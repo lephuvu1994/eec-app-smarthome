@@ -27,6 +27,7 @@ const appIconBadgeConfig: AppIconBadgeConfig = {
   ],
 };
 
+// eslint-disable-next-line max-lines-per-function
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: Env.EXPO_PUBLIC_NAME,
@@ -95,7 +96,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ],
     [
       'expo-font',
-      {ios: {
+      {
+        ios: {
           fonts: [
             'node_modules/@expo-google-fonts/inter/400Regular/Inter_400Regular.ttf',
             'node_modules/@expo-google-fonts/inter/500Medium/Inter_500Medium.ttf',
@@ -128,7 +130,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
             },
           ],
         },
-      }
+      },
     ],
     'expo-localization',
     'expo-router',
@@ -154,17 +156,17 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         recordAudioAndroid: true,
       },
     ],
-      [
-        "react-native-vlc-media-player",
-        {
-          "ios": {
-              "includeVLCKit": false
-          },
-          "android": {
-              "legacyJetifier": false
-          }
-        }
-      ],
+    [
+      'react-native-vlc-media-player',
+      {
+        ios: {
+          includeVLCKit: false,
+        },
+        android: {
+          legacyJetifier: false,
+        },
+      },
+    ],
     ['react-native-edge-to-edge'],
     [
       'expo-build-properties',

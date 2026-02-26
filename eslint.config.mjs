@@ -38,13 +38,16 @@ export default antfu(
       '.vscode',
       'docs/',
       'cli/',
+      '.github/',
+      '**/*.d.ts',
       'expo-env.d.ts',
       'migration/*',
     ],
   },
 
-  // Custom rules
+  // Custom rules (only for JS/TS so rules like max-lines-per-function don't run on .md etc.)
   {
+    files: ['**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx'],
     rules: {
       'max-params': ['error', 3],
       'max-lines-per-function': ['error', 110],

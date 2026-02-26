@@ -35,7 +35,7 @@ yarn expo prebuild      # Sinh lại thư mục android/ ios/
 
 ## Cấu trúc project
 
-```
+```text
 src/
 ├── app/              # Expo Router (file-based routes)
 ├── features/         # Các feature (auth, feed, settings...)
