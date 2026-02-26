@@ -14,7 +14,7 @@ const envSchema = z.object({
 });
 
 // Config records per environment
-const EXPO_PUBLIC_APP_ENV = ((process.env.EXPO_PUBLIC_APP_ENV ?? 'development') as z.infer<typeof envSchema>['EXPO_PUBLIC_APP_ENV']);
+const EXPO_PUBLIC_APP_ENV = (process.env.EXPO_PUBLIC_APP_ENV ?? 'development') as z.infer<typeof envSchema>['EXPO_PUBLIC_APP_ENV'];
 
 const BUNDLE_IDS = {
   development: 'EuroSol.development',

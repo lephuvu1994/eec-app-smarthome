@@ -14,7 +14,7 @@
 
 ## What: Project Structure
 
-```
+```text
 src/
 ├── app/              # Expo Router file-based routes (add new routes here)
 ├── features/         # Feature modules - auth, feed, settings are EXAMPLES

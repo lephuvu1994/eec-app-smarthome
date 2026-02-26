@@ -2230,16 +2230,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expo/code-signing-certificates@npm:0.0.5":
-  version: 0.0.5
-  resolution: "@expo/code-signing-certificates@npm:0.0.5"
-  dependencies:
-    node-forge: "npm:^1.2.1"
-    nullthrows: "npm:^1.1.1"
-  checksum: 10c0/98c908c54f92d6782ae01fef47dd858140dc6013e5376ee3faf9b243327f2b16279441fec171cbde45d0e3ebd0bf72db57b4d4c2a0c4f952285b0b377b2b356b
-  languageName: node
-  linkType: hard
-
 "@expo/code-signing-certificates@npm:^0.0.6":
   version: 0.0.6
   resolution: "@expo/code-signing-certificates@npm:0.0.6"
@@ -8246,7 +8236,7 @@ __metadata:
     expo-splash-screen: "npm:~31.0.13"
     expo-status-bar: "npm:~3.0.9"
     expo-system-ui: "npm:~6.0.9"
-    expo-updates: "npm:29.0.15"
+    expo-updates: "npm:29.0.16"
     husky: "npm:^9.1.7"
     i18next: "npm:^25.8.0"
     jest: "npm:^29.7.0"
@@ -8268,7 +8258,7 @@ __metadata:
     react-native-flash-message: "npm:^0.4.2"
     react-native-gesture-handler: "npm:~2.28.0"
     react-native-hash: "npm:3.0.3"
-    react-native-keyboard-controller: "npm:^1.18.5"
+    react-native-keyboard-controller: "npm:1.18.5"
     react-native-mmkv: "npm:~4.1.1"
     react-native-nitro-modules: "npm:^0.33.2"
     react-native-pager-view: "npm:8.0.0"
@@ -10103,11 +10093,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-updates@npm:29.0.15":
-  version: 29.0.15
-  resolution: "expo-updates@npm:29.0.15"
+"expo-updates@npm:29.0.16":
+  version: 29.0.16
+  resolution: "expo-updates@npm:29.0.16"
   dependencies:
-    "@expo/code-signing-certificates": "npm:0.0.5"
+    "@expo/code-signing-certificates": "npm:^0.0.6"
     "@expo/plist": "npm:^0.4.8"
     "@expo/spawn-async": "npm:^1.7.2"
     arg: "npm:4.1.0"
@@ -10127,7 +10117,7 @@ __metadata:
     react-native: "*"
   bin:
     expo-updates: bin/cli.js
-  checksum: 10c0/3a2752027b75e569444180c41925bf6683288d0b651f745635062de194dda3cd78b21f93369b995a0f57a7e4eda1bb38dcc230bbfa8eb790616d70221b32c989
+  checksum: 10c0/2dfadc04df7a6e37c1162a4d1eca76f6249e2c3fb8f8e6ac0ccd6f55cce34acf6867c2dfbd75c2d0a37c0578386d19d1a2fbc97a2b5efba0b5217f2a83e3a85d
   languageName: node
   linkType: hard
 
@@ -15077,7 +15067,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-forge@npm:^1.2.1, node-forge@npm:^1.3.3":
+"node-forge@npm:^1.3.3":
   version: 1.3.3
   resolution: "node-forge@npm:1.3.3"
   checksum: 10c0/9c6f53b0ebb34865872cf62a35b0aef8fb337e2efc766626c2e3a0040f4c02933bf29a62ba999eb44a2aca73bd512c4eda22705a47b94654b9fb8ed53db9a1db
@@ -16525,16 +16515,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-keyboard-controller@npm:^1.18.5":
-  version: 1.20.7
-  resolution: "react-native-keyboard-controller@npm:1.20.7"
+"react-native-keyboard-controller@npm:1.18.5":
+  version: 1.18.5
+  resolution: "react-native-keyboard-controller@npm:1.18.5"
   dependencies:
     react-native-is-edge-to-edge: "npm:^1.2.1"
   peerDependencies:
     react: "*"
     react-native: "*"
     react-native-reanimated: ">=3.0.0"
-  checksum: 10c0/f3a1682552ed90f086f4442ba2eebfb2080451e4c9d686345ba92b8fbeca3498172e6b302a413406fabe9ab06cc19c67dbec22a7703b72342f89d39fce136db3
+  checksum: 10c0/708b8c299fdfc11749db4d84238330a2f04a07a92f40a5f0aa2870ffedb9e47c05455d50c3441a321f5cd5cacf7c936d5706e74cfb234a132e6c6c9ebb0d5e57
   languageName: node
   linkType: hard
 

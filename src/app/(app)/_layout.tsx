@@ -27,7 +27,8 @@ export default function TabLayout() {
     return () => {
       clearTimeout(timer);
       // Chỉ ẩn splash khi đã từng set timer (đã vào màn hình chính), tránh ẩn sớm khi redirect login/onboarding (idle → signOut)
-      if (timer !== undefined) void hideSplash();
+      if (timer !== undefined)
+        void hideSplash();
     };
   }, [status, hideSplash]);
 

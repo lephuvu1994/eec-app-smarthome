@@ -29,7 +29,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: 📦 Setup Node + PNPM + install deps
+      - name: 📦 Setup Node + Yarn + install deps
         uses: ./.github/actions/setup-node-yarn-install
 
       - name: 🏃‍♂️ Run Tests

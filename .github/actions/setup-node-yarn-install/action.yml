@@ -23,9 +23,13 @@ runs:
 
     - uses: actions/setup-node@v4
       with:
-        node-version: 20
+        node-version: 22
         cache: yarn
 
     - name: 📦 Install Project Dependencies
+      env:
+        HUSKY: '0'
+        # Inline build log so postinstall/prepare errors appear in Actions log
+        YARN_ENABLE_INLINE_BUILDS: '1'
       run: yarn install --immutable
       shell: bash

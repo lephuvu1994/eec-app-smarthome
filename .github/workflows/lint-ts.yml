@@ -33,10 +33,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: 📦 Setup Node + PNPM + install deps
+      - name: 📦 Setup Node + YARN 4 + install deps
         uses: ./.github/actions/setup-node-yarn-install
 
-      - name: 🏃‍♂️ Run ESLint PR
+      - name: 🏃‍♂️ Run ESLint (PR review)
         if: github.event_name == 'pull_request'
         uses: reviewdog/action-eslint@v1
         with:
@@ -44,6 +44,6 @@ jobs:
           reporter: github-pr-review
           eslint_flags: '. --ext .js,.jsx,.ts,.tsx'
 
-      - name: 🏃‍♂️ Run ESLint PR
+      - name: 🏃‍♂️ Run ESLint (push)
         if: github.event_name != 'pull_request'
         run: yarn run lint
