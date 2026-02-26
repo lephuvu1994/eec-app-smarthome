@@ -1,0 +1,14 @@
+diff --git a/expo/android/withGradleTasks.js b/expo/android/withGradleTasks.js
+--- a/expo/android/withGradleTasks.js
++++ b/expo/android/withGradleTasks.js
+@@ -38,8 +38,9 @@
+         const newCode = generateCode.mergeContents({
+             tag: "withVlcMediaPlayer",
+             src: config.modResults.contents,
+             newSrc: resolveAppGradleString(options),
+-            anchor: /applyNativeModulesAppBuildGradle\(project\)/i,
++            // Expo/RN 0.81+ use autolinkLibrariesWithApp() instead of applyNativeModulesAppBuildGradle(project)
++            anchor: /autolinkLibrariesWithApp\(\)/i,
+             offset: 2,
+             comment: "//",
+         });

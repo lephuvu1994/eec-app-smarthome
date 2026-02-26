@@ -1,0 +1,31 @@
+# 🔗 Links:
+# Composite action for Node + Yarn + install dependencies
+# Composite actions docs: https://docs.github.com/en/actions/creating-actions/creating-a-composite-action
+
+# ✍️ Description:
+# This is a composite action used in workflows to set up the environment and install dependencies.
+# Updating the package manager or Node version here will be reflected in all workflows.
+
+# 👀 Example usage:
+#       - name: 📦 Setup Node + Yarn + install deps
+#         uses: ./.github/actions/setup-node-yarn-install
+#
+# Yarn 4 (Berry): cần bật Corepack trước setup-node để dùng đúng phiên bản từ packageManager.
+
+name: 'Setup Node + Yarn + Install Dependencies'
+description: 'Setup Node + Yarn 4 + Install Dependencies (Corepack, node_modules)'
+runs:
+  using: composite
+  steps:
+    - name: Enable Corepack (Yarn 4)
+      run: corepack enable
+      shell: bash
+
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: yarn
+
+    - name: 📦 Install Project Dependencies
+      run: yarn install --immutable
+      shell: bash
