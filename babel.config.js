@@ -11,12 +11,13 @@ module.exports = function (api) {
           root: ['./'],
           alias: {
             '@': './src',
-            '@env': './src/lib/env.js',
+            '@env': './env.ts',
+            "@@/*": ["./*"]
           },
           extensions: [
+            '.ts',
             '.ios.ts',
             '.android.ts',
-            '.ts',
             '.ios.tsx',
             '.android.tsx',
             '.tsx',

@@ -6,7 +6,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@env": ["env.ts"],
+      "@env": ["./env.ts"],
       "@@/*": ["./*"]
     },
     "checkJs": true,
@@ -14,6 +14,7 @@
     "esModuleInterop": true
   },
   "include": [
+    ".ts",
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",

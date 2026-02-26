@@ -3,8 +3,8 @@ import { getItem, removeItem, setItem } from '@/lib/storage';
 const TOKEN = 'token';
 
 export type TokenType = {
-  access: string;
-  refresh: string;
+  accessToken: string;
+  refreshToken: string;
 };
 
 export const getToken = () => getItem<TokenType>(TOKEN);

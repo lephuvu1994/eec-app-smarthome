@@ -67,11 +67,7 @@ export function SettingsScreen() {
           <SettingsContainer title="settings.links">
             <SettingsItem text="settings.privacy" onPress={() => {}} />
             <SettingsItem text="settings.terms" onPress={() => {}} />
-            <SettingsItem
-              text="settings.github"
-              icon={<Github color={iconColor} />}
-              onPress={() => {}}
-            />
+            
             <SettingsItem
               text="settings.website"
               icon={<Website color={iconColor} />}

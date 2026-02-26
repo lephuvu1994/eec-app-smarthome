@@ -20,41 +20,57 @@ import {
 } from '@/components/ui';
 import { translate } from '@/lib/i18n';
 import { getFieldError } from '@/components/ui/form-utils';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const schema = z.object({
-  identifier: z
-    .string()
-    .trim()
-    .min(1, 'Email bắt buộc phải nhập!')
-    .pipe(z.email({ message: 'Không đúng định dạng email' })),
-  password: z
-    .string()
-    .trim()
-    .min(1, 'Password is required')
-    .min(6, 'Password must be at least 6 characters'),
-});
+
+const schema = z
+  .object({
+    firstName: z.string().trim().min(1, 'Nhập và tên đầy đủ'),
+    lastName: z.string().trim().min(1, 'Nhập và tên đầy đủ'),
+    identifier: z
+      .string()
+      .trim()
+      .min(1, 'Email bắt buộc phải nhập')
+      .pipe(z.email({ message: 'Không đúng định dạng email' })),
+    password: z
+      .string()
+      .trim()
+      .min(1, 'Password is required')
+      .min(6, 'Password must be at least 6 characters'),
+    repeatPassword: z
+      .string()
+      .trim()
+      .min(1, 'Password is required')
+      .min(6, 'Password must be at least 6 characters'),
+  })
+  .refine((data) => data.password === data.repeatPassword, {
+    path: ['repeatPassword'],
+    message: 'Passwords do not match',
+  });
 
 export type FormType = z.infer<typeof schema>;
 
-export type LoginFormProps = {
+export type SignUpFormProps = {
   onSubmit?: (value: FormType) => Promise<void>;
 };
 
-export const LoginForm = ({ onSubmit = async () => { } }: LoginFormProps) => {
+export const SignUpForm = ({ onSubmit = async () => { } }: SignUpFormProps) => {
   const form = useForm({
     defaultValues: {
+      firstName: '',
+      lastName: '',
       identifier: '',
       password: '',
+      repeatPassword: '',
     },
-
     validators: {
-      onBlur: schema as any,
+      onChange: schema,
     },
     onSubmit: async ({ value }) => {
       await onSubmit(value);
     },
-  });
-
+  })
+  const insets = useSafeAreaInsets();
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
 
@@ -78,7 +94,7 @@ export const LoginForm = ({ onSubmit = async () => { } }: LoginFormProps) => {
           shadowOpacity: 0.5,
           shadowRadius: 24,
           elevation: 5,
-          height: 400,
+          height: insets.bottom + 540,
         }}
       >
         <LinearGradient
@@ -170,21 +186,37 @@ export const LoginForm = ({ onSubmit = async () => { } }: LoginFormProps) => {
                 testID="form-title"
                 className="text-center text-white font-bold text-3xl"
               >
-                {translate('base.signIn')}
+                {translate('base.signUp')}
               </Text>
-              <View className="items-center mx-4 mt-6">
+              <View className="items-center mx-4 mt-8 gap-4">
                 <View className="w-full gap-4">
-                  <View className="w-full gap-2">
-                    <View className="w-full relative">
+                  <View className="w-full flex-row gap-2">
+                    <View className="flex-1 relative">
                       <form.Field
-                        name="identifier"
+                        name="firstName"
+                        children={(field) => (
+                          <FloatInput
+                            testID="firstName-input"
+                            inputClassName="text-white"
+                            value={field.state.value}
+                            onBlur={field.handleBlur}
+                            onChangeText={field.handleChange}
+                            label="Nhập tên"
+                            error={getFieldError(field)}
+                          />
+                        )}
+                      />
+                    </View>
+                    <View className="flex-1 relative">
+                      <form.Field
+                        name="lastName"
                         children={(field) => (
                           <FloatInput
                             value={field.state.value}
                             onChangeText={field.handleChange}
                             onBlur={field.handleBlur}
-                            label="Nhập email hoặc số điện thoại"
-                            testID="identifier"
+                            label="Nhập họ"
+                            testID="lastName-input"
                             inputClassName="bg-transparent text-white dark:text-white"
                             placeholderTextColor="white"
                             error={getFieldError(field)}
@@ -194,34 +226,79 @@ export const LoginForm = ({ onSubmit = async () => { } }: LoginFormProps) => {
                       />
                     </View>
                   </View>
+                  <View className="w-full relative">
+                    <form.Field
+                      name="identifier"
+                      children={(field) => (
+                        <FloatInput
+                          value={field.state.value}
+                          onChangeText={field.handleChange}
+                          onBlur={field.handleBlur}
+                          label="Nhập email hoặc số điện thoại"
+                          testID="identifier"
+                          inputClassName="bg-transparent text-white dark:text-white"
+                          placeholderTextColor="white"
+                          error={getFieldError(field)}
+                          rightIcon={<Fontisto name="email" size={18} color="white" />}
+                        />
+                      )}
+                    />
+                  </View>
 
-                  <View className="w-full gap-2">
-                    <View className="w-full relative mb-4">
-                      <form.Field
-                        name="password"
-                        children={(field) => (
-                          <FloatInput
-                            value={field.state.value}
-                            onChangeText={field.handleChange}
-                            onBlur={field.handleBlur}
-                            testID="password-input"
-                            label={translate('base.password')}
-                            secureTextEntry={!showPassword}
-                            inputClassName="bg-transparent text-white dark:text-white"
-                            placeholderTextColor="white"
-                            error={getFieldError(field)}
-                            rightIcon={<TouchableOpacity
-                              onPress={() => setShowPassword(!showPassword)}>
-                              <Feather
-                                name={!showPassword ? 'eye' : 'eye-off'}
-                                size={18}
-                                color="#d1d5db"
-                              />
-                            </TouchableOpacity>}
-                          />
-                        )}
-                      />
-                    </View>
+                  <View className="w-full relative">
+                    <form.Field
+                      name="password"
+                      children={(field) => (
+                        <FloatInput
+                          value={field.state.value}
+                          onChangeText={field.handleChange}
+                          onBlur={field.handleBlur}
+                          testID="password-input"
+                          label={translate('base.password')}
+                          secureTextEntry={!showPassword}
+                          inputClassName="bg-transparent text-white dark:text-white"
+                          placeholderTextColor="white"
+                          error={getFieldError(field)}
+                          rightIcon={<TouchableOpacity
+                            onPress={() => setShowPassword(!showPassword)}>
+                            <Feather
+                              name={!showPassword ? 'eye' : 'eye-off'}
+                              size={18}
+                              color="#d1d5db"
+                            />
+                          </TouchableOpacity>}
+                        />
+                      )}
+                    />
+                  </View>
+                  <View className="w-full relative">
+                    <form.Field
+                      name="repeatPassword"
+                      validators={{
+                        onChange: schema.shape.repeatPassword,
+                      }}
+                      children={(field) => (
+                        <FloatInput
+                          value={field.state.value}
+                          onChangeText={field.handleChange}
+                          onBlur={field.handleBlur}
+                          testID="password-input"
+                          label={translate('base.repeatPassword')}
+                          secureTextEntry={!showPassword}
+                          inputClassName="bg-transparent text-white dark:text-white"
+                          placeholderTextColor="white"
+                          error={getFieldError(field)}
+                          rightIcon={<TouchableOpacity
+                            onPress={() => setShowPassword(!showPassword)}>
+                            <Feather
+                              name={!showPassword ? 'eye' : 'eye-off'}
+                              size={18}
+                              color="#d1d5db"
+                            />
+                          </TouchableOpacity>}
+                        />
+                      )}
+                    />
                   </View>
                 </View>
 
@@ -263,7 +340,7 @@ export const LoginForm = ({ onSubmit = async () => { } }: LoginFormProps) => {
                           }}
                         >
                           <Text className="text-white">
-                            {translate('base.loginLabel')}
+                            {translate('base.signUp')}
                           </Text>
                         </LinearGradient>
                       </Button>
@@ -272,16 +349,16 @@ export const LoginForm = ({ onSubmit = async () => { } }: LoginFormProps) => {
                 </View>
                 <View className="w-full mt-2 gap-2 justify-center items-center">
                   <Text className="text-white dark:text-white">
-                    {translate('base.dontHaveAccount')}
+                    {translate('base.haveAccount')}
                   </Text>
                   <View>
                     <TouchableOpacity
                       onPress={() => {
-                        router.push('/(welcome)/signUp');
+                        router.push('/(welcome)/login');
                       }}
                     >
                       <Text className="text-white dark:text-white underline">
-                        {translate('base.signUp')}
+                        {translate('base.signIn')}
                       </Text>
                     </TouchableOpacity>
                   </View>

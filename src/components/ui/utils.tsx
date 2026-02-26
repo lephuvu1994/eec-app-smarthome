@@ -23,6 +23,14 @@ export function showError(error: AxiosError) {
   });
 }
 
+export const showSuccessMessage = (message: string = "Thành công") => {
+  showMessage({
+    message,
+    type: "success",
+    duration: 4000,
+  });
+};
+
 export function showErrorMessage(message: string = 'Something went wrong ') {
   showMessage({
     message,
