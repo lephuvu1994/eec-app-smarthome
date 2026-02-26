@@ -1,10 +1,11 @@
 import { createMMKV } from 'react-native-mmkv';
+import { StateStorage } from 'zustand/middleware';
 
 export const storage = createMMKV();
 
 export function getItem<T>(key: string): T | null {
   const value = storage.getString(key);
-  return value ? JSON.parse(value) || null : null;
+  return value ? JSON.parse(value) : null;
 }
 
 export async function setItem<T>(key: string, value: T) {
@@ -13,4 +14,10 @@ export async function setItem<T>(key: string, value: T) {
 
 export async function removeItem(key: string) {
   storage.remove(key);
+}
+
+export const mmkvStorage: StateStorage = {
+  setItem: setItem,
+  getItem: getItem,
+  removeItem: removeItem,
 }

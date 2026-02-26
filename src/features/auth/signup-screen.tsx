@@ -1,51 +1,61 @@
 import React from 'react';
-import Animated, {
-  SlideInLeft,
-  SlideInRight,
-  SlideInUp,
-} from 'react-native-reanimated';
+import Animated, { SlideInLeft, SlideInRight, SlideInUp } from 'react-native-reanimated';
 
-import { Image } from 'expo-image';
-import { useRouter } from 'expo-router';
-import { showErrorMessage, Text, View } from '@/components/ui';
-import { useAuthStore } from '@/features/auth/use-auth-store';
-import { useGetUser } from '@/features/auth/user-store';
-import { UserResponse } from '@/features/auth/types/response';
-import { useLogin } from '@/lib/api';
+import { useMutation } from '@tanstack/react-query';
+import _ from 'lodash';
+
+import { SignUpForm, SignUpFormProps } from '@/features/auth/components/signup-form';
+import {
+  showErrorMessage,
+  showSuccessMessage,
+  Text,
+  View,
+  Image
+} from '@/components/ui';
+import { TUser, UserResponse } from './types/response';
+import { client } from '@/lib/api';
+import { signIn } from './use-auth-store';
+import { setUserStore } from '@/lib/auth/user';
 import { BaseLayout } from '@/components/layout/BaseLayout';
-import { LoginForm, LoginFormProps } from '@/features/auth/components/login-form';
-import { FullLayout } from '@/components/layout/FullLayout';
 
-export function SignIn() {
-  const router = useRouter();
-  const signIn = useAuthStore.use.signIn();
-  const setUserStore = useGetUser.use.setUser();
+export function SignUp() {
+  const { mutate: signUp, isPending: isPendingSignUp } = useMutation({
+    mutationFn: async (variables: any) => {
+      const resultData = await client.post<UserResponse>(
+        '/auth/signup',
+        variables
+      );
+      return resultData.data;
+    },
+  });
 
-  const { mutate: login, isPending: isPendingLogin } = useLogin();
-
-  const onSubmit: LoginFormProps['onSubmit'] = async (data: any) => {
-    login(
-      { identifier: data.email, password: data.password },
+  const onSubmit: SignUpFormProps['onSubmit'] = async (data: any) => {
+    signUp(
+      {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        identifier: data.identifier,
+        password: data.password,
+      },
       {
         onSuccess: (data: UserResponse) => {
-          if (data.statusCode !== 200) {
-            showErrorMessage(`Login falied ${JSON.stringify(data.message)}`);
-          } else if (data) {
+          if (data.statusCode !== 201 && data.message) {
+            showErrorMessage(`Sign up falied ${JSON.stringify(data.message)}`);
+          } else {
+            showSuccessMessage('Đăng ký tài khoản admin thành công !');
             signIn({
               accessToken: data.data.accessToken,
               refreshToken: data.data.refreshToken,
             });
-            setUserStore(data.data.user);
-            router.push('/(app)');
+            setUserStore(data.data.user as TUser);
           }
         },
         onError: (error: any) => {
-          showErrorMessage(`Login falied ${JSON.stringify(error)}`);
+          showErrorMessage(`Sign up falied ${JSON.stringify(error)}`);
         },
       }
     );
   };
-
   return (
     <BaseLayout hasTabBar={false}>
       <View className="flex-1 flex-col">
@@ -86,7 +96,7 @@ export function SignIn() {
             </Animated.View>
           </View>
         </View>
-        <LoginForm onSubmit={onSubmit} />
+        <SignUpForm onSubmit={onSubmit} />
       </View>
     </BaseLayout>
   );
