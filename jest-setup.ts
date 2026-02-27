@@ -11,6 +11,25 @@ jest.mock('react-native-worklets', () => ({
 jest.mock('react-native-reanimated', () => {
   const View = require('react-native').View;
 
+  const createLayoutAnim = () => {
+    const anim: any = {};
+    anim.delay = jest.fn(() => anim);
+    anim.duration = jest.fn(() => anim);
+    anim.withInitialValues = jest.fn(() => anim);
+    return anim;
+  };
+
+  const fadeIn = createLayoutAnim();
+  const fadeOut = createLayoutAnim();
+  const fadeInDown = createLayoutAnim();
+  const fadeInUp = createLayoutAnim();
+  const fadeInLeft = createLayoutAnim();
+  const fadeInRight = createLayoutAnim();
+  const slideInDown = createLayoutAnim();
+  const slideInUp = createLayoutAnim();
+  const slideInLeft = createLayoutAnim();
+  const slideInRight = createLayoutAnim();
+
   return {
     __esModule: true,
     default: {
@@ -20,6 +39,7 @@ jest.mock('react-native-reanimated', () => {
     },
     useSharedValue: jest.fn(() => ({ value: 0 })),
     useAnimatedStyle: jest.fn(fn => fn()),
+    useAnimatedProps: jest.fn(fn => fn()),
     withTiming: jest.fn(value => value),
     withSpring: jest.fn(value => value),
     withDecay: jest.fn(value => value),
@@ -37,16 +57,18 @@ jest.mock('react-native-reanimated', () => {
       out: jest.fn(fn => fn),
       inOut: jest.fn(fn => fn),
     },
-    FadeIn: { duration: jest.fn(() => ({})) },
-    FadeOut: { duration: jest.fn(() => ({})) },
-    FadeInDown: { duration: jest.fn(() => ({})) },
-    FadeInUp: { duration: jest.fn(() => ({})) },
-    FadeInLeft: { duration: jest.fn(() => ({})) },
-    FadeInRight: { duration: jest.fn(() => ({})) },
-    SlideInDown: { duration: jest.fn(() => ({})) },
-    SlideInUp: { duration: jest.fn(() => ({})) },
-    SlideInLeft: { duration: jest.fn(() => ({})) },
-    SlideInRight: { duration: jest.fn(() => ({})) },
+    interpolate: jest.fn((_value, _inputRange, outputRange) => outputRange[0]),
+    interpolateColor: jest.fn(() => '#ffffff'),
+    FadeIn: fadeIn,
+    FadeOut: fadeOut,
+    FadeInDown: fadeInDown,
+    FadeInUp: fadeInUp,
+    FadeInLeft: fadeInLeft,
+    FadeInRight: fadeInRight,
+    SlideInDown: slideInDown,
+    SlideInUp: slideInUp,
+    SlideInLeft: slideInLeft,
+    SlideInRight: slideInRight,
     Layout: {},
     Keyframe: jest.fn(),
   };

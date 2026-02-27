@@ -4,21 +4,21 @@ import { ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import FlashMessage from 'react-native-flash-message';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
+import { FullLayout } from '@/components/layout/FullLayout';
+
 import { useThemeConfig } from '@/components/ui/use-theme-config';
 import { hydrateAuth, useAuthStore } from '@/features/auth/use-auth-store';
-
+import { hydrateUserStore } from '@/features/auth/user-store';
+import CustomSplashScreen from '@/features/splash-screen';
 import { APIProvider } from '@/lib/api';
 import { loadSelectedTheme } from '@/lib/hooks/use-selected-theme';
 // Import  global CSS file
 import '../global.css';
-import { hydrateUserStore } from '@/features/auth/user-store';
-import { useCallback, useEffect, useState } from 'react';
-import CustomSplashScreen from '@/features/splash-screen';
-import { FullLayout } from '@/components/layout/FullLayout';
 
 export { ErrorBoundary } from 'expo-router';
 
@@ -27,7 +27,7 @@ export const unstable_settings = {
   initialRouteName: '(app)',
 };
 
-const initApp = async () => {
+async function initApp() {
   // Login and get access_token
   hydrateAuth();
   hydrateUserStore();
@@ -35,11 +35,10 @@ const initApp = async () => {
   await SplashScreen.hideAsync();
   // Prevent the splash screen from auto-hiding before asset loading is complete.
   // Set the animation options. This is optional.
-};
+}
 
 loadSelectedTheme();
 initApp();
-
 
 function RootRender() {
   const [isLoading, setIsLoading] = useState(true);
@@ -65,26 +64,27 @@ function RootRender() {
     };
   }, [status, hideSplash]);
 
-
   return (
     <FullLayout>
       {
-        isLoading ?
-          <CustomSplashScreen />
-          :
-          <Stack screenOptions={{
-            // 1. Ép nền của toàn bộ các màn hình trong Stack thành trong suốt
-            contentStyle: { backgroundColor: 'transparent' },
-          }}>
-            <Stack.Screen name="(app)" options={{ headerShown: false }} />
-            <Stack.Screen name="onboarding" options={{ headerShown: false }} />
-            <Stack.Screen
-              name="(welcome)"
-              options={{
-                headerShown: false,
+        isLoading
+          ? <CustomSplashScreen />
+          : (
+              <Stack screenOptions={{
+                // 1. Ép nền của toàn bộ các màn hình trong Stack thành trong suốt
+                contentStyle: { backgroundColor: 'transparent' },
               }}
-            />
-          </Stack>
+              >
+                <Stack.Screen name="(app)" options={{ headerShown: false }} />
+                <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="(welcome)"
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+              </Stack>
+            )
       }
     </FullLayout>
   );

@@ -12,7 +12,7 @@ module.exports = function (api) {
           alias: {
             '@': './src',
             '@env': './env.ts',
-            "@@/*": ["./*"]
+            '@@/*': ['./*'],
           },
           extensions: [
             '.ts',

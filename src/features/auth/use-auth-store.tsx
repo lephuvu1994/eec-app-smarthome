@@ -1,10 +1,10 @@
 import type { TokenType } from '@/lib/auth/utils';
 
+import Env from '@env';
 import { create } from 'zustand';
+import { removeUserStore } from '@/lib/auth/user';
 import { getToken, removeToken, setToken } from '@/lib/auth/utils';
 import { createSelectors } from '@/lib/utils';
-import Env from '@env';
-import { removeUserStore } from '@/lib/auth/user';
 
 type AuthState = {
   token: TokenType | null;
@@ -18,18 +18,19 @@ const _useAuthStore = create<AuthState>((set, get) => ({
   status: 'idle',
   token: null,
   signIn: (token) => {
-    setToken(token)
-    set({ status: "signIn", token })
-    const websocketUrl = Env.EXPO_PUBLIC_API_URL.replace("https", "ws")
+    setToken(token);
+    set({ status: 'signIn', token });
+    const websocketUrl = Env.EXPO_PUBLIC_API_URL.replace('https', 'ws');
+    console.log('websocketUrl', websocketUrl);
     // const wsManager = WebSocketManager.getInstance()
     // wsManager.connect(websocketUrl)
   },
- signOut: () => {
-    removeToken()
-    removeUserStore()
+  signOut: () => {
+    removeToken();
+    removeUserStore();
     // const wsManager = WebSocketManager.getInstance()
     // wsManager.disconnect()
-    set({ status: "signOut", token: null })
+    set({ status: 'signOut', token: null });
   },
   hydrate: () => {
     try {

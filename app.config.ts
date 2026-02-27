@@ -27,7 +27,6 @@ const appIconBadgeConfig: AppIconBadgeConfig = {
   ],
 };
 
-// eslint-disable-next-line max-lines-per-function
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: Env.EXPO_PUBLIC_NAME,

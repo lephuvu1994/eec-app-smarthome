@@ -5,10 +5,13 @@ import { translate } from '@/lib/i18n';
 
 export default function WelcomeLayout() {
   return (
-    <Stack initialRouteName="signIn" screenOptions={{
+    <Stack
+      initialRouteName="signIn"
+      screenOptions={{
       // 1. Ép nền của toàn bộ các màn hình trong Stack thành trong suốt
-      contentStyle: { backgroundColor: 'transparent' },
-    }}>
+        contentStyle: { backgroundColor: 'transparent' },
+      }}
+    >
       <Stack.Screen
         name="signUp"
         options={{

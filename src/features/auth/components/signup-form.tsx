@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import { useForm } from '@tanstack/react-form';
-import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
-import Animated, { FadeInUp } from 'react-native-reanimated';
-
 import Feather from '@expo/vector-icons/Feather';
 import Fontisto from '@expo/vector-icons/Fontisto';
+import { useForm } from '@tanstack/react-form';
 import { BlurView } from 'expo-blur';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
+import Animated, { FadeInUp } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as z from 'zod';
 
 import {
@@ -18,10 +18,8 @@ import {
   TouchableOpacity,
   View,
 } from '@/components/ui';
-import { translate } from '@/lib/i18n';
 import { getFieldError } from '@/components/ui/form-utils';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
+import { translate } from '@/lib/i18n';
 
 const schema = z
   .object({
@@ -43,7 +41,7 @@ const schema = z
       .min(1, 'Password is required')
       .min(6, 'Password must be at least 6 characters'),
   })
-  .refine((data) => data.password === data.repeatPassword, {
+  .refine(data => data.password === data.repeatPassword, {
     path: ['repeatPassword'],
     message: 'Passwords do not match',
   });
@@ -54,7 +52,7 @@ export type SignUpFormProps = {
   onSubmit?: (value: FormType) => Promise<void>;
 };
 
-export const SignUpForm = ({ onSubmit = async () => { } }: SignUpFormProps) => {
+export function SignUpForm({ onSubmit = async () => { } }: SignUpFormProps) {
   const form = useForm({
     defaultValues: {
       firstName: '',
@@ -69,7 +67,7 @@ export const SignUpForm = ({ onSubmit = async () => { } }: SignUpFormProps) => {
     onSubmit: async ({ value }) => {
       await onSubmit(value);
     },
-  })
+  });
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
@@ -78,7 +76,7 @@ export const SignUpForm = ({ onSubmit = async () => { } }: SignUpFormProps) => {
     <KeyboardAvoidingView
       behavior="padding"
       keyboardVerticalOffset={-120}
-      className="w-full h-full justify-end absolute"
+      className="absolute size-full justify-end"
     >
       <Animated.View
         entering={FadeInUp.delay(100)
@@ -108,7 +106,7 @@ export const SignUpForm = ({ onSubmit = async () => { } }: SignUpFormProps) => {
         >
           <BlurView
             intensity={20}
-            tint={'dark'}
+            tint="dark"
             style={{ flex: 1 }}
             className="relative"
           >
@@ -124,7 +122,7 @@ export const SignUpForm = ({ onSubmit = async () => { } }: SignUpFormProps) => {
                 height: '100%',
                 opacity: 1, // chỉnh độ mờ
               }}
-              contentFit='cover'
+              contentFit="cover"
             />
             <Image
               source={require('@@/assets/base/auro.png')}
@@ -141,7 +139,7 @@ export const SignUpForm = ({ onSubmit = async () => { } }: SignUpFormProps) => {
                 height: '100%',
                 opacity: 1, // chỉnh độ mờ
               }}
-              contentFit='cover'
+              contentFit="cover"
             />
             <Image
               source={require('@@/assets/base/auro.png')}
@@ -158,7 +156,7 @@ export const SignUpForm = ({ onSubmit = async () => { } }: SignUpFormProps) => {
                 height: '100%',
                 opacity: 1, // chỉnh độ mờ
               }}
-              contentFit='cover'
+              contentFit="cover"
             />
             <LinearGradient
               colors={[
@@ -181,20 +179,20 @@ export const SignUpForm = ({ onSubmit = async () => { } }: SignUpFormProps) => {
                 padding: 2,
               }}
             />
-            <View className="flex-1 mt-4">
+            <View className="mt-4 flex-1">
               <Text
                 testID="form-title"
-                className="text-center text-white font-bold text-3xl"
+                className="text-center text-3xl font-bold text-white"
               >
                 {translate('base.signUp')}
               </Text>
-              <View className="items-center mx-4 mt-8 gap-4">
+              <View className="mx-4 mt-8 items-center gap-4">
                 <View className="w-full gap-4">
                   <View className="w-full flex-row gap-2">
-                    <View className="flex-1 relative">
+                    <View className="relative flex-1">
                       <form.Field
                         name="firstName"
-                        children={(field) => (
+                        children={field => (
                           <FloatInput
                             testID="firstName-input"
                             inputClassName="text-white"
@@ -207,10 +205,10 @@ export const SignUpForm = ({ onSubmit = async () => { } }: SignUpFormProps) => {
                         )}
                       />
                     </View>
-                    <View className="flex-1 relative">
+                    <View className="relative flex-1">
                       <form.Field
                         name="lastName"
-                        children={(field) => (
+                        children={field => (
                           <FloatInput
                             value={field.state.value}
                             onChangeText={field.handleChange}
@@ -226,10 +224,10 @@ export const SignUpForm = ({ onSubmit = async () => { } }: SignUpFormProps) => {
                       />
                     </View>
                   </View>
-                  <View className="w-full relative">
+                  <View className="relative w-full">
                     <form.Field
                       name="identifier"
-                      children={(field) => (
+                      children={field => (
                         <FloatInput
                           value={field.state.value}
                           onChangeText={field.handleChange}
@@ -245,10 +243,10 @@ export const SignUpForm = ({ onSubmit = async () => { } }: SignUpFormProps) => {
                     />
                   </View>
 
-                  <View className="w-full relative">
+                  <View className="relative w-full">
                     <form.Field
                       name="password"
-                      children={(field) => (
+                      children={field => (
                         <FloatInput
                           value={field.state.value}
                           onChangeText={field.handleChange}
@@ -259,25 +257,28 @@ export const SignUpForm = ({ onSubmit = async () => { } }: SignUpFormProps) => {
                           inputClassName="bg-transparent text-white dark:text-white"
                           placeholderTextColor="white"
                           error={getFieldError(field)}
-                          rightIcon={<TouchableOpacity
-                            onPress={() => setShowPassword(!showPassword)}>
-                            <Feather
-                              name={!showPassword ? 'eye' : 'eye-off'}
-                              size={18}
-                              color="#d1d5db"
-                            />
-                          </TouchableOpacity>}
+                          rightIcon={(
+                            <TouchableOpacity
+                              onPress={() => setShowPassword(!showPassword)}
+                            >
+                              <Feather
+                                name={!showPassword ? 'eye' : 'eye-off'}
+                                size={18}
+                                color="#d1d5db"
+                              />
+                            </TouchableOpacity>
+                          )}
                         />
                       )}
                     />
                   </View>
-                  <View className="w-full relative">
+                  <View className="relative w-full">
                     <form.Field
                       name="repeatPassword"
                       validators={{
                         onChange: schema.shape.repeatPassword,
                       }}
-                      children={(field) => (
+                      children={field => (
                         <FloatInput
                           value={field.state.value}
                           onChangeText={field.handleChange}
@@ -288,26 +289,29 @@ export const SignUpForm = ({ onSubmit = async () => { } }: SignUpFormProps) => {
                           inputClassName="bg-transparent text-white dark:text-white"
                           placeholderTextColor="white"
                           error={getFieldError(field)}
-                          rightIcon={<TouchableOpacity
-                            onPress={() => setShowPassword(!showPassword)}>
-                            <Feather
-                              name={!showPassword ? 'eye' : 'eye-off'}
-                              size={18}
-                              color="#d1d5db"
-                            />
-                          </TouchableOpacity>}
+                          rightIcon={(
+                            <TouchableOpacity
+                              onPress={() => setShowPassword(!showPassword)}
+                            >
+                              <Feather
+                                name={!showPassword ? 'eye' : 'eye-off'}
+                                size={18}
+                                color="#d1d5db"
+                              />
+                            </TouchableOpacity>
+                          )}
                         />
                       )}
                     />
                   </View>
                 </View>
 
-                <View className="w-full mt-4">
+                <View className="mt-4 w-full">
                   <form.Subscribe
-                    selector={(state) => [state.isSubmitting]}
+                    selector={state => [state.isSubmitting]}
                     children={([isSubmitting]) => (
                       <Button
-                        className="w-full p-0 bg-transparent dark:bg-transparent rounded-2xl mb-3"
+                        className="mb-3 w-full rounded-2xl bg-transparent p-0 dark:bg-transparent"
                         testID="login-button"
                         onPress={form.handleSubmit}
                         disabled={isSubmitting}
@@ -347,7 +351,7 @@ export const SignUpForm = ({ onSubmit = async () => { } }: SignUpFormProps) => {
                     )}
                   />
                 </View>
-                <View className="w-full mt-2 gap-2 justify-center items-center">
+                <View className="mt-2 w-full items-center justify-center gap-2">
                   <Text className="text-white dark:text-white">
                     {translate('base.haveAccount')}
                   </Text>
@@ -357,7 +361,7 @@ export const SignUpForm = ({ onSubmit = async () => { } }: SignUpFormProps) => {
                         router.push('/(welcome)/login');
                       }}
                     >
-                      <Text className="text-white dark:text-white underline">
+                      <Text className="text-white underline dark:text-white">
                         {translate('base.signIn')}
                       </Text>
                     </TouchableOpacity>
@@ -370,4 +374,4 @@ export const SignUpForm = ({ onSubmit = async () => { } }: SignUpFormProps) => {
       </Animated.View>
     </KeyboardAvoidingView>
   );
-};
+}
