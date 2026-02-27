@@ -13,9 +13,9 @@ export function BaseLayout({ children }: BaseLayoutProps) {
   return (
     <View
       style={{
-        top: insets.top,
+        top: 0,
         left: insets.left,
-        bottom: insets.bottom,
+        bottom: 0,
         right: insets.right,
         position: 'absolute',
         width: '100%',

@@ -1,14 +1,11 @@
 import { Icon, Label, NativeTabs } from 'expo-router/unstable-native-tabs';
-import { useUniwind } from 'uniwind';
 
 import { colors } from '@/components/ui';
 import { translate } from '@/lib/i18n';
 
 export function TabBar() {
-  const { theme } = useUniwind();
-
   return (
-    <NativeTabs tintColor={theme === 'dark' ? colors.white : colors.primary[500]}>
+    <NativeTabs tintColor={colors.neon}>
       <NativeTabs.Trigger name="(room)">
         <Label>{translate('app.roomTab')}</Label>
         <Icon
