@@ -1,35 +1,69 @@
-import type { LoginFormProps } from './login-form';
-
 import * as React from 'react';
 
 import { cleanup, screen, setup, waitFor } from '@/lib/test-utils';
-import { LoginForm } from './login-form';
+import { LoginForm, type LoginFormProps } from './login-form';
+
+jest.mock('@/components/ui', () => {
+  const actual = jest.requireActual('@/components/ui');
+  const React = require('react');
+  const { TextInput, View, Text } = require('react-native');
+
+  const FloatInput = (props: any) => (
+    <View>
+      {props.label ? <Text>{props.label}</Text> : null}
+      <TextInput
+        testID={props.testID}
+        value={props.value}
+        onChangeText={props.onChangeText}
+        onBlur={props.onBlur}
+      />
+      {props.error ? (
+        <Text testID={`${props.testID}-error`}>{props.error}</Text>
+      ) : null}
+      {props.rightIcon ? <View>{props.rightIcon}</View> : null}
+    </View>
+  );
+
+  return {
+    ...actual,
+    FloatInput,
+  };
+});
 
 afterEach(cleanup);
 
-const onSubmitMock: jest.Mock<LoginFormProps['onSubmit']> = jest.fn();
+const onSubmitMock = jest.fn(
+  async (_value: Parameters<NonNullable<LoginFormProps['onSubmit']>>[0]) => {},
+);
 
-describe('loginForm Form ', () => {
+describe('LoginForm', () => {
   it('renders correctly', async () => {
     setup(<LoginForm />);
     expect(await screen.findByTestId('form-title')).toBeOnTheScreen();
   });
 
-  it('should display required error when values are empty', async () => {
+  it('should display required errors when values are empty', async () => {
     const { user } = setup(<LoginForm />);
 
     const button = screen.getByTestId('login-button');
-    expect(screen.queryByText(/Email is required/i)).not.toBeOnTheScreen();
+    expect(screen.queryByTestId('identifier-error')).not.toBeOnTheScreen();
+    expect(screen.queryByTestId('password-input-error')).not.toBeOnTheScreen();
+
     await user.press(button);
-    expect(await screen.findByText(/Email is required/i)).toBeOnTheScreen();
-    expect(screen.getByText(/Password is required/i)).toBeOnTheScreen();
+
+    expect(await screen.findByTestId('identifier-error')).toHaveTextContent(
+      'Email bắt buộc phải nhập!',
+    );
+    expect(await screen.findByTestId('password-input-error')).toHaveTextContent(
+      'Password is required',
+    );
   });
 
   it('should display matching error when email is invalid', async () => {
     const { user } = setup(<LoginForm />);
 
     const button = screen.getByTestId('login-button');
-    const emailInput = screen.getByTestId('email-input');
+    const emailInput = screen.getByTestId('identifier');
     const passwordInput = screen.getByTestId('password-input');
 
     await user.type(emailInput, 'yyyyy');
@@ -37,15 +71,17 @@ describe('loginForm Form ', () => {
     await user.type(passwordInput, 'test');
     await user.press(button);
 
-    expect(await screen.findByText(/Invalid Email Format/i)).toBeOnTheScreen();
-    expect(screen.queryByText(/Email is required/i)).not.toBeOnTheScreen();
+    expect(await screen.findByTestId('identifier-error')).toHaveTextContent(
+      'Không đúng định dạng email',
+    );
+    expect(screen.queryByText('Email bắt buộc phải nhập!')).not.toBeOnTheScreen();
   });
 
   it('should call LoginForm with correct values when values are valid', async () => {
     const { user } = setup(<LoginForm onSubmit={onSubmitMock} />);
 
     const button = screen.getByTestId('login-button');
-    const emailInput = screen.getByTestId('email-input');
+    const emailInput = screen.getByTestId('identifier');
     const passwordInput = screen.getByTestId('password-input');
 
     await user.type(emailInput, 'youssef@gmail.com');
@@ -54,12 +90,25 @@ describe('loginForm Form ', () => {
     await waitFor(() => {
       expect(onSubmitMock).toHaveBeenCalledTimes(1);
     });
-    // expect.objectContaining({}) because we don't want to test the target event we are receiving from the onSubmit function
-    expect(onSubmitMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        email: 'youssef@gmail.com',
-        password: 'password',
-      }),
+    expect(onSubmitMock).toHaveBeenCalledWith({
+      identifier: 'youssef@gmail.com',
+      password: 'password',
+    });
+  });
+
+  it('should show password length error when password is too short', async () => {
+    const { user } = setup(<LoginForm />);
+
+    const button = screen.getByTestId('login-button');
+    const emailInput = screen.getByTestId('identifier');
+    const passwordInput = screen.getByTestId('password-input');
+
+    await user.type(emailInput, 'user@example.com');
+    await user.type(passwordInput, '123');
+    await user.press(button);
+
+    expect(await screen.findByTestId('password-input-error')).toHaveTextContent(
+      'Password must be at least 6 characters',
     );
   });
 });

@@ -1,10 +1,17 @@
-import { Text, View } from "@/components/ui";
+import { BaseLayout } from '@/components/layout/BaseLayout';
+import { View } from '@/components/ui';
+import { ParalaxRoomHeader } from '@/features/home-screen/wrapper/ParalaxRoomHeader';
 
-
-export const HomeScreen = () => {
-    return (
-        <View>
-            <Text>HomeScreen</Text>
-        </View>
-    );
-};
+export function HomeScreen() {
+  return (
+    <BaseLayout>
+      <ParalaxRoomHeader />
+      <View className="flex-1 px-4 pb-2">
+        {/* Kịch bản */}
+        {/* <SceneWrapper /> */}
+        {/* Thiết bị yêu thích */}
+        {/* <LikeDeviceWrapper /> */}
+      </View>
+    </BaseLayout>
+  );
+}

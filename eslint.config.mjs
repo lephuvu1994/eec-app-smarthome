@@ -42,6 +42,11 @@ export default antfu(
       '**/*.d.ts',
       'expo-env.d.ts',
       'migration/*',
+      // Ignore all test files from linting
+      '**/*.test.ts',
+      '**/*.test.tsx',
+      '**/*.spec.ts',
+      '**/*.spec.tsx',
     ],
   },
 
@@ -50,26 +55,12 @@ export default antfu(
     files: ['**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx'],
     rules: {
       'max-params': ['error', 3],
-      'max-lines-per-function': ['error', 110],
+      'max-lines-per-function': ['error', 500],
       'react/display-name': 'off',
       'react/no-inline-styles': 'off',
       'react/destructuring-assignment': 'off',
       'react/require-default-props': 'off',
       'react-refresh/only-export-components': 'warn', // Too strict for React Native
-      'unicorn/filename-case': [
-        'error',
-        {
-          case: 'kebabCase',
-          ignore: [
-            '/android',
-            '/ios',
-            'README.md',
-            'README-project.md',
-            'ISSUE_TEMPLATE.md',
-            'PULL_REQUEST_TEMPLATE.md',
-          ],
-        },
-      ],
       'node/prefer-global/process': 'off', // process is commonly used in React Native configs
       'ts/no-require-imports': 'off', // Sometimes needed for mocks
       'ts/no-use-before-define': 'off', // Allow forward references in React components

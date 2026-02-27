@@ -1,29 +1,28 @@
-import React from 'react';
-import Animated, { SlideInLeft, SlideInRight, SlideInUp } from 'react-native-reanimated';
+import type { TUser, UserResponse } from './types/response';
+import type { SignUpFormProps } from '@/features/auth/components/signup-form';
 
 import { useMutation } from '@tanstack/react-query';
-import _ from 'lodash';
 
-import { SignUpForm, SignUpFormProps } from '@/features/auth/components/signup-form';
+import Animated, { SlideInLeft, SlideInRight, SlideInUp } from 'react-native-reanimated';
+import { BaseLayout } from '@/components/layout/BaseLayout';
 import {
+  Image,
   showErrorMessage,
   showSuccessMessage,
   Text,
   View,
-  Image
 } from '@/components/ui';
-import { TUser, UserResponse } from './types/response';
+import { SignUpForm } from '@/features/auth/components/signup-form';
 import { client } from '@/lib/api';
-import { signIn } from './use-auth-store';
 import { setUserStore } from '@/lib/auth/user';
-import { BaseLayout } from '@/components/layout/BaseLayout';
+import { signIn } from './use-auth-store';
 
 export function SignUp() {
-  const { mutate: signUp, isPending: isPendingSignUp } = useMutation({
+  const { mutate: signUp } = useMutation({
     mutationFn: async (variables: any) => {
       const resultData = await client.post<UserResponse>(
         '/auth/signup',
-        variables
+        variables,
       );
       return resultData.data;
     },
@@ -41,7 +40,8 @@ export function SignUp() {
         onSuccess: (data: UserResponse) => {
           if (data.statusCode !== 201 && data.message) {
             showErrorMessage(`Sign up falied ${JSON.stringify(data.message)}`);
-          } else {
+          }
+          else {
             showSuccessMessage('Đăng ký tài khoản admin thành công !');
             signIn({
               accessToken: data.data.accessToken,
@@ -53,43 +53,43 @@ export function SignUp() {
         onError: (error: any) => {
           showErrorMessage(`Sign up falied ${JSON.stringify(error)}`);
         },
-      }
+      },
     );
   };
   return (
-    <BaseLayout hasTabBar={false}>
+    <BaseLayout>
       <View className="flex-1 flex-col">
-        <View className="h-1/2 top-0 justify-center px-4 w-full gap-8">
+        <View className="top-0 h-1/2 w-full justify-center gap-8 px-4">
           <Animated.View
-            className="w-full justify-center items-center"
+            className="w-full items-center justify-center"
             entering={SlideInUp.duration(800)}
           >
             <Image
               source={require('@@/assets/logo.png')}
-              className="w-28 h-28"
+              className="size-28"
               style={{ width: 112, height: 112 }}
               contentFit="contain"
             />
           </Animated.View>
-          <View className="w-full justify-center items-center gap-4">
+          <View className="w-full items-center justify-center gap-4">
             <Animated.View
-              className="w-full justify-center items-center"
+              className="w-full items-center justify-center"
               entering={SlideInLeft.delay(200).duration(800)}
             >
               <Text
                 style={{ fontFamily: 'rightTeous' }}
-                className="text-white text-4xl font-bold uppercase"
+                className="text-4xl font-bold text-white uppercase"
               >
                 Welcome to
               </Text>
             </Animated.View>
             <Animated.View
-              className="w-full justify-center items-center"
+              className="w-full items-center justify-center"
               entering={SlideInRight.delay(200).duration(800)}
             >
               <Text
                 style={{ fontFamily: 'rightTeous' }}
-                className="text-white text-4xl font-bold uppercase"
+                className="text-4xl font-bold text-white uppercase"
               >
                 Euro SmartHome
               </Text>

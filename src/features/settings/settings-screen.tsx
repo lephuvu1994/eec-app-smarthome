@@ -8,7 +8,7 @@ import {
   Text,
   View,
 } from '@/components/ui';
-import { Github, Rate, Share, Support, Website } from '@/components/ui/icons';
+import { Rate, Share, Support, Website } from '@/components/ui/icons';
 import { useAuthStore as useAuth } from '@/features/auth/use-auth-store';
 import { translate } from '@/lib/i18n';
 import { LanguageItem } from './components/language-item';
@@ -67,7 +67,7 @@ export function SettingsScreen() {
           <SettingsContainer title="settings.links">
             <SettingsItem text="settings.privacy" onPress={() => {}} />
             <SettingsItem text="settings.terms" onPress={() => {}} />
-            
+
             <SettingsItem
               text="settings.website"
               icon={<Website color={iconColor} />}

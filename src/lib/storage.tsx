@@ -1,5 +1,5 @@
+import type { StateStorage } from 'zustand/middleware';
 import { createMMKV } from 'react-native-mmkv';
-import { StateStorage } from 'zustand/middleware';
 
 export const storage = createMMKV();
 
@@ -17,7 +17,7 @@ export async function removeItem(key: string) {
 }
 
 export const mmkvStorage: StateStorage = {
-  setItem: setItem,
-  getItem: getItem,
-  removeItem: removeItem,
-}
+  setItem,
+  getItem,
+  removeItem,
+};

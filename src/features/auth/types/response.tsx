@@ -1,5 +1,4 @@
-import { TokenType } from "@/lib/auth/utils";
-
+import type { TokenType } from '@/lib/auth/utils';
 
 export type TUser = {
   id: string;
@@ -13,10 +12,10 @@ export type TUser = {
 };
 
 export type UserResponse = {
-    statusCode: number;
-    message: string;
-    timestamp: string;
-    data: TokenType & {
-       user: TUser
-    };
+  statusCode: number;
+  message: string;
+  timestamp: string;
+  data: TokenType & {
+    user: TUser;
   };
+};

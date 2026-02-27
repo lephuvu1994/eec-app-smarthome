@@ -1,24 +1,24 @@
-import { create } from "zustand";
+import type { TUser } from './types/response';
 
-import { TUser } from "./types/response";
-import { getUserStore, removeUserStore, setUserStore } from "@/lib/auth/user";
-import { createSelectors } from "@/lib/utils";
+import { create } from 'zustand';
+import { getUserStore, removeUserStore, setUserStore } from '@/lib/auth/user';
+import { createSelectors } from '@/lib/utils';
 
 export type UserState = TUser & {
-    setUser: (user: TUser) => void;
-    removeUser: () => void;
-    hydrate: () => void;
-  };
+  setUser: (user: TUser) => void;
+  removeUser: () => void;
+  hydrate: () => void;
+};
 
 const _useGetUser = create<UserState>((set, get) => ({
-  id: "",
+  id: '',
   email: null,
-  phone:null,
+  phone: null,
   avatar: null,
-  userName: "",
-  role: "",
-  created_at: "",
-  updated_at: "",
+  userName: '',
+  role: '',
+  created_at: '',
+  updated_at: '',
   setUser: (user: TUser) => {
     setUserStore(user);
     set({ ...user });
@@ -32,7 +32,9 @@ const _useGetUser = create<UserState>((set, get) => ({
       if (user !== null) {
         get().setUser(user);
       }
-    } catch (e) {
+    }
+    catch (e) {
+      console.error(e);
       // catch error here
       // Maybe sign_out user!
     }

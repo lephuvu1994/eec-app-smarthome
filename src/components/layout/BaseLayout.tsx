@@ -1,28 +1,28 @@
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { twMerge } from 'tailwind-merge';
 import { View } from '@/components/ui';
 
-export const BaseLayout = ({
-  children,
-  hasTabBar = false,
-}: {
+type BaseLayoutProps = {
   children: React.ReactNode;
-  hasTabBar?: boolean;
   className?: string;
-  coverBottomTab?: boolean;
-}) => {
+  hasTabBar?: boolean;
+};
+
+export function BaseLayout({ children }: BaseLayoutProps) {
   const insets = useSafeAreaInsets();
 
   return (
     <View
-      className={twMerge("absolute w-full overflow-hidden")}
       style={{
         top: 0,
         left: insets.left,
         bottom: 0,
         right: insets.right,
+        position: 'absolute',
+        width: '100%',
+        height: '100%',
       }}
-    >{children}
+    >
+      {children}
     </View>
   );
 };

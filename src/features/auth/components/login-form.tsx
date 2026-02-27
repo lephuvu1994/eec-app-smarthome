@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import { useForm } from '@tanstack/react-form';
-import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
-import Animated, { FadeInUp } from 'react-native-reanimated';
-
 import Feather from '@expo/vector-icons/Feather';
 import Fontisto from '@expo/vector-icons/Fontisto';
+import { useForm } from '@tanstack/react-form';
 import { BlurView } from 'expo-blur';
 import { Image } from 'expo-image';
+
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
+import Animated, { FadeInUp } from 'react-native-reanimated';
 import * as z from 'zod';
 
 import {
@@ -18,8 +18,8 @@ import {
   TouchableOpacity,
   View,
 } from '@/components/ui';
-import { translate } from '@/lib/i18n';
 import { getFieldError } from '@/components/ui/form-utils';
+import { translate } from '@/lib/i18n';
 
 const schema = z.object({
   identifier: z
@@ -40,7 +40,7 @@ export type LoginFormProps = {
   onSubmit?: (value: FormType) => Promise<void>;
 };
 
-export const LoginForm = ({ onSubmit = async () => { } }: LoginFormProps) => {
+export function LoginForm({ onSubmit = async () => { } }: LoginFormProps) {
   const form = useForm({
     defaultValues: {
       identifier: '',
@@ -48,7 +48,8 @@ export const LoginForm = ({ onSubmit = async () => { } }: LoginFormProps) => {
     },
 
     validators: {
-      onBlur: schema as any,
+      onChange: schema as any,
+      onSubmit: schema as any,
     },
     onSubmit: async ({ value }) => {
       await onSubmit(value);
@@ -62,7 +63,7 @@ export const LoginForm = ({ onSubmit = async () => { } }: LoginFormProps) => {
     <KeyboardAvoidingView
       behavior="padding"
       keyboardVerticalOffset={-120}
-      className="w-full h-full justify-end absolute"
+      className="absolute size-full justify-end"
     >
       <Animated.View
         entering={FadeInUp.delay(100)
@@ -92,7 +93,7 @@ export const LoginForm = ({ onSubmit = async () => { } }: LoginFormProps) => {
         >
           <BlurView
             intensity={20}
-            tint={'dark'}
+            tint="dark"
             style={{ flex: 1 }}
             className="relative"
           >
@@ -108,7 +109,7 @@ export const LoginForm = ({ onSubmit = async () => { } }: LoginFormProps) => {
                 height: '100%',
                 opacity: 1, // chỉnh độ mờ
               }}
-              contentFit='cover'
+              contentFit="cover"
             />
             <Image
               source={require('@@/assets/base/auro.png')}
@@ -125,7 +126,7 @@ export const LoginForm = ({ onSubmit = async () => { } }: LoginFormProps) => {
                 height: '100%',
                 opacity: 1, // chỉnh độ mờ
               }}
-              contentFit='cover'
+              contentFit="cover"
             />
             <Image
               source={require('@@/assets/base/auro.png')}
@@ -142,7 +143,7 @@ export const LoginForm = ({ onSubmit = async () => { } }: LoginFormProps) => {
                 height: '100%',
                 opacity: 1, // chỉnh độ mờ
               }}
-              contentFit='cover'
+              contentFit="cover"
             />
             <LinearGradient
               colors={[
@@ -165,20 +166,20 @@ export const LoginForm = ({ onSubmit = async () => { } }: LoginFormProps) => {
                 padding: 2,
               }}
             />
-            <View className="flex-1 mt-4">
+            <View className="mt-4 flex-1">
               <Text
                 testID="form-title"
-                className="text-center text-white font-bold text-3xl"
+                className="text-center text-3xl font-bold text-white"
               >
                 {translate('base.signIn')}
               </Text>
-              <View className="items-center mx-4 mt-6">
+              <View className="mx-4 mt-6 items-center">
                 <View className="w-full gap-4">
                   <View className="w-full gap-2">
-                    <View className="w-full relative">
+                    <View className="relative w-full">
                       <form.Field
                         name="identifier"
-                        children={(field) => (
+                        children={field => (
                           <FloatInput
                             value={field.state.value}
                             onChangeText={field.handleChange}
@@ -196,10 +197,10 @@ export const LoginForm = ({ onSubmit = async () => { } }: LoginFormProps) => {
                   </View>
 
                   <View className="w-full gap-2">
-                    <View className="w-full relative mb-4">
+                    <View className="relative mb-4 w-full">
                       <form.Field
                         name="password"
-                        children={(field) => (
+                        children={field => (
                           <FloatInput
                             value={field.state.value}
                             onChangeText={field.handleChange}
@@ -210,14 +211,17 @@ export const LoginForm = ({ onSubmit = async () => { } }: LoginFormProps) => {
                             inputClassName="bg-transparent text-white dark:text-white"
                             placeholderTextColor="white"
                             error={getFieldError(field)}
-                            rightIcon={<TouchableOpacity
-                              onPress={() => setShowPassword(!showPassword)}>
-                              <Feather
-                                name={!showPassword ? 'eye' : 'eye-off'}
-                                size={18}
-                                color="#d1d5db"
-                              />
-                            </TouchableOpacity>}
+                            rightIcon={(
+                              <TouchableOpacity
+                                onPress={() => setShowPassword(!showPassword)}
+                              >
+                                <Feather
+                                  name={!showPassword ? 'eye' : 'eye-off'}
+                                  size={18}
+                                  color="#d1d5db"
+                                />
+                              </TouchableOpacity>
+                            )}
                           />
                         )}
                       />
@@ -225,14 +229,16 @@ export const LoginForm = ({ onSubmit = async () => { } }: LoginFormProps) => {
                   </View>
                 </View>
 
-                <View className="w-full mt-4">
+                <View className="mt-4 w-full">
                   <form.Subscribe
-                    selector={(state) => [state.isSubmitting]}
+                    selector={state => [state.isSubmitting]}
                     children={([isSubmitting]) => (
                       <Button
-                        className="w-full p-0 bg-transparent dark:bg-transparent rounded-2xl mb-3"
+                        className="mb-3 w-full rounded-2xl bg-transparent p-0 dark:bg-transparent"
                         testID="login-button"
-                        onPress={form.handleSubmit}
+                        onPress={() => {
+                          form.handleSubmit();
+                        }}
                         disabled={isSubmitting}
                         loading={isSubmitting}
                         textClassName="text-black"
@@ -270,7 +276,7 @@ export const LoginForm = ({ onSubmit = async () => { } }: LoginFormProps) => {
                     )}
                   />
                 </View>
-                <View className="w-full mt-2 gap-2 justify-center items-center">
+                <View className="mt-2 w-full items-center justify-center gap-2">
                   <Text className="text-white dark:text-white">
                     {translate('base.dontHaveAccount')}
                   </Text>
@@ -280,7 +286,7 @@ export const LoginForm = ({ onSubmit = async () => { } }: LoginFormProps) => {
                         router.push('/(welcome)/signUp');
                       }}
                     >
-                      <Text className="text-white dark:text-white underline">
+                      <Text className="text-white underline dark:text-white">
                         {translate('base.signUp')}
                       </Text>
                     </TouchableOpacity>
@@ -293,4 +299,4 @@ export const LoginForm = ({ onSubmit = async () => { } }: LoginFormProps) => {
       </Animated.View>
     </KeyboardAvoidingView>
   );
-};
+}
