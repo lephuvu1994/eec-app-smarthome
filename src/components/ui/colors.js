@@ -75,4 +75,5 @@ module.exports = {
     800: '#991B1B',
     900: '#7F1D1D',
   },
+  neon: '#A3E635',
 };
