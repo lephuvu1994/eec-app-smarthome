@@ -41,9 +41,9 @@ function SettingScreen() {
 
   return (
     <FullLayout>
-      <Stack>
+      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'transparent' } }}>
         <Stack.Screen
-          name="settingTab"
+          name="index"
           options={{
             headerShown: true,
             headerTransparent: true,
@@ -60,7 +60,25 @@ function SettingScreen() {
             },
           }}
         />
+        <Stack.Screen
+          name="account"
+          options={{
+            headerShown: true,
+            headerTransparent: true,
+            title: translate('settings.account'),
+          }}
+        />
+        <Stack.Screen
+          name="profile"
+          options={{
+            presentation: 'card',
+            headerShown: true,
+            headerTransparent: true,
+            title: translate('settings.profileScreen.title'),
+          }}
+        />
       </Stack>
+
     </FullLayout>
   );
 }
