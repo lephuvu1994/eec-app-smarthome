@@ -1,5 +1,5 @@
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { View } from '@/components/ui';
+import { FocusAwareStatusBar, View } from '@/components/ui';
 
 type BaseLayoutProps = {
   children: React.ReactNode;
@@ -13,15 +13,16 @@ export function BaseLayout({ children }: BaseLayoutProps) {
   return (
     <View
       style={{
-        top: 0,
+        top: insets.top,
         left: insets.left,
-        bottom: 0,
+        bottom: insets.bottom,
         right: insets.right,
         position: 'absolute',
         width: '100%',
         height: '100%',
       }}
     >
+      <FocusAwareStatusBar />
       {children}
     </View>
   );

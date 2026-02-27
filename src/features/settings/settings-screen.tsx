@@ -1,87 +1,42 @@
-import Env from 'env';
-import { useUniwind } from 'uniwind';
-
-import {
-  colors,
-  FocusAwareStatusBar,
-  ScrollView,
-  Text,
-  View,
-} from '@/components/ui';
-import { Rate, Share, Support, Website } from '@/components/ui/icons';
-import { useAuthStore as useAuth } from '@/features/auth/use-auth-store';
-import { translate } from '@/lib/i18n';
-import { LanguageItem } from './components/language-item';
+import Env from '@env';
+import { BaseLayout } from '@/components/layout/BaseLayout';
+import { ScrollView, View } from '@/components/ui';
+import { useGetUser } from '@/features/auth/user-store';
+import { LanguageItem } from '@/features/settings/components/language-item';
+import { ThemeItem } from '@/features/settings/components/theme-item';
+import { AccountItem } from './components/account-item';
 import { SettingsContainer } from './components/settings-container';
 import { SettingsItem } from './components/settings-item';
-import { ThemeItem } from './components/theme-item';
 
 export function SettingsScreen() {
-  const signOut = useAuth.use.signOut();
-  const { theme } = useUniwind();
-  const iconColor
-    = theme === 'dark' ? colors.neutral[400] : colors.neutral[500];
-  return (
-    <>
-      <FocusAwareStatusBar />
+  const user = useGetUser();
 
-      <ScrollView>
-        <View className="flex-1 px-4 pt-16">
-          <Text className="text-xl font-bold">
-            {translate('settings.title')}
-          </Text>
+  const fullName = user.userName;
+
+  return (
+    <BaseLayout>
+      <ScrollView style={{ height: '100%', width: '100%' }}>
+        <View className="w-full flex-1 gap-4 px-4">
+          <SettingsContainer title="settings.account">
+            <AccountItem fullName={fullName} email={user.email || user.phone || ''} isAccountDetail={false} />
+          </SettingsContainer>
+
           <SettingsContainer title="settings.generale">
+            <SettingsItem
+              text="settings.systemTab"
+              onPress={() => {}}
+              value={Env.EXPO_PUBLIC_VERSION}
+            />
             <LanguageItem />
             <ThemeItem />
           </SettingsContainer>
 
           <SettingsContainer title="settings.about">
-            <SettingsItem
-              text="settings.app_name"
-              value={Env.EXPO_PUBLIC_NAME}
-            />
-            <SettingsItem
-              text="settings.version"
-              value={Env.EXPO_PUBLIC_VERSION}
-            />
+            <SettingsItem text="settings.app_name" value={Env.EXPO_PUBLIC_NAME} />
+            <SettingsItem text="settings.version" value={`${Env.EXPO_PUBLIC_VERSION} (${Env.EXPO_PUBLIC_APP_ENV})`} />
           </SettingsContainer>
-
-          <SettingsContainer title="settings.support_us">
-            <SettingsItem
-              text="settings.share"
-              icon={<Share color={iconColor} />}
-              onPress={() => {}}
-            />
-            <SettingsItem
-              text="settings.rate"
-              icon={<Rate color={iconColor} />}
-              onPress={() => {}}
-            />
-            <SettingsItem
-              text="settings.support"
-              icon={<Support color={iconColor} />}
-              onPress={() => {}}
-            />
-          </SettingsContainer>
-
-          <SettingsContainer title="settings.links">
-            <SettingsItem text="settings.privacy" onPress={() => {}} />
-            <SettingsItem text="settings.terms" onPress={() => {}} />
-
-            <SettingsItem
-              text="settings.website"
-              icon={<Website color={iconColor} />}
-              onPress={() => {}}
-            />
-          </SettingsContainer>
-
-          <View className="my-8">
-            <SettingsContainer>
-              <SettingsItem text="settings.logout" onPress={signOut} />
-            </SettingsContainer>
-          </View>
         </View>
       </ScrollView>
-    </>
+    </BaseLayout>
   );
 }
