@@ -2,14 +2,16 @@ import { Stack } from 'expo-router';
 
 import { colors } from '@/components/ui';
 import { translate } from '@/lib/i18n';
+import { useUniwind } from 'uniwind';
+import { ETheme } from '@/types/base';
 
 export default function WelcomeLayout() {
+  const { theme } = useUniwind();
   return (
     <Stack
       initialRouteName="signIn"
       screenOptions={{
-      // 1. Ép nền của toàn bộ các màn hình trong Stack thành trong suốt
-        contentStyle: { backgroundColor: 'transparent' },
+        contentStyle: { backgroundColor: colors.screenBackground[theme as ETheme] },
       }}
     >
       <Stack.Screen

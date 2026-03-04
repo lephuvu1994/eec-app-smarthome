@@ -2,7 +2,6 @@ import Feather from '@expo/vector-icons/Feather';
 import Fontisto from '@expo/vector-icons/Fontisto';
 import { useForm } from '@tanstack/react-form';
 import { BlurView } from 'expo-blur';
-import { Image } from 'expo-image';
 
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
@@ -97,54 +96,7 @@ export function LoginForm({ onSubmit = async () => { } }: LoginFormProps) {
             style={{ flex: 1 }}
             className="relative"
           >
-            <Image
-              source={require('@@/assets/base/auro.png')}
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                width: '100%',
-                height: '100%',
-                opacity: 1, // chỉnh độ mờ
-              }}
-              contentFit="cover"
-            />
-            <Image
-              source={require('@@/assets/base/auro.png')}
-              style={{
-                position: 'absolute',
-                transform: [{ rotate: '180deg' }],
-                translateX: -120,
-                translateY: -320,
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                width: '100%',
-                height: '100%',
-                opacity: 1, // chỉnh độ mờ
-              }}
-              contentFit="cover"
-            />
-            <Image
-              source={require('@@/assets/base/auro.png')}
-              style={{
-                position: 'absolute',
-                transform: [{ rotate: '180deg' }],
-                translateX: 80,
-                translateY: 80,
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                width: '100%',
-                height: '100%',
-                opacity: 1, // chỉnh độ mờ
-              }}
-              contentFit="cover"
-            />
+            
             <LinearGradient
               colors={[
                 'rgba(255,255,255,0.05)', // viền sáng bên trong

@@ -3,14 +3,16 @@ import { router, Stack } from 'expo-router';
 
 import { useMemo } from 'react';
 
-import { FullLayout } from '@/components/layout/FullLayout';
 import { colors } from '@/components/ui';
 import { Settings } from '@/components/ui/icons';
 import { MenuNative } from '@/components/ui/menu-native';
 import { NativeButton } from '@/components/ui/native-button';
 import { translate } from '@/lib/i18n';
+import { useUniwind } from 'uniwind';
+import { ETheme } from '@/types/base';
 
 function SettingScreen() {
+  const { theme } = useUniwind();
   const onPressMenu = (route: string) => {
     if (route === 'memberManager') {
       router.push(`/(app)/(settings)/${route}/` as Href);
@@ -40,8 +42,7 @@ function SettingScreen() {
   }, []);
 
   return (
-    <FullLayout>
-      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'transparent' } }}>
+      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.screenBackground[theme as ETheme] } }}>
         <Stack.Screen
           name="index"
           options={{
@@ -78,8 +79,6 @@ function SettingScreen() {
           }}
         />
       </Stack>
-
-    </FullLayout>
   );
 }
 

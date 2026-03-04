@@ -76,4 +76,9 @@ module.exports = {
     900: '#7F1D1D',
   },
   neon: '#A3E635',
+  screenBackground: {
+    dark: '#1E1E1E',
+    light: '#E9ECF4',
+  }
+
 };

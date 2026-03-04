@@ -1,16 +1,16 @@
+import React from 'react';
+import Animated, { FadeInDown, SlideInRight, SlideInLeft, SlideInUp } from 'react-native-reanimated';
+import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
+import { Feather, Ionicons } from '@expo/vector-icons';
+
 import { BaseLayout } from '@/components/layout/BaseLayout';
-import ParalaxRoomHeader from '@/features/home-screen/wrapper/ParalaxRoomHeader';
+import { View, Text, ScrollView, TouchableOpacity, Image } from '@/components/ui';
 
 export function HomeScreen() {
   return (
     <BaseLayout>
-      <ParalaxRoomHeader />
-      {/* <View className="flex-1 px-4 pb-2"> */}
-      {/* Kịch bản */}
-      {/* <SceneWrapper /> */}
-      {/* Thiết bị yêu thích */}
-      {/* <LikeDeviceWrapper /> */}
-      {/* </View> */}
+    <Text>HomeScreen</Text>
     </BaseLayout>
   );
 }
