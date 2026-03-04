@@ -33,9 +33,20 @@
     "placeHolderLastName": "Enter your last name",
     "repeatPassword": "Repeat Password",
     "saveButton": "Save",
-    "scene": "Scenes",
-    "signIn": "Sign In",
-    "signUp": "Sign Up"
+    "scene": "Scenes"
+  },
+   "formAuth": {
+    "titleSignIn": "SignIn",
+    "titleSignUp": "SignUp",
+    "titleIdentifier": "Email or Phone Number",
+    "titlePassword": "Password",
+    "resetPassword": "Reset Password",
+    "error": {
+      "identifierRequired": "Please enter email or phone number",
+      "invalidFormatIdentifier": "Chưa đúng định dạng email hoặc số điện thoại",
+      "passwordRequired": "Please enter password",
+      "passwordInvalidFormat": "Password must be at least {length} characters"
+    }
   },
   "settings": {
     "about": "About",

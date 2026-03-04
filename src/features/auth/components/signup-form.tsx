@@ -134,9 +134,8 @@ export function SignUpForm({ onSubmit = async () => { } }: SignUpFormProps) {
               <Text
                 testID="form-title"
                 className="text-center text-3xl font-bold text-white"
-              >
-                {translate('base.signUp')}
-              </Text>
+                tx="formAuth.titleSignUp"
+               />
               <View className="mx-4 mt-8 items-center gap-4">
                 <View className="w-full gap-4">
                   <View className="w-full flex-row gap-2">
@@ -294,9 +293,7 @@ export function SignUpForm({ onSubmit = async () => { } }: SignUpFormProps) {
                             backgroundColor: 'rgba(72,49,157,0.2)',
                           }}
                         >
-                          <Text className="text-white">
-                            {translate('base.signUp')}
-                          </Text>
+                          <Text className="text-white" tx="formAuth.titleSignUp"/>
                         </LinearGradient>
                       </Button>
                     )}
@@ -309,12 +306,10 @@ export function SignUpForm({ onSubmit = async () => { } }: SignUpFormProps) {
                   <View>
                     <TouchableOpacity
                       onPress={() => {
-                        router.push('/(welcome)/login');
+                        router.back()
                       }}
                     >
-                      <Text className="text-white underline dark:text-white">
-                        {translate('base.signIn')}
-                      </Text>
+                      <Text className="text-white underline dark:text-white" tx="formAuth.titleSignUp" />
                     </TouchableOpacity>
                   </View>
                 </View>
