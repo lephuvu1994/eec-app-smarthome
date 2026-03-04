@@ -23,7 +23,7 @@ const inputTv = tv({
   slots: {
     container: 'relative w-full',
     input:
-      'z-10 bg-transparent px-4 py-4 text-base/5 font-medium text-white',
+      'bg-transparent px-4 py-4 text-base/5 font-medium text-white',
   },
   variants: {
     disabled: {
@@ -40,6 +40,13 @@ type NInputProps = TextInputProps & {
   error?: string;
   inputClassName?: string;
   rightIcon?: React.ReactNode; // Thêm prop để nhận Icon từ bên ngoài
+  labelTextColor?: string;
+  labelTextColorInactive?: string;
+  borderColor?: {
+    active: string,
+    inactive: string
+  }
+  containerClassName?: string
 };
 
 export function FloatInput({ ref, ...props }: NInputProps & { ref?: React.RefObject<TextInput | null> }) {
@@ -51,6 +58,11 @@ export function FloatInput({ ref, ...props }: NInputProps & { ref?: React.RefObj
     inputClassName,
     rightIcon, // Lấy Icon ra
     value,
+    placeholderTextColor,
+    labelTextColor,
+    labelTextColorInactive,
+    borderColor,
+    containerClassName,
     ...inputProps
   } = props;
 
@@ -125,10 +137,11 @@ export function FloatInput({ ref, ...props }: NInputProps & { ref?: React.RefObj
     const color = interpolateColor(
       animation.value,
       [0, 1],
-      ['rgba(255,255,255,0.7)', '#FFFFFF'],
+      [labelTextColorInactive ??'rgba(255,255,255,0.7)', labelTextColor ?? "#FFFFFF"],
     );
+    const opacity = interpolate(animation.value, [0,1], [0.6, 1])
     // Dùng shouldShowError để quyết định màu đỏ
-    return { color: shouldShowError ? '#ef4444' : color };
+    return { color: shouldShowError ? '#ef4444' : color, opacity };
   });
 
   const animatedMaskProps = useAnimatedProps(() => {
@@ -137,7 +150,8 @@ export function FloatInput({ ref, ...props }: NInputProps & { ref?: React.RefObj
   });
 
   // Màu viền và màu chữ tin nhắn lỗi
-  const currentBorderColor = (error && !isFocussed) ? '#ef4444' : isFocussed ? '#FFFFFF' : 'rgba(255,255,255,0.4)';
+  const currentBorderColor = (error && !isFocussed) ? '#ef4444' : isFocussed ? (borderColor ? borderColor.active :
+   '#FFFFFF') : (borderColor ? borderColor.inactive : 'rgba(255,255,255,0.4)');
 
   // --- ANIMATED STYLE CHO KHỐI ERROR MESSAGE ---
   // Interpolate chiều cao từ 0 đến khoảng 24px (hoặc tự động đo)
@@ -153,7 +167,7 @@ export function FloatInput({ ref, ...props }: NInputProps & { ref?: React.RefObj
     <View className={styles.container()}>
       {/* KHỐI INPUT CHÍNH (Vẽ Viền, Ô nhập liệu, Label và Icon) */}
       <View
-        className="relative w-full justify-center"
+        className={twMerge("relative w-full justify-center rounded-xl", containerClassName)}
         onLayout={(e) => {
           setBox({
             width: e.nativeEvent.layout.width,
@@ -199,7 +213,7 @@ export function FloatInput({ ref, ...props }: NInputProps & { ref?: React.RefObj
           testID={testID}
           ref={ref}
           placeholder={isFocussed ? inputProps.placeholder : ''}
-          placeholderTextColor="rgba(255,255,255,0.5)"
+          placeholderTextColor={placeholderTextColor}
           // Nếu có rightIcon, thêm padding right 'pr-12' để text không lẹm vào icon
           className={twMerge(styles.input(), rightIcon ? 'pr-12' : '', inputClassName)}
           editable={!disabled}

@@ -14,11 +14,16 @@ import { LoginForm } from '@/features/auth/components/login-form';
 import { useAuthStore } from '@/features/auth/use-auth-store';
 import { useGetUser } from '@/features/auth/user-store';
 import { useLogin } from '@/lib/api';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useHeaderHeight } from '@react-navigation/elements';
+
 
 export function SignIn() {
   const router = useRouter();
   const signIn = useAuthStore.use.signIn();
   const setUserStore = useGetUser.use.setUser();
+  const { top } = useSafeAreaInsets();
+  const headerHeight = useHeaderHeight();
 
   const { mutate: login } = useLogin();
 
@@ -48,43 +53,30 @@ export function SignIn() {
 
   return (
     <BaseLayout hasTabBar={false}>
-      <View className="flex-1 flex-col">
-        <View className="top-0 h-1/2 w-full justify-center gap-8 px-4">
-          <Animated.View
-            className="w-full items-center justify-center"
-            entering={SlideInUp.duration(800)}
-          >
-            <Image
-              source={require('@@/assets/logo.png')}
-              className="size-28"
-              style={{ width: 112, height: 112 }}
-              contentFit="contain"
-            />
-          </Animated.View>
-          <View className="w-full items-center justify-center gap-4">
-            <Animated.View
-              className="w-full items-center justify-center"
-              entering={SlideInLeft.delay(200).duration(800)}
-            >
-              <Text
-                style={{ fontFamily: 'rightTeous' }}
-                className="text-4xl font-bold text-white uppercase"
-              >
-                Welcome to
-              </Text>
-            </Animated.View>
-            <Animated.View
-              className="w-full items-center justify-center"
-              entering={SlideInRight.delay(200).duration(800)}
-            >
-              <Text
-                style={{ fontFamily: 'rightTeous' }}
-                className="text-4xl font-bold text-white uppercase"
-              >
-                Euro SmartHome
-              </Text>
-            </Animated.View>
-          </View>
+      <View className="flex-1 w-full relative">
+        <Image
+          source={require('@@/assets/sign-in/background-signIn.png')}
+          style={{
+            width: '100%',
+            height: '100%',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+          }}
+          contentFit="cover"
+        />
+        <View className="px-4 gap-6" style={{ paddingTop: top + headerHeight - 32 }}>
+          <Image
+            source={require('@@/assets/base/icon.png')}
+            style={{
+              width: 60,
+              height: 60,
+            }}
+            contentFit="cover"
+          />
+          <Text className="text-4xl font-bold text-[#1B1B1B]" tx="formAuth.titleSignIn"/>
         </View>
         <LoginForm onSubmit={onSubmit} />
       </View>

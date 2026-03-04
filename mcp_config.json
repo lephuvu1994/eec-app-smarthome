@@ -6,6 +6,7 @@
         "/Users/hamai/Documents/smarthome/eec-app-smarthome/node_modules/figma-mcp-server/mcpServer.ts"
       ],
       "env": {
+        "FIGMA_API_KEY": "figd_bb96OT7K9QdSEQr5fQtttTBNzUjklu58jOkSprMP"
       }
     }
   }

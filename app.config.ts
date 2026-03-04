@@ -44,12 +44,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   assetBundlePatterns: ['**/*'],
   splash: {
-    image: './assets/splash-screen.png',
+    image: './assets/splash-screen/splash-screen.png',
     backgroundColor: '#FFFFFF',
     resizeMode: 'contain',
     dark: {
       backgroundColor: '#FFFFFF',
-      image: './assets/splash-screen.png',
+      image: './assets/splash-screen/splash-screen.png',
     },
   },
   ios: {

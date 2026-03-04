@@ -33,9 +33,20 @@
     "placeHolderLastName": "Nhập họ của bạn",
     "repeatPassword": "Nhập lại mật khẩu",
     "saveButton": "Lưu",
-    "scene": "Kịch bản",
-    "signIn": "Đăng nhập",
-    "signUp": "Đăng ký"
+    "scene": "Kịch bản"
+  },
+  "formAuth": {
+    "titleSignIn": "Đăng nhập",
+    "titleSignUp": "Đăng ký",
+    "titleIdentifier": "Email hoặc số điện thoại",
+    "titlePassword": "Mật khẩu",
+    "resetPassword": "Quên mật khẩu",
+    "error": {
+      "identifierRequired": "Vui lòng nhập email hoặc số điện thoại",
+      "invalidFormatIdentifier": "Chưa đúng định dạng email hoặc số điện thoại",
+      "passwordRequired": "Vui lòng nhập mật khẩu",
+     "passwordInvalidFormat": "Mật khẩu phải có ít nhất {length} ký tự"
+    }
   },
   "settings": {
     "about": "Giới Thiệu",

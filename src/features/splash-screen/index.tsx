@@ -1,85 +1,32 @@
 import Env from '@env';
-import { DeviceType, deviceType } from 'expo-device';
 import { Image } from 'expo-image';
-import * as React from 'react';
-import { useEffect } from 'react';
-
-import { StyleSheet } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
 import { FocusAwareStatusBar, Text, View, WIDTH } from '@/components/ui';
+import { useUniwind } from 'uniwind';
+import { ETheme } from '@/types/base';
 
 export default function SplashScreen() {
-  const animatedValue = useSharedValue(82);
-  const animatedText = useSharedValue(0);
   const insets = useSafeAreaInsets();
-
-  // New Animations
-  const scaleValue = useSharedValue(1);
-  const logoOpacity = useSharedValue(0);
-  const shimmer = useSharedValue(-1);
-
-  useEffect(() => {
-    // Fade-in
-    logoOpacity.value = withTiming(1, { duration: 300 });
-
-    // Pulse Scale
-    scaleValue.value = withTiming(1.03, { duration: 300 }, () => {
-      scaleValue.value = withTiming(1, { duration: 300 });
-    });
-
-    // Shimmer light running across logo
-    shimmer.value = withTiming(1, { duration: 900 });
-
-    // Your existing animations
-    animatedValue.value = 82;
-
-    const timer = setTimeout(() => {
-      animatedValue.value = withTiming((3 * WIDTH) / 4, { duration: 700 });
-      animatedText.value = withTiming(100, { duration: 400 });
-    }, 400);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Logo width animation
-  const styleLogo = useAnimatedStyle(() => ({
-    width: animatedValue.value,
-  }));
-
-  // Fade + scale animation
-  const styleScaleFade = useAnimatedStyle(() => ({
-    opacity: logoOpacity.value,
-    transform: [{ scale: scaleValue.value }],
-  }));
-
-  // Shimmer overlay
-  const styleShimmer = useAnimatedStyle(() => ({
-    transform: [{ translateX: shimmer.value * (WIDTH * 0.75) }],
-    opacity: 0.35,
-  }));
-
-  // Text fade-in + slide-in
-  const styleTextOpacity = useAnimatedStyle(() => ({
-    opacity: animatedText.value / 100,
-    left: 130 - (animatedText.value / 100) * 130,
-  }));
-
-  // Center icon by sliding it based on animation
-  const styleImage = useAnimatedStyle(() => ({
-    left: ((3 * WIDTH) / 4 - 82 - (animatedValue.value - 82)) / 2,
-  }));
-
-  const iconWidth = deviceType === DeviceType.PHONE ? (WIDTH * 3) / 4 : WIDTH / 3;
-
-  const iconHeight = iconWidth * (267 / 923);
+  const { theme } = useUniwind();
 
   return (
     <View className="relative w-full flex-1 items-center justify-center">
       <FocusAwareStatusBar hidden />
+      <Image
+          source={theme === ETheme.Dark ? require('@@/assets/base/background-dark.png') : require('@@/assets/base/background-light.png')}
+          style={{
+            width: '100%',
+            height: '100%',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+          }}
+          contentFit="contain"
+        />
       <View
-        className="absolute w-full flex-1 items-center justify-center"
+        className="absolute w-full flex-1 items-center justify-start"
         style={{
           top: insets.top,
           bottom: insets.bottom,
@@ -87,41 +34,69 @@ export default function SplashScreen() {
           right: insets.right,
         }}
       >
-        {/* --- LOGO ANIMATION WRAPPER --- */}
-        <Animated.View
-          className="-mt-32 items-center justify-center overflow-hidden"
-          style={[styleLogo, styleScaleFade]}
-        >
-          {/* Main Logo */}
-          <Animated.Image
-            source={require('@@/assets/splash-icon.png')}
-            className="w-full"
-            resizeMode="cover"
-            style={[styleImage, { width: iconWidth, height: iconHeight }]}
-          />
-
-          {/* Shimmer Light Effect */}
-          <Animated.View
-            style={[
-              StyleSheet.absoluteFillObject,
-              styleShimmer,
-              {
-                width: '35%',
-                backgroundColor: 'white',
-                borderRadius: 20,
-              },
-            ]}
-          />
-        </Animated.View>
-
-        {/* --- SUBTEXT --- */}
-        <View className="-mt-3" style={{ width: iconWidth, alignItems: 'flex-end' }}>
-          <View className="justify-end">
-            <View style={{ width: 130, overflow: 'hidden' }}>
-              <Animated.Text style={[styleTextOpacity]} className="text-xs font-semibold text-yellow-500/70 italic">
-                Design by Euro Sol
-              </Animated.Text>
-            </View>
+        
+        <View className="h-2/3 w-full">
+          <View className="w-full h-full relative items-center justify-center">
+            <Image
+              source={require('@@/assets/splash-screen/icon1.png')}
+              style={{
+                width: '100%',
+                height: '100%',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+              }}
+              contentFit="contain"
+            />
+            <Image
+              source={require('@@/assets/splash-screen/icon2.png')}
+              style={{
+                width: '100%',
+                height: '100%',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+              }}
+              contentFit="contain"
+            />
+            <Image
+              source={require('@@/assets/splash-screen/icon3.png')}
+              style={{
+                width: '100%',
+                height: '100%',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+              }}
+              contentFit="contain"
+            />
+            <Image
+              source={require('@@/assets/splash-screen/arrow-select.png')}
+              style={{
+                width: '100%',
+                height: '100%',
+                position: 'absolute',
+                top: "50%",
+                left: 0,
+                right: 0,
+                bottom: 0,
+              }}
+              contentFit="contain"
+            />
+            <Image
+              source={require('@@/assets/base/icon-wrapper-full.png')}
+              style={{
+                width: 160,
+                height: 46,
+              }}
+              contentFit="contain"
+            />
           </View>
         </View>
 
