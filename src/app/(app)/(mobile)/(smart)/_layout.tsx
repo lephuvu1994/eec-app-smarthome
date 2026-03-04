@@ -1,13 +1,11 @@
 import { Stack } from 'expo-router';
-import { FullLayout } from '@/components/layout/FullLayout';
 
 function SmartScreen() {
   return (
-    <FullLayout>
       <Stack
         screenOptions={{
           animation: 'slide_from_right',
-          contentStyle: { backgroundColor: 'transparent' },
+          contentStyle: { backgroundColor: '#E9ECF4' },
         }}
       >
         <Stack.Screen
@@ -17,7 +15,6 @@ function SmartScreen() {
           }}
         />
       </Stack>
-    </FullLayout>
   );
 };
 

@@ -77,9 +77,6 @@ export default function SplashScreen() {
 
   return (
     <View className="relative w-full flex-1 items-center justify-center">
-      {/* {theme ==="dark" ? ( */}
-      <Image style={{ width: '100%', height: '100%', position: 'absolute' }} source={require('@@/assets/base/dark-bg-image.png')} className="absolute h-full w-full" />
-      {/* ) : null} */}
       <FocusAwareStatusBar hidden />
       <View
         className="absolute w-full flex-1 items-center justify-center"

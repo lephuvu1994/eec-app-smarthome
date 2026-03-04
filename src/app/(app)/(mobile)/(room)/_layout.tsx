@@ -1,12 +1,15 @@
 import { Stack } from 'expo-router';
-import { FullLayout } from '@/components/layout/FullLayout';
+import { useUniwind } from 'uniwind';
+import { ETheme } from '@/types/base';
+import { colors } from '@/components/ui';
 
 function RoomScreen() {
+  const { theme } = useUniwind();
   return (
-    <FullLayout>
       <Stack
         screenOptions={{
           animation: 'slide_from_right',
+          contentStyle: { backgroundColor: colors.screenBackground[theme as ETheme] },
         }}
       >
         <Stack.Screen
@@ -50,7 +53,6 @@ function RoomScreen() {
           }}
         />
       </Stack>
-    </FullLayout>
   );
 };
 

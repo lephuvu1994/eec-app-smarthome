@@ -9,7 +9,6 @@ import { StyleSheet } from 'react-native';
 import FlashMessage from 'react-native-flash-message';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
-import { FullLayout } from '@/components/layout/FullLayout';
 
 import { useThemeConfig } from '@/components/ui/use-theme-config';
 import { hydrateAuth, useAuthStore } from '@/features/auth/use-auth-store';
@@ -19,6 +18,9 @@ import { APIProvider } from '@/lib/api';
 import { loadSelectedTheme } from '@/lib/hooks/use-selected-theme';
 // Import  global CSS file
 import '../global.css';
+import { useUniwind } from 'uniwind';
+import { colors } from '@/components/ui';
+import { ETheme } from '@/types/base';
 
 export { ErrorBoundary } from 'expo-router';
 
@@ -42,6 +44,7 @@ initApp();
 
 function RootRender() {
   const [isLoading, setIsLoading] = useState(true);
+  const { theme } = useUniwind();
 
   const status = useAuthStore.use.status();
 
@@ -64,30 +67,21 @@ function RootRender() {
     };
   }, [status, hideSplash]);
 
-  return (
-    <FullLayout>
-      {
-        isLoading
-          ? <CustomSplashScreen />
-          : (
-              <Stack screenOptions={{
-                // 1. Ép nền của toàn bộ các màn hình trong Stack thành trong suốt
-                contentStyle: { backgroundColor: 'transparent' },
-              }}
-              >
-                <Stack.Screen name="(app)" options={{ headerShown: false }} />
-                <Stack.Screen name="onboarding" options={{ headerShown: false }} />
-                <Stack.Screen
-                  name="(welcome)"
-                  options={{
-                    headerShown: false,
-                  }}
-                />
-              </Stack>
-            )
-      }
-    </FullLayout>
-  );
+  return isLoading ? <CustomSplashScreen /> : (
+    <Stack screenOptions={{
+      contentStyle: { backgroundColor: colors.screenBackground[theme as ETheme] },
+    }}
+    >
+      <Stack.Screen name="(app)" options={{ headerShown: false }} />
+      <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="(welcome)"
+        options={{
+          headerShown: false,
+        }}
+      />
+    </Stack>
+  )
 }
 
 export default function RootLayout() {
