@@ -8406,6 +8406,7 @@ __metadata:
     react-native-safe-area-context: "npm:5.6.2"
     react-native-screens: "npm:4.16.0"
     react-native-svg: "npm:~15.12.1"
+    react-native-tab-view: "npm:^4.2.2"
     react-native-url-polyfill: "npm:^3.0.0"
     react-native-uuid: "npm:2.0.2"
     react-native-vlc-media-player: "npm:1.0.98"
@@ -17097,6 +17098,19 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/ed94b57007125c715283fc760438ac8eac0677ced3201f6e272a7cd4459f3fecb672a8eed2c32664e5b8e6e0367585353b0f83f99b231f603d75094bb052c01f
+  languageName: node
+  linkType: hard
+
+"react-native-tab-view@npm:^4.2.2":
+  version: 4.2.2
+  resolution: "react-native-tab-view@npm:4.2.2"
+  dependencies:
+    use-latest-callback: "npm:^0.2.4"
+  peerDependencies:
+    react: ">= 18.2.0"
+    react-native: "*"
+    react-native-pager-view: ">= 6.0.0"
+  checksum: 10c0/8fadb0d84e2ab9695dd58946eed2840deefde1ab16cfad3bcdaf4d1e25f68fed171f7a04f1deb9a4cc267a8eafe1f620d204a0a3cd00f724c5997df104e8c45d
   languageName: node
   linkType: hard
 
