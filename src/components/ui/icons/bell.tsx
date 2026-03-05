@@ -2,7 +2,7 @@ import type { SvgProps } from 'react-native-svg';
 import * as React from 'react';
 import Svg, { Path } from 'react-native-svg';
 
-export function BellIcon({ color = "#737373", ...props }: SvgProps & { color?: string }) {
+export function BellIcon({ color = '#737373', ...props }: SvgProps & { color?: string }) {
   return (
     <Svg width="16" height="18" viewBox="0 0 16 18" fill="none" {...props}>
       <Path

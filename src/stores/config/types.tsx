@@ -1,7 +1,7 @@
 export type TConfig = {
-  showCameraPreview: boolean
-}
+  showCameraPreview: boolean;
+};
 
 export type TConfigState = TConfig & {
-  setShowCameraPreview: (showCameraPreview: boolean) => void
-}
+  setShowCameraPreview: (showCameraPreview: boolean) => void;
+};

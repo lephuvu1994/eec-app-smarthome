@@ -5,9 +5,9 @@ import * as React from 'react';
 import { IS_IOS } from './utils';
 
 export type TItemMenu = {
-  key: string
-  element: React.ReactNode
-}
+  key: string;
+  element: React.ReactNode;
+};
 
 type TMenuNative = {
   containerStyle: { width: number; height: number };
