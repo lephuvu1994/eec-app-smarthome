@@ -5,6 +5,10 @@
     "settingTab": "Cài đặt",
     "smartTab": "Thông minh"
   },
+   "scene": {
+    "automation": "Tự động hoá",
+    "tapToRun": "Chạm để chạy"
+  },
   "base": {
     "addDevice": "Thêm thiết bị",
     "addScene": "Tạo kịch bản",

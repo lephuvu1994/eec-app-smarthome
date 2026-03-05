@@ -5,6 +5,10 @@
     "settingTab": "Setting",
     "smartTab": "Smart"
   },
+  "scene": {
+    "automation": "Automation",
+    "tapToRun": "Tap To Run"
+  },
   "base": {
     "addDevice": "Add device",
     "addScene": "Add scene",
