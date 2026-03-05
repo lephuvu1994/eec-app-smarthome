@@ -19,10 +19,10 @@ export function SignIn() {
   const { top } = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
 
-  const { mutate: login } = useLogin();
+  const { mutateAsync: login } = useLogin();
 
   const onSubmit: LoginFormProps['onSubmit'] = async (data: any) => {
-    login(
+    await login(
       { identifier: data.identifier, password: data.password },
       {
         onSuccess: (data: UserResponse) => {
