@@ -1,6 +1,9 @@
-import type { TokenType } from '@/lib/auth/utils';
+export type TTokenType = {
+  accessToken: string | null;
+  refreshToken: string | null;
+};
 
-export type TUser = {
+export type TUser = TTokenType & {
   id: string;
   email: string | null;
   phone: string | null;
@@ -9,13 +12,14 @@ export type TUser = {
   role: string;
   created_at: string;
   updated_at: string;
+
 };
 
 export type UserResponse = {
   statusCode: number;
   message: string;
   timestamp: string;
-  data: TokenType & {
+  data: {
     user: TUser;
   };
 };

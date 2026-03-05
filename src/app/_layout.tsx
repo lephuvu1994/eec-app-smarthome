@@ -1,5 +1,6 @@
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import type { ETheme } from '@/types/base';
 
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -8,19 +9,18 @@ import { useCallback, useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import FlashMessage from 'react-native-flash-message';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { KeyboardProvider } from 'react-native-keyboard-controller';
 
+import { KeyboardProvider } from 'react-native-keyboard-controller';
+import { useUniwind } from 'uniwind';
+import { colors } from '@/components/ui';
 import { useThemeConfig } from '@/components/ui/use-theme-config';
-import { hydrateAuth, useAuthStore } from '@/features/auth/use-auth-store';
-import { hydrateUserStore } from '@/features/auth/user-store';
+import { EAuthStatus } from '@/features/auth/types/enum';
+import { hydrateAuth, useUserManager } from '@/features/auth/user-store';
 import CustomSplashScreen from '@/features/splash-screen';
 import { APIProvider } from '@/lib/api';
 import { loadSelectedTheme } from '@/lib/hooks/use-selected-theme';
 // Import  global CSS file
 import '../global.css';
-import { useUniwind } from 'uniwind';
-import { colors } from '@/components/ui';
-import { ETheme } from '@/types/base';
 
 export { ErrorBoundary } from 'expo-router';
 
@@ -31,8 +31,7 @@ export const unstable_settings = {
 
 async function initApp() {
   // Login and get access_token
-  hydrateAuth();
-  hydrateUserStore();
+  await hydrateAuth();
   // await ScreenOrientation.lockAsync(deviceType === DeviceType.TABLET ? ScreenOrientation.OrientationLock.LANDSCAPE : ScreenOrientation.OrientationLock.PORTRAIT);
   await SplashScreen.hideAsync();
   // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -45,8 +44,7 @@ initApp();
 function RootRender() {
   const [isLoading, setIsLoading] = useState(true);
   const { theme } = useUniwind();
-
-  const status = useAuthStore.use.status();
+  const { status } = useUserManager();
 
   const hideSplash = useCallback(async () => {
     setIsLoading(false);
@@ -54,7 +52,7 @@ function RootRender() {
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | undefined;
-    if (status !== 'idle') {
+    if (status !== EAuthStatus.idle) {
       timer = setTimeout(async () => {
         await hideSplash();
       }, 1500);
@@ -67,21 +65,23 @@ function RootRender() {
     };
   }, [status, hideSplash]);
 
-  return isLoading ? <CustomSplashScreen /> : (
-    <Stack screenOptions={{
-      contentStyle: { backgroundColor: colors.screenBackground[theme as ETheme] },
-    }}
-    >
-      <Stack.Screen name="(app)" options={{ headerShown: false }} />
-      <Stack.Screen name="onboarding" options={{ headerShown: false }} />
-      <Stack.Screen
-        name="(welcome)"
-        options={{
-          headerShown: false,
+  return isLoading
+    ? <CustomSplashScreen />
+    : (
+        <Stack screenOptions={{
+          contentStyle: { backgroundColor: colors.screenBackground[theme as ETheme] },
         }}
-      />
-    </Stack>
-  )
+        >
+          <Stack.Screen name="(app)" options={{ headerShown: false }} />
+          <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="(welcome)"
+            options={{
+              headerShown: false,
+            }}
+          />
+        </Stack>
+      );
 }
 
 export default function RootLayout() {

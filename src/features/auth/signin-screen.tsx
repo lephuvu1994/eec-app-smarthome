@@ -8,14 +8,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BaseLayout } from '@/components/layout/BaseLayout';
 import { showErrorMessage, Text, View } from '@/components/ui';
 import { LoginForm } from '@/features/auth/components/login-form';
-import { useAuthStore } from '@/features/auth/use-auth-store';
-import { useGetUser } from '@/features/auth/user-store';
+import { useUserManager } from '@/features/auth/user-store';
 import { useLogin } from '@/lib/api';
 
 export function SignIn() {
   const router = useRouter();
-  const signIn = useAuthStore.use.signIn();
-  const setUserStore = useGetUser.use.setUser();
+  const { setUser } = useUserManager();
   const { top } = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
 
@@ -30,11 +28,7 @@ export function SignIn() {
             showErrorMessage(`Login falied ${JSON.stringify(data.message)}`);
           }
           else if (data) {
-            signIn({
-              accessToken: data.data.accessToken,
-              refreshToken: data.data.refreshToken,
-            });
-            setUserStore(data.data.user);
+            setUser(data.data.user);
             router.push('/(app)');
           }
         },

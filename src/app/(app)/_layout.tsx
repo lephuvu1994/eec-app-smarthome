@@ -1,9 +1,9 @@
 import { Redirect, Slot } from 'expo-router';
-import { useAuthStore as useAuth } from '@/features/auth/use-auth-store';
+import { useUserManager } from '@/features/auth/user-store';
 import { useIsFirstTime } from '@/lib/hooks/use-is-first-time';
 
 function AppLayout() {
-  const status = useAuth.use.status();
+  const { status } = useUserManager();
   const [isFirstTime] = useIsFirstTime();
 
   if (isFirstTime) {
