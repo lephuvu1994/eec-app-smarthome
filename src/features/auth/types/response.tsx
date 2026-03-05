@@ -21,5 +21,7 @@ export type UserResponse = {
   timestamp: string;
   data: {
     user: TUser;
+    accessToken: string;
+    refreshToken: string;
   };
 };

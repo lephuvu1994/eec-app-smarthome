@@ -13,7 +13,7 @@ import { useLogin } from '@/lib/api';
 
 export function SignIn() {
   const router = useRouter();
-  const { setUser } = useUserManager();
+  const { signIn } = useUserManager();
   const { top } = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
 
@@ -28,7 +28,7 @@ export function SignIn() {
             showErrorMessage(`Login falied ${JSON.stringify(data.message)}`);
           }
           else if (data) {
-            setUser(data.data.user);
+            signIn({ ...data.data.user, accessToken: data.data.accessToken, refreshToken: data.data.refreshToken });
             router.push('/(app)');
           }
         },
