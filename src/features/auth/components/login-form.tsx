@@ -38,10 +38,10 @@ const schema = z.object({
 export type FormType = z.infer<typeof schema>;
 
 export type LoginFormProps = {
-  onSubmit?: (value: FormType) => Promise<void>;
+  onSubmit: (value: FormType) => Promise<void>;
 };
 
-export function LoginForm({ onSubmit = async () => { } }: LoginFormProps) {
+export function LoginForm({ onSubmit }: LoginFormProps) {
   const { bottom } = useSafeAreaInsets();
 
   const form = useForm({
