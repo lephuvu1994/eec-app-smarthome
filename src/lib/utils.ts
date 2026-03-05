@@ -1,5 +1,8 @@
+import type { ClassValue } from 'tailwind-variants';
 import type { StoreApi, UseBoundStore } from 'zustand';
+import clsx from 'clsx';
 import { Linking } from 'react-native';
+import { twMerge } from 'tailwind-merge';
 
 export function openLinkInBrowser(url: string) {
   Linking.canOpenURL(url).then(canOpen => canOpen && Linking.openURL(url));
@@ -17,4 +20,7 @@ export function createSelectors<S extends UseBoundStore<StoreApi<object>>>(_stor
   }
 
   return store;
+}
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
 }

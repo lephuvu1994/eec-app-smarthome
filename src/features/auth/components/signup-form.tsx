@@ -1,15 +1,17 @@
+import type { UserResponse } from '../types/response';
 import Feather from '@expo/vector-icons/Feather';
 import Fontisto from '@expo/vector-icons/Fontisto';
 import { useForm } from '@tanstack/react-form';
+import { useMutation } from '@tanstack/react-query';
 import { BlurView } from 'expo-blur';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
+import { StyleSheet } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import Animated, { FadeInUp } from 'react-native-reanimated';
+
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as z from 'zod';
-
 import {
   Button,
   FloatInput,
@@ -18,7 +20,9 @@ import {
   View,
 } from '@/components/ui';
 import { getFieldError } from '@/components/ui/form-utils';
+import { client } from '@/lib/api';
 import { translate } from '@/lib/i18n';
+import { cn } from '@/lib/utils';
 
 const schema = z
   .object({
@@ -51,7 +55,11 @@ export type SignUpFormProps = {
   onSubmit?: (value: FormType) => Promise<void>;
 };
 
-export function SignUpForm({ onSubmit = async () => { } }: SignUpFormProps) {
+export function SignUpForm() {
+  const { bottom } = useSafeAreaInsets();
+  const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
+
   const form = useForm({
     defaultValues: {
       firstName: '',
@@ -63,19 +71,25 @@ export function SignUpForm({ onSubmit = async () => { } }: SignUpFormProps) {
     validators: {
       onChange: schema,
     },
-    onSubmit: async ({ value }) => {
-      await onSubmit(value);
+    onSubmit: async () => {
     },
   });
-  const insets = useSafeAreaInsets();
-  const router = useRouter();
-  const [showPassword, setShowPassword] = useState(false);
+
+  const { mutate: _signUp } = useMutation({
+    mutationFn: async (variables: any) => {
+      const resultData = await client.post<UserResponse>(
+        '/auth/signup',
+        variables,
+      );
+      return resultData.data;
+    },
+  });
 
   return (
     <KeyboardAvoidingView
       behavior="padding"
       keyboardVerticalOffset={-120}
-      className="absolute size-full justify-end"
+      className="absolute size-full justify-end px-4"
     >
       <Animated.View
         entering={FadeInUp.delay(100)
@@ -84,239 +98,169 @@ export function SignUpForm({ onSubmit = async () => { } }: SignUpFormProps) {
             transform: [{ translateY: '50%' }],
             opacity: 0,
           })}
-        className="w-full overflow-hidden rounded-t-[40px]"
+        className="w-full overflow-hidden"
         style={{
-          shadowColor: '#222',
-          shadowOffset: { width: 0, height: 32 },
-          shadowOpacity: 0.5,
-          shadowRadius: 24,
-          elevation: 5,
-          height: insets.bottom + 540,
+          height: 500 + bottom,
+          marginBottom: bottom,
         }}
       >
-        <LinearGradient
-          colors={['#2E335A', '#1C1B33']}
-          style={{
-            flex: 1,
-            height: '100%',
-            borderRadius: 40,
-            overflow: 'hidden',
-          }}
+        <BlurView
+          intensity={40}
+          tint="light"
+          style={{ ...StyleSheet.absoluteFillObject }}
+          className="relative overflow-hidden rounded-3xl"
         >
-          <BlurView
-            intensity={20}
-            tint="dark"
-            style={{ flex: 1 }}
-            className="relative"
-          >
-            <LinearGradient
-              colors={[
-                'rgba(255,255,255,0.05)', // viền sáng bên trong
-                'rgba(255,255,255,0)', // fade vào giữa
-              ]}
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                borderRadius: 40,
-
-                // Trick để tạo inner glow
-                borderWidth: 1,
-                borderColor: 'rgba(255,255,255,0.2)',
-
-                // Gradient inside
-                padding: 2,
-              }}
-            />
-            <View className="mt-4 flex-1">
-              <Text
-                testID="form-title"
-                className="text-center text-3xl font-bold text-white"
-                tx="formAuth.titleSignUp"
-               />
-              <View className="mx-4 mt-8 items-center gap-4">
+          <View className="flex-1 rounded-3xl border border-white/25 bg-white/70">
+            <View className="flex-1 justify-between py-6">
+              <View className="mx-4 mt-2 items-center">
                 <View className="w-full gap-4">
-                  <View className="w-full flex-row gap-2">
-                    <View className="relative flex-1">
+                  <View className="w-full gap-2">
+                    <View className="relative w-full">
                       <form.Field
-                        name="firstName"
-                        children={field => (
-                          <FloatInput
-                            testID="firstName-input"
-                            inputClassName="text-white"
-                            value={field.state.value}
-                            onBlur={field.handleBlur}
-                            onChangeText={field.handleChange}
-                            label="Nhập tên"
-                            error={getFieldError(field)}
-                          />
-                        )}
-                      />
-                    </View>
-                    <View className="relative flex-1">
-                      <form.Field
-                        name="lastName"
+                        name="identifier"
                         children={field => (
                           <FloatInput
                             value={field.state.value}
                             onChangeText={field.handleChange}
                             onBlur={field.handleBlur}
-                            label="Nhập họ"
-                            testID="lastName-input"
-                            inputClassName="bg-transparent text-white dark:text-white"
-                            placeholderTextColor="white"
+                            label={translate('formAuth.titleIdentifier')}
+                            testID="identifier"
+                            inputClassName="text-[#1B1B1B] dark:text-[#1B1B1B]"
+                            containerClassName="bg-[#F3F4F6] shadow"
+                            labelTextColor="#737373"
+                            labelTextColorInactive="#737373"
+                            placeholderTextColor="text-[#737373] dark:text-[#737373]"
+                            borderColor={{
+                              active: '#737373',
+                              inactive: 'transparent',
+                            }}
                             error={getFieldError(field)}
-                            rightIcon={<Fontisto name="email" size={18} color="white" />}
+                            rightIcon={<Fontisto name="email" size={18} color="#9CA3AF" />}
                           />
                         )}
                       />
                     </View>
-                  </View>
-                  <View className="relative w-full">
-                    <form.Field
-                      name="identifier"
-                      children={field => (
-                        <FloatInput
-                          value={field.state.value}
-                          onChangeText={field.handleChange}
-                          onBlur={field.handleBlur}
-                          label="Nhập email hoặc số điện thoại"
-                          testID="identifier"
-                          inputClassName="bg-transparent text-white dark:text-white"
-                          placeholderTextColor="white"
-                          error={getFieldError(field)}
-                          rightIcon={<Fontisto name="email" size={18} color="white" />}
-                        />
-                      )}
-                    />
                   </View>
 
-                  <View className="relative w-full">
-                    <form.Field
-                      name="password"
-                      children={field => (
-                        <FloatInput
-                          value={field.state.value}
-                          onChangeText={field.handleChange}
-                          onBlur={field.handleBlur}
-                          testID="password-input"
-                          label={translate('base.password')}
-                          secureTextEntry={!showPassword}
-                          inputClassName="bg-transparent text-white dark:text-white"
-                          placeholderTextColor="white"
-                          error={getFieldError(field)}
-                          rightIcon={(
-                            <TouchableOpacity
-                              onPress={() => setShowPassword(!showPassword)}
-                            >
-                              <Feather
-                                name={!showPassword ? 'eye' : 'eye-off'}
-                                size={18}
-                                color="#d1d5db"
-                              />
-                            </TouchableOpacity>
-                          )}
-                        />
-                      )}
-                    />
-                  </View>
-                  <View className="relative w-full">
-                    <form.Field
-                      name="repeatPassword"
-                      validators={{
-                        onChange: schema.shape.repeatPassword,
-                      }}
-                      children={field => (
-                        <FloatInput
-                          value={field.state.value}
-                          onChangeText={field.handleChange}
-                          onBlur={field.handleBlur}
-                          testID="password-input"
-                          label={translate('base.repeatPassword')}
-                          secureTextEntry={!showPassword}
-                          inputClassName="bg-transparent text-white dark:text-white"
-                          placeholderTextColor="white"
-                          error={getFieldError(field)}
-                          rightIcon={(
-                            <TouchableOpacity
-                              onPress={() => setShowPassword(!showPassword)}
-                            >
-                              <Feather
-                                name={!showPassword ? 'eye' : 'eye-off'}
-                                size={18}
-                                color="#d1d5db"
-                              />
-                            </TouchableOpacity>
-                          )}
-                        />
-                      )}
-                    />
+                  <View className="w-full gap-2">
+                    <View className="relative mb-2 w-full">
+                      <form.Field
+                        name="password"
+                        children={field => (
+                          <FloatInput
+                            value={field.state.value}
+                            onChangeText={field.handleChange}
+                            onBlur={field.handleBlur}
+                            testID="password-input"
+                            label={translate('formAuth.titlePassword')}
+                            secureTextEntry={!showPassword}
+                            inputClassName="text-[#1B1B1B] dark:text-[#1B1B1B]"
+                            containerClassName="bg-[#F3F4F6] shadow"
+                            labelTextColor="#737373"
+                            labelTextColorInactive="#737373"
+                            borderColor={{
+                              active: '#737373',
+                              inactive: 'transparent',
+                            }}
+                            placeholderTextColor="text-[#737373] dark:text-[#737373]"
+                            error={getFieldError(field)}
+                            rightIcon={(
+                              <TouchableOpacity
+                                onPress={() => setShowPassword(!showPassword)}
+                              >
+                                <Feather
+                                  name={!showPassword ? 'eye' : 'eye-off'}
+                                  size={18}
+                                  color="#9CA3AF"
+                                />
+                              </TouchableOpacity>
+                            )}
+                          />
+                        )}
+                      />
+                    </View>
                   </View>
                 </View>
 
-                <View className="mt-4 w-full">
+                <View className="mt-4 w-full flex-col gap-3">
                   <form.Subscribe
-                    selector={state => [state.isSubmitting]}
-                    children={([isSubmitting]) => (
-                      <Button
-                        className="mb-3 w-full rounded-2xl bg-transparent p-0 dark:bg-transparent"
-                        testID="login-button"
-                        onPress={form.handleSubmit}
-                        disabled={isSubmitting}
-                        loading={isSubmitting}
-                        textClassName="text-black"
-                      >
-                        <LinearGradient
-                          colors={[
-                            'rgba(72,49,157,0.6)',
-                            'rgba(72,49,157,0.8)',
-                          ]}
-                          style={{
-                            width: '100%',
-                            height: '100%',
-                            borderRadius: 16,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-
-                            // Viền mờ giống figma (Stroke 20%)
-                            borderWidth: 1,
-                            borderColor: 'rgba(255,255,255,0.25)',
-
-                            // Shadow ngoài
-                            shadowColor: '#000',
-                            shadowOpacity: 0.25,
-                            shadowRadius: 20,
-                            shadowOffset: { width: 0, height: 5 },
-
-                            backgroundColor: 'rgba(72,49,157,0.2)',
+                    selector={state => [state.canSubmit, state.isSubmitting]}
+                    children={([canSubmit, isSubmitting]) => {
+                      const isDisabled = !canSubmit || isSubmitting;
+                      return (
+                        <Button
+                          className={cn('my-1 h-12 w-full rounded-full p-0 shadow-sm', isDisabled
+                            ? 'bg-[#A3E635]/50 dark:bg-[#A3E635]/50' // Màu khi Disable
+                            : 'bg-[#A3E635] dark:bg-[#A3E635]')}
+                          testID="login-button"
+                          onPress={() => {
+                            form.handleSubmit();
                           }}
-                        >
-                          <Text className="text-white" tx="formAuth.titleSignUp"/>
-                        </LinearGradient>
-                      </Button>
-                    )}
+                          disabled={isDisabled}
+                          loading={isSubmitting}
+                          textClassName={cn(
+                            'text-base font-semibold',
+                            isDisabled
+                              ? 'text-[#0F0F0F] dark:text-[#0F0F0F]' // Chữ khi Disable
+                              : 'text-[#0F0F0F] dark:text-[#0F0F0F]', // Chữ khi Active
+                          )}
+                          label={translate('formAuth.titleSignIn')}
+                        />
+                      );
+                    }}
                   />
+
+                  <TouchableOpacity
+                    testID="reset-password"
+                    onPress={() => router.back()}
+                    activeOpacity={0.7}
+                    className="h-12 w-full items-center justify-center rounded-full bg-[#E5E7EB] shadow-sm"
+                  >
+                    <Text
+                      className="font-medium text-[#4B5563]"
+                      tx="formAuth.resetPassword"
+                    />
+                  </TouchableOpacity>
                 </View>
-                <View className="mt-2 w-full items-center justify-center gap-2">
-                  <Text className="text-white dark:text-white">
-                    {translate('base.haveAccount')}
-                  </Text>
-                  <View>
-                    <TouchableOpacity
-                      onPress={() => {
-                        router.back()
-                      }}
-                    >
-                      <Text className="text-white underline dark:text-white" tx="formAuth.titleSignUp" />
-                    </TouchableOpacity>
-                  </View>
+
+                <View className="my-6 w-full flex-row items-center justify-center">
+                  <View className="h-px flex-1 bg-black/10" />
+                  <Text className="mx-4 text-neutral-500">Hoặc</Text>
+                  <View className="h-px flex-1 bg-black/10" />
+                </View>
+
+                <View className="mb-6 w-full flex-row justify-center gap-6">
+                  <TouchableOpacity className="size-12 items-center justify-center rounded-full bg-white shadow-sm">
+                    <Fontisto name="google" size={20} color="#DB4437" />
+                  </TouchableOpacity>
+                  <TouchableOpacity className="size-12 items-center justify-center rounded-full bg-white shadow-sm">
+                    <Fontisto name="facebook" size={20} color="#4267B2" />
+                  </TouchableOpacity>
+                  <TouchableOpacity className="size-12 items-center justify-center rounded-full bg-white shadow-sm">
+                    <Fontisto name="apple" size={20} color="#000000" />
+                  </TouchableOpacity>
+                </View>
+
+              </View>
+              <View className="mt-8 w-full flex-row items-center justify-center gap-1">
+                <Text className="text-[#4B5563] dark:text-[#4B5563]">
+                  {translate('formAuth.haveAccount')}
+                </Text>
+                <View>
+                  <TouchableOpacity
+                    onPress={() => {
+                      router.push('/(welcome)/signIn');
+                    }}
+                  >
+                    <Text className="font-bold text-[#A3E635] dark:text-[#A3E635]">
+                      {translate('formAuth.titleSignIn')}
+                    </Text>
+                  </TouchableOpacity>
                 </View>
               </View>
             </View>
-          </BlurView>
-        </LinearGradient>
+          </View>
+        </BlurView>
       </Animated.View>
     </KeyboardAvoidingView>
   );

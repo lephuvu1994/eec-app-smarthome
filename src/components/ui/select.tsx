@@ -10,7 +10,7 @@ import { FlashList } from '@shopify/flash-list';
 import * as React from 'react';
 import { Platform, Pressable, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
-import { tv } from 'tailwind-variants';
+import { tv } from 'tailwind-variants/lite';
 
 import { useUniwind } from 'uniwind';
 import colors from '@/components/ui/colors';
