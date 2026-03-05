@@ -9,7 +9,7 @@ import { EAuthStatus } from './types/enum';
 
 export type UserState = TUser & {
   status: EAuthStatus;
-  setUser: (user: TUser) => void;
+  signIn: (user: TUser) => void;
   signOut: () => void;
   updateToken: (token: TTokenType) => void;
   hydrateAuth: () => Promise<void>;
@@ -34,7 +34,9 @@ const _useGetUser = create<UserState>()(
     (set, get) => ({
       ...initialUserState,
       status: EAuthStatus.idle,
-      setUser: user => set({ ...user }),
+      signIn: (user) => {
+        set({ ...user, status: EAuthStatus.signIn });
+      },
       signOut: () => {
         const currentState = get();
         set({
@@ -54,10 +56,10 @@ const _useGetUser = create<UserState>()(
         const currentState = get();
         try {
           // Call API to call profile
-          const profileUpdate = await client.get('/me');
+          // const profileUpdate = await client.get('/me');
           set({
             ...currentState,
-            ...profileUpdate,
+            // ...profileUpdate,
             status: EAuthStatus.signIn,
           });
         }
