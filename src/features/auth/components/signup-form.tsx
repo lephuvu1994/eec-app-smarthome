@@ -1,4 +1,3 @@
-import type { UserResponse } from '../types/response';
 import Feather from '@expo/vector-icons/Feather';
 import Fontisto from '@expo/vector-icons/Fontisto';
 import { useForm } from '@tanstack/react-form';
@@ -21,7 +20,6 @@ import {
   View,
 } from '@/components/ui';
 import { getFieldError } from '@/components/ui/form-utils';
-import { client } from '@/lib/api';
 import { translate } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 import { emailRegex, phoneRegex } from '../utils/constants';

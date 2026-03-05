@@ -1,8 +1,8 @@
 import Env from '@env';
 import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { FocusAwareStatusBar, Text, View, WIDTH } from '@/components/ui';
 import { useUniwind } from 'uniwind';
+import { FocusAwareStatusBar, Text, View } from '@/components/ui';
 import { ETheme } from '@/types/base';
 
 export default function SplashScreen() {
@@ -13,18 +13,18 @@ export default function SplashScreen() {
     <View className="relative w-full flex-1 items-center justify-center">
       <FocusAwareStatusBar hidden />
       <Image
-          source={theme === ETheme.Dark ? require('@@/assets/base/background-dark.png') : require('@@/assets/base/background-light.png')}
-          style={{
-            width: '100%',
-            height: '100%',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-          }}
-          contentFit="contain"
-        />
+        source={theme === ETheme.Dark ? require('@@/assets/base/background-dark.png') : require('@@/assets/base/background-light.png')}
+        style={{
+          width: '100%',
+          height: '100%',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+        }}
+        contentFit="contain"
+      />
       <View
         className="absolute w-full flex-1 items-center justify-start"
         style={{
@@ -34,9 +34,9 @@ export default function SplashScreen() {
           right: insets.right,
         }}
       >
-        
+
         <View className="h-2/3 w-full">
-          <View className="w-full h-full relative items-center justify-center">
+          <View className="relative h-full w-full items-center justify-center">
             <Image
               source={require('@@/assets/splash-screen/icon1.png')}
               style={{
@@ -82,7 +82,7 @@ export default function SplashScreen() {
                 width: '100%',
                 height: '100%',
                 position: 'absolute',
-                top: "50%",
+                top: '50%',
                 left: 0,
                 right: 0,
                 bottom: 0,
