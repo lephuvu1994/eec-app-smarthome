@@ -1,9 +1,9 @@
-import { Stack } from 'expo-router';
+import type { ETheme } from '@/types/base';
 
+import { Stack } from 'expo-router';
+import { useUniwind } from 'uniwind';
 import { colors } from '@/components/ui';
 import { translate } from '@/lib/i18n';
-import { useUniwind } from 'uniwind';
-import { ETheme } from '@/types/base';
 
 export default function WelcomeLayout() {
   const { theme } = useUniwind();
