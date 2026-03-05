@@ -17,36 +17,31 @@
     "deleteButton": "Delete",
     "device": "Devices",
     "disconnectedStatus": "Disconnected",
-    "dontHaveAccount": "You don't have an account?",
     "editButton": "Edit",
-    "firstName": "First Name",
-    "haveAccount": "You have an account?",
-    "lastName": "Last Name",
-    "loginLabel": "Login",
     "noData": "No data",
     "noDataOptionSelect": "No options available",
     "off": "Off",
     "on": "On",
-    "password": "Password",
-    "placeHolderEmail": "Enter your email",
-    "placeHolderFirstName": "Enter your first name",
-    "placeHolderLastName": "Enter your last name",
-    "repeatPassword": "Repeat Password",
     "saveButton": "Save",
     "scene": "Scenes"
   },
-   "formAuth": {
-    "titleSignIn": "SignIn",
-    "titleSignUp": "SignUp",
-    "titleIdentifier": "Email or Phone Number",
-    "titlePassword": "Password",
-    "resetPassword": "Reset Password",
+  "formAuth": {
+    "dontHaveAccount": "You don't have an account?",
     "error": {
       "identifierRequired": "Please enter email or phone number",
       "invalidFormatIdentifier": "Chưa đúng định dạng email hoặc số điện thoại",
-      "passwordRequired": "Please enter password",
-      "passwordInvalidFormat": "Password must be at least {length} characters"
-    }
+      "passwordInvalidFormat": "Password must be at least 6 characters",
+      "passwordRequired": "Please enter password"
+    },
+    "firstName": "FirstName",
+    "haveAccount": "You have an account?",
+    "lastName": "LastName",
+    "or": "Or",
+    "resetPassword": "Reset Password",
+    "titleIdentifier": "Email or Phone Number",
+    "titlePassword": "Password",
+    "titleSignIn": "SignIn",
+    "titleSignUp": "SignUp"
   },
   "settings": {
     "about": "About",

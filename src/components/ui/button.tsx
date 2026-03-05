@@ -3,7 +3,7 @@ import type { PressableProps, View } from 'react-native';
 import type { VariantProps } from 'tailwind-variants';
 import * as React from 'react';
 import { ActivityIndicator, Pressable, Text } from 'react-native';
-import { tv } from 'tailwind-variants';
+import { tv } from 'tailwind-variants/lite';
 
 const button = tv({
   slots: {

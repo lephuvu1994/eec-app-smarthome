@@ -79,6 +79,8 @@ module.exports = {
   screenBackground: {
     dark: '#1E1E1E',
     light: '#E9ECF4',
-  }
+  },
+  primaryActive: '#A3EC3E',
+  primaryInactive: '#A3EC3E',
 
 };

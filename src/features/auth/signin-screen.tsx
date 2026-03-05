@@ -1,22 +1,16 @@
 import type { LoginFormProps } from '@/features/auth/components/login-form';
 import type { UserResponse } from '@/features/auth/types/response';
 
+import { useHeaderHeight } from '@react-navigation/elements';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import Animated, {
-  SlideInLeft,
-  SlideInRight,
-  SlideInUp,
-} from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BaseLayout } from '@/components/layout/BaseLayout';
 import { showErrorMessage, Text, View } from '@/components/ui';
 import { LoginForm } from '@/features/auth/components/login-form';
 import { useAuthStore } from '@/features/auth/use-auth-store';
 import { useGetUser } from '@/features/auth/user-store';
 import { useLogin } from '@/lib/api';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useHeaderHeight } from '@react-navigation/elements';
-
 
 export function SignIn() {
   const router = useRouter();
@@ -53,7 +47,7 @@ export function SignIn() {
 
   return (
     <BaseLayout hasTabBar={false}>
-      <View className="flex-1 w-full relative">
+      <View className="relative w-full flex-1">
         <Image
           source={require('@@/assets/sign-in/background-signIn.png')}
           style={{
@@ -67,7 +61,7 @@ export function SignIn() {
           }}
           contentFit="cover"
         />
-        <View className="px-4 gap-6" style={{ paddingTop: top + headerHeight - 32 }}>
+        <View className="gap-6 px-4" style={{ paddingTop: top + headerHeight - 32 }}>
           <Image
             source={require('@@/assets/base/icon.png')}
             style={{
@@ -76,7 +70,7 @@ export function SignIn() {
             }}
             contentFit="cover"
           />
-          <Text className="text-4xl font-bold text-[#1B1B1B]" tx="formAuth.titleSignIn"/>
+          <Text className="text-4xl font-bold text-[#1B1B1B]" tx="formAuth.titleSignIn" />
         </View>
         <LoginForm onSubmit={onSubmit} />
       </View>

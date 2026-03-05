@@ -13,7 +13,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import Svg, { Defs, Mask, Rect } from 'react-native-svg';
 import { twMerge } from 'tailwind-merge';
-import { tv } from 'tailwind-variants';
+import { tv } from 'tailwind-variants/lite';
 
 import { Text } from './text';
 
@@ -43,10 +43,10 @@ type NInputProps = TextInputProps & {
   labelTextColor?: string;
   labelTextColorInactive?: string;
   borderColor?: {
-    active: string,
-    inactive: string
-  }
-  containerClassName?: string
+    active: string;
+    inactive: string;
+  };
+  containerClassName?: string;
 };
 
 export function FloatInput({ ref, ...props }: NInputProps & { ref?: React.RefObject<TextInput | null> }) {
@@ -137,9 +137,9 @@ export function FloatInput({ ref, ...props }: NInputProps & { ref?: React.RefObj
     const color = interpolateColor(
       animation.value,
       [0, 1],
-      [labelTextColorInactive ??'rgba(255,255,255,0.7)', labelTextColor ?? "#FFFFFF"],
+      [labelTextColorInactive ?? 'rgba(255,255,255,0.7)', labelTextColor ?? '#FFFFFF'],
     );
-    const opacity = interpolate(animation.value, [0,1], [0.6, 1])
+    const opacity = interpolate(animation.value, [0, 1], [0.6, 1]);
     // Dùng shouldShowError để quyết định màu đỏ
     return { color: shouldShowError ? '#ef4444' : color, opacity };
   });
@@ -150,8 +150,13 @@ export function FloatInput({ ref, ...props }: NInputProps & { ref?: React.RefObj
   });
 
   // Màu viền và màu chữ tin nhắn lỗi
-  const currentBorderColor = (error && !isFocussed) ? '#ef4444' : isFocussed ? (borderColor ? borderColor.active :
-   '#FFFFFF') : (borderColor ? borderColor.inactive : 'rgba(255,255,255,0.4)');
+  const currentBorderColor = (error && !isFocussed)
+    ? '#ef4444'
+    : isFocussed
+      ? (borderColor
+          ? borderColor.active
+          : '#FFFFFF')
+      : (borderColor ? borderColor.inactive : 'rgba(255,255,255,0.4)');
 
   // --- ANIMATED STYLE CHO KHỐI ERROR MESSAGE ---
   // Interpolate chiều cao từ 0 đến khoảng 24px (hoặc tự động đo)
@@ -167,7 +172,7 @@ export function FloatInput({ ref, ...props }: NInputProps & { ref?: React.RefObj
     <View className={styles.container()}>
       {/* KHỐI INPUT CHÍNH (Vẽ Viền, Ô nhập liệu, Label và Icon) */}
       <View
-        className={twMerge("relative w-full justify-center rounded-xl", containerClassName)}
+        className={twMerge('relative w-full justify-center rounded-xl', containerClassName)}
         onLayout={(e) => {
           setBox({
             width: e.nativeEvent.layout.width,

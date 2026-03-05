@@ -2,7 +2,7 @@
 import type { TextInputProps } from 'react-native';
 import * as React from 'react';
 import { I18nManager, TextInput as NTextInput, StyleSheet, View } from 'react-native';
-import { tv } from 'tailwind-variants';
+import { tv } from 'tailwind-variants/lite';
 
 import colors from './colors';
 import { Text } from './text';
