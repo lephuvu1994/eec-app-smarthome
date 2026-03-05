@@ -1,11 +1,12 @@
-import React, { useState, useRef, useEffect } from "react";
-import { View, TouchableOpacity } from "@/components/ui";
-import { VLCPlayer } from "react-native-vlc-media-player";
+import * as React from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   useSharedValue,
   withRepeat,
   withTiming,
-} from "react-native-reanimated";
+} from 'react-native-reanimated';
+import { VLCPlayer } from 'react-native-vlc-media-player';
+import { TouchableOpacity, View } from '@/components/ui';
 
 type TVideoProps = {
   videoUrl: string;
@@ -15,13 +16,13 @@ type TVideoProps = {
   imageUrl: string | undefined;
 };
 
-const VideoStreamComponent = ({
+function VideoStreamComponent({
   videoUrl,
   imageUrl,
   handleError,
   setIsFailedRTS,
   isFailedRTS,
-}: TVideoProps) => {
+}: TVideoProps) {
   const [isLoading, setIsLoading] = useState(true);
   const videoRef = useRef(null);
   const opacityValue = useSharedValue(0.2);
@@ -30,59 +31,59 @@ const VideoStreamComponent = ({
     opacityValue.value = withRepeat(
       withTiming(1, { duration: 1000 }),
       -1,
-      true
+      true,
     );
   }, []);
 
   const handleErrorRTS = () => {
     setIsLoading(false);
     setIsFailedRTS(true);
-    if (!imageUrl || imageUrl === "") {
+    if (!imageUrl || imageUrl === '') {
       handleError();
     }
   };
 
   return (
-    <View className="absolute top-0 left-0 w-full h-full z-1">
+    <View className="absolute top-0 left-0 z-1 size-full">
       <TouchableOpacity disabled={isLoading}>
         <VLCPlayer
           ref={videoRef}
           style={{
-            width: "100%",
+            width: '100%',
             zIndex: 50,
-            height: "auto",
+            height: 'auto',
             aspectRatio: 16 / 9,
           }}
           videoAspectRatio="16:9"
-          resizeMode={"fill"}
+          resizeMode="fill"
           source={{
             uri: videoUrl,
           }}
           muted={false}
           onPlaying={() => {
             setIsLoading(false);
-            console.log("playing");
+            console.log('playing');
           }}
           onEnd={() => {
-            console.log("end");
+            console.log('end');
           }}
           onStopped={() => {
-            console.log("stopped");
+            console.log('stopped');
           }}
           onLoad={() => {
-            console.log("load");
+            console.log('load');
           }}
           onError={handleErrorRTS}
           onPaused={() => {
-            console.log("paused");
+            console.log('paused');
           }}
           onBuffering={() => {
-            console.log("buffering");
+            console.log('buffering');
           }}
         />
       </TouchableOpacity>
     </View>
   );
-};
+}
 
 export default VideoStreamComponent;

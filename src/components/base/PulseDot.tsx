@@ -1,39 +1,41 @@
-import React, { useEffect } from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
+import type { ViewStyle } from 'react-native';
+import * as React from 'react';
+import { useEffect } from 'react';
+import { StyleSheet, View } from 'react-native';
 import Animated, {
+  interpolate,
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
   withSequence,
   withTiming,
-  interpolate,
 } from 'react-native-reanimated';
 
-interface PulseDotProps {
+type PulseDotProps = {
   color?: string;
   size?: number;
   duration?: number;
   maxScale?: number;
   style?: ViewStyle;
-}
+};
 
-export const PulseDot = ({
+export function PulseDot({
   color = '#22C55E', // Mặc định xanh lá
   size = 10,
   duration = 1000,
   maxScale = 1.8,
   style,
-}: PulseDotProps) => {
+}: PulseDotProps) {
   const pulse = useSharedValue(1);
 
   useEffect(() => {
     pulse.value = withRepeat(
       withSequence(
         withTiming(maxScale, { duration }),
-        withTiming(1, { duration })
+        withTiming(1, { duration }),
       ),
       -1,
-      true
+      true,
     );
   }, [duration, maxScale]);
 
@@ -59,7 +61,7 @@ export const PulseDot = ({
           },
         ]}
       />
-      
+
       {/* Chấm tròn chính */}
       <View
         style={[
@@ -73,7 +75,7 @@ export const PulseDot = ({
       />
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {

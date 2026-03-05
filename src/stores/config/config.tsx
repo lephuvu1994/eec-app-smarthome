@@ -1,9 +1,8 @@
-
+import type { TConfig, TConfigState } from './types';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { mmkvStorage } from '@/lib/storage';
 import { createSelectors } from '@/lib/utils';
-import { TConfig, TConfigState } from './types';
 
 const initialConfigState: TConfig = {
   showCameraPreview: false,
@@ -11,7 +10,7 @@ const initialConfigState: TConfig = {
 
 const _useConfig = create<TConfigState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       ...initialConfigState,
       setShowCameraPreview: (showCameraPreview: boolean) => {
         set({ showCameraPreview });
