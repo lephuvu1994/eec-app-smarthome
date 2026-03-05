@@ -26,22 +26,32 @@
     "scene": "Kịch bản"
   },
   "formAuth": {
+    "createPassword": "Tạo mật khẩu",
     "dontHaveAccount": "Bạn chưa có tài khoản?",
+    "emailTitle": "Email",
     "error": {
       "identifierRequired": "Vui lòng nhập email hoặc số điện thoại",
       "invalidFormatIdentifier": "Chưa đúng định dạng email hoặc số điện thoại",
       "passwordInvalidFormat": "Mật khẩu phải có ít nhất 6 ký tự",
+      "passwordNotMatch": "Mật khẩu không khớp",
       "passwordRequired": "Vui lòng nhập mật khẩu"
     },
     "firstName": "Họ",
     "haveAccount": "Bạn đã có tài khoản?",
     "lastName": "Tên",
+    "messageDescriptionOtp": "Chúng tôi đã gửi mã OTP đến {{identifier}} của bạn, vui lòng kiểm tra hộp thư đến.",
+    "notReceivedOtp": "Không nhận được mã OTP?",
     "or": "Hoặc",
+    "passwordNotMatch": "Mật khẩu không khớp",
+    "phoneNumber": "số điện thoại",
+    "resendOtp": "Gửi lại mã",
     "resetPassword": "Quên mật khẩu",
     "titleIdentifier": "Email hoặc số điện thoại",
     "titlePassword": "Mật khẩu",
     "titleSignIn": "Đăng nhập",
-    "titleSignUp": "Đăng ký"
+    "titleSignUp": "Đăng ký",
+    "verifyCode": "Xác minh code",
+    "verifyIdentifier": "Xác minh {{identifier}}"
   },
   "settings": {
     "about": "Giới Thiệu",

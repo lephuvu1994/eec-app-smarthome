@@ -26,22 +26,32 @@
     "scene": "Scenes"
   },
   "formAuth": {
+    "createPassword": "Create password",
     "dontHaveAccount": "You don't have an account?",
+    "emailTitle": "Email",
     "error": {
       "identifierRequired": "Please enter email or phone number",
       "invalidFormatIdentifier": "Chưa đúng định dạng email hoặc số điện thoại",
       "passwordInvalidFormat": "Password must be at least 6 characters",
+      "passwordNotMatch": "Passwords do not match",
       "passwordRequired": "Please enter password"
     },
     "firstName": "FirstName",
     "haveAccount": "You have an account?",
     "lastName": "LastName",
+    "messageDescriptionOtp": "We have sent OTP to your {{identifier}}, please check your inbox.",
+    "notReceivedOtp": "Not received OTP?",
     "or": "Or",
+    "passwordNotMatch": "Passwords do not match",
+    "phoneNumber": "Phone Number",
+    "resendOtp": "Resend OTP",
     "resetPassword": "Reset Password",
     "titleIdentifier": "Email or Phone Number",
     "titlePassword": "Password",
     "titleSignIn": "SignIn",
-    "titleSignUp": "SignUp"
+    "titleSignUp": "SignUp",
+    "verifyCode": "Verify code",
+    "verifyIdentifier": "Verify {{identifier}}"
   },
   "settings": {
     "about": "About",

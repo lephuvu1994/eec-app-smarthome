@@ -185,7 +185,7 @@ export function LoginForm({ onSubmit = async () => { } }: LoginFormProps) {
                                 ? 'text-[#0F0F0F] dark:text-[#0F0F0F]' // Chữ khi Disable
                                 : 'text-[#0F0F0F] dark:text-[#0F0F0F]', // Chữ khi Active
                             )}
-                            label={translate('base.loginLabel')}
+                            label={translate('formAuth.titleSignIn')}
                           />
                         );
                       }}
@@ -206,7 +206,7 @@ export function LoginForm({ onSubmit = async () => { } }: LoginFormProps) {
 
                   <View className="my-6 w-full flex-row items-center justify-center">
                     <View className="h-px flex-1 bg-black/10" />
-                    <Text className="mx-4 text-neutral-500">Hoặc</Text>
+                    <Text className="mx-4 text-neutral-500" tx="formAuth.or" />
                     <View className="h-px flex-1 bg-black/10" />
                   </View>
 
@@ -223,9 +223,9 @@ export function LoginForm({ onSubmit = async () => { } }: LoginFormProps) {
                   </View>
 
                 </View>
-                <View className="mt-8 w-full flex-row items-center justify-center gap-1">
+                <View className="w-full flex-row items-center justify-center gap-1">
                   <Text className="text-[#4B5563] dark:text-[#4B5563]">
-                    {translate('base.dontHaveAccount')}
+                    {translate('formAuth.dontHaveAccount')}
                   </Text>
                   <View>
                     <TouchableOpacity
