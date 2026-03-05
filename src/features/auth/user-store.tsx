@@ -1,16 +1,22 @@
-import type { TUser } from './types/response';
+import type { TTokenType, TUser } from './types/response';
 
 import { create } from 'zustand';
-import { getUserStore, removeUserStore, setUserStore } from '@/lib/auth/user';
+import { createJSONStorage, persist } from 'zustand/middleware';
+import { client } from '@/lib/api';
+import { mmkvStorage } from '@/lib/storage';
 import { createSelectors } from '@/lib/utils';
+import { EAuthStatus } from './types/enum';
 
 export type UserState = TUser & {
+  status: EAuthStatus;
   setUser: (user: TUser) => void;
-  removeUser: () => void;
-  hydrate: () => void;
+  signOut: () => void;
+  updateToken: (token: TTokenType) => void;
+  hydrateAuth: () => Promise<void>;
 };
 
-const _useGetUser = create<UserState>((set, get) => ({
+// Giá trị khởi tạo mặc định khi chưa có user
+const initialUserState: TUser = {
   id: '',
   email: null,
   phone: null,
@@ -19,27 +25,54 @@ const _useGetUser = create<UserState>((set, get) => ({
   role: '',
   created_at: '',
   updated_at: '',
-  setUser: (user: TUser) => {
-    setUserStore(user);
-    set({ ...user });
-  },
-  removeUser: () => {
-    removeUserStore();
-  },
-  hydrate: async () => {
-    try {
-      const user: TUser | null = getUserStore();
-      if (user !== null) {
-        get().setUser(user);
-      }
-    }
-    catch (e) {
-      console.error(e);
-      // catch error here
-      // Maybe sign_out user!
-    }
-  },
-}));
+  accessToken: null,
+  refreshToken: null,
+};
 
-export const useGetUser = createSelectors(_useGetUser);
-export const hydrateUserStore = () => useGetUser.getState().hydrate();
+const _useGetUser = create<UserState>()(
+  persist(
+    (set, get) => ({
+      ...initialUserState,
+      status: EAuthStatus.idle,
+      setUser: user => set({ ...user }),
+      signOut: () => {
+        const currentState = get();
+        set({
+          ...currentState,
+          ...initialUserState,
+          status: EAuthStatus.signOut,
+        });
+      },
+      updateToken: (token: TTokenType) => {
+        const currentState = get();
+        set({
+          ...currentState,
+          ...token,
+        });
+      },
+      hydrateAuth: async () => {
+        const currentState = get();
+        try {
+          // Call API to call profile
+          const profileUpdate = await client.get('/me');
+          set({
+            ...currentState,
+            ...profileUpdate,
+            status: EAuthStatus.signIn,
+          });
+        }
+        // eslint-disable-next-line unused-imports/no-unused-vars
+        catch (e) {
+          currentState.signOut();
+        }
+      },
+    }),
+    {
+      name: 'user-storage', // Key duy nhất để lưu trong MMKV
+      storage: createJSONStorage(() => mmkvStorage),
+    },
+  ),
+);
+
+export const useUserManager = createSelectors(_useGetUser);
+export const hydrateAuth = useUserManager.getState().hydrateAuth;

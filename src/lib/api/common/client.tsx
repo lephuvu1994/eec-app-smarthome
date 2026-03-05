@@ -1,10 +1,8 @@
 import type { AxiosInstance, AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios';
-import type { TokenType } from '@/lib/auth/utils';
 import Env from '@env';
 import axios from 'axios';
 import get from 'lodash/get';
-import { useAuthStore } from '@/features/auth/use-auth-store';
-import { getToken } from '@/lib/auth/utils';
+import { useUserManager } from '@/features/auth/user-store';
 
 export const TIMEOUT = 10000;
 const API_VERSION = '/v1';
@@ -29,9 +27,9 @@ function setupAuthInterceptor(instance: AxiosInstance) {
       // Update baseURL before each request
       config.baseURL = Env.EXPO_PUBLIC_API_URL + API_VERSION;
 
-      const token: TokenType | null = getToken();
-      if (token?.accessToken) {
-        config.headers.Authorization = `Bearer ${token.accessToken}`;
+      const accessToken = useUserManager.getState().accessToken;
+      if (accessToken) {
+        config.headers.Authorization = `Bearer ${accessToken}`;
       }
       return config;
     },
@@ -43,25 +41,23 @@ function setupAuthInterceptor(instance: AxiosInstance) {
     async (error) => {
       const statusCode = get(error, 'response.status');
       const prevRequest = error?.config;
-      const { signOut, signIn } = useAuthStore.getState();
       if (statusCode === 401) {
-        const token = getToken();
-        if (token?.refreshToken) {
+        const refreshToken = useUserManager.getState().refreshToken;
+        if (refreshToken) {
+          const state = useUserManager.getState();
           try {
             const { data } = await instance.post('/refreshToken', {
-              refreshToken: token.refreshToken,
+              refreshToken,
             });
-
-            signIn({
-              accessToken: data.accessToken,
-              refreshToken: token.refreshToken,
+            state.updateToken({
+              accessToken: data.data.accessToken,
+              refreshToken: data.data.refreshToken ?? refreshToken,
             });
-
             return instance(prevRequest);
           }
           catch {
             console.log('error', error);
-            signOut();
+            state.signOut();
           }
         }
       }

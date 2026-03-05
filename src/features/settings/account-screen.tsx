@@ -3,25 +3,22 @@ import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { BaseLayout } from '@/components/layout/BaseLayout';
 import { Button, Image, Text, TouchableOpacity, View } from '@/components/ui';
-import { useAuthStore } from '@/features/auth/use-auth-store';
-import { useGetUser } from '@/features/auth/user-store';
+import { useUserManager } from '@/features/auth/user-store';
 import { client } from '@/lib/api/common';
 import { getLanguage, translate } from '@/lib/i18n';
 import { ItemsContainer } from './components/items-container';
 
 export function AccountScreen() {
-  const signOut = useAuthStore.use.signOut();
+  const { signOut, userName, id: userId, avatar, email, phone } = useUserManager();
   const [isLoading, setIsLoading] = useState(false);
 
-  const user = useGetUser();
-
   const isViLanguage = getLanguage();
-  const fullName = isViLanguage ? `${user.userName}` : `${user.userName}`;
+  const fullName = isViLanguage ? `${userName}` : `${userName}`;
 
   const handleLogout = async () => {
     try {
       setIsLoading(true);
-      const revokeSessionResponse = await client.post(`/session/${user.id}/revoke`);
+      const revokeSessionResponse = await client.post(`/session/${userId}/revoke`);
       if (revokeSessionResponse.status === 200) {
         signOut();
       }
@@ -43,12 +40,12 @@ export function AccountScreen() {
             onPress={() => router.push('/(app)/(mobile)/(settings)/profile')}
             className={twMerge('w-full flex-row items-center gap-2 px-2 py-2')}
           >
-            {user.avatar && user.avatar.length > 0
+            {avatar && avatar.length > 0
               ? (
                   <Image
                     className="size-12 rounded-full"
                     source={{
-                      uri: user.avatar,
+                      uri: avatar,
                     }}
                   />
                 )
@@ -57,7 +54,7 @@ export function AccountScreen() {
                 )}
             <View className="w-[80%] pl-2">
               <Text className="text-xl text-neutral-600 dark:text-white">{fullName}</Text>
-              <Text className="text-primary-500 dark:text-primary-500">{user.email}</Text>
+              <Text className="text-primary-500 dark:text-primary-500">{phone ?? email}</Text>
             </View>
           </TouchableOpacity>
         </ItemsContainer>

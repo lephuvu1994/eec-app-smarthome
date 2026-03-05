@@ -1,7 +1,7 @@
 import Env from '@env';
 import { BaseLayout } from '@/components/layout/BaseLayout';
 import { ScrollView, View } from '@/components/ui';
-import { useGetUser } from '@/features/auth/user-store';
+import { useUserManager } from '@/features/auth/user-store';
 import { LanguageItem } from '@/features/settings/components/language-item';
 import { ThemeItem } from '@/features/settings/components/theme-item';
 import { AccountItem } from './components/account-item';
@@ -9,16 +9,16 @@ import { SettingsContainer } from './components/settings-container';
 import { SettingsItem } from './components/settings-item';
 
 export function SettingsScreen() {
-  const user = useGetUser();
+  const userState = useUserManager();
 
-  const fullName = user.userName;
+  const fullName = userState.userName;
 
   return (
     <BaseLayout>
       <ScrollView style={{ height: '100%', width: '100%' }}>
         <View className="w-full flex-1 gap-4 px-4">
           <SettingsContainer title="settings.account">
-            <AccountItem fullName={fullName} email={user.email || user.phone || ''} isAccountDetail={false} />
+            <AccountItem fullName={fullName} email={userState.email || userState.phone || ''} isAccountDetail={false} />
           </SettingsContainer>
 
           <SettingsContainer title="settings.generale">
