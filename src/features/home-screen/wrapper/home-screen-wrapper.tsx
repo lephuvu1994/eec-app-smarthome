@@ -1,21 +1,22 @@
 import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
-import { ScrollView } from 'react-native';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import Animated, { 
-  Easing, 
-  scrollTo, 
-  useAnimatedRef, 
-  useAnimatedStyle, 
-  useDerivedValue, 
-  useSharedValue, 
-  withTiming 
-} from 'react-native-reanimated';
+import type { TItemMenu } from '@/components/ui/menu-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { useUniwind } from 'uniwind';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ScrollView } from 'react-native';
+import Animated, {
+  Easing,
+  scrollTo,
+  useAnimatedRef,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
+import { useUniwind } from 'uniwind';
 import { LiveCameraWrapper } from '@/components/base/LiveCameraWrapper';
 import { Pressable, Text, View, WIDTH } from '@/components/ui';
-import { MenuNative, TItemMenu } from '@/components/ui/menu-native';
+import { MenuNative } from '@/components/ui/menu-native';
 import { NativeButton } from '@/components/ui/native-button';
 import { ANIMATION_DURATION, ASPECT_RATIO_VIDEO, BASE_SPACE_HORIZONTAL } from '@/constants';
 import { translate } from '@/lib/i18n';
@@ -34,7 +35,6 @@ const GROUPS = [
   { key: 't3', title: 'Tầng 3' },
 ];
 
-
 // ==========================================
 // 2. MAIN WRAPPER COMPONENT (Lớp ngoài)
 // Quản lý việc cuộn ngang giữa các tầng và Camera Preview
@@ -44,7 +44,7 @@ export function HomeScreenWrapper({ className }: { className?: string }) {
   const [currentFloorIdx, setCurrentFloorIdx] = useState(0);
   const showCameraPreview = useConfigManager(state => !state.showCameraPreview);
   const animatedHeight = useSharedValue(heightVideoOnScreen);
-  
+
   const primaryTabRef = useAnimatedRef<Animated.ScrollView>();
   const outerScrollRef = useRef<ScrollView>(null);
   const isManualOuterScrolling = useRef(false);
@@ -74,7 +74,8 @@ export function HomeScreenWrapper({ className }: { className?: string }) {
 
   // Xử lý vuốt nội dung lớp ngoài để chuyển Tầng
   const handleOuterScroll = useCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => {
-    if (isManualOuterScrolling.current) return;
+    if (isManualOuterScrolling.current)
+      return;
     const offsetX = e.nativeEvent.contentOffset.x;
     const index = Math.round(offsetX / WIDTH);
 
@@ -89,7 +90,7 @@ export function HomeScreenWrapper({ className }: { className?: string }) {
       isManualOuterScrolling.current = true;
       setCurrentFloorIdx(idx);
       outerScrollRef.current?.scrollTo({ x: idx * WIDTH, animated: true });
-      setTimeout(() => { isManualOuterScrolling.current = false; }, 400);
+      setTimeout(() => isManualOuterScrolling.current = false, 400);
     }
   }, [currentFloorIdx]);
 
@@ -122,18 +123,19 @@ export function HomeScreenWrapper({ className }: { className?: string }) {
       <View className="flex-row items-center gap-1 px-4">
         <Pressable onPress={() => jumpToFloor(0)} className="px-2">
           <Text className={cn(
-            'h-8 text-lg font-normal text-neutral-500 dark:text-neutral-400', 
-            currentFloorIdx === 0 && 'font-bold text-neutral-700 dark:text-white'
-          )}>
+            'h-8 text-lg font-normal text-neutral-500 dark:text-neutral-400',
+            currentFloorIdx === 0 && 'font-bold text-neutral-700 dark:text-white',
+          )}
+          >
             {translate('app.favoriteTab')}
           </Text>
         </Pressable>
 
         <View className="h-8 flex-1">
-          <Animated.ScrollView 
-            ref={primaryTabRef} 
-            horizontal 
-            showsHorizontalScrollIndicator={false} 
+          <Animated.ScrollView
+            ref={primaryTabRef}
+            horizontal
+            showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ gap: 8 }}
           >
             {GROUPS.slice(1).map((group, offsetIdx) => {
@@ -143,8 +145,9 @@ export function HomeScreenWrapper({ className }: { className?: string }) {
                 <Pressable key={group.key} onPress={() => jumpToFloor(realIdx)} className="px-2">
                   <Text className={cn(
                     'h-8 text-lg font-normal text-neutral-500 dark:text-neutral-400',
-                    focused && 'font-bold text-neutral-700 dark:text-white'
-                  )}>
+                    focused && 'font-bold text-neutral-700 dark:text-white',
+                  )}
+                  >
                     {group.title}
                   </Text>
                 </Pressable>
@@ -153,14 +156,14 @@ export function HomeScreenWrapper({ className }: { className?: string }) {
           </Animated.ScrollView>
         </View>
 
-        <MenuNative 
-          containerStyle={{ width: 32, height: 32 }} 
-          triggerComponent={
+        <MenuNative
+          containerStyle={{ width: 32, height: 32 }}
+          triggerComponent={(
             <View className="ml-2 h-8 w-8 items-center justify-center rounded-full bg-black/5 dark:bg-white/10">
               <MaterialIcons name="menu" size={16} color={theme === ETheme.Light ? '#737373' : '#FFF'} />
             </View>
-          } 
-          listItem={listItem} 
+          )}
+          listItem={listItem}
         />
       </View>
 

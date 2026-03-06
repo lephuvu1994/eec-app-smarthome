@@ -5,10 +5,6 @@
     "settingTab": "Cài đặt",
     "smartTab": "Thông minh"
   },
-   "scene": {
-    "automation": "Tự động hoá",
-    "tapToRun": "Chạm để chạy"
-  },
   "base": {
     "addDevice": "Thêm thiết bị",
     "addScene": "Tạo kịch bản",
@@ -56,6 +52,10 @@
     "titleSignUp": "Đăng ký",
     "verifyCode": "Xác minh code",
     "verifyIdentifier": "Xác minh {{identifier}}"
+  },
+  "scene": {
+    "automation": "Tự động hoá",
+    "tapToRun": "Chạm để chạy"
   },
   "settings": {
     "about": "Giới Thiệu",
