@@ -199,7 +199,6 @@ export function HomeScreenWrapper({ className }: { className?: string }) {
           overScrollMode="never"
         >
           {GROUPS.map((group) => {
-            console.log(GROUPS[currentFloorIdx].key === group.key);
             return (
               <GroupPage isCurrentGroup={GROUPS[currentFloorIdx].key === group.key} key={group.key} group={group} theme={theme as ETheme} />
             );

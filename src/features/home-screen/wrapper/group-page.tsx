@@ -82,14 +82,17 @@ export const GroupPage = memo(({ group, theme, isCurrentGroup }: { group: any; t
     <View style={{ width: WIDTH, flex: 1 }}>
       {/* THANH TAB PHỤ (SECONDARY TAB) */}
       {!isFav && (
-        <View className="mb-4 px-4">
+        <View className="mb-4">
           <ScrollView
             ref={secondaryTabRef}
             horizontal
             showsHorizontalScrollIndicator={false}
+            style={{
+              paddingHorizontal: 16,
+            }}
           >
             {/* Vùng Flexbox chứa các Tab (Layout Transitions sẽ đẩy các view này tự động) */}
-            <View style={{ flexDirection: 'row', gap: 8 }}>
+            <View style={{ flexDirection: 'row', gap: 8, paddingRight: 16 }}>
               {rooms.map((room, idx) => (
                 <RoomTabItem
                   key={room.id}
