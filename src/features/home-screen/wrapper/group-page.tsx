@@ -1,12 +1,15 @@
 import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView } from 'react-native';
-import { Text, View, WIDTH } from '@/components/ui';
+import { Text, View, WIDTH, TouchableOpacity } from '@/components/ui';
 import { useConfigManager } from '@/stores/config/config';
 import { ETheme } from '@/types/base';
 import { RoomTabItem } from '../components/tab/room-tab';
 import { calculateCenterOffset } from '../utils/utils';
+import { translate } from '@/lib/i18n';
+import { AntDesign } from '@expo/vector-icons';
+import { router } from 'expo-router';
+import { ListDevice } from '../components/device/ListDevice';
 
 const ROOMS_DATA: Record<string, { id: string; title: string }[]> = {
   favorite: [{ id: 'fav1', title: 'Thiết bị thường dùng' }],
@@ -82,7 +85,7 @@ export const GroupPage = memo(({ group, theme, isCurrentGroup }: { group: any; t
     <View style={{ width: WIDTH, flex: 1 }}>
       {/* THANH TAB PHỤ (SECONDARY TAB) */}
       {!isFav && (
-        <View className="mb-4">
+        <View className="w-full">
           <ScrollView
             ref={secondaryTabRef}
             horizontal
@@ -105,7 +108,6 @@ export const GroupPage = memo(({ group, theme, isCurrentGroup }: { group: any; t
               ))}
             </View>
           </ScrollView>
-
         </View>
       )}
 
@@ -123,35 +125,20 @@ export const GroupPage = memo(({ group, theme, isCurrentGroup }: { group: any; t
           overScrollMode="never"
         >
           {rooms.map(item => (
-            <View key={item.id} style={{ width: WIDTH }} className="px-4 pb-4">
+            <View key={item.id} style={{ width: WIDTH }} className="px-4 mt-3">
               <ScrollView
                 showsVerticalScrollIndicator={false}
                 overScrollMode="never"
-                className="flex-1 overflow-hidden rounded-[32px] bg-black/5 dark:bg-white/10"
+                className="flex-1"
               >
-                <View className="items-center p-6">
-                  <MaterialIcons
-                    name={isFav ? 'star' : 'door-front'}
-                    size={40}
-                    color={isFav ? '#F59E0B' : (theme === ETheme.Light ? '#737373' : '#FFF')}
-                  />
-                  <Text className="mt-2 text-xl font-bold dark:text-white">{item.title}</Text>
-                </View>
-
-                {/* Danh sách thiết bị */}
-                <View className="gap-3 px-4 pb-6">
-                  {[1, 2, 3, 4, 5, 6].map(device => (
-                    <View key={device} className="h-20 flex-row items-center rounded-2xl bg-white px-4 shadow-sm dark:bg-black/20">
-                      <View className="mr-4 size-10 rounded-full bg-[#A3E635]" />
-                      <View>
-                        <Text className="text-base font-bold dark:text-white">
-                          Thiết bị
-                          {' '}
-                          {device}
-                        </Text>
-                      </View>
-                    </View>
-                  ))}
+                <View className="flex-1 text-neutral-500 dark:text-white gap-2">
+                  <View className="flex-row items-center justify-between">
+                    <Text className="text-lg font-semibold">{translate('base.device')}</Text>
+                    <TouchableOpacity onPress={() => router.push('/device/add')} className="h-8 w-8 items-center justify-center rounded-full bg-white/40 shadow-sm dark:bg-black/40">
+                      <AntDesign name="plus" size={16} color={theme === ETheme.Light ? '#737373' : '#FFFFFF'} />
+                    </TouchableOpacity>
+                  </View>
+                  <ListDevice />
                 </View>
               </ScrollView>
             </View>

@@ -40,7 +40,7 @@ const GROUPS = [
 export function HomeScreenWrapper({ className }: { className?: string }) {
   const { theme } = useUniwind();
   const [currentFloorIdx, setCurrentFloorIdx] = useState(0);
-  const showCameraPreview = useConfigManager(state => state.showCameraPreview);
+  const showCameraPreview = useConfigManager(state => !state.showCameraPreview);
   const animatedHeight = useSharedValue(heightVideoOnScreen);
   const { showRoomViewExpand, setShowRoomViewExpand } = useConfigManager();
 
@@ -122,9 +122,9 @@ export function HomeScreenWrapper({ className }: { className?: string }) {
   });
 
   return (
-    <View className={cn('flex-1 gap-2', className)}>
+    <View className={cn('flex-1', className)}>
       {/* Vùng xem Camera */}
-      <Animated.View style={[animatedStyle]} className="w-full items-center justify-center overflow-hidden px-4">
+      <Animated.View style={[animatedStyle]} className="w-full items-center justify-center overflow-hidden px-4 mb-2">
         {showCameraPreview && (
           <View className="h-full w-full flex-row justify-between">
             <LiveCameraWrapper
@@ -137,7 +137,7 @@ export function HomeScreenWrapper({ className }: { className?: string }) {
       </Animated.View>
 
       {/* HEADER: Tab Tầng và Favorite */}
-      <View className="flex-row items-center gap-1 px-4">
+      <View className="flex-row items-center px-2">
         <Pressable onPress={() => jumpToFloor(0)} className="px-2">
           <Text className={cn(
             'h-8 text-lg font-normal text-neutral-500 dark:text-neutral-400',
@@ -174,7 +174,7 @@ export function HomeScreenWrapper({ className }: { className?: string }) {
         </View>
 
         {/* Nút Chevron */}
-        <Pressable onPress={toggleExpand} className="absolute top-0 right-4 z-10 h-[28px] items-center justify-center rounded-full bg-white/40 px-2 shadow-sm dark:bg-black/40">
+        <Pressable onPress={toggleExpand} className="h-7 items-center justify-center rounded-full bg-white/40 px-2 mr-2 shadow-sm dark:bg-black/40">
           <Animated.View style={[arrowStyle]}>
             <FontAwesome6
               name="chevron-down"
