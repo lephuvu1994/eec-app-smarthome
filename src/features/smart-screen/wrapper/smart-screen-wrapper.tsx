@@ -1,18 +1,19 @@
 import type { TabBarProps } from 'react-native-tab-view';
 import { LinearGradient } from 'expo-linear-gradient';
-
 import { useCallback, useState } from 'react';
-import { Animated, useWindowDimensions } from 'react-native';
+
+import { Animated as RNAnimated, useWindowDimensions } from 'react-native';
+
 import { TabView } from 'react-native-tab-view';
 import { Pressable, Text, View, WIDTH } from '@/components/ui';
 import { BASE_SPACE_HORIZONTAL } from '@/constants';
 import { translate } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
-import { ETabSmart } from '../types/types';
+import { ETabSmart, ETabSmartKey } from '../types/types';
 
 const ROUTES = [
-  { key: 'tapToRun', title: translate('scene.tapToRun') },
-  { key: 'automation', title: translate('scene.automation') },
+  { key: ETabSmartKey.tapToRun, title: translate('scene.tapToRun') },
+  { key: ETabSmartKey.automation, title: translate('scene.automation') },
 ];
 
 // --- MÀN HÌNH SCENE DÀNH CHO 2 TAB ---
@@ -38,11 +39,11 @@ export function SmartScreenWrapper({ className }: { className?: string }) {
 
   const renderScene = ({ route }: { route: { key: string } }) => {
     switch (route.key) {
-      case 'automation':
+      case ETabSmartKey.automation:
         return (
           <AutomationScene />
         );
-      case 'tapToRun':
+      case ETabSmartKey.tapToRun:
         return (
           <TapToRunScene />);
     }
@@ -59,7 +60,7 @@ export function SmartScreenWrapper({ className }: { className?: string }) {
     return (
       <View className="mt-4 mb-2 px-4">
         <View className="relative h-8.5 w-full flex-row items-center rounded-full bg-gray-100 p-0.5 shadow-sm dark:bg-white/10">
-          <Animated.View
+          <RNAnimated.View
             style={{
               position: 'absolute',
               width: INDICATOR_WIDTH,
@@ -77,7 +78,7 @@ export function SmartScreenWrapper({ className }: { className?: string }) {
               end={{ x: 0.5, y: 1 }}
               style={{ flex: 1 }}
             />
-          </Animated.View>
+          </RNAnimated.View>
 
           {props.navigationState.routes.map((route, i) => {
             const isActive = tabIndex === i;
