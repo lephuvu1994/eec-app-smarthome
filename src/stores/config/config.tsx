@@ -6,6 +6,7 @@ import { createSelectors } from '@/lib/utils';
 
 const initialConfigState: TConfig = {
   showCameraPreview: false,
+  showRoomViewExpand: true,
 };
 
 const _useConfig = create<TConfigState>()(
@@ -14,6 +15,9 @@ const _useConfig = create<TConfigState>()(
       ...initialConfigState,
       setShowCameraPreview: (showCameraPreview: boolean) => {
         set({ showCameraPreview });
+      },
+      setShowRoomViewExpand: (showRoomViewExpand: boolean) => {
+        set({ showRoomViewExpand });
       },
     }),
     {

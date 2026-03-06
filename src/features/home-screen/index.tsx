@@ -47,7 +47,7 @@ export function HomeScreen() {
             </View>
           </View>
           <View className="flex-1 flex-row justify-end gap-2">
-            <View className="relative h-8 w-8 items-center justify-center rounded-full bg-white/40 dark:text-black/40">
+            <View className="relative h-8 w-8 items-center justify-center rounded-full bg-white/40 shadow-sm dark:text-black/40">
               <BellIcon color={theme === ETheme.Light ? '#737373' : '#FFFFFF'} />
               <PulseDot
                 color="#22C55E"
@@ -61,7 +61,7 @@ export function HomeScreen() {
               />
             </View>
 
-            <View className="h-8 w-8 items-center justify-center rounded-full bg-white/40 dark:text-black/40">
+            <View className="h-8 w-8 items-center justify-center rounded-full bg-white/40 shadow-sm dark:bg-black/40">
               <AntDesign name="plus" size={16} color={theme === ETheme.Light ? '#737373' : '#FFFFFF'} />
             </View>
           </View>
