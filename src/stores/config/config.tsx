@@ -10,7 +10,7 @@ const initialConfigState: TConfig = {
 
 const _useConfig = create<TConfigState>()(
   persist(
-    (set) => ({
+    set => ({
       ...initialConfigState,
       setShowCameraPreview: (showCameraPreview: boolean) => {
         set({ showCameraPreview });

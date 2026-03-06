@@ -5,10 +5,6 @@
     "settingTab": "Setting",
     "smartTab": "Smart"
   },
-  "scene": {
-    "automation": "Automation",
-    "tapToRun": "Tap To Run"
-  },
   "base": {
     "addDevice": "Add device",
     "addScene": "Add scene",
@@ -56,6 +52,10 @@
     "titleSignUp": "SignUp",
     "verifyCode": "Verify code",
     "verifyIdentifier": "Verify {{identifier}}"
+  },
+  "scene": {
+    "automation": "Automation",
+    "tapToRun": "Tap To Run"
   },
   "settings": {
     "about": "About",

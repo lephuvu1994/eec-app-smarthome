@@ -12,7 +12,6 @@ type TVideoProps = {
   videoUrl: string;
   handleError: () => void;
   setIsFailedRTS: React.Dispatch<React.SetStateAction<boolean>>;
-  isFailedRTS: boolean;
   imageUrl: string | undefined;
 };
 
@@ -21,7 +20,6 @@ function VideoStreamComponent({
   imageUrl,
   handleError,
   setIsFailedRTS,
-  isFailedRTS,
 }: TVideoProps) {
   const [isLoading, setIsLoading] = useState(true);
   const videoRef = useRef(null);
