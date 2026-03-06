@@ -54,7 +54,7 @@ export function LiveCameraWrapper({ videoUrl, imageUrl, defaultImage, handleErro
                   aspectRatio: 16 / 9,
                 }}
                 contentFit="cover"
-                source={require('../../../assets/rooms.jpg')}
+                source={require('@@/assets/room/default_image.png')}
                 cachePolicy="memory-disk"
                 transition={500}
               />
