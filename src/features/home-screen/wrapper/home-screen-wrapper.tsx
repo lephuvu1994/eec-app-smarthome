@@ -42,12 +42,12 @@ const GROUPS = [
 export function HomeScreenWrapper({ className }: { className?: string }) {
   const { theme } = useUniwind();
   const [currentFloorIdx, setCurrentFloorIdx] = useState(0);
-  const showCameraPreview = useConfigManager(state => !state.showCameraPreview);
+  const showCameraPreview = useConfigManager(state => state.showCameraPreview);
   const animatedHeight = useSharedValue(heightVideoOnScreen);
 
   const primaryTabRef = useAnimatedRef<Animated.ScrollView>();
   const outerScrollRef = useRef<ScrollView>(null);
-  const isManualOuterScrolling = useRef(false);
+  const isManualOuterScrollingRef = useRef(false);
   const primarySharedIdx = useSharedValue(0);
 
   // Animation cho Camera Preview
@@ -74,7 +74,7 @@ export function HomeScreenWrapper({ className }: { className?: string }) {
 
   // Xử lý vuốt nội dung lớp ngoài để chuyển Tầng
   const handleOuterScroll = useCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => {
-    if (isManualOuterScrolling.current)
+    if (isManualOuterScrollingRef.current)
       return;
     const offsetX = e.nativeEvent.contentOffset.x;
     const index = Math.round(offsetX / WIDTH);
@@ -87,10 +87,10 @@ export function HomeScreenWrapper({ className }: { className?: string }) {
   // Điều hướng khi nhấn Tab Tầng
   const jumpToFloor = useCallback((idx: number) => {
     if (idx !== currentFloorIdx) {
-      isManualOuterScrolling.current = true;
+      isManualOuterScrollingRef.current = true;
       setCurrentFloorIdx(idx);
       outerScrollRef.current?.scrollTo({ x: idx * WIDTH, animated: true });
-      setTimeout(() => isManualOuterScrolling.current = false, 400);
+      setTimeout(() => isManualOuterScrollingRef.current = false, 400);
     }
   }, [currentFloorIdx]);
 
@@ -159,7 +159,7 @@ export function HomeScreenWrapper({ className }: { className?: string }) {
         <MenuNative
           containerStyle={{ width: 32, height: 32 }}
           triggerComponent={(
-            <View className="ml-2 h-8 w-8 items-center justify-center rounded-full bg-black/5 dark:bg-white/10">
+            <View className="ml-2 h-8 w-8 items-center justify-center rounded-full bg-white/40 dark:text-black/40">
               <MaterialIcons name="menu" size={16} color={theme === ETheme.Light ? '#737373' : '#FFF'} />
             </View>
           )}

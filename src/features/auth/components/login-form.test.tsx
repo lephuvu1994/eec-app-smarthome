@@ -38,12 +38,12 @@ const onSubmitMock = jest.fn(
 
 describe('LoginForm', () => {
   it('renders correctly', async () => {
-    setup(<LoginForm />);
+    setup(<LoginForm onSubmit={onSubmitMock} />);
     expect(await screen.findByTestId('form-title')).toBeOnTheScreen();
   });
 
   it('should display required errors when values are empty', async () => {
-    const { user } = setup(<LoginForm />);
+    const { user } = setup(<LoginForm onSubmit={onSubmitMock} />);
 
     const button = screen.getByTestId('login-button');
     expect(screen.queryByTestId('identifier-error')).not.toBeOnTheScreen();
@@ -60,7 +60,7 @@ describe('LoginForm', () => {
   });
 
   it('should display matching error when email is invalid', async () => {
-    const { user } = setup(<LoginForm />);
+    const { user } = setup(<LoginForm onSubmit={onSubmitMock} />);
 
     const button = screen.getByTestId('login-button');
     const emailInput = screen.getByTestId('identifier');
@@ -97,7 +97,7 @@ describe('LoginForm', () => {
   });
 
   it('should show password length error when password is too short', async () => {
-    const { user } = setup(<LoginForm />);
+    const { user } = setup(<LoginForm onSubmit={onSubmitMock} />);
 
     const button = screen.getByTestId('login-button');
     const emailInput = screen.getByTestId('identifier');

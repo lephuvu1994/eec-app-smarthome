@@ -71,7 +71,6 @@ export function LiveCameraWrapper({ videoUrl, imageUrl, defaultImage, handleErro
                 videoUrl={videoUrl}
                 imageUrl={imageUrl}
                 setIsFailedRTS={setIsFailedRTS}
-                isFailedRTS={isFailedRTS}
                 handleError={handleError}
               />
               <View className="absolute top-2 right-2 flex-row items-center rounded-full bg-white/10 px-2 py-1 dark:bg-black/10">
