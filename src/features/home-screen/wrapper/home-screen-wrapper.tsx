@@ -1,10 +1,11 @@
 import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
-import type { TItemMenu } from '@/components/ui/menu-native';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FontAwesome6 } from '@expo/vector-icons';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ScrollView } from 'react-native';
+
 import Animated, {
   Easing,
+  interpolate,
   scrollTo,
   useAnimatedRef,
   useAnimatedStyle,
@@ -12,12 +13,9 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-
 import { useUniwind } from 'uniwind';
 import { LiveCameraWrapper } from '@/components/base/LiveCameraWrapper';
 import { Pressable, Text, View, WIDTH } from '@/components/ui';
-import { MenuNative } from '@/components/ui/menu-native';
-import { NativeButton } from '@/components/ui/native-button';
 import { ANIMATION_DURATION, ASPECT_RATIO_VIDEO, BASE_SPACE_HORIZONTAL } from '@/constants';
 import { translate } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
@@ -44,6 +42,7 @@ export function HomeScreenWrapper({ className }: { className?: string }) {
   const [currentFloorIdx, setCurrentFloorIdx] = useState(0);
   const showCameraPreview = useConfigManager(state => state.showCameraPreview);
   const animatedHeight = useSharedValue(heightVideoOnScreen);
+  const { showRoomViewExpand, setShowRoomViewExpand } = useConfigManager();
 
   const primaryTabRef = useAnimatedRef<Animated.ScrollView>();
   const outerScrollRef = useRef<ScrollView>(null);
@@ -100,9 +99,27 @@ export function HomeScreenWrapper({ className }: { className?: string }) {
     });
   };
 
-  const listItem: TItemMenu[] = useMemo(() => [
-    { key: 'managerScene', element: <NativeButton onPress={() => {}}>Manager</NativeButton> },
-  ], []);
+  const toggleExpand = () => {
+    const nextState = !showRoomViewExpand;
+    setShowRoomViewExpand(nextState); // Đổi state -> RoomTabItem tự re-render -> Kích hoạt LinearTransition
+  };
+
+  // 1. Tạo shared value để tracking trạng thái xoay
+  const rotateProgress = useDerivedValue(() => {
+    return withTiming(showRoomViewExpand ? 1 : 0, { duration: 300 });
+  });
+
+  // 2. Định nghĩa style xoay
+  const arrowStyle = useAnimatedStyle(() => {
+    const rotateValue = interpolate(
+      rotateProgress.value,
+      [0, 1],
+      [-90, 0], // Xoay từ 0 đến 180 độ
+    );
+    return {
+      transform: [{ rotate: `${rotateValue}deg` }],
+    };
+  });
 
   return (
     <View className={cn('flex-1 gap-2', className)}>
@@ -156,15 +173,16 @@ export function HomeScreenWrapper({ className }: { className?: string }) {
           </Animated.ScrollView>
         </View>
 
-        <MenuNative
-          containerStyle={{ width: 32, height: 32 }}
-          triggerComponent={(
-            <View className="ml-2 h-8 w-8 items-center justify-center rounded-full bg-white/40 dark:text-black/40">
-              <MaterialIcons name="menu" size={16} color={theme === ETheme.Light ? '#737373' : '#FFF'} />
-            </View>
-          )}
-          listItem={listItem}
-        />
+        {/* Nút Chevron */}
+        <Pressable onPress={toggleExpand} className="absolute top-0 right-4 z-10 h-[28px] items-center justify-center rounded-full bg-white/40 px-2 shadow-sm dark:bg-black/40">
+          <Animated.View style={[arrowStyle]}>
+            <FontAwesome6
+              name="chevron-down"
+              size={12}
+              color={theme === ETheme.Light ? '#737373' : '#FFFFFF'}
+            />
+          </Animated.View>
+        </Pressable>
       </View>
 
       {/* NỘI DUNG CHÍNH: Outer ScrollView chứa các FloorPage */}
@@ -180,9 +198,12 @@ export function HomeScreenWrapper({ className }: { className?: string }) {
           decelerationRate="fast"
           overScrollMode="never"
         >
-          {GROUPS.map(group => (
-            <GroupPage key={group.key} group={group} theme={theme as ETheme} />
-          ))}
+          {GROUPS.map((group) => {
+            console.log(GROUPS[currentFloorIdx].key === group.key);
+            return (
+              <GroupPage isCurrentGroup={GROUPS[currentFloorIdx].key === group.key} key={group.key} group={group} theme={theme as ETheme} />
+            );
+          })}
         </ScrollView>
       </View>
     </View>

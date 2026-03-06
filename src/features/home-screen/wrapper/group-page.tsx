@@ -1,12 +1,12 @@
 import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
-import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo, useCallback, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView } from 'react-native';
-import { Pressable, Text, View, WIDTH } from '@/components/ui';
-import { BASE_SPACE_HORIZONTAL } from '@/constants';
+import { Text, View, WIDTH } from '@/components/ui';
+import { useConfigManager } from '@/stores/config/config';
 import { ETheme } from '@/types/base';
 import { RoomTabItem } from '../components/tab/room-tab';
+import { calculateCenterOffset } from '../utils/utils';
 
 const ROOMS_DATA: Record<string, { id: string; title: string }[]> = {
   favorite: [{ id: 'fav1', title: 'Thiết bị thường dùng' }],
@@ -25,45 +25,30 @@ const ROOMS_DATA: Record<string, { id: string; title: string }[]> = {
   ],
 };
 
-const MAX_WIDTH = 3 * (WIDTH - BASE_SPACE_HORIZONTAL * 2) / 4;
-
-export const GroupPage = memo(({ group, theme }: { group: any; theme: ETheme }) => {
+export const GroupPage = memo(({ group, theme, isCurrentGroup }: { group: any; theme: ETheme; isCurrentGroup: boolean }) => {
   const isFav = group.key === 'favorite';
   const rooms = ROOMS_DATA[group.key] || [];
   const [activeRoomIdx, setActiveRoomIdx] = useState(0);
   const isManualRoomScrollingRef = useRef(false);
+  const secondaryTabRef = useRef<ScrollView>(null);
+  const { showRoomViewExpand } = useConfigManager();
 
   // Chỉ cần ScrollView thường là đủ
-  const secondaryTabRef = useRef<ScrollView>(null);
   const innerScrollRef = useRef<ScrollView>(null);
-
-  const [isExpanded, setIsExpanded] = useState(false);
 
   const minWidths = useMemo(() => rooms.map(r => r.title.length * 8 + 42), [rooms]);
 
-  // Hàm tính toán Center Offset tĩnh
-  const calculateCenterOffset = useCallback((index: number, isExpandedState: boolean) => {
-    let offset = 0;
-    const gap = 8;
-    for (let i = 0; i < index; i++) {
-      offset += (isExpandedState ? MAX_WIDTH : minWidths[i]) + gap;
+  useEffect(() => {
+    if (isCurrentGroup) {
+      const timeout = setTimeout(() => {
+        const targetOffset = calculateCenterOffset(minWidths, activeRoomIdx, showRoomViewExpand);
+        secondaryTabRef?.current?.scrollTo({ x: targetOffset, animated: true });
+      }, 50);
+      return () => {
+        clearTimeout(timeout);
+      };
     }
-    const currentWidth = isExpandedState ? MAX_WIDTH : minWidths[index];
-    const centerOffset = offset + (currentWidth / 2) - (WIDTH / 2) + 16;
-    return Math.max(0, centerOffset);
-  }, [minWidths]);
-
-  const toggleExpand = () => {
-    const nextState = !isExpanded;
-    setIsExpanded(nextState); // Đổi state -> RoomTabItem tự re-render -> Kích hoạt LinearTransition
-
-    // Cho Native Scroll cuộn về vị trí trung tâm của Tab
-    // Để 50ms delay để layout engine (Yoga) kịp bung chiều dài ScrollView ra
-    setTimeout(() => {
-      const targetOffset = calculateCenterOffset(activeRoomIdx, nextState);
-      secondaryTabRef.current?.scrollTo({ x: targetOffset, animated: true });
-    }, 50);
-  };
+  }, [showRoomViewExpand, isCurrentGroup]);
 
   // Dùng onMomentumScrollEnd để chống nháy tab (Phantom Scroll)
   const handleScrollEnd = useCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -74,10 +59,10 @@ export const GroupPage = memo(({ group, theme }: { group: any; theme: ETheme }) 
 
     if (index >= 0 && index < rooms.length && index !== activeRoomIdx) {
       setActiveRoomIdx(index);
-      const targetOffset = calculateCenterOffset(index, isExpanded);
-      secondaryTabRef.current?.scrollTo({ x: targetOffset, animated: true });
+      const targetOffset = calculateCenterOffset(minWidths, index, showRoomViewExpand);
+      secondaryTabRef?.current?.scrollTo({ x: targetOffset, animated: true });
     }
-  }, [rooms.length, activeRoomIdx, isExpanded, calculateCenterOffset]);
+  }, [rooms.length, secondaryTabRef, minWidths, activeRoomIdx, showRoomViewExpand]);
 
   const jumpToRoom = useCallback((idx: number) => {
     if (idx !== activeRoomIdx) {
@@ -85,13 +70,13 @@ export const GroupPage = memo(({ group, theme }: { group: any; theme: ETheme }) 
       setActiveRoomIdx(idx);
       innerScrollRef.current?.scrollTo({ x: idx * WIDTH, animated: true });
 
-      const targetOffset = calculateCenterOffset(idx, isExpanded);
-      secondaryTabRef.current?.scrollTo({ x: targetOffset, animated: true });
+      const targetOffset = calculateCenterOffset(minWidths, idx, showRoomViewExpand);
+      secondaryTabRef?.current?.scrollTo({ x: targetOffset, animated: true });
       setTimeout(() => {
         isManualRoomScrollingRef.current = false;
       }, 400);
     }
-  }, [activeRoomIdx, isExpanded, calculateCenterOffset]);
+  }, [activeRoomIdx, secondaryTabRef, showRoomViewExpand, minWidths]);
 
   return (
     <View style={{ width: WIDTH, flex: 1 }}>
@@ -112,22 +97,12 @@ export const GroupPage = memo(({ group, theme }: { group: any; theme: ETheme }) 
                   focused={activeRoomIdx === idx}
                   theme={theme}
                   onPress={() => jumpToRoom(idx)}
-                  isExpanded={isExpanded} // <--- Truyền state tĩnh thay vì sharedValue
+                  isExpanded={showRoomViewExpand} // <--- Truyền state tĩnh thay vì sharedValue
                 />
               ))}
             </View>
           </ScrollView>
 
-          {/* Nút Chevron */}
-          <View className="absolute top-0 right-4 z-10 h-[28px] items-center justify-center rounded-full bg-white/40 px-2 shadow-sm dark:bg-black/40">
-            <Pressable onPress={toggleExpand} className="p-1">
-              <FontAwesome6
-                name={isExpanded ? 'chevron-up' : 'chevron-down'}
-                size={12}
-                color={theme === ETheme.Light ? '#737373' : '#FFFFFF'}
-              />
-            </Pressable>
-          </View>
         </View>
       )}
 
