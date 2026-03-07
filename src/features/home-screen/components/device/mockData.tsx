@@ -1,4 +1,4 @@
-import { EDeviceConnectStatus, TDevice } from "../../types/device";
+import { EDeviceConnectStatus, TDevice } from "@/types/device";
 
 export const listDevice: TDevice[] = [
     {
@@ -21,5 +21,12 @@ export const listDevice: TDevice[] = [
         type: 'camera',
         status: EDeviceConnectStatus.CONNECTED,
         image: require('@@/assets/device/camera.png'),
-    }
+    },
+  {
+    id: '4',
+    name: 'Camera 2',
+    type: 'camera',
+    status: EDeviceConnectStatus.CONNECTED,
+    image: require('@@/assets/device/camera.png'),
+  },
   ]
