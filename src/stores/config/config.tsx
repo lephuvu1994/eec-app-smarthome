@@ -7,6 +7,7 @@ import { createSelectors } from '@/lib/utils';
 const initialConfigState: TConfig = {
   showCameraPreview: false,
   showRoomViewExpand: true,
+  allowHaptics: true
 };
 
 const _useConfig = create<TConfigState>()(
@@ -17,6 +18,9 @@ const _useConfig = create<TConfigState>()(
         set({ showCameraPreview });
       },
       setShowRoomViewExpand: (showRoomViewExpand: boolean) => {
+        set({ showRoomViewExpand });
+      },
+      setToggleAllowHaptics: (showRoomViewExpand: boolean) => {
         set({ showRoomViewExpand });
       },
     }),
