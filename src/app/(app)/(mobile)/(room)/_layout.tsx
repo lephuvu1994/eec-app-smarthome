@@ -18,40 +18,6 @@ function RoomScreen() {
           headerShown: false,
         }}
       />
-
-      <Stack.Screen
-        name="[roomId]"
-        options={{
-          headerShown: true,
-        }}
-      />
-
-      <Stack.Screen
-        name="floorManager"
-        options={{
-          headerShown: false,
-        }}
-      />
-
-      <Stack.Screen
-        name="roomManager"
-        options={{
-          headerShown: false,
-        }}
-      />
-
-      <Stack.Screen
-        name="favoriteRoomManager"
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="addFavoriteRoom"
-        options={{
-          headerShown: false,
-        }}
-      />
     </Stack>
   );
 };

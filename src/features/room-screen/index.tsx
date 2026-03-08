@@ -3,11 +3,12 @@ import { BaseLayout } from '@/components/layout/BaseLayout';
 import { View } from '@/components/ui';
 import { ETheme } from '@/types/base';
 import { Image } from 'expo-image';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
-import { SmartScreenWrapper } from './wrapper/smart-screen-wrapper';
 
-export function SmartScreen() {
+export function RoomScreen() {
   const { theme } = useUniwind();
+  const insets = useSafeAreaInsets();
 
   return (
     <BaseLayout>
@@ -26,7 +27,6 @@ export function SmartScreen() {
           contentFit="contain"
         />
         <PrimaryHeaderHome />
-        <SmartScreenWrapper className="pt-4" />
       </View>
     </BaseLayout>
   );
