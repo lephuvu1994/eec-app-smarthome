@@ -32,7 +32,7 @@ export function HomeScreen() {
         <View
           className="w-full flex-row gap-2 px-4"
           style={{
-            marginTop: insets.top,
+            paddingTop: insets.top,
           }}
         >
           <View className="flex-1 flex-col">
@@ -47,7 +47,7 @@ export function HomeScreen() {
             </View>
           </View>
           <View className="flex-1 flex-row justify-end gap-2">
-            <View className="relative h-8 w-8 items-center justify-center rounded-full bg-white/40 shadow-sm dark:text-black/40">
+            <View className="relative h-8 w-8 items-center justify-center rounded-full bg-white/40 shadow-sm dark:bg-black/40">
               <BellIcon color={theme === ETheme.Light ? '#737373' : '#FFFFFF'} />
               <PulseDot
                 color="#22C55E"
@@ -66,7 +66,7 @@ export function HomeScreen() {
             </View>
           </View>
         </View>
-        <HomeScreenWrapper className="mt-2" />
+        <HomeScreenWrapper className="flex-1 pt-2" />
       </View>
     </BaseLayout>
   );

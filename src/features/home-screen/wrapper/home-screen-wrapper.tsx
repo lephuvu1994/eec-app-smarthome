@@ -21,7 +21,7 @@ import { translate } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 import { useConfigManager } from '@/stores/config/config';
 import { ETheme } from '@/types/base';
-import { GroupPage } from './group-page';
+import { GroupPage } from '../components/tab/group-page';
 
 // --- Cấu hình dữ liệu ---
 const heightVideoOnScreen = ((WIDTH - BASE_SPACE_HORIZONTAL * 2) / ASPECT_RATIO_VIDEO);
@@ -197,6 +197,8 @@ export function HomeScreenWrapper({ className }: { className?: string }) {
           scrollEventThrottle={16}
           decelerationRate="fast"
           overScrollMode="never"
+          contentContainerStyle={{ flexGrow: 1 }}
+          className='flex-1'
         >
           {GROUPS.map((group) => {
             return (

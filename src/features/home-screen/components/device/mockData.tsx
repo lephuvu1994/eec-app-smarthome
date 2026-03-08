@@ -29,4 +29,25 @@ export const listDevice: TDevice[] = [
     status: EDeviceConnectStatus.CONNECTED,
     image: require('@@/assets/device/camera.png'),
   },
+  {
+    id: '5',
+    name: 'Camera 2',
+    type: 'camera',
+    status: EDeviceConnectStatus.CONNECTED,
+    image: require('@@/assets/device/camera.png'),
+  },
+  {
+    id: '6',
+    name: 'Camera 2',
+    type: 'camera',
+    status: EDeviceConnectStatus.CONNECTED,
+    image: require('@@/assets/device/camera.png'),
+  },
+  {
+    id: '7',
+    name: 'Camera 2',
+    type: 'camera',
+    status: EDeviceConnectStatus.CONNECTED,
+    image: require('@@/assets/device/camera.png'),
+  },
   ]
