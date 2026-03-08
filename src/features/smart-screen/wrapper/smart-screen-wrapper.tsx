@@ -10,28 +10,13 @@ import { BASE_SPACE_HORIZONTAL } from '@/constants';
 import { translate } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 import { ETabSmart, ETabSmartKey } from '../types/types';
+import { AutomationListSceneWrapper } from './automation-scene-screen';
 
 const ROUTES = [
   { key: ETabSmartKey.tapToRun, title: translate('scene.tapToRun') },
   { key: ETabSmartKey.automation, title: translate('scene.automation') },
 ];
 
-// --- MÀN HÌNH SCENE DÀNH CHO 2 TAB ---
-function TapToRunScene() {
-  return (
-    <View className="flex-1 items-center justify-center bg-transparent">
-      <Text className="text-gray-500">Nội dung Chạm để chạy</Text>
-    </View>
-  );
-}
-
-function AutomationScene() {
-  return (
-    <View className="flex-1 items-center justify-center bg-transparent">
-      <Text className="text-gray-500">Nội dung Tự động hóa</Text>
-    </View>
-  );
-}
 
 export function SmartScreenWrapper({ className }: { className?: string }) {
   const [tabIndex, setTabIndex] = useState<ETabSmart>(ETabSmart.tapToRun);
@@ -41,11 +26,11 @@ export function SmartScreenWrapper({ className }: { className?: string }) {
     switch (route.key) {
       case ETabSmartKey.automation:
         return (
-          <AutomationScene />
+          <AutomationListSceneWrapper className="pt-4" />
         );
       case ETabSmartKey.tapToRun:
         return (
-          <TapToRunScene />);
+          <AutomationListSceneWrapper className="pt-4" />);
     }
   };
 
@@ -58,7 +43,7 @@ export function SmartScreenWrapper({ className }: { className?: string }) {
     });
 
     return (
-      <View className="mt-4 mb-2 px-4">
+      <View className="px-4">
         <View className="relative h-8.5 w-full flex-row items-center rounded-full bg-gray-100 p-0.5 shadow-sm dark:bg-white/10">
           <RNAnimated.View
             style={{
