@@ -102,7 +102,7 @@ export const DeviceItem: React.FC<TProps> = ({ device, typeViewDevice }) => {
   // Layout FullWidth
   if (typeViewDevice === ETypeViewDevice.FullWidth) {
     return (
-      <TouchableOpacity onPress={handleToggleDevice} activeOpacity={0.9} className="w-full h-36 rounded-xl justify-between bg-white shadow-sm p-3">
+      <TouchableOpacity onPress={handleToggleDevice} activeOpacity={0.9} className="w-full h-36 rounded-xl justify-between bg-white dark:bg-[#FFFFFF0D] shadow-sm p-3 border border-white dark:border-[#292929] overflow-hidden">
         <Animated.View style={[StyleSheet.absoluteFill, animatedGradientStyle]}>
           <LinearGradient
             // 180deg = Top to Bottom
@@ -141,7 +141,7 @@ export const DeviceItem: React.FC<TProps> = ({ device, typeViewDevice }) => {
       activeOpacity={0.9}
       onPress={handleToggleDevice}
       style={{ width: (layout.width - BASE_SPACE_HORIZONTAL * 2 - GAP_DEVICE_VIEW_MOBILE) / GRID_VIEW_DEVICE_MOBILE }}
-      className="h-36 rounded-xl justify-between bg-white shadow-sm p-3"
+      className="h-36 rounded-xl justify-between bg-white dark:bg-[#FFFFFF0D] border border-white dark:border-[#292929] shadow-sm p-3 overflow-hidden"
     >
       <Animated.View style={[StyleSheet.absoluteFill, animatedGradientStyle]}>
         <LinearGradient
@@ -161,7 +161,9 @@ export const DeviceItem: React.FC<TProps> = ({ device, typeViewDevice }) => {
       </View>
       <View>
         <Text className="text-[15px] font-bold text-neutral-800" numberOfLines={1}>{device.name}</Text>
-        <Text className="text-[11px] text-neutral-400 mt-0.5">{device.type}</Text>
+        <Text className={isOn ? "text-[#A3EC3E] text-xs font-medium" : "text-neutral-400 text-xs"}>
+          {isOn ? 'Đang hoạt động' : 'Đã tắt'}
+        </Text>
       </View>
     </TouchableOpacity>
   );

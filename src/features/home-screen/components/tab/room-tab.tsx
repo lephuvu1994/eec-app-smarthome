@@ -19,7 +19,7 @@ import { cn } from '@/lib/utils';
 import { ETheme } from '@/types/base';
 
 const MIN_HEIGHT = 28;
-const MAX_WIDTH = 85 * (WIDTH - BASE_SPACE_HORIZONTAL * 2) / 100;
+const MAX_WIDTH = 80 * (WIDTH - BASE_SPACE_HORIZONTAL * 2) / 100;
 const MAX_HEIGHT = MAX_WIDTH / ASPECT_RATIO_VIDEO;
 
 export const RoomTabItem = memo(({ room, focused, theme, onPress, isExpanded }: any) => {
@@ -87,7 +87,7 @@ export const RoomTabItem = memo(({ room, focused, theme, onPress, isExpanded }: 
 
   const gradientColors = (focused
     ? (theme === ETheme.Light ? ['#141414', '#00000078'] : ['#FFFFFF', '#8D8D8D'])
-    : ['#0000000D', '#0000000D']) as ColorValue[];
+    : theme === ETheme.Light ? ['#0000000D', '#0000000D'] : ['#FFFFFF0D', '#FFFFFF0D']) as ColorValue[];
 
   return (
     <Animated.View
@@ -112,7 +112,7 @@ export const RoomTabItem = memo(({ room, focused, theme, onPress, isExpanded }: 
           {/* 1. Ảnh nền */}
           <Image
             source={require('@@/assets/room/default_image.png')}
-            style={StyleSheet.absoluteFill}
+            style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]}
             resizeMode="cover"
           />
 
@@ -146,7 +146,7 @@ export const RoomTabItem = memo(({ room, focused, theme, onPress, isExpanded }: 
               'text-sm font-normal',
               focused && 'font-bold',
               focused ? 'text-white dark:text-black' : 'text-black dark:text-white',
-              isExpanded && 'font-bold text-white dark:text-black',
+              isExpanded && 'font-bold text-white dark:text-white',
             )}
           >
             {room.title}
@@ -192,7 +192,7 @@ export const RoomTabItem = memo(({ room, focused, theme, onPress, isExpanded }: 
           >
             <View className="flex-row items-center gap-0.5 bg-white/60">
               <SensorTempIcon size={16} />
-              <Text className="text-xs text-neutral-500">20°C</Text>
+              <Text className="text-xs text-neutral-500 dark:text-neutral-500">20°C</Text>
             </View>
           </BlurView>
         </View>
@@ -211,7 +211,7 @@ export const RoomTabItem = memo(({ room, focused, theme, onPress, isExpanded }: 
           >
             <View className="flex-row items-center gap-0.5 bg-white/60">
               <LightningIcon size={16} />
-              <Text className="text-xs text-neutral-500">244 kwc</Text>
+              <Text className="text-xs text-neutral-500 dark:text-neutral-500">244 kwc</Text>
             </View>
           </BlurView>
         </View>

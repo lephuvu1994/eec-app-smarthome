@@ -1,15 +1,16 @@
-import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ScrollView } from 'react-native';
-import { Text, View, WIDTH, TouchableOpacity } from '@/components/ui';
+import { Text, TouchableOpacity, View, WIDTH } from '@/components/ui';
+import { translate } from '@/lib/i18n';
 import { useConfigManager } from '@/stores/config/config';
 import { ETheme } from '@/types/base';
-import { RoomTabItem } from '../components/tab/room-tab';
-import { calculateCenterOffset } from '../utils/utils';
-import { translate } from '@/lib/i18n';
 import { AntDesign } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { ListDevice } from '../components/device/ListDevice';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
+import { ScrollView } from 'react-native';
+import { calculateCenterOffset } from '../../utils/utils';
+import { ListDevice } from '../device/ListDevice';
+import { RoomTabItem } from './room-tab';
+import { useSmartTabBarHeight } from '@/hooks/useSmartTabBarHeight';
 
 const ROOMS_DATA: Record<string, { id: string; title: string }[]> = {
   favorite: [{ id: 'fav1', title: 'Thiết bị thường dùng' }],
@@ -35,6 +36,7 @@ export const GroupPage = memo(({ group, theme, isCurrentGroup }: { group: any; t
   const isManualRoomScrollingRef = useRef(false);
   const secondaryTabRef = useRef<ScrollView>(null);
   const { showRoomViewExpand } = useConfigManager();
+   const heightBottomTab = useSmartTabBarHeight();
 
   // Chỉ cần ScrollView thường là đủ
   const innerScrollRef = useRef<ScrollView>(null);
@@ -123,15 +125,18 @@ export const GroupPage = memo(({ group, theme, isCurrentGroup }: { group: any; t
           scrollEventThrottle={16}
           decelerationRate="fast"
           overScrollMode="never"
+          style={{ flex: 1 }}
+          contentContainerStyle={{ flexGrow: 1}}
         >
           {rooms.map(item => (
-            <View key={item.id} style={{ width: WIDTH }} className="px-4 mt-3">
+            <View key={item.id} style={{ width: WIDTH }} className="px-4 pt-1">
               <ScrollView
                 showsVerticalScrollIndicator={false}
                 overScrollMode="never"
                 className="flex-1"
+                contentContainerStyle={{ flexGrow: 1, paddingBottom: heightBottomTab }}
               >
-                <View className="flex-1 text-neutral-500 dark:text-white gap-2">
+                <View className="flex-1 gap-2">
                   <View className="flex-row items-center justify-between">
                     <Text className="text-lg font-semibold">{translate('base.device')}</Text>
                     <TouchableOpacity onPress={() => router.push('/device/add')} className="h-8 w-8 items-center justify-center rounded-full bg-white/40 shadow-sm dark:bg-black/40">
