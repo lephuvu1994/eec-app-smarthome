@@ -1,14 +1,19 @@
 import React from 'react';
-import { View, TouchableOpacity, ViewStyle, StyleSheet } from 'react-native';
+import { ViewStyle, StyleSheet } from 'react-native';
+import { View, TouchableOpacity,  } from '@/components/ui';
 import { Text } from '@/components/ui';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons, Entypo } from '@expo/vector-icons';
 import { cn } from '@/lib/utils';
-
+import { Image } from 'expo-image'
 export interface RecommendationCardProps {
   title: string;
   usageCount: string;
-  bgGradient: [string, string];
+
+  // Nền: Làm cho cả 2 thành optional để dùng 1 trong 2
+  bgGradient?: [string, string];
+  bgImage?: any; // Dùng any hoặc ImageSourcePropType để nhận require() hoặc { uri: '...' }
+
   onAddPress?: () => void;
   className?: string;
   containerStyle?: ViewStyle;
@@ -18,9 +23,10 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
   title,
   usageCount,
   bgGradient,
+  bgImage,
   onAddPress,
   className,
-  containerStyle
+  containerStyle,
 }) => {
   return (
     <View
@@ -30,13 +36,21 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
       )}
       style={!bgGradient ? undefined : containerStyle}
     >
-      {/* Nền Gradient */}
-      <LinearGradient
-        colors={bgGradient}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={StyleSheet.absoluteFillObject}
-      />
+      {/* NỀN: Ưu tiên dùng bgImage, nếu không có mới dùng bgGradient */}
+      {bgImage ? (
+        <Image
+          source={bgImage}
+          style={StyleSheet.absoluteFillObject}
+          contentFit="cover"
+        />
+      ) : bgGradient ? (
+        <LinearGradient
+          colors={bgGradient}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={StyleSheet.absoluteFillObject}
+        />
+      ) : null}
       
       {/* Hiệu ứng Glassmorphism (Các shape chìm) */}
       <View className="absolute -top-12 -right-12 w-48 h-48 rounded-3xl rotate-12 bg-white/20" />
@@ -53,7 +67,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
 
       {/* Dòng Trên: Tiêu đề + Nút Thêm */}
       <View className="flex-row justify-between items-start z-10 w-full">
-        <Text className="text-[17px] font-bold text-[#1B1B1B] flex-1 mr-4 mt-1" numberOfLines={2}>
+        <Text className="text-[17px] font-semibold text-[#1B1B1B] flex-1 mr-4 mt-1" numberOfLines={2}>
           {title}
         </Text>
 

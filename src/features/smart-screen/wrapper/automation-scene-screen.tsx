@@ -112,8 +112,8 @@ export const AutomationListSceneWrapper: React.FC<TProps> = ({ className }) => {
       </View>
 
       {/* --- TEXT CẢNH BÁO KỊCH BẢN --- */}
-      <View className="px-4 mt-6 mb-2 flex-row flex-wrap items-center">
-         <Text className="text-[#059669] text-sm">1 kịch bản chưa khả dụng. </Text>
+      <View className="px-4 w-full mt-6 mb-2 flex-row flex-wrap items-center justify-center">
+        <Text className="text-[#1B1B1B] text-sm">1 kịch bản chưa khả dụng. </Text>
          <View>
              <Text className="text-[#059669] text-sm font-medium underline">Nhấn để xem thêm.</Text>
          </View>
@@ -121,20 +121,20 @@ export const AutomationListSceneWrapper: React.FC<TProps> = ({ className }) => {
 
       {/* --- PHẦN ĐỀ XUẤT (RECOMMENDATION) --- */}
       <View className="mt-4 px-4 w-full">
-         <View className="border-b border-t border-[#E5E7EB] border-x-0 py-3 mb-5 bg-[#F9FAFB]/50">
+         <View className="border-b border-t border-[#E5E7EB] border-x-0 py-3 mb-2">
              <Text className="text-[16px] font-semibold text-[#1B1B1B] ml-1">Đề xuất</Text>
          </View>
          
          <RecommendationCard 
             title="Bật tất cả công tắc"
             usageCount="498.7K"
-            bgGradient={['#A7F3D0', '#22C55E']} // Xanh lá cây nhạt (Emerald/Green)
+            bgImage={require('@@/assets/scene/recommendation-bg.png')}
          />
 
          <RecommendationCard 
             title="Tắt toàn bộ thiết bị"
             usageCount="498.7K"
-            bgGradient={['#BAE6FD', '#3B82F6']} // Xanh nước biển nhạt (Sky/Blue)
+          bgImage={require('@@/assets/scene/recommendation-bg-off.png')}
          />
       </View>
     </ScrollView>
