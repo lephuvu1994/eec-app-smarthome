@@ -14,6 +14,7 @@ type KeyParams = {
   [key: string]: any;
 };
 export const DEFAULT_LIMIT = 10;
+const regex = /[?&]([^=#]+)=([^&#]*)/g;
 
 export function getQueryKey<T extends KeyParams>(key: string, params?: T) {
   return [key, ...(params ? [params] : [])];
@@ -33,7 +34,6 @@ export function getUrlParameters(
   if (url === null) {
     return null;
   }
-  const regex = /[?&]([^=#]+)=([^&#]*)/g;
   const params = {};
   let match;
   while ((match = regex.exec(url))) {

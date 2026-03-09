@@ -1,0 +1,9 @@
+{
+  "name": "SmartHomeSiri",
+  "ios": {
+    "modules": [
+      "SmartHomeModule"
+    ],
+    "sourceDir": "ios"
+  }
+}

@@ -17,6 +17,7 @@ import { useThemeConfig } from '@/components/ui/use-theme-config';
 import { EAuthStatus } from '@/features/auth/types/enum';
 import { hydrateAuth, useUserManager } from '@/features/auth/user-store';
 import CustomSplashScreen from '@/features/splash-screen';
+import { useVoiceControl } from '@/hooks/use-voice-control';
 import { APIProvider } from '@/lib/api';
 import { loadSelectedTheme } from '@/lib/hooks/use-selected-theme';
 // Import  global CSS file
@@ -45,6 +46,8 @@ function RootRender() {
   const [isLoading, setIsLoading] = useState(true);
   const { theme } = useUniwind();
   const { status } = useUserManager();
+
+  useVoiceControl();
 
   const hideSplash = useCallback(async () => {
     setIsLoading(false);

@@ -1,8 +1,6 @@
 /* eslint-disable react-hooks/immutability */
 import type { FlashListRef } from '@shopify/flash-list';
 import { AntDesign } from '@expo/vector-icons';
-import { useHeaderHeight } from '@react-navigation/elements';
-
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
@@ -51,7 +49,6 @@ export function OnboardingScreen() {
   const [_, setFirstTime] = useIsFirstTime();
   const insets = useSafeAreaInsets();
   const [index, setIndex] = useState(0);
-  const headerHeight = useHeaderHeight();
   const scale = useSharedValue(1);
   const listRef = useRef<FlashListRef<typeof DATA[number]>>(null);
 
@@ -93,12 +90,18 @@ export function OnboardingScreen() {
             height: HEIGHT * 0.35 - 132 - insets.top,
           }}
         >
-          <Text className="mb-4 text-[32px]/10 font-bold text-[#1B1B1B] dark:text-[#1B1B1B]" style={{ color: COLORS.textPrimary }}>
+          <Text className="mb-4 w-full text-[32px]/10 font-bold text-[#1B1B1B] dark:text-[#1B1B1B]" style={{ color: COLORS.textPrimary }}>
             {item.title.split('Euro Smart').map((part: string, index: number, array: string[]) => (
-              <Text className="text-[32px] font-bold" key={index}>
+              <Text
+                className="text-3xl font-bold"
+                key={index}
+                numberOfLines={1} // Bắt buộc phải có để báo cho RN biết giới hạn dòng
+                adjustsFontSizeToFit // Tự động bóp nhỏ font nếu text quá dài
+                minimumFontScale={0.5}
+              >
                 {part}
                 {index < array.length - 1 && (
-                  <Text className="text-[32px] font-bold" style={{ color: '#93D737' }}>Euro Smart</Text>
+                  <Text className="text-3xl font-bold" style={{ color: '#93D737' }}>Euro Smart</Text>
                 )}
               </Text>
             ),
@@ -139,7 +142,7 @@ export function OnboardingScreen() {
   return (
     <View style={{ flex: 1, backgroundColor: COLORS.background }}>
       <FocusAwareStatusBar />
-      <View className="px-4" style={{ paddingTop: insets.top + headerHeight + 32 }}>
+      <View className="px-4" style={{ paddingTop: insets.top + 32 }}>
         <Image
           source={require('@@/assets/base/icon-wrapper-full.png')}
           style={{

@@ -1,122 +1,87 @@
+import { Fontisto } from '@expo/vector-icons';
 import Feather from '@expo/vector-icons/Feather';
-import Fontisto from '@expo/vector-icons/Fontisto';
 import { useForm } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
 import { BlurView } from 'expo-blur';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { Alert, StyleSheet, TextInput } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import Animated, { FadeInRight, FadeInUp, FadeOutLeft } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import * as z from 'zod';
-import {
-  Button,
-  FloatInput,
-  IS_IOS,
-  showErrorMessage,
-  Text,
-  TouchableOpacity,
-  View,
-} from '@/components/ui';
+import { Button, FloatInput, IS_IOS, Text, TouchableOpacity, View } from '@/components/ui';
 import { getFieldError } from '@/components/ui/form-utils';
 import { translate } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
-import { emailRegex, phoneRegex } from '../utils/constants';
+import { emailRegex, nonDigitRegex, phoneRegex } from '../utils/constants';
+import { ResendOtpButton } from './resend-button';
 
-// 1. Cập nhật Schema: Bổ sung thêm trường OTP
-const schema = z
-  .object({
-    identifier: z
-      .string()
-      .trim()
-      .min(1, translate('formAuth.error.identifierRequired'))
-      // Thay đổi: Dùng refine để check 1 trong 2 điều kiện
-      .refine(
-        val => emailRegex.test(val) || phoneRegex.test(val),
-        { message: translate('formAuth.error.invalidFormatIdentifier') },
-      ),
-    password: z
-      .string()
-      .trim()
-      .min(1, translate('formAuth.error.passwordRequired'))
-      .min(6, translate('formAuth.error.passwordInvalidFormat'))
-      .optional(),
-    repeatPassword: z.string().trim().optional(),
-  })
-  .refine((data) => {
-    // Chỉ check match password nếu cả 2 đã được nhập
-    if (data.password && data.repeatPassword) {
-      return data.password === data.repeatPassword;
-    }
-    return true;
-  }, {
-    path: ['repeatPassword'],
-    message: translate('formAuth.error.passwordNotMatch'),
-  });
+// Zod Schema cho Quên mật khẩu
+const forgotSchema = z.object({
+  identifier: z.string().trim().min(1, translate('formAuth.error.identifierRequired')).refine(val => emailRegex.test(val) || phoneRegex.test(val), { message: translate('formAuth.error.invalidFormatIdentifier') }),
+  otp: z.string().optional(),
+  password: z.string().min(6).optional(),
+  repeatPassword: z.string().optional(),
+}).refine((data) => {
+  if (data.password && data.repeatPassword)
+    return data.password === data.repeatPassword;
+  return true;
+}, { path: ['repeatPassword'], message: translate('formAuth.error.passwordNotMatch') });
 
-export type FormType = z.infer<typeof schema>;
-
-// Tạo component AnimatedTextInput
-
-export function SignUpForm() {
+export function ForgotPasswordForm() {
   const { bottom } = useSafeAreaInsets();
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-
-  // 2. Khởi tạo State Machine quản lý Bước
-  const [step, setStep] = useState<1 | 2>(1);
+  const [step, setStep] = useState<1 | 2 | 3>(1);
 
   const form = useForm({
-    defaultValues: {
-      identifier: '',
-      otp: '',
-      password: '',
-      repeatPassword: '',
-    },
-    validators: {
-      onChange: schema as any,
-    },
+    defaultValues: { identifier: '', otp: '', password: '', repeatPassword: '' },
+    validators: { onChange: forgotSchema as any },
     onSubmit: async ({ value }) => {
-      // Gọi API đăng ký thực tế ở đây
-      _signUp(value);
+      _resetPassword(value);
     },
   });
 
   const identifierValue = form.getFieldValue('identifier');
+  const isEmail = identifierValue.includes('@');
 
-  const { mutate: _signUp } = useMutation({
-    mutationFn: async (variables: any) => {
-      // Mock API Call
-      // const resultData = await client.post<UserResponse>('/auth/signup', variables);
-      // return resultData.data;
-      console.log('ĐĂNG KÝ THÀNH CÔNG VỚI DATA:', variables);
-    },
-  });
-  // MOCK: API Check tài khoản tồn tại
-  const { mutateAsync: checkAccountExists } = useMutation({
+  // MOCK API: Check tồn tại & Gửi OTP
+  const { mutateAsync: sendOtp } = useMutation({
     mutationFn: async (_identifier: string) => {
-      // TODO: Thay bằng API gọi NestJS
-      // Trả về true nếu đã tồn tại, false nếu chưa
+      // 1. Gọi API NestJS check tồn tại.
+      // 2. Nếu không tồn tại -> throw Error("Tài khoản không tồn tại")
+      // 3. Nếu tồn tại -> NestJS bắn OTP qua SMS/Email -> resolve
       return new Promise<boolean>(resolve => setTimeout(resolve, 1000, true));
     },
   });
 
-  // Giả lập API Gửi OTP
-  const handleNextStep = async () => {
+  // MOCK API: Đổi mật khẩu mới
+  const { mutate: _resetPassword } = useMutation({
+    mutationFn: async (variables: any) => {
+      console.log('🔑 ĐỔI MẬT KHẨU THÀNH CÔNG:', variables);
+      Alert.alert('Thành công', 'Đã đổi mật khẩu. Vui lòng đăng nhập lại.', [
+        { text: 'OK', onPress: () => router.back() },
+      ]);
+    },
+  });
+
+  const handleRequestOTP = async () => {
     try {
-      const exists = await checkAccountExists(identifierValue);
-      if (exists) {
-        showErrorMessage('Tài khoản này đã được đăng ký. Vui lòng đăng nhập!');
-      }
-      else {
-        setStep(2); // Tài khoản mới -> Cho phép nhập mật khẩu
-      }
+      // API báo gửi thành công thì mới chuyển bước
+      await sendOtp(identifierValue);
+      setStep(2);
     }
+    // eslint-disable-next-line unused-imports/no-unused-vars
     catch (error) {
-      console.error(error);
+      Alert.alert('Lỗi', 'Tài khoản không tồn tại trong hệ thống!');
     }
+  };
+
+  const handleVerifyOTP = () => {
+    // TODO: Có thể gọi API verify OTP riêng hoặc gộp chung lúc submit reset password
+    setStep(3);
   };
 
   return (
@@ -143,22 +108,26 @@ export function SignUpForm() {
           className="relative overflow-hidden rounded-3xl"
         >
           <View className="flex-1 rounded-3xl border border-white/25 bg-white/70">
-            <View className="flex-1 pt-4 pb-6">
+            <View className="flex-1 py-6">
 
               {/* === HEADER CÓ NÚT BACK === */}
               <View className="relative mb-6 w-full flex-row items-center justify-center px-4">
                 {step > 1 && (
                   <TouchableOpacity
                     className="absolute left-4 p-2"
-                    onPress={() => setStep(prev => (prev - 1) as 1 | 2)}
+                    onPress={() => setStep(prev => (prev - 1) as 1 | 2 | 3)}
                   >
                     <Feather name="arrow-left" size={24} color="#1B1B1B" />
                   </TouchableOpacity>
                 )}
                 <Text className="text-2xl font-bold text-[#1B1B1B]">
                   {step === 1
-                    ? translate('formAuth.titleSignUp')
-                    : translate('formAuth.createPassword')}
+                    ? translate('formAuth.titleSignIn')
+                    : step === 2
+                      ? translate('formAuth.verifyIdentifier', {
+                          identifier: isEmail ? translate('formAuth.emailTitle') : translate('formAuth.phoneNumber'),
+                        })
+                      : translate('formAuth.createPassword')}
                 </Text>
               </View>
 
@@ -194,7 +163,7 @@ export function SignUpForm() {
                               className={cn('mt-4 h-12 w-full rounded-full p-0 shadow-sm', (!field.state.value || hasError)
                                 ? 'bg-[#A3E635]/50'
                                 : 'bg-[#A3E635]')}
-                              onPress={handleNextStep}
+                              onPress={handleRequestOTP}
                               disabled={!field.state.value || hasError}
                               textClassName="text-base font-semibold text-[#0F0F0F]"
                               label={translate('formAuth.titleSignUp')}
@@ -232,8 +201,78 @@ export function SignUpForm() {
                 </Animated.View>
               )}
 
-              {/* === BƯỚC 3: TẠO MẬT KHẨU === */}
+              {/* === BƯỚC 2: NHẬP OTP === */}
               {step === 2 && (
+                <Animated.View entering={FadeInRight} exiting={FadeOutLeft} className="flex-1 px-4">
+                  <Text
+                    className="mb-6 text-center text-[#4B5563]"
+                  >
+                    {translate('formAuth.messageDescriptionOtp', {
+                      identifier: isEmail ? (`${translate('formAuth.emailTitle')} address`) : translate('formAuth.phoneNumber'),
+                    })}
+                  </Text>
+
+                  <form.Field
+                    name="otp"
+                    children={field => (
+                      <View className="w-full items-center">
+                        {/* THỦ THUẬT: Khung UI 4 ô vuông */}
+                        <View className="mb-6 w-[80%] flex-row justify-between">
+                          {[0, 1, 2, 3].map((index) => {
+                            const char = field.state.value[index];
+                            return (
+                              <View
+                                key={index}
+                                className={cn(
+                                  'h-14 w-14 items-center justify-center rounded-xl border bg-white shadow-sm',
+                                  char ? 'border-[#A3E635]' : 'border-transparent',
+                                )}
+                              >
+                                <Text className="text-2xl font-bold text-[#1B1B1B]">
+                                  {char || ''}
+                                </Text>
+                              </View>
+                            );
+                          })}
+                        </View>
+
+                        {/* THỦ THUẬT: TextInput ẩn nằm đè lên để hứng sự kiện bàn phím */}
+                        <TextInput
+                          value={field.state.value}
+                          onChangeText={(val) => {
+                            // Chỉ cho nhập số, tối đa 4 ký tự
+                            const formatted = val.replace(nonDigitRegex, '');
+                            field.handleChange(formatted);
+                            // Auto submit nếu đủ 4 số
+                            if (formatted.length === 4) {
+                              handleVerifyOTP();
+                            }
+                          }}
+                          maxLength={4}
+                          keyboardType="number-pad"
+                          className="absolute h-14 w-[80%] opacity-0"
+                          autoFocus
+                        />
+
+                        <Button
+                          className={cn('h-12 w-full rounded-full p-0 shadow-sm', field.state.value.length !== 4
+                            ? 'bg-[#DE1E23]/50' // Design của bạn để nút OTP màu đỏ, tôi dùng mã màu đỏ ví dụ
+                            : 'bg-[#DE1E23]')}
+                          onPress={handleVerifyOTP}
+                          disabled={field.state.value.length !== 4}
+                          textClassName="text-base font-semibold text-white"
+                          label={translate('formAuth.verifyCode')}
+                        />
+
+                        <ResendOtpButton onResend={handleRequestOTP} />
+                      </View>
+                    )}
+                  />
+                </Animated.View>
+              )}
+
+              {/* === BƯỚC 3: TẠO MẬT KHẨU === */}
+              {step === 3 && (
                 <Animated.View entering={FadeInRight} exiting={FadeOutLeft} className="flex-1 justify-between px-4">
                   <View className="w-full gap-4">
                     <form.Field

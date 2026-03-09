@@ -54,6 +54,10 @@ const _useGetUser = create<UserState>()(
       hydrateAuth: async () => {
         const currentState = get();
         try {
+          if (!currentState.accessToken) {
+            currentState.signOut();
+            return;
+          }
           // Call API to call profile
           // const profileUpdate = await client.get('/me');
           set({
