@@ -62,10 +62,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       NSAppTransportSecurity: {
         NSAllowsArbitraryLoads: true,
       },
-      NSMicrophoneUsageDescription:
-        'App cần truy cập micro để nhận diện giọng nói',
-      NSSpeechRecognitionUsageDescription:
-        'App cần truy cập giọng nói để nhận diện lời nói',
+      NSSiriUsageDescription: 'App cần quyền Siri để điều khiển thiết bị bằng giọng nói.',
+    },
+    entitlements: {
+      'com.apple.developer.siri': true,
     },
   },
   experiments: {
@@ -78,6 +78,16 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     },
     permissions: ['WAKE_LOCK', 'RECORD_AUDIO'],
     package: Env.EXPO_PUBLIC_PACKAGE,
+    intentFilters: [
+      {
+        action: 'VIEW',
+        data: {
+          scheme: 'my-smarthome-app',
+          host: 'control',
+        },
+        category: ['BROWSABLE', 'DEFAULT'],
+      },
+    ],
   },
   web: {
     favicon: './assets/favicon.png',

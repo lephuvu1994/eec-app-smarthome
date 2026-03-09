@@ -17,24 +17,24 @@ const envSchema = z.object({
 const EXPO_PUBLIC_APP_ENV = (process.env.EXPO_PUBLIC_APP_ENV ?? 'development') as z.infer<typeof envSchema>['EXPO_PUBLIC_APP_ENV'];
 
 const BUNDLE_IDS = {
-  development: 'EuroSol.development',
-  preview: 'EuroSol.preview',
-  production: 'EuroSol',
+  development: 'eurosmart.development',
+  preview: 'eurosmart.preview',
+  production: 'eurosmart',
 } as const;
 
 const PACKAGES = {
-  development: 'EuroSol.development',
-  preview: 'EuroSol.preview',
-  production: 'EuroSol',
+  development: 'eurosmart.development',
+  preview: 'eurosmart.preview',
+  production: 'eurosmart',
 } as const;
 
 const SCHEMES = {
-  development: 'EuroSol',
-  preview: 'EuroSol.preview',
-  production: 'EuroSol',
+  development: 'eurosmart',
+  preview: 'eurosmart.preview',
+  production: 'eurosmart',
 } as const;
 
-const NAME = 'EuroSol';
+const NAME = 'EuroSmart';
 
 // Check if strict validation is required (before prebuild)
 const STRICT_ENV_VALIDATION = process.env.STRICT_ENV_VALIDATION === '1';

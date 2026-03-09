@@ -9,6 +9,8 @@ type KeyParams = {
   [key: string]: any;
 };
 export const DEFAULT_LIMIT = 10;
+// ✅ Đưa regex ra ngoài module scope để tránh re-compilation
+const URL_PARAMS_REGEX = /[?&]([^=#]+)=([^&#]*)/g;
 
 export function getQueryKey<T extends KeyParams>(key: string, params?: T) {
   return [key, ...(params ? [params] : [])];
@@ -28,10 +30,9 @@ export function getUrlParameters(
   if (url === null) {
     return null;
   }
-  const regex = /[?&]([^=#]+)=([^&#]*)/g;
   const params = {};
   let match;
-  while ((match = regex.exec(url))) {
+  while ((match = URL_PARAMS_REGEX.exec(url))) {
     if (match[1] !== null) {
       // @ts-expect-error - Dynamic key assignment
       params[match[1]] = match[2];
