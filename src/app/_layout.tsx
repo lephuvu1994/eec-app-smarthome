@@ -47,7 +47,7 @@ function RootRender() {
   const { theme } = useUniwind();
   const { status } = useUserManager();
 
-  useVoiceControl();
+  // useVoiceControl();
 
   const hideSplash = useCallback(async () => {
     setIsLoading(false);
