@@ -58,54 +58,48 @@
     "tapToRun": "Chạm để chạy"
   },
   "settings": {
-    "about": "Giới Thiệu",
+    "about": "Giới thiệu",
     "account": "Tài khoản EEC",
-    "app_name": "Tên Ứng Dụng",
-    "english": "Tiếng Anh",
+    "defaultUser": "Người dùng",
+    "energyCard": {
+      "currentUsage": "Mức tiêu thụ hiện tại",
+      "estimatedCost": "Chi phí ước tính",
+      "last24h": "24 giờ qua",
+      "live": "Trực tiếp",
+      "title": "Điện năng đang sử dụng"
+    },
+    "general": {
+      "cameraView": "Hiển thị Camera",
+      "haptics": "Rung khi bấm",
+      "introduction": "Giới thiệu",
+      "privacyPolicy": "Chính sách bảo mật",
+      "privacySettings": "Cài đặt quyền riêng tư",
+      "temperatureUnit": "Đơn vị nhiệt độ",
+      "title": "Cài đặt chung"
+    },
     "generale": "Thông tin chung",
-    "integration": "Quản lý module",
-    "integrationScreen": {
-      "backTitle": "Module",
-      "title": "Quản lý module"
+    "homeManagement": "Quản lý nhà",
+    "language": {
+      "english": "Tiếng Anh",
+      "title": "Ngôn ngữ",
+      "vietnam": "Tiếng Việt"
     },
-    "language": "Ngôn ngữ",
-    "links": "Đường dẫn",
-    "listMember": "Danh sách thành viên",
     "logout": "Đăng xuất",
-    "managerHome": "Quản lý nhà của bạn",
-    "managerMember": "Quản lý thành viên",
-    "managerUI": "Quản lý giao diện",
-    "more": "Thêm",
-    "privacy": "Điều khoản 2",
-    "profileScreen": {
-      "birthDate": "Ngày, tháng, năm sinh",
-      "distanceUnit": "Đơn vị đo lường",
-      "firstName": "Tên",
-      "language": "Ngôn ngữ",
-      "lastName": "Họ",
-      "role": "Vai trò",
-      "selectRolePlaceholder": "Vui lòng chọn vai trò",
-      "selectRoom": "Chọn phòng",
-      "selectRoomPlaceholder": "Vui lòng chọn phòng",
-      "temperatureUnit": "Đơn vị đo nhiệt độ",
-      "textConfirmDeleteAccount": "Bạn có chắc chắn muốn xoá tài khoản này?",
-      "title": "Chỉnh sửa thông tin của bạn"
+    "logoutConfirm": "Bạn có chắc chắn muốn đăng xuất không?",
+    "menu": {
+      "account": "Tài khoản",
+      "homeManagement": "Quản lý Nhà",
+      "messageCenter": "Trung tâm tin nhắn",
+      "notification": "Thông báo",
+      "support": "Hỗ trợ sử dụng"
     },
-    "rate": "Giới hạn",
-    "share": "Chia sẻ",
-    "support": "Hỗ trợ",
-    "support_us": "Hỗ trợ tôi",
-    "systemTab": "Cài đặt Hệ thống",
-    "terms": "Điều khoản",
+    "tapToSetName": "Nhấn để đặt tên",
     "theme": {
       "dark": "Tối",
       "light": "Sáng",
       "system": "Hệ thống",
       "title": "Màu nền"
     },
-    "title": "Cài đặt",
-    "version": "Phiên bản",
-    "vietnam": "Tiếng Việt",
-    "website": "Trang web"
+    "userInformation": "Thông tin cá nhân"
   }
 }

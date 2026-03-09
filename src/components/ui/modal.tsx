@@ -38,7 +38,9 @@ import * as React from 'react';
 import { Pressable, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { Path, Svg } from 'react-native-svg';
+import { useUniwind } from 'uniwind';
 
+import colors from './colors';
 import { Text } from './text';
 
 type ModalProps = BottomSheetModalProps & {
@@ -70,6 +72,8 @@ export function Modal({ ref, snapPoints: _snapPoints = ['60%'] as (string | numb
   );
   const modal = useModal();
   const snapPoints = React.useMemo(() => _snapPoints, [_snapPoints]);
+  const { theme } = useUniwind();
+  const isDark = theme === 'dark';
 
   React.useImperativeHandle(
     ref,
@@ -78,10 +82,10 @@ export function Modal({ ref, snapPoints: _snapPoints = ['60%'] as (string | numb
 
   const renderHandleComponent = React.useCallback(
     () => (
-      <>
-        <View className="mt-2 mb-8 h-1 w-12 self-center rounded-lg bg-gray-400 dark:bg-gray-700" />
+      <View className="items-center pt-2">
+        <View className="h-1 w-12 rounded-lg bg-neutral-300 dark:bg-neutral-600" />
         <ModalHeader title={title} dismiss={modal.dismiss} />
-      </>
+      </View>
     ),
     [title, modal.dismiss],
   );
@@ -96,6 +100,14 @@ export function Modal({ ref, snapPoints: _snapPoints = ['60%'] as (string | numb
       backdropComponent={props.backdropComponent || renderBackdrop}
       enableDynamicSizing={false}
       handleComponent={renderHandleComponent}
+      backgroundStyle={{
+        backgroundColor: isDark ? colors.neutral[800] : colors.white,
+        ...(props.backgroundStyle as object),
+      }}
+      handleIndicatorStyle={{
+        backgroundColor: isDark ? colors.neutral[400] : colors.neutral[300],
+        ...(props.handleIndicatorStyle as object),
+      }}
     />
   );
 }
@@ -148,19 +160,21 @@ function getDetachedProps(detached: boolean) {
 
 const ModalHeader = React.memo(({ title, dismiss }: ModalHeaderProps) => {
   return (
-    <>
+    <View className="w-full">
       {title && (
-        <View className="flex-row px-2 py-4">
-          <View className="size-6" />
+        <View className="flex-row items-center px-4 py-4">
+          {/* Symmetric spacers to ensure absolute center */}
+          <View className="size-9" />
           <View className="flex-1">
             <Text className="text-center text-[16px] font-bold text-[#26313D] dark:text-white">
               {title}
             </Text>
           </View>
+          <View className="size-9" />
         </View>
       )}
       <CloseButton close={dismiss} />
-    </>
+    </View>
   );
 });
 

@@ -1,12 +1,12 @@
 import type { ETheme } from '@/types/base';
 
-import { Stack } from 'expo-router';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { router, Stack } from 'expo-router';
+import { TouchableOpacity, View } from 'react-native';
 
-import { colors } from '@/components/ui';
-import { Settings } from '@/components/ui/icons';
-import { MenuNative } from '@/components/ui/menu-native';
-import { translate } from '@/lib/i18n';
 import { useUniwind } from 'uniwind';
+import { colors } from '@/components/ui';
+import { translate } from '@/lib/i18n';
 
 function SettingScreen() {
   const { theme } = useUniwind();
@@ -16,17 +16,57 @@ function SettingScreen() {
       <Stack.Screen
         name="index"
         options={{
+          headerShown: true,
           headerTransparent: true,
-          title: translate('app.settingTab'),
+          title: '',
+          headerTitleAlign: 'center',
+          headerRight: () => (
+            <View className="flex-row items-center gap-5 px-1">
+              {/* Button 1: Notifications */}
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => {}}
+                style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(0,0,0,0.06)', alignItems: 'center', justifyContent: 'center' }}
+              >
+                <MaterialCommunityIcons name="line-scan" size={20} color={theme === 'dark' ? '#fff' : '#1B1B1B'} />
+              </TouchableOpacity>
+              {/* Button 2: General / Preferences */}
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => router.push('/(app)/(mobile)/(settings)/general' as any)}
+                style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(0,0,0,0.06)', alignItems: 'center', justifyContent: 'center' }}
+              >
+                <MaterialCommunityIcons name="tune-variant" size={20} color={theme === 'dark' ? '#fff' : '#1B1B1B'} />
+              </TouchableOpacity>
+            </View>
+          ),
+        }}
+      />
+      <Stack.Screen
+        name="profile"
+        options={{
+          headerShown: true,
+          headerTransparent: true,
+          title: translate('settings.userInformation'),
           headerTitleAlign: 'center',
         }}
       />
       <Stack.Screen
-        name="account"
+        name="homeManagement"
         options={{
           headerShown: true,
           headerTransparent: true,
-          title: translate('settings.account'),
+          title: translate('settings.homeManagement'),
+          headerTitleAlign: 'center',
+        }}
+      />
+      <Stack.Screen
+        name="general"
+        options={{
+          headerShown: true,
+          headerTransparent: true,
+          title: translate('settings.general.title'),
+          headerTitleAlign: 'center',
         }}
       />
     </Stack>
