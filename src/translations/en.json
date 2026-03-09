@@ -60,52 +60,46 @@
   "settings": {
     "about": "About",
     "account": "EEC Account",
-    "app_name": "App Name",
-    "english": "English",
-    "generale": "General",
-    "integration": "Module manager",
-    "integrationScreen": {
-      "backTitle": "Module Manager",
-      "title": "Module Manager"
+    "defaultUser": "User",
+    "energyCard": {
+      "currentUsage": "Current consumption",
+      "estimatedCost": "Estimated cost",
+      "last24h": "Last 24 hours",
+      "live": "Live",
+      "title": "Current Power Usage"
     },
-    "language": "Language",
-    "links": "Links",
-    "listMember": "List Member",
-    "logout": "Logout",
-    "managerHome": "My Home Manager",
-    "managerMember": "Member manager",
-    "managerUI": "UI manager",
-    "more": "More",
-    "privacy": "Privacy Policy",
-    "profileScreen": {
-      "birthDate": "BirthDate",
-      "distanceUnit": "Distance Unit",
-      "firstName": "First Name",
-      "language": "Language",
-      "lastName": "Last Name",
-      "role": "Role",
-      "selectRolePlaceholder": "Please Select Role",
-      "selectRoom": "Select room",
-      "selectRoomPlaceholder": "Please Select Room",
+    "general": {
+      "cameraView": "Show Camera View",
+      "haptics": "Haptic Feedback",
+      "introduction": "Introduction",
+      "privacyPolicy": "Privacy Policy",
+      "privacySettings": "Privacy Settings",
       "temperatureUnit": "Temperature Unit",
-      "textConfirmDeleteAccount": "Are you sure you want to delete this account?",
-      "title": "Edit your profile"
+      "title": "General Settings"
     },
-    "rate": "Rate",
-    "share": "Share",
-    "support": "Support",
-    "support_us": "Support Us",
-    "systemTab": "System Setting",
-    "terms": "Terms of Service",
+    "generale": "General",
+    "homeManagement": "Home Management",
+    "language": {
+      "english": "English",
+      "title": "Language",
+      "vietnam": "Vietnamese"
+    },
+    "logout": "Logout",
+    "logoutConfirm": "Are you sure you want to log out?",
+    "menu": {
+      "account": "Account",
+      "homeManagement": "Home Management",
+      "messageCenter": "Message Center",
+      "notification": "Notifications",
+      "support": "Help & Support"
+    },
+    "tapToSetName": "Tap to set your name",
     "theme": {
       "dark": "Dark",
       "light": "Light",
       "system": "System",
       "title": "Theme"
     },
-    "title": "Settings",
-    "version": "Version",
-    "vietnam": "VietNamese",
-    "website": "Website"
+    "userInformation": "User Information"
   }
 }
