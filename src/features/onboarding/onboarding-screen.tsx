@@ -1,65 +1,48 @@
 import type { FlashListRef } from '@shopify/flash-list';
-import { Feather } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
+import { Feather, AntDesign } from '@expo/vector-icons';
 import { useRef, useState } from 'react';
 
 import {
-  Image,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+  StyleSheet
 } from 'react-native';
+import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { twMerge } from 'tailwind-merge';
-import { colors, List, WIDTH } from '@/components/ui';
+import { List, WIDTH, FocusAwareStatusBar, View, Text, TouchableOpacity, HEIGHT, colors } from '@/components/ui';
 import { useIsFirstTime } from '@/lib/hooks';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useHeaderHeight } from '@react-navigation/elements';
+import Animated, { interpolateColor, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import { router } from 'expo-router';
 
 /**
  * DESIGN COLORS
  */
-
 const COLORS = {
-  // nền chính gần với màu viền ngoài cùng trong mock
-  background: '#1e2021',
-  textDim: '#9AA0A6',
-  neon: '#A3E635',
+  background: '#FFFFFF',
+  textSecondary: '#6B7280',
+  textPrimary: '#1B1B1B',
+  neon: '#A3E635', // Lime green
 };
 
 const DATA = [
   {
     id: '1',
-    title: 'Hỗ trợ thiết bị khác nhau',
-    description:
-      'Kết nối các thiết bị yêu thích trong một hệ sinh thái',
-    image:
-      require('@@/assets/onboarding/connected-device-onboarding.png'),
+    title: 'Chào mừng bạn đến với\nEuro Smart',
+    description: 'Kết nối và điều khiển ngôi nhà dễ dàng',
+    image: require('@@/assets/onboarding/onboarding-step1.png'), // Reuse existing or equivalent
   },
   {
     id: '2',
-    title: 'Tự tạo kịch bản',
-    description:
-      'Thiết lập tự động hóa cho các công việc hàng ngày',
-    image:
-      require('@@/assets/onboarding/smarthome-connect-home.png'),
+    title: 'Kết nối dễ dàng',
+    description: 'Kết nối mọi thiết bị chỉ trong vài giây.\nĐơn giản, nhanh chóng, tiện lợi.',
+    image: require('@@/assets/onboarding/onboarding-step2.png'), // Reuse existing or equivalent
   },
   {
     id: '3',
-    title: 'Chia sẻ gia đình',
-    description:
-      'Cùng nhau quản lý thiết bị với các thành viên',
-    image:
-      require('@@/assets/onboarding/onboarding-step3.png'),
-  },
-  {
-    id: '4',
-    title: 'Lưu trữ camera',
-    description:
-      'Xem lại lịch sử camera mọi lúc mọi nơi',
-    image:
-      require('@@/assets/onboarding/camera-onboarding.png'),
+    title: 'Kiểm soát toàn diện',
+    description: 'Điều khiển và giám sát ngôi nhà của\nbạn mọi lúc, mọi nơi',
+    image: require('@@/assets/onboarding/onboarding-step3.png'), // Reuse existing or equivalent
   },
 ];
 
@@ -67,7 +50,8 @@ export function OnboardingScreen() {
   const [_, setFirstTime] = useIsFirstTime();
   const insets = useSafeAreaInsets();
   const [index, setIndex] = useState(0);
-
+  const headerHeight = useHeaderHeight();
+  const scale = useSharedValue(1);
   const listRef = useRef<FlashListRef<typeof DATA[number]>>(null);
 
   const onViewableItemsChanged = useRef(({ viewableItems }: any) => {
@@ -84,44 +68,63 @@ export function OnboardingScreen() {
       listRef.current?.scrollToIndex({
         index: index + 1,
       });
-    }
-    else {
+    } else {
       setFirstTime(false);
+      router.push("/(app)")
     }
   };
 
+  // Tạo style chạy theo biến scale
+  const animatedButtonStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: scale.value }],
+    };
+  });
+
   const renderItem = ({ item }: any) => {
     return (
-      <View className="w-full items-center py-8" style={{ width: WIDTH }}>
-        <View className="w-full items-center gap-4">
-          <View className="items-center justify-between gap-4 py-10" style={{ width: WIDTH - 16, aspectRatio: '1/1' }}>
-            <Image source={item.image} resizeMode="cover" style={{ width: '100%', height: '100%' }} />
-          </View>
-          <View className="h-56 w-full items-center justify-between gap-4">
-            <View className="gap-4 px-6">
-              <Text className="text-center text-3xl font-bold text-white">
-                {item.title}
-              </Text>
+      <View style={{ width: WIDTH }}>
+        {/* LOGO & TEXT AREA */}
+        <View className="px-6 w-full items-start" style={{
+          height: HEIGHT * 0.35 - 132 - insets.top
+        }}>
+          <Text className="text-[32px] text-[#1B1B1B] dark:text-[#1B1B1B] font-bold leading-10 mb-4" style={{ color: COLORS.textPrimary }}>
+            {item.title.split('Euro Smart').map((part: string, index: number, array: string[]) => (
+              <Text className="text-[32px] font-bold" key={index}>
+                {part}
+                {index < array.length - 1 && (
+                  <Text className="text-[32px] font-bold" style={{ color: '#93D737' }}>Euro Smart</Text>
+                )}
+              </Text>)
+            )}
+          </Text>
+          <Text className="text-neutral-500 dark:text-neutral-500 text-xl leading-7" style={{ color: COLORS.textSecondary }}>
+            {item.description}
+          </Text>
+        </View>
 
-              <Text className="text-center text-base text-white">
-                {item.description}
-              </Text>
-            </View>
-            {/* BUTTON */}
-
-            <View className="w-full px-4 pb-4">
-              <TouchableOpacity
-                activeOpacity={0.9}
-                className={twMerge('h-10 items-center justify-center rounded-full border')}
-                style={{ borderWidth: 1, borderColor: COLORS.neon, backgroundColor: index === DATA.length - 1 ? COLORS.neon : 'transparent' }}
-                onPress={next}
-              >
-                <Text className="text-sm font-medium" style={{ color: index === DATA.length - 1 ? colors.black : COLORS.neon }}>
-                  {index === DATA.length - 1 ? 'BẮT ĐẦU' : 'TIẾP THEO'}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+        {/* IMAGE AREA */}
+        <View className="flex-1 relative items-center justify-center w-full px-4">
+          <Image
+            source={item.image}
+            style={{ width: WIDTH, height: HEIGHT * 0.65 }}
+            contentFit='cover'
+          />
+          <LinearGradient
+            colors={['#FFFFFF', 'rgba(255, 255, 255, 0)']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 0.2525 }}
+            style={StyleSheet.absoluteFillObject}
+            pointerEvents="none"
+          />
+          {/* Lớp 2: Gradient mờ ở DƯỚI CÙNG (Từ trong suốt mờ dần thành trắng) */}
+          <LinearGradient
+            colors={['rgba(255, 255, 255, 0)', '#FFFFFF']}
+            start={{ x: 0, y: 0.9 }}    // Bắt đầu từ 75% chiều cao ảnh (gần cuối)
+            end={{ x: 0, y: 1 }}         // Kết thúc ở mép dưới cùng (100%)
+            style={StyleSheet.absoluteFillObject}
+            pointerEvents="none"
+          />
         </View>
       </View>
     );
@@ -129,55 +132,72 @@ export function OnboardingScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: COLORS.background }}>
-      <LinearGradient
-        colors={['#131c27', COLORS.background]}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 1 }}
-        style={StyleSheet.absoluteFill}
-      />
-      <StatusBar barStyle="light-content" />
-      <View className="h-full gap-2" style={{ paddingTop: insets.top }}>
-        {/* HEADER */}
-        <View className="px-4">
-          <View className="flex-row items-center justify-between gap-2 pt-4">
-            <View className="flex-1 flex-row gap-1.5">
-              {DATA.map((_, i) => (
-                <View
-                  key={_.id}
-                  style={{ backgroundColor: i <= index ? 'white' : 'rgba(255,255,255,0.2)', height: 2, width: ((WIDTH / DATA.length) - ((DATA.length - 1) * 6) - 4), borderRadius: 10 }}
-                />
-              ))}
+      <FocusAwareStatusBar />
+      <View className="px-4" style={{ paddingTop: insets.top + headerHeight + 32 }}>
+        <Image
+          source={require('@@/assets/base/icon-wrapper-full.png')}
+          style={{
+            width: 140,
+            height: 40,
+          }}
+          contentFit="cover"
+        />
+      </View>
+      {/* LIST */}
+      <View className="flex-1 pt-8">
+        <List
+          ref={listRef}
+          data={DATA}
+          renderItem={renderItem}
+          onViewableItemsChanged={onViewableItemsChanged}
+          viewabilityConfig={viewabilityConfig}
+          pagingEnabled={true}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={i => i.id}
+        />
+      </View>
 
-            </View>
-
-            <TouchableOpacity
-              onPress={() => setFirstTime(false)}
-              className=""
-            >
-              <Feather name="x" size={24} color="white" />
-            </TouchableOpacity>
-
-          </View>
+      {/* FOOTER: Indicators & Next Button */}
+      <View
+        className="absolute left-0 right-0 flex-row items-center justify-between px-6 w-full z-10"
+        style={{ bottom: insets.bottom + 32 }}
+      >
+        {/* Indicators */}
+        <View className="flex-row gap-2">
+          {DATA.map((_, i) => (
+            <View
+              key={i}
+              className="h-1.5 rounded-full"
+              style={{
+                backgroundColor: i === index ? '#D1D5DB' : '#F3F4F6',
+                width: i === index ? 32 : 16, // Active is longer
+              }}
+            />
+          ))}
         </View>
 
-        {/* LIST */}
-
-        <View className="flex-1">
-          <List
-            ref={listRef}
-            data={DATA}
-            renderItem={renderItem}
-            horizontal
-            pagingEnabled
-            showsHorizontalScrollIndicator={false}
-            onViewableItemsChanged={onViewableItemsChanged}
-            viewabilityConfig={viewabilityConfig}
-            keyExtractor={i => i.id}
-            style={{ flex: 1 }}
-          />
-        </View>
+        {/* Action Button */}
+        <TouchableOpacity
+          activeOpacity={0.8}
+          className="w-19 h-11.5 bg-white/53 p-1.5 rounded-full items-center justify-center shadow-sm"
+          onPress={next}
+          onPressIn={() => {
+            // Khi ấn xuống: Thu nhỏ về 90% (0.9) với tốc độ nhanh
+            scale.value = withTiming(0.9, { duration: 100 });
+          }}
+          onPressOut={() => {
+            // Khi thả tay: Nảy lại kích thước gốc bằng lò xo (spring)
+            scale.value = withSpring(1, { damping: 10, stiffness: 200 });
+          }}
+        >
+          <Animated.View className="rounded-full w-full h-full items-center justify-center" style={[{
+            backgroundColor: colors.neon,
+          }, animatedButtonStyle]}>
+            <AntDesign name="arrow-right" size={16} color={COLORS.textPrimary} />
+          </Animated.View>
+        </TouchableOpacity>
       </View>
     </View>
-
   );
 }
