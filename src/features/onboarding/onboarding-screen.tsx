@@ -1,19 +1,20 @@
+/* eslint-disable react-hooks/immutability */
 import type { FlashListRef } from '@shopify/flash-list';
-import { Feather, AntDesign } from '@expo/vector-icons';
-import { useRef, useState } from 'react';
-
-import {
-  StyleSheet
-} from 'react-native';
-import { Image } from 'expo-image';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
-import { List, WIDTH, FocusAwareStatusBar, View, Text, TouchableOpacity, HEIGHT, colors } from '@/components/ui';
-import { useIsFirstTime } from '@/lib/hooks';
-import { LinearGradient } from 'expo-linear-gradient';
+import { AntDesign } from '@expo/vector-icons';
 import { useHeaderHeight } from '@react-navigation/elements';
-import Animated, { interpolateColor, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+
+import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
+
+import { useRef, useState } from 'react';
+import {
+  StyleSheet,
+} from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { colors, FocusAwareStatusBar, HEIGHT, List, Text, TouchableOpacity, View, WIDTH } from '@/components/ui';
+import { useIsFirstTime } from '@/lib/hooks';
 
 /**
  * DESIGN COLORS
@@ -68,9 +69,10 @@ export function OnboardingScreen() {
       listRef.current?.scrollToIndex({
         index: index + 1,
       });
-    } else {
+    }
+    else {
       setFirstTime(false);
-      router.push("/(app)")
+      router.push('/(app)');
     }
   };
 
@@ -85,30 +87,34 @@ export function OnboardingScreen() {
     return (
       <View style={{ width: WIDTH }}>
         {/* LOGO & TEXT AREA */}
-        <View className="px-6 w-full items-start" style={{
-          height: HEIGHT * 0.35 - 132 - insets.top
-        }}>
-          <Text className="text-[32px] text-[#1B1B1B] dark:text-[#1B1B1B] font-bold leading-10 mb-4" style={{ color: COLORS.textPrimary }}>
+        <View
+          className="w-full items-start px-6"
+          style={{
+            height: HEIGHT * 0.35 - 132 - insets.top,
+          }}
+        >
+          <Text className="mb-4 text-[32px]/10 font-bold text-[#1B1B1B] dark:text-[#1B1B1B]" style={{ color: COLORS.textPrimary }}>
             {item.title.split('Euro Smart').map((part: string, index: number, array: string[]) => (
               <Text className="text-[32px] font-bold" key={index}>
                 {part}
                 {index < array.length - 1 && (
                   <Text className="text-[32px] font-bold" style={{ color: '#93D737' }}>Euro Smart</Text>
                 )}
-              </Text>)
+              </Text>
+            ),
             )}
           </Text>
-          <Text className="text-neutral-500 dark:text-neutral-500 text-xl leading-7" style={{ color: COLORS.textSecondary }}>
+          <Text className="text-xl/7 text-neutral-500 dark:text-neutral-500" style={{ color: COLORS.textSecondary }}>
             {item.description}
           </Text>
         </View>
 
         {/* IMAGE AREA */}
-        <View className="flex-1 relative items-center justify-center w-full px-4">
+        <View className="relative w-full flex-1 items-center justify-center px-4">
           <Image
             source={item.image}
             style={{ width: WIDTH, height: HEIGHT * 0.65 }}
-            contentFit='cover'
+            contentFit="cover"
           />
           <LinearGradient
             colors={['#FFFFFF', 'rgba(255, 255, 255, 0)']}
@@ -120,8 +126,8 @@ export function OnboardingScreen() {
           {/* Lớp 2: Gradient mờ ở DƯỚI CÙNG (Từ trong suốt mờ dần thành trắng) */}
           <LinearGradient
             colors={['rgba(255, 255, 255, 0)', '#FFFFFF']}
-            start={{ x: 0, y: 0.9 }}    // Bắt đầu từ 75% chiều cao ảnh (gần cuối)
-            end={{ x: 0, y: 1 }}         // Kết thúc ở mép dưới cùng (100%)
+            start={{ x: 0, y: 0.9 }} // Bắt đầu từ 75% chiều cao ảnh (gần cuối)
+            end={{ x: 0, y: 1 }} // Kết thúc ở mép dưới cùng (100%)
             style={StyleSheet.absoluteFillObject}
             pointerEvents="none"
           />
@@ -160,7 +166,7 @@ export function OnboardingScreen() {
 
       {/* FOOTER: Indicators & Next Button */}
       <View
-        className="absolute left-0 right-0 flex-row items-center justify-between px-6 w-full z-10"
+        className="absolute right-0 left-0 z-10 w-full flex-row items-center justify-between px-6"
         style={{ bottom: insets.bottom + 32 }}
       >
         {/* Indicators */}
@@ -180,7 +186,7 @@ export function OnboardingScreen() {
         {/* Action Button */}
         <TouchableOpacity
           activeOpacity={0.8}
-          className="w-19 h-11.5 bg-white/53 p-1.5 rounded-full items-center justify-center shadow-sm"
+          className="h-11.5 w-19 items-center justify-center rounded-full bg-white/53 p-1.5 shadow-sm"
           onPress={next}
           onPressIn={() => {
             // Khi ấn xuống: Thu nhỏ về 90% (0.9) với tốc độ nhanh
@@ -191,9 +197,12 @@ export function OnboardingScreen() {
             scale.value = withSpring(1, { damping: 10, stiffness: 200 });
           }}
         >
-          <Animated.View className="rounded-full w-full h-full items-center justify-center" style={[{
-            backgroundColor: colors.neon,
-          }, animatedButtonStyle]}>
+          <Animated.View
+            className="h-full w-full items-center justify-center rounded-full"
+            style={[{
+              backgroundColor: colors.neon,
+            }, animatedButtonStyle]}
+          >
             <AntDesign name="arrow-right" size={16} color={COLORS.textPrimary} />
           </Animated.View>
         </TouchableOpacity>

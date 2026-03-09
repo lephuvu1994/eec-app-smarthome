@@ -17,7 +17,6 @@ const ROUTES = [
   { key: ETabSmartKey.automation, title: translate('scene.automation') },
 ];
 
-
 export function SmartScreenWrapper({ className }: { className?: string }) {
   const [tabIndex, setTabIndex] = useState<ETabSmart>(ETabSmart.tapToRun);
   const layout = useWindowDimensions();

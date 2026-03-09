@@ -5,7 +5,7 @@ export enum EDeviceConnectStatus {
 
 export enum ETypeViewDevice {
   FullWidth,
-  Grid
+  Grid,
 }
 
 export enum EDeviceStatus {
@@ -19,4 +19,4 @@ export type TDevice = {
   type: string;
   status: EDeviceConnectStatus;
   image: string;
-}
+};
