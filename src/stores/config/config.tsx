@@ -7,7 +7,7 @@ import { createSelectors } from '@/lib/utils';
 const initialConfigState: TConfig = {
   showCameraPreview: false,
   showRoomViewExpand: true,
-  allowHaptics: true
+  allowHaptics: true,
 };
 
 const _useConfig = create<TConfigState>()(

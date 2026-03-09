@@ -1,22 +1,25 @@
-import React, { useState, useRef, useEffect } from "react";
-import { useWindowDimensions, StyleSheet } from "react-native";
-import { View, Text, TouchableOpacity, } from "@/components/ui";
-import { Image } from "expo-image";
+/* eslint-disable react-hooks/immutability */
+import type { TDevice } from '@/types/device';
 import * as Haptics from 'expo-haptics'; // Import Haptics
-import { EDeviceConnectStatus, ETypeViewDevice, TDevice } from "@/types/device";
-import { BASE_SPACE_HORIZONTAL, GAP_DEVICE_VIEW_MOBILE, GRID_VIEW_DEVICE_MOBILE } from "@/constants";
-import { PowerIcon } from "@/components/ui/icons/power-icon";
+import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
+import * as React from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { StyleSheet, useWindowDimensions } from 'react-native';
 import Animated, {
+  Extrapolation,
+  interpolate,
+  interpolateColor,
   useAnimatedStyle,
   useSharedValue,
-  withTiming,
-  interpolateColor,
   withSpring,
-  interpolate,
-  Extrapolation
-} from "react-native-reanimated";
-import { useConfigManager } from "@/stores/config/config";
-import { LinearGradient } from "expo-linear-gradient";
+  withTiming,
+} from 'react-native-reanimated';
+import { Text, TouchableOpacity, View } from '@/components/ui';
+import { PowerIcon } from '@/components/ui/icons/power-icon';
+import { BASE_SPACE_HORIZONTAL, GAP_DEVICE_VIEW_MOBILE, GRID_VIEW_DEVICE_MOBILE } from '@/constants';
+import { useConfigManager } from '@/stores/config/config';
+import { EDeviceConnectStatus, ETypeViewDevice } from '@/types/device';
 
 type TProps = {
   device: TDevice;
@@ -43,7 +46,8 @@ export const DeviceItem: React.FC<TProps> = ({ device, typeViewDevice }) => {
   const handleToggleDevice = async () => {
     // Chống click quá nhanh (debounce 500ms)
     const now = Date.now();
-    if (now - lastClickTime.current < 500) return;
+    if (now - lastClickTime.current < 500)
+      return;
     lastClickTime.current = now;
 
     const nextState = !isOn;
@@ -60,11 +64,14 @@ export const DeviceItem: React.FC<TProps> = ({ device, typeViewDevice }) => {
       // --- BƯỚC 3: GỬI LỆNH LÊN SERVER ---
       // await onToggleApi(device.id, nextState);
       // Không cần làm gì thêm, đợi Websocket bắn về qua props
-    } catch (error) {
+
+    }
+    // eslint-disable-next-line unused-imports/no-unused-vars
+    catch (error) {
       // Rollback ngay nếu lỗi API (mất mạng cục bộ)
       setIsOn(!nextState);
       progress.value = withTiming(!nextState ? 1 : 0, { duration: 250 });
-      if(allowHaptics) {
+      if (allowHaptics) {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       }
     }
@@ -74,10 +81,10 @@ export const DeviceItem: React.FC<TProps> = ({ device, typeViewDevice }) => {
     backgroundColor: interpolateColor(
       progress.value,
       [0, 1],
-      ['#E9ECF4', '#A3EC3E']
+      ['#E9ECF4', '#A3EC3E'],
     ),
     // Hiệu ứng "nhún" nhẹ khi trạng thái thay đổi
-    transform: [{ scale: withSpring(progress.value === 1 ? 1.05 : 1) }]
+    transform: [{ scale: withSpring(progress.value === 1 ? 1.05 : 1) }],
   }));
 
   // Giả sử progress.value chạy từ 0 -> 1
@@ -88,21 +95,22 @@ export const DeviceItem: React.FC<TProps> = ({ device, typeViewDevice }) => {
         progress.value,
         [0, 1],
         [0, 1],
-        Extrapolation.CLAMP
+        Extrapolation.CLAMP,
       ),
     };
   });
 
+  // eslint-disable-next-line react/no-nested-component-definitions
   const PowerButton = () => (
     <Animated.View style={[{ width: 32, height: 32, borderRadius: 17, padding: 7 }, powerButtonStyle]}>
-      <PowerIcon color={'#1B1B1B'} size={18} />
+      <PowerIcon color="#1B1B1B" size={18} />
     </Animated.View>
   );
 
   // Layout FullWidth
   if (typeViewDevice === ETypeViewDevice.FullWidth) {
     return (
-      <TouchableOpacity onPress={handleToggleDevice} activeOpacity={0.9} className="w-full h-36 rounded-xl justify-between bg-white dark:bg-[#FFFFFF0D] shadow-sm p-3 border border-white dark:border-[#292929] overflow-hidden">
+      <TouchableOpacity onPress={handleToggleDevice} activeOpacity={0.9} className="h-36 w-full justify-between overflow-hidden rounded-xl border border-white bg-white p-3 shadow-sm dark:border-[#292929] dark:bg-[#FFFFFF0D]">
         <Animated.View style={[StyleSheet.absoluteFill, animatedGradientStyle]}>
           <LinearGradient
             // 180deg = Top to Bottom
@@ -110,7 +118,7 @@ export const DeviceItem: React.FC<TProps> = ({ device, typeViewDevice }) => {
             end={{ x: 0.5, y: 1 }}
             colors={[
               'rgba(163, 236, 62, 0.20)', // Màu bắt đầu (0%)
-              'transparent'               // Màu kết thúc (100%) - Thay bằng màu faded của bác
+              'transparent', // Màu kết thúc (100%) - Thay bằng màu faded của bác
             ]}
             style={StyleSheet.absoluteFill}
           />
@@ -120,7 +128,7 @@ export const DeviceItem: React.FC<TProps> = ({ device, typeViewDevice }) => {
             <Image source={device.image} style={{ width: 52, height: 52, borderRadius: 12 }} contentFit="cover" />
             <View className="justify-center">
               <Text className="text-lg font-bold text-neutral-800">{device.name}</Text>
-              <Text className={isOn ? "text-[#A3EC3E] text-xs font-medium" : "text-neutral-400 text-xs"}>
+              <Text className={isOn ? 'text-xs font-medium text-[#A3EC3E]' : 'text-xs text-neutral-400'}>
                 {isOn ? 'Đang hoạt động' : 'Đã tắt'}
               </Text>
             </View>
@@ -128,8 +136,8 @@ export const DeviceItem: React.FC<TProps> = ({ device, typeViewDevice }) => {
           <PowerButton />
         </View>
         <View className="flex-row gap-4 pt-2">
-          <Text className="text-neutral-400 text-[11px]">⚡ 225V</Text>
-          <Text className="text-neutral-400 text-[11px]">⏳ Hẹn giờ: 22:00</Text>
+          <Text className="text-[11px] text-neutral-400">⚡ 225V</Text>
+          <Text className="text-[11px] text-neutral-400">⏳ Hẹn giờ: 22:00</Text>
         </View>
       </TouchableOpacity>
     );
@@ -141,7 +149,7 @@ export const DeviceItem: React.FC<TProps> = ({ device, typeViewDevice }) => {
       activeOpacity={0.9}
       onPress={handleToggleDevice}
       style={{ width: (layout.width - BASE_SPACE_HORIZONTAL * 2 - GAP_DEVICE_VIEW_MOBILE) / GRID_VIEW_DEVICE_MOBILE }}
-      className="h-36 rounded-xl justify-between bg-white dark:bg-[#FFFFFF0D] border border-white dark:border-[#292929] shadow-sm p-3 overflow-hidden"
+      className="h-36 justify-between overflow-hidden rounded-xl border border-white bg-white p-3 shadow-sm dark:border-[#292929] dark:bg-[#FFFFFF0D]"
     >
       <Animated.View style={[StyleSheet.absoluteFill, animatedGradientStyle]}>
         <LinearGradient
@@ -150,18 +158,18 @@ export const DeviceItem: React.FC<TProps> = ({ device, typeViewDevice }) => {
           end={{ x: 0.5, y: 1 }}
           colors={[
             'rgba(163, 236, 62, 0.20)', // Màu bắt đầu (0%)
-            'transparent'               // Màu kết thúc (100%) - Thay bằng màu faded của bác
+            'transparent', // Màu kết thúc (100%) - Thay bằng màu faded của bác
           ]}
           style={StyleSheet.absoluteFill}
         />
       </Animated.View>
-      <View className="w-full flex-row justify-between items-start">
+      <View className="w-full flex-row items-start justify-between">
         <Image source={device.image} style={{ width: 64, height: 64 }} contentFit="cover" />
         <PowerButton />
       </View>
       <View>
         <Text className="text-[15px] font-bold text-neutral-800" numberOfLines={1}>{device.name}</Text>
-        <Text className={isOn ? "text-[#A3EC3E] text-xs font-medium" : "text-neutral-400 text-xs"}>
+        <Text className={isOn ? 'text-xs font-medium text-[#A3EC3E]' : 'text-xs text-neutral-400'}>
           {isOn ? 'Đang hoạt động' : 'Đã tắt'}
         </Text>
       </View>

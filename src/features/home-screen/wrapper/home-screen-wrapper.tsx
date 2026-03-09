@@ -124,7 +124,7 @@ export function HomeScreenWrapper({ className }: { className?: string }) {
   return (
     <View className={cn('flex-1', className)}>
       {/* Vùng xem Camera */}
-      <Animated.View style={[animatedStyle]} className="w-full items-center justify-center overflow-hidden px-4 mb-2">
+      <Animated.View style={[animatedStyle]} className="mb-2 w-full items-center justify-center overflow-hidden px-4">
         {showCameraPreview && (
           <View className="h-full w-full flex-row justify-between">
             <LiveCameraWrapper
@@ -174,7 +174,7 @@ export function HomeScreenWrapper({ className }: { className?: string }) {
         </View>
 
         {/* Nút Chevron */}
-        <Pressable onPress={toggleExpand} className="h-7 items-center justify-center rounded-full bg-white/40 px-2 mr-2 shadow-sm dark:bg-black/40">
+        <Pressable onPress={toggleExpand} className="mr-2 h-7 items-center justify-center rounded-full bg-white/40 px-2 shadow-sm dark:bg-black/40">
           <Animated.View style={[arrowStyle]}>
             <FontAwesome6
               name="chevron-down"
@@ -198,7 +198,7 @@ export function HomeScreenWrapper({ className }: { className?: string }) {
           decelerationRate="fast"
           overScrollMode="never"
           contentContainerStyle={{ flexGrow: 1 }}
-          className='flex-1'
+          className="flex-1"
         >
           {GROUPS.map((group) => {
             return (

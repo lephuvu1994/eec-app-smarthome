@@ -1,18 +1,13 @@
-import AntDesign from '@expo/vector-icons/AntDesign';
 import { Image } from 'expo-image';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
-import { PulseDot } from '@/components/base/PulseDot';
+import { PrimaryHeaderHome } from '@/components/base/header/PrimaryHomeHeader';
 import { BaseLayout } from '@/components/layout/BaseLayout';
-import { Text, TouchableOpacity, View } from '@/components/ui';
-import { BellIcon, SnownyIcon } from '@/components/ui/icons';
+import { View } from '@/components/ui';
 import { ETheme } from '@/types/base';
 import { HomeScreenWrapper } from './wrapper/home-screen-wrapper';
-import { PrimaryHeaderHome } from '@/components/base/header/PrimaryHomeHeader';
 
 export function HomeScreen() {
   const { theme } = useUniwind();
-  const insets = useSafeAreaInsets();
 
   return (
     <BaseLayout>

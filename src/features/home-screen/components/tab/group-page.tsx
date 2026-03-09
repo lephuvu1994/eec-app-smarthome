@@ -1,16 +1,16 @@
-import { Text, TouchableOpacity, View, WIDTH } from '@/components/ui';
-import { translate } from '@/lib/i18n';
-import { useConfigManager } from '@/stores/config/config';
-import { ETheme } from '@/types/base';
+import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import { ScrollView } from 'react-native';
+import { Text, TouchableOpacity, View, WIDTH } from '@/components/ui';
+import { useSmartTabBarHeight } from '@/hooks/useSmartTabBarHeight';
+import { translate } from '@/lib/i18n';
+import { useConfigManager } from '@/stores/config/config';
+import { ETheme } from '@/types/base';
 import { calculateCenterOffset } from '../../utils/utils';
 import { ListDevice } from '../device/ListDevice';
 import { RoomTabItem } from './room-tab';
-import { useSmartTabBarHeight } from '@/hooks/useSmartTabBarHeight';
 
 const ROOMS_DATA: Record<string, { id: string; title: string }[]> = {
   favorite: [{ id: 'fav1', title: 'Thiết bị thường dùng' }],
@@ -36,7 +36,7 @@ export const GroupPage = memo(({ group, theme, isCurrentGroup }: { group: any; t
   const isManualRoomScrollingRef = useRef(false);
   const secondaryTabRef = useRef<ScrollView>(null);
   const { showRoomViewExpand } = useConfigManager();
-   const heightBottomTab = useSmartTabBarHeight();
+  const heightBottomTab = useSmartTabBarHeight();
 
   // Chỉ cần ScrollView thường là đủ
   const innerScrollRef = useRef<ScrollView>(null);
@@ -126,7 +126,7 @@ export const GroupPage = memo(({ group, theme, isCurrentGroup }: { group: any; t
           decelerationRate="fast"
           overScrollMode="never"
           style={{ flex: 1 }}
-          contentContainerStyle={{ flexGrow: 1}}
+          contentContainerStyle={{ flexGrow: 1 }}
         >
           {rooms.map(item => (
             <View key={item.id} style={{ width: WIDTH }} className="px-4 pt-1">

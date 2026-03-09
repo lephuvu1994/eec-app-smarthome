@@ -1,12 +1,12 @@
-import React from 'react';
+import * as React from 'react';
 import Svg, { Path } from 'react-native-svg';
 
-interface PowerIconProps {
+type PowerIconProps = {
   size?: number;
   color?: string;
-}
+};
 
-export const PowerIcon = ({ size = 20, color = "white" }: PowerIconProps) => {
+export function PowerIcon({ size = 20, color = 'white' }: PowerIconProps) {
   return (
     <Svg
       width={size}
@@ -30,4 +30,4 @@ export const PowerIcon = ({ size = 20, color = "white" }: PowerIconProps) => {
       />
     </Svg>
   );
-};
+}

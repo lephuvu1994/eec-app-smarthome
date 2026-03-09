@@ -1,35 +1,35 @@
-import { PrimarySceneCard } from "@/components/base/scene/PrimarySceneCard"
-import { RecommendationCard } from "@/components/base/scene/RecommendationCard"
-import { View, Text } from "@/components/ui"
-import { BASE_SPACE_HORIZONTAL, GAP_DEVICE_VIEW_MOBILE, GRID_VIEW_DEVICE_MOBILE } from "@/constants"
-import { MaterialCommunityIcons } from "@expo/vector-icons"
-import { useWindowDimensions, ScrollView } from "react-native"
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { ScrollView, useWindowDimensions } from 'react-native';
+import { PrimarySceneCard } from '@/components/base/scene/PrimarySceneCard';
+import { RecommendationCard } from '@/components/base/scene/RecommendationCard';
+import { Text, View } from '@/components/ui';
+import { BASE_SPACE_HORIZONTAL, GAP_DEVICE_VIEW_MOBILE, GRID_VIEW_DEVICE_MOBILE } from '@/constants';
 
 type TProps = {
-  className?: string
-}
+  className?: string;
+};
 
 export const AutomationListSceneWrapper: React.FC<TProps> = ({ className }) => {
-  const layout = useWindowDimensions()
-  const cardWidth = (layout.width - BASE_SPACE_HORIZONTAL * 2 - GAP_DEVICE_VIEW_MOBILE) / GRID_VIEW_DEVICE_MOBILE
+  const layout = useWindowDimensions();
+  const cardWidth = (layout.width - BASE_SPACE_HORIZONTAL * 2 - GAP_DEVICE_VIEW_MOBILE) / GRID_VIEW_DEVICE_MOBILE;
 
   return (
     <ScrollView className={className} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
       {/* Tiêu đề cho Grid */}
-      <View className="px-4 mb-3">
+      <View className="mb-3 px-4">
         {/* Có thể thêm tựa đề hoặc tuỳ chọn filter ở đây */}
       </View>
 
       {/* --- GRID (2 CỘT) --- */}
       <View className="w-full flex-row flex-wrap px-4" style={{ gap: GAP_DEVICE_VIEW_MOBILE }}>
-        
+
         {/* 1. Mẫu Cơ Bản: Tối giản (Hình 1) */}
         <PrimarySceneCard
           title="Về nhà"
-          cardColor="#FFFFFF"          // Nền thẻ màu trắng
-          iconBgColor="#F2FCEE"        // Nền icon xanh lá nhạt
-          textColor="#1B1B1B"          // Chữ màu đen
-          menuIconColor="#9CA3AF"      // Nút 3 chấm màu xám
+          cardColor="#FFFFFF" // Nền thẻ màu trắng
+          iconBgColor="#F2FCEE" // Nền icon xanh lá nhạt
+          textColor="#1B1B1B" // Chữ màu đen
+          menuIconColor="#9CA3AF" // Nút 3 chấm màu xám
           icon={<MaterialCommunityIcons name="home-outline" size={20} color="#84CC16" />}
           containerStyle={{ width: cardWidth }}
         />
@@ -38,9 +38,9 @@ export const AutomationListSceneWrapper: React.FC<TProps> = ({ className }) => {
         <PrimarySceneCard
           title="Thức dậy sớm"
           bgGradient={['#FBBF24', '#F59E0B']} // Vàng sang cam
-          textColor="#FFFFFF"                 // Chữ trắng
+          textColor="#FFFFFF" // Chữ trắng
           menuIconColor="#FFFFFF"
-          iconBgColor="transparent"           // Bỏ nền của ô vuông chứa icon
+          iconBgColor="transparent" // Bỏ nền của ô vuông chứa icon
           icon={<MaterialCommunityIcons name="white-balance-sunny" size={24} color="#FFFFFF" />}
           containerStyle={{ width: cardWidth }}
         />
@@ -48,33 +48,33 @@ export const AutomationListSceneWrapper: React.FC<TProps> = ({ className }) => {
         {/* 3. Mẫu Dark Mode + Quầng sáng Glossy */}
         <PrimarySceneCard
           title="Giải trí (Phim)"
-          cardColor="#1F2937"          // Nền xám than đậm
-          iconBgColor="#374151"        // Nền icon xám nhạt hơn xíu
-          textColor="#F9FAFB"          // Chữ trắng xám
+          cardColor="#1F2937" // Nền xám than đậm
+          iconBgColor="#374151" // Nền icon xám nhạt hơn xíu
+          textColor="#F9FAFB" // Chữ trắng xám
           menuIconColor="#9CA3AF"
           icon={<MaterialCommunityIcons name="movie-open-outline" size={20} color="#A78BFA" />} // Icon màu đỏ dâu/tím
-          showGlossyEffect={true}      // BẬT HIỆU ỨNG GLOSSY (Hình 3)
+          showGlossyEffect={true} // BẬT HIỆU ỨNG GLOSSY (Hình 3)
           containerStyle={{ width: cardWidth }}
         />
 
         {/* 4. Mẫu Nguy Hiểm / Cảnh Báo + Quầng sáng Glossy */}
         <PrimarySceneCard
           title="Báo động"
-          cardColor="#7F1D1D"          // Màu đỏ đậm mận
-          iconBgColor="#991B1B"        // Đỏ nhạt hơn xíu cho icon box
+          cardColor="#7F1D1D" // Màu đỏ đậm mận
+          iconBgColor="#991B1B" // Đỏ nhạt hơn xíu cho icon box
           textColor="#FFFFFF"
           menuIconColor="#FDA4AF"
           icon={<MaterialCommunityIcons name="shield-alert-outline" size={20} color="#FECACA" />}
-          showGlossyEffect={true}      // BẬT HIỆU ỨNG GLOSSY
+          showGlossyEffect={true} // BẬT HIỆU ỨNG GLOSSY
           containerStyle={{ width: cardWidth }}
         />
 
         {/* 5. Mẫu Nền Pastel Dành Cho Case Nhẹ Nhàng */}
         <PrimarySceneCard
           title="Đi ngủ"
-          cardColor="#EFF6FF"          // Màu xanh dương pastel nhạt
+          cardColor="#EFF6FF" // Màu xanh dương pastel nhạt
           iconBgColor="#DBEAFE"
-          textColor="#1E3A8A"          // Xanh dương đậm
+          textColor="#1E3A8A" // Xanh dương đậm
           menuIconColor="#60A5FA"
           icon={<MaterialCommunityIcons name="weather-night" size={20} color="#3B82F6" />}
           containerStyle={{ width: cardWidth }}
@@ -83,16 +83,16 @@ export const AutomationListSceneWrapper: React.FC<TProps> = ({ className }) => {
         {/* 6. Mẫu Không Có Icon (Chỉ Text) */}
         <PrimarySceneCard
           title="Tắt toàn bộ thiết bị nhà"
-          cardColor="#FEE2E2"         // Đỏ cực nhạt (Pastel)
-          textColor="#991B1B"         // Chữ đỏ đậm
+          cardColor="#FEE2E2" // Đỏ cực nhạt (Pastel)
+          textColor="#991B1B" // Chữ đỏ đậm
           menuIconColor="#EF4444"
-          icon={null}                 // KHÔNG TRUYỀN ICON ĐỂ BACKGROUND TEXT DỊCH LÊN
+          icon={null} // KHÔNG TRUYỀN ICON ĐỂ BACKGROUND TEXT DỊCH LÊN
           containerStyle={{ width: cardWidth }}
         />
       </View>
 
       {/* --- BANNER (FULL BỀ NGANG) DÙNG CHO QUẢNG CÁO HOẶC NHẤN MẠNH --- */}
-      <View className="px-4 mt-6">
+      <View className="mt-6 px-4">
         <PrimarySceneCard
           title="Chế độ Tự động làm mát & Hệ thống sinh thái xanh"
           bgGradient={['#34D399', '#059669']} // Xanh Gradient
@@ -101,7 +101,7 @@ export const AutomationListSceneWrapper: React.FC<TProps> = ({ className }) => {
           iconBgColor="rgba(255, 255, 255, 0.2)"
           icon={<MaterialCommunityIcons name="spa-outline" size={24} color="#FFFFFF" />}
           showGlossyEffect={true}
-          
+
           /* Ở đây có thể dùng ảnh ImageSource truyền vào bgPattern. VD:
              bgPattern={require('@/assets/images/leaf-pattern.png')}
              bgPatternStyle={{ opacity: 0.15, right: -20, bottom: -20, width: 120, height: 120 }}
@@ -112,31 +112,31 @@ export const AutomationListSceneWrapper: React.FC<TProps> = ({ className }) => {
       </View>
 
       {/* --- TEXT CẢNH BÁO KỊCH BẢN --- */}
-      <View className="px-4 w-full mt-6 mb-2 flex-row flex-wrap items-center justify-center">
-        <Text className="text-[#1B1B1B] text-sm">1 kịch bản chưa khả dụng. </Text>
-         <View>
-             <Text className="text-[#059669] text-sm font-medium underline">Nhấn để xem thêm.</Text>
-         </View>
+      <View className="mt-6 mb-2 w-full flex-row flex-wrap items-center justify-center px-4">
+        <Text className="text-sm text-[#1B1B1B]">1 kịch bản chưa khả dụng. </Text>
+        <View>
+          <Text className="text-sm font-medium text-[#059669] underline">Nhấn để xem thêm.</Text>
+        </View>
       </View>
 
       {/* --- PHẦN ĐỀ XUẤT (RECOMMENDATION) --- */}
-      <View className="mt-4 px-4 w-full">
-         <View className="border-b border-t border-[#E5E7EB] border-x-0 py-3 mb-2">
-             <Text className="text-[16px] font-semibold text-[#1B1B1B] ml-1">Đề xuất</Text>
-         </View>
-         
-         <RecommendationCard 
-            title="Bật tất cả công tắc"
-            usageCount="498.7K"
-            bgImage={require('@@/assets/scene/recommendation-bg.png')}
-         />
+      <View className="mt-4 w-full px-4">
+        <View className="mb-2 border-x-0 border-t border-b border-[#E5E7EB] py-3">
+          <Text className="ml-1 text-[16px] font-semibold text-[#1B1B1B]">Đề xuất</Text>
+        </View>
 
-         <RecommendationCard 
-            title="Tắt toàn bộ thiết bị"
-            usageCount="498.7K"
+        <RecommendationCard
+          title="Bật tất cả công tắc"
+          usageCount="498.7K"
+          bgImage={require('@@/assets/scene/recommendation-bg.png')}
+        />
+
+        <RecommendationCard
+          title="Tắt toàn bộ thiết bị"
+          usageCount="498.7K"
           bgImage={require('@@/assets/scene/recommendation-bg-off.png')}
-         />
+        />
       </View>
     </ScrollView>
-  )
-}
+  );
+};
