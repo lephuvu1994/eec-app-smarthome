@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 import { BaseLayout } from '@/components/layout/BaseLayout';
 import { ScrollView, Text, TouchableOpacity, View } from '@/components/ui';
+import { BASE_TAB_HEIGHT, EXTRA_GLASS_SPACE } from '@/constants';
 import { useUserManager } from '@/features/auth/user-store';
 import { translate } from '@/lib/i18n';
 import { ETheme } from '@/types/base';
@@ -103,7 +104,7 @@ export function SettingsScreen() {
 
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingTop: headerHeight, paddingBottom: insets.bottom + 24 }}
+          contentContainerStyle={{ paddingTop: headerHeight, paddingBottom: insets.bottom + BASE_TAB_HEIGHT + EXTRA_GLASS_SPACE }}
         >
           {/* ─── Profile Section ─── */}
           <TouchableOpacity
