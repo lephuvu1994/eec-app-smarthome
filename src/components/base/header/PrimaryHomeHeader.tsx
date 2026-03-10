@@ -19,13 +19,13 @@ export const PrimaryHeaderHome: React.FC = memo(() => {
       key: 'add device',
       title: translate('base.addDevice'),
       icon: { ios: 'plus' },
-      onPress: () => router.push('/(app)/(mobile)/(home)/add-device' as Href),
+      onPress: () => router.push('/(app)/(mobile)/add-device' as Href),
     },
     {
       key: 'add scene',
       title: translate('base.addScene'),
       icon: { ios: 'plus' },
-      onPress: () => router.push('/(app)/(mobile)/(home)/add-scene' as Href),
+      onPress: () => router.push('/(app)/(mobile)/add-scene' as Href),
     },
     {
       type: 'separator',

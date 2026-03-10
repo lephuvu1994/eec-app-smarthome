@@ -1,7 +1,10 @@
-import { TabBar } from '@/features/TabBar';
+import { Stack } from 'expo-router';
 
-function MobileLayout() {
-  return <TabBar />;
+export default function MobileLayout() {
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="add-device" />
+    </Stack>
+  );
 }
-
-export default MobileLayout;
