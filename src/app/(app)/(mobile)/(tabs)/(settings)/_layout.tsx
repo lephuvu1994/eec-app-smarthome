@@ -1,4 +1,4 @@
-import type { ETheme } from '@/types/base';
+import { ETheme } from '@/types/base';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router, Stack } from 'expo-router';
@@ -48,7 +48,12 @@ function SettingScreen() {
           headerShown: true,
           headerTransparent: true,
           title: translate('settings.userInformation'),
-          headerTitleAlign: 'center',
+          headerTintColor: theme === ETheme.Dark ? colors.white : '#1B1B1B',
+          headerTitleStyle: {
+            color: theme === ETheme.Dark ? colors.white: '#1B1B1B',
+            fontWeight: '600', // Sẵn tiện cho nó đậm lên tí nhìn cho sang
+          },
+          headerBackTitle: '',
         }}
       />
       <Stack.Screen
@@ -58,6 +63,12 @@ function SettingScreen() {
           headerTransparent: true,
           title: translate('settings.homeManagement'),
           headerTitleAlign: 'center',
+          headerTintColor: theme === 'dark' ? '#ffffff' : '#1B1B1B',
+          headerTitleStyle: {
+            color: theme === 'dark' ? '#ffffff' : '#1B1B1B',
+            fontWeight: '600', // Sẵn tiện cho nó đậm lên tí nhìn cho sang
+          },
+          headerBackTitle: '',
         }}
       />
       <Stack.Screen
@@ -67,6 +78,12 @@ function SettingScreen() {
           headerTransparent: true,
           title: translate('settings.general.title'),
           headerTitleAlign: 'center',
+          headerTintColor: theme === 'dark' ? '#ffffff' : '#1B1B1B',
+          headerTitleStyle: {
+            color: theme === 'dark' ? '#ffffff' : '#1B1B1B',
+            fontWeight: '600', // Sẵn tiện cho nó đậm lên tí nhìn cho sang
+          },
+          headerBackTitle: '',
         }}
       />
     </Stack>

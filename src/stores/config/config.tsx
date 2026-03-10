@@ -20,8 +20,8 @@ const _useConfig = create<TConfigState>()(
       setShowRoomViewExpand: (showRoomViewExpand: boolean) => {
         set({ showRoomViewExpand });
       },
-      setToggleAllowHaptics: (showRoomViewExpand: boolean) => {
-        set({ showRoomViewExpand });
+      setToggleAllowHaptics: (allowHaptics: boolean) => {
+        set({ allowHaptics });
       },
     }),
     {
