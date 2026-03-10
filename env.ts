@@ -17,14 +17,14 @@ const envSchema = z.object({
 const EXPO_PUBLIC_APP_ENV = (process.env.EXPO_PUBLIC_APP_ENV ?? 'development') as z.infer<typeof envSchema>['EXPO_PUBLIC_APP_ENV'];
 
 const BUNDLE_IDS = {
-  development: 'eurosmart.development',
-  preview: 'eurosmart.preview',
+  development: 'eurosmart.vincent.le.development',
+  preview: 'eurosmart.vincent.le.preview',
   production: 'eurosmart',
 } as const;
 
 const PACKAGES = {
-  development: 'eurosmart.development',
-  preview: 'eurosmart.preview',
+  development: 'eurosmart.vincent.le.development',
+  preview: 'eurosmart.vincent.le.preview',
   production: 'eurosmart',
 } as const;
 

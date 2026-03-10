@@ -13,6 +13,8 @@
     "prebuild": "node scripts/patch-vlc-for-prebuild.js && yarn expo prebuild",
     "android": "expo run:android",
     "ios": "expo run:ios",
+    "ios-device": "expo run:ios --device 00008030-001150AC0AA0802E",
+    "ios-device2": "expo run:ios --device 00008140-000475AE0252801C",
     "web": "expo start --web",
     "xcode": "xed -b ios",
     "doctor": "npx expo-doctor@latest",
