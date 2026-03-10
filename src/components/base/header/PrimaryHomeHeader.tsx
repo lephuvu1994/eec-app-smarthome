@@ -1,17 +1,45 @@
+import { memo, useMemo } from 'react';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 import { Text, TouchableOpacity, View } from '@/components/ui';
-import { SnownyIcon } from '@/components/ui/icons';
+import { BellIcon, SnownyIcon } from '@/components/ui/icons';
 import { ETheme } from '@/types/base';
+import { translate } from '@/lib/i18n';
+import { Href, router } from 'expo-router';
+import { TMenuElement, ZeegoNativeMenu } from '@/components/ui/zeego-native-menu';
+import { PulseDot } from '../PulseDot';
 
-type TProps = {
-  rightHeader?: () => React.ReactNode;
-};
-
-export const PrimaryHeaderHome: React.FC<TProps> = ({ rightHeader }) => {
+export const PrimaryHeaderHome: React.FC = memo(() => {
   const { theme } = useUniwind();
   const insets = useSafeAreaInsets();
+
+  const headerRightMenu: TMenuElement[] = useMemo(() => [
+    {
+      key: 'add device',
+      title: translate('base.addDevice'),
+      icon: { ios: 'plus' },
+      onPress: () => router.push('/(app)/(mobile)/(home)/add-device' as Href),
+    },
+    {
+      key: 'add scene',
+      title: translate('base.addScene'),
+      icon: { ios: 'plus' },
+      onPress: () => router.push('/(app)/(mobile)/(home)/add-scene' as Href),
+    },
+    {
+      type: 'separator',
+      key: 'sep-1',
+    },
+    {
+      key: 'scan',
+      title: translate('base.scan'),
+      icon: { ios: 'trash' },
+      isDestructive: true,
+      onPress: () => router.push('/(app)/(mobile)/(home)/scan' as Href),
+    },
+  ], []);
+
   return (
     <View
       className="w-full flex-row gap-2 px-4"
@@ -30,13 +58,30 @@ export const PrimaryHeaderHome: React.FC<TProps> = ({ rightHeader }) => {
           <Text className="text-sm text-[#06B6D4] dark:text-[#06B6D4]">20°C</Text>
         </View>
       </View>
-      {rightHeader
-        ? (
-            <View className="flex-1 flex-row justify-end gap-2">
-              {rightHeader()}
+      <View className="flex-1 flex-row justify-end gap-2">
+        <View className="relative size-8 items-center justify-center rounded-full bg-white/40 shadow-sm dark:bg-black/40">
+          <BellIcon color={theme === ETheme.Light ? '#737373' : '#FFFFFF'} />
+          <PulseDot
+            color="#22C55E"
+            size={8}
+            duration={1200}
+            style={{
+              position: 'absolute',
+              top: 6,
+              right: 6,
+            }}
+          />
+        </View>
+
+        <ZeegoNativeMenu
+          triggerComponent={(
+            <View pointerEvents="none" className="size-8 items-center justify-center rounded-full bg-white/40 shadow-sm dark:bg-black/40">
+              <AntDesign name="plus" size={16} color={theme === ETheme.Light ? '#737373' : '#FFFFFF'} />
             </View>
-          )
-        : null}
+          )}
+          elements={headerRightMenu}
+        />
+      </View>
     </View>
   );
-};
+});
