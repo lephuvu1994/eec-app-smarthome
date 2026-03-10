@@ -2,6 +2,7 @@ import type TranslateOptions from 'i18next';
 import type { Language, resources } from './resources';
 import type { RecursiveKeyOf } from './types';
 import i18n from 'i18next';
+// eslint-disable-next-line e18e/ban-dependencies
 import memoize from 'lodash.memoize';
 import { useCallback } from 'react';
 import { I18nManager, NativeModules, Platform } from 'react-native';

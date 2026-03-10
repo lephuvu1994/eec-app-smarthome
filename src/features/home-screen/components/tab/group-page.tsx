@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView } from 'react-native';
 import { Text, TouchableOpacity, View, WIDTH } from '@/components/ui';
-import { useSmartTabBarHeight } from '@/hooks/useSmartTabBarHeight';
+import { useSmartTabBarHeight } from '@/hooks/use-smart-tabbar-height';
 import { translate } from '@/lib/i18n';
 import { useConfigManager } from '@/stores/config/config';
 import { ETheme } from '@/types/base';
