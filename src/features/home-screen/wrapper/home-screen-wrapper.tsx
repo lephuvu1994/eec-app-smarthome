@@ -1,6 +1,6 @@
 import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import { FontAwesome6 } from '@expo/vector-icons';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { ScrollView } from 'react-native';
 
 import Animated, {
@@ -37,12 +37,13 @@ const GROUPS = [
 // 2. MAIN WRAPPER COMPONENT (Lớp ngoài)
 // Quản lý việc cuộn ngang giữa các tầng và Camera Preview
 // ==========================================
-export function HomeScreenWrapper({ className }: { className?: string }) {
+export const HomeScreenWrapper = memo(({ className }: { className?: string }) => {
   const { theme } = useUniwind();
   const [currentFloorIdx, setCurrentFloorIdx] = useState(0);
   const showCameraPreview = useConfigManager(state => !state.showCameraPreview);
   const animatedHeight = useSharedValue(heightVideoOnScreen);
-  const { showRoomViewExpand, setShowRoomViewExpand } = useConfigManager();
+  const showRoomViewExpand = useConfigManager(state => state.showRoomViewExpand);
+  const setShowRoomViewExpand = useConfigManager(state => state.setShowRoomViewExpand);
 
   const primaryTabRef = useAnimatedRef<Animated.ScrollView>();
   const outerScrollRef = useRef<ScrollView>(null);
@@ -93,11 +94,11 @@ export function HomeScreenWrapper({ className }: { className?: string }) {
     }
   }, [currentFloorIdx]);
 
-  const handleError = () => {
+  const handleError = useCallback(() => {
     animatedHeight.value = withTiming(animatedHeight.value > 0 ? 0 : heightVideoOnScreen, {
       duration: ANIMATION_DURATION,
     });
-  };
+  }, [animatedHeight]);
 
   const toggleExpand = () => {
     const nextState = !showRoomViewExpand;
@@ -209,4 +210,4 @@ export function HomeScreenWrapper({ className }: { className?: string }) {
       </View>
     </View>
   );
-}
+});

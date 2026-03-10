@@ -70,12 +70,12 @@ export type TSharedNativeMenuProps = {
 // ==========================================
 // 2. COMPONENT CHÍNH
 // ==========================================
-export function ZeegoNativeMenu({
+export const ZeegoNativeMenu = React.memo(({
   triggerComponent,
   elements,
   menuTitle,
   align = 'end',
-}: TSharedNativeMenuProps) {
+}: TSharedNativeMenuProps) => {
   // Hàm đệ quy: Đọc Data và đẻ ra Native UI tương ứng
   const renderElement = (el: TMenuElement) => {
     // 0️⃣ Nếu bị ẩn theo logic -> Bỏ qua
@@ -164,4 +164,4 @@ export function ZeegoNativeMenu({
       </DropdownMenu.Content>
     </DropdownMenu.Root>
   );
-}
+});

@@ -13,7 +13,7 @@ type Props = {
   handleError: () => void;
 };
 
-export function LiveCameraWrapper({ videoUrl, imageUrl, defaultImage, handleError }: Props) {
+export const LiveCameraWrapper = React.memo(({ videoUrl, imageUrl, defaultImage, handleError }: Props) => {
   const [isFailedRTS, setIsFailedRTS] = useState<boolean>(false);
 
   return (
@@ -88,4 +88,4 @@ export function LiveCameraWrapper({ videoUrl, imageUrl, defaultImage, handleErro
         : null}
     </Animated.View>
   );
-}
+});

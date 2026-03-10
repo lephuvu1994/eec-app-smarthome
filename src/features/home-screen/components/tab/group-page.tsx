@@ -35,7 +35,7 @@ export const GroupPage = memo(({ group, theme, isCurrentGroup }: { group: any; t
   const [activeRoomIdx, setActiveRoomIdx] = useState(0);
   const isManualRoomScrollingRef = useRef(false);
   const secondaryTabRef = useRef<ScrollView>(null);
-  const { showRoomViewExpand } = useConfigManager();
+  const showRoomViewExpand = useConfigManager(state => state.showRoomViewExpand);
   const heightBottomTab = useSmartTabBarHeight();
 
   // Chỉ cần ScrollView thường là đủ

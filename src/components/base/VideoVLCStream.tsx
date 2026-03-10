@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import {
   useSharedValue,
   withRepeat,
@@ -15,12 +15,12 @@ type TVideoProps = {
   imageUrl: string | undefined;
 };
 
-function VideoStreamComponent({
+const VideoStreamComponent = memo(({
   videoUrl,
   imageUrl,
   handleError,
   setIsFailedRTS,
-}: TVideoProps) {
+}: TVideoProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const videoRef = useRef(null);
   const opacityValue = useSharedValue(0.2);
@@ -33,13 +33,13 @@ function VideoStreamComponent({
     );
   }, []);
 
-  const handleErrorRTS = () => {
+  const handleErrorRTS = useCallback(() => {
     setIsLoading(false);
     setIsFailedRTS(true);
     if (!imageUrl || imageUrl === '') {
       handleError();
     }
-  };
+  }, [imageUrl, handleError, setIsFailedRTS]);
 
   return (
     <View className="absolute top-0 left-0 z-1 size-full">
@@ -82,6 +82,6 @@ function VideoStreamComponent({
       </TouchableOpacity>
     </View>
   );
-}
+});
 
 export default VideoStreamComponent;

@@ -28,7 +28,7 @@ type TProps = {
 
 export const DeviceItem: React.FC<TProps> = ({ device, typeViewDevice }) => {
   const layout = useWindowDimensions();
-  const { allowHaptics } = useConfigManager();
+  const allowHaptics = useConfigManager(state => state.allowHaptics);
   // 1. State đồng bộ từ Websocket (thông qua props device)
   const [isOn, setIsOn] = useState<boolean>(device.status === EDeviceConnectStatus.CONNECTED);
   const progress = useSharedValue(device.status === EDeviceConnectStatus.CONNECTED ? 1 : 0);
@@ -100,12 +100,6 @@ export const DeviceItem: React.FC<TProps> = ({ device, typeViewDevice }) => {
     };
   });
 
-  // eslint-disable-next-line react/no-nested-component-definitions
-  const PowerButton = () => (
-    <Animated.View style={[{ width: 32, height: 32, borderRadius: 17, padding: 7 }, powerButtonStyle]}>
-      <PowerIcon color="#1B1B1B" size={18} />
-    </Animated.View>
-  );
 
   // Layout FullWidth
   if (typeViewDevice === ETypeViewDevice.FullWidth) {
@@ -133,7 +127,9 @@ export const DeviceItem: React.FC<TProps> = ({ device, typeViewDevice }) => {
               </Text>
             </View>
           </View>
-          <PowerButton />
+          <Animated.View style={[{ width: 32, height: 32, borderRadius: 17, padding: 7 }, powerButtonStyle]}>
+            <PowerIcon color="#1B1B1B" size={18} />
+          </Animated.View>
         </View>
         <View className="flex-row gap-4 pt-2">
           <Text className="text-[11px] text-neutral-400">⚡ 225V</Text>
@@ -165,7 +161,9 @@ export const DeviceItem: React.FC<TProps> = ({ device, typeViewDevice }) => {
       </Animated.View>
       <View className="w-full flex-row items-start justify-between">
         <Image source={device.image} style={{ width: 64, height: 64 }} contentFit="cover" />
-        <PowerButton />
+        <Animated.View style={[{ width: 32, height: 32, borderRadius: 17, padding: 7 }, powerButtonStyle]}>
+          <PowerIcon color="#1B1B1B" size={18} />
+        </Animated.View>
       </View>
       <View>
         <Text className="text-[15px] font-bold text-neutral-800" numberOfLines={1}>{device.name}</Text>
