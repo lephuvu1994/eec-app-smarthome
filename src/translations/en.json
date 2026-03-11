@@ -34,7 +34,16 @@
     "scene": "Scenes",
     "searchDevice": "Search for devices",
     "searchDeviceDesc": "Allow us to check for nearby devices using Bluetooth or Wi-Fi.",
-    "selectRoom": "SELECT ROOM"
+    "selectRoom": "SELECT ROOM",
+    "searching": "Searching...",
+    "searchingDesc": "Please make sure all your devices are connected to Wi-Fi or Bluetooth.",
+    "connecting": "Connecting...",
+    "unableToConnect": "Unable to connect",
+    "scanAgainDesc": "If you don't see your device, please scan again.",
+    "selectRoomTitle": "Select room",
+    "kitchen": "Kitchen",
+    "livingRoom": "Living Room",
+    "bedroom": "Bedroom"
   },
   "formAuth": {
     "createPassword": "Create password",
@@ -59,8 +68,8 @@
     "resetPassword": "Reset Password",
     "titleIdentifier": "Email or Phone Number",
     "titlePassword": "Password",
-    "titleSignIn": "SignIn",
-    "titleSignUp": "SignUp",
+    "titleSignIn": "Sign In",
+    "titleSignUp": "Sign Up",
     "verifyCode": "Verify code",
     "verifyIdentifier": "Verify {{identifier}}"
   },

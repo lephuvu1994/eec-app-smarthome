@@ -34,7 +34,16 @@
     "scene": "Kịch bản",
     "searchDevice": "Tìm kiếm thiết bị",
     "searchDeviceDesc": "Cho phép chúng tôi kiểm tra các thiết bị ở gần bằng Bluetooth hoặc Wi-Fi.",
-    "selectRoom": "CHỌN PHÒNG"
+    "selectRoom": "CHỌN PHÒNG",
+    "searching": "Đang tìm kiếm...",
+    "searchingDesc": "Vui lòng đảm bảo tất cả thiết bị của bạn đã được kết nối với Wi-Fi hoặc Bluetooth.",
+    "connecting": "Đang kết nối...",
+    "unableToConnect": "Không thể kết nối",
+    "scanAgainDesc": "Nếu bạn không thấy thiết bị của mình, vui lòng quét lại.",
+    "selectRoomTitle": "Chọn phòng",
+    "kitchen": "Phòng bếp",
+    "livingRoom": "Phòng khách",
+    "bedroom": "Phòng ngủ"
   },
   "formAuth": {
     "createPassword": "Tạo mật khẩu",
