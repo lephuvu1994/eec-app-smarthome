@@ -1,26 +1,29 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
-import { MotiView } from 'moti';
-import * as React from 'react';
+import { Stack } from 'expo-router';
+import { LinearGradient as ExpoLinearGradient } from 'expo-linear-gradient';
 import { useEffect, useState } from 'react';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, {
-  interpolate,
+  Easing,
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
   withTiming,
-  Easing,
-  withSequence,
-  withDelay,
 } from 'react-native-reanimated';
-import { Svg, Circle, Path, Defs, RadialGradient, Stop } from 'react-native-svg';
+import { StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import {
+  Canvas,
+  Circle as SkiaCircle,
+  LinearGradient as SkiaLinearGradient,
+  SweepGradient,
+  vec,
+} from '@shopify/react-native-skia';
 import { useUniwind } from 'uniwind';
 import { BaseLayout } from '@/components/layout/BaseLayout';
 import { ScrollView, Text, TouchableOpacity, View } from '@/components/ui';
 import { translate } from '@/lib/i18n';
 import { ETheme } from '@/types/base';
-import { Stack } from 'expo-router';
 
 enum EAddDeviceStep {
   SEARCH = 0,
@@ -32,29 +35,102 @@ type DeviceResult = {
   id: string;
   name: string;
   status: 'connecting' | 'connected' | 'failed';
-  image: any;
-  angle: number; // in degrees
-  radius: number; // radius from center
+  imageUrl: string;
+  angle: number; // Góc xuất hiện trên radar (độ)
+  radius: number; // Khoảng cách từ tâm (0.1 -> 1)
 };
 
-const RADAR_SIZE = 280;
+const RADAR_SIZE = 340;
 const CENTER = RADAR_SIZE / 2;
-const LIME_GREEN = '#A3E635';
 
-const AnimatedPath = Animated.createAnimatedComponent(Path);
+// Định nghĩa mã màu chuẩn xanh lá từ CSS (A3EC3E -> rgba(163, 236, 62, X))
+const PRIMARY_GREEN_HEX = '#A3EC3E';
+const HIGHLIGHT_COLOR = '#8B5CF6'; // Màu tím bo viền Figma
+const TEXT_PRIMARY = '#1A1A1A';
+const TEXT_SECONDARY = '#666666';
+
+// Component con xử lý icon thiết bị để ăn Animation chuẩn xác
+function RadarDeviceIcon({
+  device,
+  currentBeamRotation,
+}: {
+  device: DeviceResult;
+  currentBeamRotation: number;
+}) {
+  const rad = (device.angle * Math.PI) / 180;
+  const activeRadius = RADAR_SIZE * 0.45;
+  const x = CENTER + activeRadius * device.radius * Math.cos(rad);
+  const y = CENTER + activeRadius * device.radius * Math.sin(rad);
+
+  const ICON_CONTAINER_SIZE = 64;
+
+  const animatedStyle = useAnimatedStyle(() => {
+    // Góc hiện tại của tia quét
+    const currentRot = currentBeamRotation % 360;
+
+    // Tính khoảng cách góc từ đầu tia quét lùi về phía đuôi thiết bị
+    let diff = currentRot - device.angle;
+    if (diff < 0) diff += 360;
+
+    // Đuôi tia quét dài 133 độ (từ 360 lùi về 226.87 theo mã CSS).
+    // Nếu thiết bị nằm trong khoảng này => tia đang quét qua
+    const isScanning = diff > 0 && diff < 133;
+
+    return {
+      transform: [{ scale: withTiming(isScanning ? 1.15 : 1, { duration: 300 }) }],
+      borderColor: withTiming(isScanning ? HIGHLIGHT_COLOR : 'transparent', { duration: 300 }),
+      borderWidth: withTiming(isScanning ? 3 : 0, { duration: 300 }),
+      opacity: withTiming(isScanning ? 1 : 0.7, { duration: 300 }),
+    };
+  });
+
+  return (
+    <Animated.View
+      style={[
+        {
+          position: 'absolute',
+          left: x - ICON_CONTAINER_SIZE / 2,
+          top: y - ICON_CONTAINER_SIZE / 2,
+          width: ICON_CONTAINER_SIZE,
+          height: ICON_CONTAINER_SIZE,
+          borderRadius: ICON_CONTAINER_SIZE / 2,
+          backgroundColor: 'white',
+          alignItems: 'center',
+          justifyContent: 'center',
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 6 },
+          shadowOpacity: 0.1,
+          shadowRadius: 12,
+          elevation: 6,
+        },
+        animatedStyle,
+      ]}
+    >
+      <Image
+        source={{ uri: device.imageUrl }}
+        style={{
+          width: ICON_CONTAINER_SIZE - 12,
+          height: ICON_CONTAINER_SIZE - 12,
+          borderRadius: (ICON_CONTAINER_SIZE - 12) / 2,
+        }}
+        contentFit="cover"
+      />
+    </Animated.View>
+  );
+}
 
 export function AddDeviceScreen() {
   const insets = useSafeAreaInsets();
   const { theme } = useUniwind();
   const [step, setStep] = useState<EAddDeviceStep>(EAddDeviceStep.SEARCH);
 
-  // Rotation for the radar beam
   const rotation = useSharedValue(0);
 
   useEffect(() => {
+    // Xoay tròn radar liên tục (60fps mượt mà)
     rotation.value = withRepeat(
       withTiming(360, {
-        duration: 3000,
+        duration: 3500, // Tốc độ quét 3.5s/vòng
         easing: Easing.linear,
       }),
       -1,
@@ -62,11 +138,11 @@ export function AddDeviceScreen() {
     );
   }, []);
 
-  // Mock data for step 2
   const [devices] = useState<DeviceResult[]>([
-    { id: '1', name: 'Amazon Alexa 2', status: 'failed', image: null, angle: 45, radius: 0.7 },
-    { id: '2', name: 'Tapo TP-Link C210 360', status: 'connected', image: null, angle: 160, radius: 0.5 },
-    { id: '3', name: 'Havells Glamax 9W B22', status: 'connected', image: null, angle: 280, radius: 0.8 },
+    { id: '1', name: 'Tapo TP-Link C210', status: 'connecting', imageUrl: 'https://images.unsplash.com/photo-1557324232-b8917d3c3dcb?w=200&h=200&fit=crop', angle: 210, radius: 0.8 },
+    { id: '2', name: 'Smart Bulb RGB', status: 'connected', imageUrl: 'https://images.unsplash.com/photo-1550989460-0adf9ea622e2?w=200&h=200&fit=crop', angle: 110, radius: 0.65 },
+    { id: '3', name: 'Alexa Echo Dot', status: 'failed', imageUrl: 'https://images.unsplash.com/photo-1543512214-318c7553f230?w=200&h=200&fit=crop', angle: 30, radius: 0.75 },
+    { id: '4', name: 'Pendant Light', status: 'connected', imageUrl: 'https://images.unsplash.com/photo-1513506003901-1e6a229e9d15?w=200&h=200&fit=crop', angle: 320, radius: 0.85 },
   ]);
 
   const beamStyle = useAnimatedStyle(() => ({
@@ -74,191 +150,180 @@ export function AddDeviceScreen() {
   }));
 
   const renderRadar = () => (
-    <View className="relative items-center justify-center" style={{ width: RADAR_SIZE, height: RADAR_SIZE }}>
-      {/* Background Rings */}
-      <View className="absolute inset-0 items-center justify-center">
-        <Svg width={RADAR_SIZE} height={RADAR_SIZE}>
-          {[0.3, 0.6, 0.9].map((scale, i) => (
-            <Circle
-              key={i}
-              cx={CENTER}
-              cy={CENTER}
-              r={(RADAR_SIZE / 2) * scale}
-              stroke={LIME_GREEN}
-              strokeWidth="1"
-              opacity={0.15}
-              fill="none"
-            />
-          ))}
-        </Svg>
-      </View>
-
-      {/* Rotating Beam */}
-      <Animated.View style={[beamStyle, { position: 'absolute', width: RADAR_SIZE, height: RADAR_SIZE }]}>
-        <Svg width={RADAR_SIZE} height={RADAR_SIZE}>
-          <Defs>
-            <RadialGradient id="beamGrad" cx={CENTER} cy={CENTER} r={RADAR_SIZE / 2} fx={CENTER} fy={CENTER} gradientUnits="userSpaceOnUse">
-              <Stop offset="0" stopColor={LIME_GREEN} stopOpacity="0.4" />
-              <Stop offset="1" stopColor={LIME_GREEN} stopOpacity="0" />
-            </RadialGradient>
-          </Defs>
-          <Path
-            d={`M ${CENTER} ${CENTER} L ${CENTER} 0 A ${RADAR_SIZE / 2} ${RADAR_SIZE / 2} 0 0 1 ${CENTER + RADAR_SIZE / 2} ${CENTER} Z`}
-            fill="url(#beamGrad)"
-            opacity={0.6}
+    <View
+      className="relative items-center justify-center"
+      style={{ width: RADAR_SIZE, height: RADAR_SIZE }}
+    >
+      {/* LỚP 1: CÁC VÒNG TRÒN NỀN XẾP CHỒNG (DÙNG SKIA CHO CHUẨN MÀU VÀ ĐẸP) */}
+      <Canvas style={{ position: 'absolute', width: RADAR_SIZE, height: RADAR_SIZE }}>
+        {/* Vòng ngoài cùng */}
+        <SkiaCircle cx={CENTER} cy={CENTER} r={RADAR_SIZE * 0.48}>
+          <SkiaLinearGradient
+            start={vec(CENTER, 0)}
+            end={vec(CENTER, RADAR_SIZE)}
+            colors={['rgba(163, 236, 62, 0.05)', 'rgba(163, 236, 62, 0.1)']}
           />
-        </Svg>
+        </SkiaCircle>
+        {/* Vòng giữa */}
+        <SkiaCircle cx={CENTER} cy={CENTER} r={RADAR_SIZE * 0.35}>
+          <SkiaLinearGradient
+            start={vec(CENTER, 0)}
+            end={vec(CENTER, RADAR_SIZE)}
+            colors={['rgba(163, 236, 62, 0.05)', 'rgba(163, 236, 62, 0.2)']}
+          />
+        </SkiaCircle>
+        {/* Vòng trong cùng */}
+        <SkiaCircle cx={CENTER} cy={CENTER} r={RADAR_SIZE * 0.20}>
+          <SkiaLinearGradient
+            start={vec(CENTER, 0)}
+            end={vec(CENTER, RADAR_SIZE)}
+            colors={['rgba(163, 236, 62, 0.05)', 'rgba(163, 236, 62, 0.1)']}
+          />
+        </SkiaCircle>
+      </Canvas>
+
+      {/* LỚP 2: TIA QUÉT QUAY TRÒN (SWEEP GRADIENT CHUẨN CSS Figma) */}
+      <Animated.View
+        style={[beamStyle, { position: 'absolute', width: RADAR_SIZE, height: RADAR_SIZE }]}
+      >
+        <Canvas style={{ flex: 1 }}>
+          <SkiaCircle cx={CENTER} cy={CENTER} r={RADAR_SIZE / 2}>
+            <SweepGradient
+              c={vec(CENTER, CENTER)}
+              colors={[
+                'rgba(163, 236, 62, 0)',
+                'rgba(163, 236, 62, 0)',
+                'rgba(163, 236, 62, 0.5)',
+              ]}
+              // 226.87deg / 360deg = 0.63019
+              positions={[0, 0.63019, 1]}
+            />
+          </SkiaCircle>
+        </Canvas>
       </Animated.View>
 
-      {/* Centered Image (Optional base) */}
-      <Image
-        source={require('@@/assets/base/radar-scanner.png')}
-        style={{ width: RADAR_SIZE, height: RADAR_SIZE, position: 'absolute', opacity: 0.2 }}
-        contentFit="contain"
-      />
-
-      {/* Device Icons floating on Radar */}
-      {devices.map((device, idx) => {
-        const rad = (device.angle * Math.PI) / 180;
-        const x = CENTER + (RADAR_SIZE / 2) * device.radius * Math.cos(rad);
-        const y = CENTER + (RADAR_SIZE / 2) * device.radius * Math.sin(rad);
-
-        // Reactivity to beam: calculate distance between rotation angle and device angle
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        const iconStyle = useAnimatedStyle(() => {
-          const diff = Math.abs((rotation.value % 360) - device.angle);
-          const isScanning = diff < 30 || diff > 330;
-          const scale = interpolate(isScanning ? 1 : 0, [0, 1], [1, 1.3]);
-          const opacity = interpolate(isScanning ? 1 : 0, [0, 1], [0.3, 1]);
-          return {
-            transform: [{ scale: withTiming(scale, { duration: 150 }) }],
-            opacity: withTiming(opacity, { duration: 150 }),
-          };
-        });
-
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        const popInStyle = useAnimatedStyle(() => ({
-            transform: [{ scale: withDelay(idx * 800, withSequence(withTiming(1.2), withTiming(1)))}],
-            opacity: withDelay(idx * 800, withTiming(1)),
-        }));
-
-        return (
-          <Animated.View
-            key={device.id}
-            style={[
-              {
-                position: 'absolute',
-                left: x - 20,
-                top: y - 20,
-                width: 40,
-                height: 40,
-                borderRadius: 20,
-                backgroundColor: 'white',
-                alignItems: 'center',
-                justifyContent: 'center',
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.1,
-                shadowRadius: 4,
-                elevation: 3,
-                opacity: 0,
-              },
-              popInStyle,
-              iconStyle,
-            ]}
-          >
-            <MaterialCommunityIcons 
-              name={device.name.toLowerCase().includes('camera') ? 'camera-outline' : 'devices'} 
-              size={20} 
-              color={LIME_GREEN} 
-            />
-          </Animated.View>
-        );
-      })}
-
-      {/* Center Axis */}
-      <View className="size-4 items-center justify-center rounded-full bg-white shadow-sm">
-        <View className="size-2 rounded-full bg-[#A3E635]" />
-      </View>
+      {/* LỚP 3: THIẾT BỊ NỔI LÊN (Render đè lên trên cùng) */}
+      {devices.map((device) => (
+        <RadarDeviceIcon key={device.id} device={device} currentBeamRotation={rotation.value} />
+      ))}
     </View>
   );
 
   const renderStep1 = () => (
-    <View className="flex-1 items-center justify-between px-6 pb-10">
-      <View className="flex-1 items-center justify-center pt-10">
+    <View className="flex-1 px-5">
+      <View className="items-center justify-center py-8">
         {renderRadar()}
 
-        <View className="mt-12 items-center px-4">
-          <Text className="text-2xl font-bold text-neutral-800 dark:text-white text-center">
-            {translate('base.searchDevice') || 'Tìm kiếm thiết bị'}
+        <View className="mt-8 items-center">
+          <Text className="text-center text-[24px] font-bold" style={{ color: TEXT_PRIMARY }}>
+            {translate('base.searching')}
           </Text>
-          <Text className="mt-3 text-center text-sm text-neutral-500 dark:text-neutral-400 leading-5">
-            {translate('base.searchDeviceDesc') || 'Cho phép chúng tôi kiểm tra các thiết bị ở gần bằng Bluetooth hoặc Wi-Fi.'}
+          <Text
+            className="mt-2 text-center text-[14px]/[20px] font-normal"
+            style={{ color: TEXT_SECONDARY, paddingHorizontal: 40 }}
+          >
+            {translate('base.searchingDesc')}
           </Text>
         </View>
       </View>
 
-      <View className="w-full gap-4">
+      <View className="mt-auto pb-10">
+        <View
+          className="mb-8 flex-row items-center rounded-2xl bg-white p-4 shadow-sm"
+          style={{
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.05,
+            shadowRadius: 8,
+            elevation: 2,
+          }}
+        >
+          <View className="size-12 items-center justify-center rounded-xl bg-neutral-100">
+            <MaterialCommunityIcons name="camera-outline" size={24} color="#737373" />
+          </View>
+          <View className="ml-4 flex-1">
+            <Text className="text-[15px] font-bold" style={{ color: TEXT_PRIMARY }}>
+              Tapo TP-Link C210 360°
+            </Text>
+            <Text className="text-xs font-semibold text-amber-500">{translate('base.connecting')}</Text>
+          </View>
+        </View>
+
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={() => setStep(EAddDeviceStep.RESULTS)}
-          className="h-14 w-full items-center justify-center rounded-2xl bg-[#A3E635]"
+          className="h-14 w-full items-center justify-center rounded-2xl"
+          style={{ backgroundColor: PRIMARY_GREEN_HEX }}
         >
-          <Text className="text-base font-bold text-neutral-900">
-            {translate('base.allowAndContinue') || 'Cho phép và Tiếp tục'}
-          </Text>
+          <Text className="text-[16px] font-bold text-white">{translate('base.allowAndContinue')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           activeOpacity={0.7}
-          className="h-14 w-full items-center justify-center rounded-2xl bg-white/60 dark:bg-neutral-800"
+          className="mt-4 h-14 w-full items-center justify-center rounded-2xl bg-neutral-100"
         >
-          <Text className="text-base font-medium text-neutral-600 dark:text-neutral-300">
-            {translate('base.addManually') || 'Thêm thủ công'}
-          </Text>
+          <Text className="text-[16px] font-semibold text-neutral-600">{translate('base.addManually')}</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 
   const renderStep2 = () => (
-    <View className="flex-1 px-6 pb-10">
+    <View className="flex-1 px-5 pb-10">
       <View className="flex-1 pt-6">
-        <Text className="text-xl font-bold text-neutral-800 dark:text-white">
-          {translate('base.foundDevices', { count: devices.filter(d => d.status === 'connected').length }) || `Đã tìm thấy ${devices.length} thiết bị`}
+        <Text className="text-[18px] font-bold" style={{ color: TEXT_PRIMARY }}>
+          {translate('base.foundDevices', { count: devices.length })}
+        </Text>
+        <Text className="mt-1 text-[14px] font-normal" style={{ color: TEXT_SECONDARY }}>
+          {translate('base.scanAgainDesc')}
         </Text>
 
         <ScrollView showsVerticalScrollIndicator={false} className="mt-6">
           {devices.map((device) => (
             <View
               key={device.id}
-              className="mb-4 flex-row items-center rounded-2xl bg-white p-4 shadow-sm dark:bg-neutral-800"
+              className="mb-4 flex-row items-center rounded-2xl bg-white p-4 shadow-sm"
+              style={{
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.05,
+                shadowRadius: 8,
+                elevation: 2,
+              }}
             >
-              <View className="size-12 items-center justify-center rounded-xl bg-neutral-100 dark:bg-neutral-700">
-                <MaterialCommunityIcons 
-                  name={device.name.toLowerCase().includes('camera') ? 'camera-outline' : 'devices'} 
-                  size={24} 
-                  color="#737373" 
+              <View className="size-12 items-center justify-center rounded-xl bg-neutral-100">
+                <MaterialCommunityIcons
+                  name={device.name.toLowerCase().includes('camera') ? 'camera-outline' : 'devices'}
+                  size={24}
+                  color="#737373"
                 />
               </View>
               <View className="ml-4 flex-1">
-                <Text className="text-[15px] font-bold text-neutral-800 dark:text-white">{device.name}</Text>
-                <Text 
-                  className={`text-xs mt-0.5 ${
-                    device.status === 'connected' ? 'text-green-500' : 
-                    device.status === 'failed' ? 'text-red-500' : 'text-amber-500'
-                  }`}
+                <Text className="text-[15px] font-bold" style={{ color: TEXT_PRIMARY }}>
+                  {device.name}
+                </Text>
+                <Text
+                  className={`mt-0.5 text-xs font-semibold ${device.status === 'connected'
+                      ? 'text-success-500'
+                      : device.status === 'failed'
+                        ? 'text-red-500'
+                        : 'text-amber-500'
+                    }`}
                 >
-                  {device.status === 'connected' ? 'Connected' : device.status === 'failed' ? 'Unable to connect' : 'Connecting...'}
+                  {device.status === 'connected'
+                    ? translate('base.connectedStatus')
+                    : device.status === 'failed'
+                      ? translate('base.unableToConnect')
+                      : translate('base.connecting')}
                 </Text>
               </View>
               {device.status === 'connected' ? (
-                <View className="size-6 items-center justify-center rounded-full bg-green-100">
-                  <MaterialCommunityIcons name="check" size={16} color="#22C55E" />
+                <View className="size-6 items-center justify-center rounded-full bg-success-100">
+                  <MaterialCommunityIcons name="check" size={16} color="#34C759" />
                 </View>
               ) : device.status === 'failed' ? (
-                <TouchableOpacity className="size-8 items-center justify-center rounded-full bg-red-50">
-                  <MaterialCommunityIcons name="refresh" size={18} color="#EF4444" />
+                <TouchableOpacity className="size-8 items-center justify-center rounded-full bg-neutral-100">
+                  <MaterialCommunityIcons name="refresh" size={18} color="#737373" />
                 </TouchableOpacity>
               ) : null}
             </View>
@@ -269,90 +334,114 @@ export function AddDeviceScreen() {
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={() => setStep(EAddDeviceStep.ROOM_ASSIGN)}
-        className="h-14 w-full items-center justify-center rounded-2xl bg-[#A3E635]"
+        className="h-14 w-full items-center justify-center rounded-2xl"
+        style={{ backgroundColor: PRIMARY_GREEN_HEX }}
       >
-        <Text className="text-base font-bold text-neutral-900">
-          {translate('base.continue') || 'Tiếp tục'}
-        </Text>
+        <Text className="text-[16px] font-bold text-white">{translate('base.continue')}</Text>
       </TouchableOpacity>
     </View>
   );
 
   const renderStep3 = () => (
-    <View className="flex-1 px-6 pb-10">
+    <View className="flex-1 px-5 pb-10">
       <View className="flex-1 pt-6">
-        <Text className="text-xl font-bold text-neutral-800 dark:text-white">
-          {translate('base.manageRoomAndDevice') || 'Quản lý phòng & thiết bị'}
+        <Text className="text-[18px] font-bold" style={{ color: TEXT_PRIMARY }}>
+          {translate('base.manageRoomAndDevice')}
         </Text>
 
         <View className="mt-8">
-          <Text className="text-xs font-bold tracking-widest text-neutral-400 uppercase">
-            {translate('base.selectRoom') || 'CHỌN PHÒNG'}
+          <Text className="text-[14px] font-bold" style={{ color: TEXT_PRIMARY }}>
+            {translate('base.selectRoomTitle')}
           </Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mt-4 -ml-2">
             {[
-              { label: 'Phòng bếp', icon: 'silverware-fork-knife' },
-              { label: 'Phòng khách', icon: 'sofa' },
-              { label: 'Phòng ngủ', icon: 'bed' },
-            ].map((room, idx) => (
+              { label: translate('base.kitchen'), icon: 'silverware-fork-knife', color: '#FFD7B2' },
+              { label: translate('base.livingRoom'), icon: 'sofa', color: '#B2EBF2' },
+              { label: translate('base.bedroom'), icon: 'bed', color: '#F8BBD0' },
+            ].map((room) => (
               <TouchableOpacity
                 key={room.label}
-                className={`ml-2 flex-row items-center rounded-full px-4 py-2 ${
-                  idx === 1 ? 'bg-[#A3E635]' : 'bg-white dark:bg-neutral-800'
-                }`}
+                className="ml-2 items-center justify-center rounded-2xl bg-white p-4 shadow-sm"
+                style={{
+                  width: 110,
+                  height: 110,
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.05,
+                  shadowRadius: 8,
+                  elevation: 2,
+                }}
               >
-                <MaterialCommunityIcons 
-                  name={room.icon as any} 
-                  size={16} 
-                  color={idx === 1 ? '#1B1B1B' : '#737373'} 
-                />
-                <Text className={`ml-2 text-sm font-medium ${idx === 1 ? 'text-neutral-900' : 'text-neutral-600 dark:text-neutral-300'}`}>
+                <View
+                  className="size-12 items-center justify-center rounded-full"
+                  style={{ backgroundColor: room.color }}
+                >
+                  <MaterialCommunityIcons name={room.icon as any} size={24} color="#424242" />
+                </View>
+                <Text className="mt-2 text-xs font-bold" style={{ color: TEXT_PRIMARY }}>
                   {room.label}
                 </Text>
               </TouchableOpacity>
             ))}
-            <TouchableOpacity className="ml-2 flex-row items-center rounded-full bg-neutral-100 px-4 py-2 dark:bg-neutral-800">
-              <MaterialCommunityIcons name="plus" size={16} color="#737373" />
-              <Text className="ml-1 text-sm font-medium text-neutral-600 dark:text-neutral-300">Thêm phòng</Text>
+            <TouchableOpacity
+              className="ml-2 items-center justify-center rounded-2xl bg-neutral-50 px-4 py-2"
+              style={{ width: 110, height: 110 }}
+            >
+              <MaterialCommunityIcons name="plus" size={32} color="#737373" />
             </TouchableOpacity>
           </ScrollView>
         </View>
 
         <View className="mt-10">
-          <Text className="text-xs font-bold tracking-widest text-neutral-400 uppercase">
-            {translate('base.devices') || 'THIẾT BỊ'}
+          <Text className="text-[14px] font-bold" style={{ color: TEXT_PRIMARY }}>
+            {translate('base.devices')}
           </Text>
           <View className="mt-4">
-             {devices.filter(d => d.status === 'connected').map(device => (
-               <View key={device.id} className="mb-4 flex-row items-center rounded-2xl bg-white p-4 shadow-sm dark:bg-neutral-800">
-                 <View className="size-10 items-center justify-center rounded-xl bg-neutral-50 dark:bg-neutral-700">
-                   <MaterialCommunityIcons 
-                     name={device.name.toLowerCase().includes('camera') ? 'camera-outline' : 'devices'} 
-                     size={20} 
-                     color="#737373" 
-                   />
-                 </View>
-                 <Text className="ml-4 flex-1 text-[15px] font-bold text-neutral-800 dark:text-white">{device.name}</Text>
-               </View>
-             ))}
+            {devices
+              .filter((d) => d.status === 'connected' || d.status === 'connecting')
+              .map((device) => (
+                <View
+                  key={device.id}
+                  className="mb-4 flex-row items-center rounded-2xl bg-white p-4 shadow-sm"
+                  style={{
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.05,
+                    shadowRadius: 8,
+                    elevation: 2,
+                  }}
+                >
+                  <View className="size-10 items-center justify-center rounded-xl bg-neutral-50">
+                    <MaterialCommunityIcons
+                      name={
+                        device.name.toLowerCase().includes('camera') ? 'camera-outline' : 'devices'
+                      }
+                      size={22}
+                      color="#737373"
+                    />
+                  </View>
+                  <Text
+                    className="ml-4 flex-1 text-[15px] font-bold"
+                    style={{ color: TEXT_PRIMARY }}
+                  >
+                    {device.name}
+                  </Text>
+                  <MaterialCommunityIcons name="check-circle" size={24} color={PRIMARY_GREEN_HEX} />
+                </View>
+              ))}
           </View>
         </View>
       </View>
 
-      <View className="items-center pb-6">
-        <Text className="text-sm text-neutral-500">
-          Bạn còn thiếu thiết bị nào không? <Text className="font-bold text-[#A3E635]">Thêm ngay</Text>
-        </Text>
-      </View>
-
       <TouchableOpacity
         activeOpacity={0.8}
-        onPress={() => {/* Finalize */}}
-        className="h-14 w-full items-center justify-center rounded-2xl bg-[#A3E635]"
+        onPress={() => {
+          /* Finalize */
+        }}
+        className="h-14 w-full items-center justify-center rounded-2xl"
+        style={{ backgroundColor: PRIMARY_GREEN_HEX }}
       >
-        <Text className="text-base font-bold text-neutral-900">
-          {translate('base.finish') || 'Hoàn tất'}
-        </Text>
+        <Text className="text-[16px] font-bold text-white">{translate('base.finish')}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -362,12 +451,8 @@ export function AddDeviceScreen() {
       <Stack.Screen options={{ headerShown: false }} />
       <View className="relative w-full flex-1">
         <Image
-          source={
-            theme === ETheme.Dark
-              ? require('@@/assets/base/background-dark.png')
-              : require('@@/assets/base/background-light.png')
-          }
-          style={{
+          source={theme === ETheme.Dark ? require('@@/assets/base/background-dark.png') : require('@@/assets/base/background-light.png')}
+          style={[{
             width: '100%',
             height: '100%',
             position: 'absolute',
@@ -375,18 +460,28 @@ export function AddDeviceScreen() {
             left: 0,
             right: 0,
             bottom: 0,
-          }}
-          contentFit="contain"
+          }, StyleSheet.absoluteFillObject]}
+          contentFit="cover"
         />
-
         <View style={{ paddingTop: insets.top, flex: 1 }}>
-          {/* Custom Header */}
-          <View className="h-14 flex-row items-center px-4">
-            <TouchableOpacity onPress={() => {/* navigation handle */ }}>
-              <MaterialCommunityIcons name="chevron-left" size={32} color={theme === ETheme.Dark ? '#fff' : '#1B1B1B'} />
+          <View className="h-14 flex-row items-center px-5">
+            <TouchableOpacity
+              onPress={() => {
+                /* navigation handle */
+              }}
+              className="size-10 items-center justify-center rounded-full bg-white/60"
+              style={{
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.05,
+                shadowRadius: 4,
+                elevation: 1,
+              }}
+            >
+              <MaterialCommunityIcons name="chevron-left" size={28} color="#1B1B1B" />
             </TouchableOpacity>
-            <Text className="ml-1 text-lg font-bold text-neutral-900 dark:text-white">
-              {translate('base.addDevice') || 'Thêm thiết bị'}
+            <Text className="ml-4 text-[18px] font-bold" style={{ color: TEXT_PRIMARY }}>
+              {translate('base.addDevice')}
             </Text>
           </View>
 
