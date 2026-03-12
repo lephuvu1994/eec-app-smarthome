@@ -8,6 +8,16 @@
       "env": {
         "FIGMA_API_KEY": "figd_bb96OT7K9QdSEQr5fQtttTBNzUjklu58jOkSprMP"
       }
+    },
+    "github": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-github"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "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"
+      }
     }
   }
 }

@@ -11,7 +11,7 @@
 
   // Enable ESLint auto-fix on save
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit",
+    "source.fixAll.eslint": "always",
     "source.organizeImports": "never"
   },
 

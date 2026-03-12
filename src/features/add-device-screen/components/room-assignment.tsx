@@ -1,9 +1,9 @@
-import React from 'react';
+import type { DeviceResult } from '../types';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import * as React from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from '@/components/ui';
 import { translate } from '@/lib/i18n';
-import { DeviceResult } from '../types';
-import { TEXT_PRIMARY, PRIMARY_GREEN_HEX } from '../constants';
+import { PRIMARY_GREEN_HEX, TEXT_PRIMARY } from '../constants';
 
 export function RoomAssignment({
   devices,
@@ -30,7 +30,7 @@ export function RoomAssignment({
               { label: translate('base.kitchen'), icon: 'silverware-fork-knife', color: '#FFD7B2' },
               { label: translate('base.livingRoom'), icon: 'sofa', color: '#B2EBF2' },
               { label: translate('base.bedroom'), icon: 'bed', color: '#F8BBD0' },
-            ].map((room) => (
+            ].map(room => (
               <TouchableOpacity
                 key={room.label}
                 className="ml-2 items-center justify-center rounded-2xl bg-white p-4 shadow-sm"
@@ -70,8 +70,8 @@ export function RoomAssignment({
           </Text>
           <View className="mt-4">
             {devices
-              .filter((d) => d.status === 'connected' || d.status === 'connecting')
-              .map((device) => (
+              .filter(d => d.status === 'connected' || d.status === 'connecting')
+              .map(device => (
                 <View
                   key={device.id}
                   className="mb-4 flex-row items-center rounded-2xl bg-white p-4 shadow-sm"
@@ -105,17 +105,17 @@ export function RoomAssignment({
         </View>
       </View>
 
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={onFinish}
-            disabled={isRegistering}
-            className={`h-14 w-full items-center justify-center rounded-2xl ${isRegistering ? 'opacity-50' : ''}`}
-            style={{ backgroundColor: PRIMARY_GREEN_HEX }}
-          >
-            <Text className="text-[16px] font-bold text-white">
-               {isRegistering ? 'Loading...' : translate('base.finish')}
-            </Text>
-          </TouchableOpacity>
+      <TouchableOpacity
+        activeOpacity={0.8}
+        onPress={onFinish}
+        disabled={isRegistering}
+        className={`h-14 w-full items-center justify-center rounded-2xl ${isRegistering ? 'opacity-50' : ''}`}
+        style={{ backgroundColor: PRIMARY_GREEN_HEX }}
+      >
+        <Text className="text-[16px] font-bold text-white">
+          {isRegistering ? 'Loading...' : translate('base.finish')}
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 }

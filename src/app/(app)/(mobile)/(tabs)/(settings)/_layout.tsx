@@ -1,12 +1,12 @@
-import { ETheme } from '@/types/base';
-
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+
 import { router, Stack } from 'expo-router';
 import { TouchableOpacity, View } from 'react-native';
-
 import { useUniwind } from 'uniwind';
+
 import { colors } from '@/components/ui';
 import { translate } from '@/lib/i18n';
+import { ETheme } from '@/types/base';
 
 function SettingScreen() {
   const { theme } = useUniwind();
@@ -50,7 +50,7 @@ function SettingScreen() {
           title: translate('settings.userInformation'),
           headerTintColor: theme === ETheme.Dark ? colors.white : '#1B1B1B',
           headerTitleStyle: {
-            color: theme === ETheme.Dark ? colors.white: '#1B1B1B',
+            color: theme === ETheme.Dark ? colors.white : '#1B1B1B',
             fontWeight: '600', // Sẵn tiện cho nó đậm lên tí nhìn cho sang
           },
           headerBackTitle: '',

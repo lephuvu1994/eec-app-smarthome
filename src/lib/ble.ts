@@ -1,6 +1,6 @@
+import Env from '@env';
 import { PermissionsAndroid, Platform } from 'react-native';
 import BleManager from 'react-native-ble-manager';
-import Env from '@env';
 
 export const CHIP_SERVICE_UUID = Env.EXPO_PUBLIC_BLE_SERVICE_UUID;
 export const CHIP_TX_CHAR_UUID = Env.EXPO_PUBLIC_BLE_TX_UUID;
@@ -10,7 +10,8 @@ class BleService {
   private isInitialized = false;
 
   async init() {
-    if (this.isInitialized) return;
+    if (this.isInitialized)
+      return;
     await BleManager.start({ showAlert: false });
     this.isInitialized = true;
   }
@@ -25,13 +26,14 @@ class BleService {
         ]);
 
         return (
-          result[PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN] === PermissionsAndroid.RESULTS.GRANTED &&
-          result[PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT] === PermissionsAndroid.RESULTS.GRANTED &&
-          result[PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION] === PermissionsAndroid.RESULTS.GRANTED
+          result[PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN] === PermissionsAndroid.RESULTS.GRANTED
+          && result[PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT] === PermissionsAndroid.RESULTS.GRANTED
+          && result[PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION] === PermissionsAndroid.RESULTS.GRANTED
         );
-      } else {
+      }
+      else {
         const result = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
         );
         return result === PermissionsAndroid.RESULTS.GRANTED;
       }
@@ -44,7 +46,8 @@ class BleService {
       if (Platform.OS === 'android') {
         await BleManager.enableBluetooth();
       }
-    } catch (error) {
+    }
+    catch (error) {
       console.warn('Bluetooth not enabled', error);
     }
   }
@@ -54,10 +57,10 @@ class BleService {
     // In many modern versions, options is the third parameter but the signatures can vary.
     // Ensure we match index.d.ts of the exact version by only passing the required valid args.
     await BleManager.scan({
-      serviceUUIDs: [CHIP_SERVICE_UUID], 
-      seconds, 
-      allowDuplicates: true
-    }); 
+      serviceUUIDs: [CHIP_SERVICE_UUID],
+      seconds,
+      allowDuplicates: true,
+    });
   }
 
   async stopScan(): Promise<void> {
@@ -75,15 +78,16 @@ class BleService {
   async retrieveServices(id: string) {
     return await BleManager.retrieveServices(id);
   }
-  
+
   async requestMTU(id: string, mtu: number = 512): Promise<number> {
     if (Platform.OS === 'android') {
-        try {
-            return await BleManager.requestMTU(id, mtu);
-        } catch (error) {
-            console.error('Request MTU failed', error);
-            return 20; // Default fallback
-        }
+      try {
+        return await BleManager.requestMTU(id, mtu);
+      }
+      catch (error) {
+        console.error('Request MTU failed', error);
+        return 20; // Default fallback
+      }
     }
     return 20; // iOS handles MTU automatically mostly
   }
@@ -91,7 +95,7 @@ class BleService {
   async startNotification(id: string): Promise<void> {
     await BleManager.startNotification(id, CHIP_SERVICE_UUID, CHIP_TX_CHAR_UUID);
   }
-  
+
   async stopNotification(id: string): Promise<void> {
     await BleManager.stopNotification(id, CHIP_SERVICE_UUID, CHIP_TX_CHAR_UUID);
   }
@@ -104,7 +108,7 @@ class BleService {
       id,
       CHIP_SERVICE_UUID,
       CHIP_RX_CHAR_UUID,
-      data
+      data,
     );
   }
 

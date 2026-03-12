@@ -1,9 +1,9 @@
-import React from 'react';
+import type { DeviceResult } from '../types';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import * as React from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from '@/components/ui';
 import { translate } from '@/lib/i18n';
-import { DeviceResult } from '../types';
-import { TEXT_PRIMARY, TEXT_SECONDARY, PRIMARY_GREEN_HEX } from '../constants';
+import { PRIMARY_GREEN_HEX, TEXT_PRIMARY, TEXT_SECONDARY } from '../constants';
 
 export function DeviceList({
   devices,
@@ -23,7 +23,7 @@ export function DeviceList({
         </Text>
 
         <ScrollView showsVerticalScrollIndicator={false} className="mt-6">
-          {devices.map((device) => (
+          {devices.map(device => (
             <View
               key={device.id}
               className="mb-4 flex-row items-center rounded-2xl bg-white p-4 shadow-sm"
@@ -48,11 +48,11 @@ export function DeviceList({
                 </Text>
                 <Text
                   className={`mt-0.5 text-xs font-semibold ${device.status === 'connected'
-                      ? 'text-success-500'
-                      : device.status === 'failed'
-                        ? 'text-red-500'
-                        : 'text-amber-500'
-                    }`}
+                    ? 'text-success-500'
+                    : device.status === 'failed'
+                      ? 'text-red-500'
+                      : 'text-amber-500'
+                  }`}
                 >
                   {device.status === 'connected'
                     ? translate('base.connectedStatus')
@@ -61,15 +61,19 @@ export function DeviceList({
                       : translate('base.connecting')}
                 </Text>
               </View>
-              {device.status === 'connected' ? (
-                <View className="size-6 items-center justify-center rounded-full bg-success-100">
-                  <MaterialCommunityIcons name="check" size={16} color="#34C759" />
-                </View>
-              ) : device.status === 'failed' ? (
-                <TouchableOpacity className="size-8 items-center justify-center rounded-full bg-neutral-100">
-                  <MaterialCommunityIcons name="refresh" size={18} color="#737373" />
-                </TouchableOpacity>
-              ) : null}
+              {device.status === 'connected'
+                ? (
+                    <View className="size-6 items-center justify-center rounded-full bg-success-100">
+                      <MaterialCommunityIcons name="check" size={16} color="#34C759" />
+                    </View>
+                  )
+                : device.status === 'failed'
+                  ? (
+                      <TouchableOpacity className="size-8 items-center justify-center rounded-full bg-neutral-100">
+                        <MaterialCommunityIcons name="refresh" size={18} color="#737373" />
+                      </TouchableOpacity>
+                    )
+                  : null}
             </View>
           ))}
         </ScrollView>

@@ -36,7 +36,7 @@ export const deviceService = {
   registerDevice: async (variables: RegisterDeviceVariables): Promise<RegisterDeviceResponse> => {
     const { data } = await client.post<RegisterDeviceResponse>(
       '/devices/register',
-      variables
+      variables,
     );
     return data;
   },
