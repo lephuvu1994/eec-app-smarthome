@@ -1,4 +1,5 @@
-import { Buffer } from 'node:buffer';
+// eslint-disable-next-line unicorn/prefer-node-protocol -- React Native runtime doesn't support node: protocol
+import { Buffer } from 'buffer';
 
 import Env from '@env';
 import QuickCrypto from 'react-native-quick-crypto';

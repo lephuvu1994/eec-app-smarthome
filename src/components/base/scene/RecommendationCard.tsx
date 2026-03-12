@@ -72,7 +72,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
 
       {/* Dòng Trên: Tiêu đề + Nút Thêm */}
       <View className="z-10 w-full flex-row items-start justify-between">
-        <Text className="mt-1 mr-4 flex-1 text-[17px] font-semibold text-[#1B1B1B]" numberOfLines={2}>
+        <Text className="mt-1 mr-4 flex-1 text-[17px] font-semibold text-[#1B1B1B] dark:text-[#1B1B1B]" numberOfLines={2}>
           {title}
         </Text>
 
@@ -88,7 +88,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
       {/* Dòng Dưới: Badge số lượt dùng */}
       <View className="z-10 flex-row items-center self-start rounded-[12px] border border-white/20 bg-white/40 px-2.5 py-1.5">
         <MaterialCommunityIcons name="fire" size={14} color="#F97316" />
-        <Text className="ml-1.5 text-[13px] font-medium text-[#1B1B1B]/80">{usageCount}</Text>
+        <Text className="ml-1.5 text-[13px] font-medium text-[#1B1B1B]/80 dark:text-[#1B1B1B]/80">{usageCount}</Text>
       </View>
     </View>
   );

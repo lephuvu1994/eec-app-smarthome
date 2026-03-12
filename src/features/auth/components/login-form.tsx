@@ -89,9 +89,9 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
         >
 
           <View
-            className="flex-1 rounded-3xl border border-white/25 bg-white/70"
+            className="flex-1 rounded-3xl border border-white/25 bg-white/70 dark:bg-white/70"
           >
-            <View className="flex-1 rounded-3xl border border-white/25 bg-white/70">
+            <View className="flex-1 rounded-3xl border border-white/25 bg-white/70 dark:bg-white/70">
               <View className="flex-1 justify-between py-6">
                 <View className="mx-4 mt-2 items-center">
                   <View className="w-full gap-4">
@@ -198,7 +198,7 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
                       className="h-12 w-full items-center justify-center rounded-full bg-[#E5E7EB] shadow-sm"
                     >
                       <Text
-                        className="font-medium text-[#4B5563]"
+                        className="font-medium text-[#4B5563] dark:text-[#4B5563]"
                         tx="formAuth.resetPassword"
                       />
                     </TouchableOpacity>
@@ -206,18 +206,18 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
 
                   <View className="my-6 w-full flex-row items-center justify-center">
                     <View className="h-px flex-1 bg-black/10" />
-                    <Text className="mx-4 text-neutral-500" tx="formAuth.or" />
+                    <Text className="mx-4 text-neutral-500 dark:text-neutral-500" tx="formAuth.or" />
                     <View className="h-px flex-1 bg-black/10" />
                   </View>
 
                   <View className="mb-6 w-full flex-row justify-center gap-6">
-                    <TouchableOpacity className="size-12 items-center justify-center rounded-full bg-white shadow-sm">
+                    <TouchableOpacity className="size-12 items-center justify-center rounded-full bg-white shadow-sm dark:bg-white">
                       <Fontisto name="google" size={20} color="#DB4437" />
                     </TouchableOpacity>
-                    <TouchableOpacity className="size-12 items-center justify-center rounded-full bg-white shadow-sm">
+                    <TouchableOpacity className="size-12 items-center justify-center rounded-full bg-white shadow-sm dark:bg-white">
                       <Fontisto name="facebook" size={20} color="#4267B2" />
                     </TouchableOpacity>
-                    <TouchableOpacity className="size-12 items-center justify-center rounded-full bg-white shadow-sm">
+                    <TouchableOpacity className="size-12 items-center justify-center rounded-full bg-white shadow-sm dark:bg-white">
                       <Fontisto name="apple" size={20} color="#000000" />
                     </TouchableOpacity>
                   </View>
