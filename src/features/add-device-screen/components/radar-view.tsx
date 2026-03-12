@@ -1,11 +1,10 @@
-import React from 'react';
-import { View } from 'react-native';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import type { DeviceResult } from '../types';
 import { Canvas, Circle as SkiaCircle, LinearGradient as SkiaLinearGradient, SweepGradient, vec } from '@shopify/react-native-skia';
 import { Image } from 'expo-image';
-import { withTiming } from 'react-native-reanimated';
-import { DeviceResult } from '../types';
-import { RADAR_SIZE, CENTER, HIGHLIGHT_COLOR } from '../constants';
+import * as React from 'react';
+import { View } from 'react-native';
+import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import { CENTER, HIGHLIGHT_COLOR, RADAR_SIZE } from '../constants';
 
 function RadarDeviceIcon({
   device,
@@ -24,7 +23,8 @@ function RadarDeviceIcon({
   const animatedStyle = useAnimatedStyle(() => {
     const currentRot = currentBeamRotation % 360;
     let diff = currentRot - device.angle;
-    if (diff < 0) diff += 360;
+    if (diff < 0)
+      diff += 360;
     const isScanning = diff > 0 && diff < 133;
 
     return {
@@ -126,7 +126,7 @@ export function RadarView({
         </Canvas>
       </Animated.View>
 
-      {devices.map((device) => (
+      {devices.map(device => (
         <RadarDeviceIcon key={device.id} device={device} currentBeamRotation={rotation.value} />
       ))}
     </View>

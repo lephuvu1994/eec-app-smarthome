@@ -1,7 +1,7 @@
-import React from 'react';
-import { Text, TouchableOpacity, View, ScrollView } from '@/components/ui';
+import * as React from 'react';
 import { TextInput } from 'react-native';
-import { TEXT_PRIMARY, TEXT_SECONDARY, PRIMARY_GREEN_HEX } from '../constants';
+import { ScrollView, Text, TouchableOpacity, View } from '@/components/ui';
+import { PRIMARY_GREEN_HEX, TEXT_PRIMARY, TEXT_SECONDARY } from '../constants';
 
 export function SetupForm({
   deviceName,
@@ -21,7 +21,7 @@ export function SetupForm({
   onContinue: () => void;
 }) {
   return (
-    <ScrollView 
+    <ScrollView
       className="flex-1 px-5 pt-8"
       contentContainerStyle={{ paddingBottom: 100 }}
     >
@@ -33,8 +33,8 @@ export function SetupForm({
       </Text>
 
       <View className="mt-10 gap-y-4">
-        <View className="rounded-2xl bg-white px-4 py-3 border border-neutral-100">
-          <Text className="text-xs font-bold text-neutral-400 mb-1">Device Name</Text>
+        <View className="rounded-2xl border border-neutral-100 bg-white px-4 py-3">
+          <Text className="mb-1 text-xs font-bold text-neutral-400">Device Name</Text>
           <TextInput
             value={deviceName}
             onChangeText={setDeviceName}
@@ -43,9 +43,9 @@ export function SetupForm({
             style={{ color: TEXT_PRIMARY }}
           />
         </View>
-        
-        <View className="rounded-2xl bg-white px-4 py-3 border border-neutral-100">
-          <Text className="text-xs font-bold text-neutral-400 mb-1">Wi-Fi Network</Text>
+
+        <View className="rounded-2xl border border-neutral-100 bg-white px-4 py-3">
+          <Text className="mb-1 text-xs font-bold text-neutral-400">Wi-Fi Network</Text>
           <TextInput
             value={wifiSsid}
             onChangeText={setWifiSsid}
@@ -55,8 +55,8 @@ export function SetupForm({
           />
         </View>
 
-        <View className="rounded-2xl bg-white px-4 py-3 border border-neutral-100">
-          <Text className="text-xs font-bold text-neutral-400 mb-1">Wi-Fi Password</Text>
+        <View className="rounded-2xl border border-neutral-100 bg-white px-4 py-3">
+          <Text className="mb-1 text-xs font-bold text-neutral-400">Wi-Fi Password</Text>
           <TextInput
             value={wifiPass}
             onChangeText={setWifiPass}

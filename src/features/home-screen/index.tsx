@@ -1,11 +1,11 @@
+import { Image } from 'expo-image';
+import { StyleSheet } from 'react-native';
+import { useUniwind } from 'uniwind';
 import { PrimaryHeaderHome } from '@/components/base/header/PrimaryHomeHeader';
 import { BaseLayout } from '@/components/layout/BaseLayout';
 import { View } from '@/components/ui';
 import { ETheme } from '@/types/base';
-import { Image } from 'expo-image';
-import { useUniwind } from 'uniwind';
 import { HomeScreenWrapper } from './wrapper/home-screen-wrapper';
-import { StyleSheet } from 'react-native'
 
 export function HomeScreen() {
   const { theme } = useUniwind();

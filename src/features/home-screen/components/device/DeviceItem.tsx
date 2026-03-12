@@ -100,7 +100,6 @@ export const DeviceItem: React.FC<TProps> = ({ device, typeViewDevice }) => {
     };
   });
 
-
   // Layout FullWidth
   if (typeViewDevice === ETypeViewDevice.FullWidth) {
     return (

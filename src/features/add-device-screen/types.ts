@@ -10,6 +10,6 @@ export type DeviceResult = {
   name: string;
   status: 'connecting' | 'connected' | 'failed';
   imageUrl: string;
-  angle: number; 
-  radius: number; 
+  angle: number;
+  radius: number;
 };

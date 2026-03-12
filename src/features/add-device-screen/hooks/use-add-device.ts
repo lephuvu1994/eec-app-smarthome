@@ -1,28 +1,30 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
-import { NativeEventEmitter, NativeModules, Alert } from 'react-native';
+import type { DeviceResult } from '../types';
+import { useCallback, useEffect, useState } from 'react';
+import { Alert, NativeEventEmitter, NativeModules } from 'react-native';
 import { Easing, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
-import { bleService, CHIP_TX_CHAR_UUID } from '@/lib/ble';
-import { cryptoService } from '@/lib/crypto';
 import { useRegisterDevice } from '@/hooks/use-register-device';
 import { DeviceProtocol } from '@/lib/api/devices/device.service';
-import { EAddDeviceStep, DeviceResult } from '../types';
+import { bleService, CHIP_TX_CHAR_UUID } from '@/lib/ble';
+import { cryptoService } from '@/lib/crypto';
+import { EAddDeviceStep } from '../types';
 
 const BleManagerModule = NativeModules.BleManager;
 const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
 
-export const useAddDevice = () => {
+export function useAddDevice() {
   const [step, setStep] = useState<EAddDeviceStep>(EAddDeviceStep.SEARCH);
   const [devices, setDevices] = useState<DeviceResult[]>([]);
   const [isScanning, setIsScanning] = useState(false);
   const [deviceName, setDeviceName] = useState('');
   const [wifiSsid, setWifiSsid] = useState('');
   const [wifiPass, setWifiPass] = useState('');
-  
+
   const rotation = useSharedValue(0);
   const { mutateAsync: registerDevice, isPending: isRegistering } = useRegisterDevice();
 
   const startScan = useCallback(async () => {
-    if (isScanning) return;
+    if (isScanning)
+      return;
     setDevices([]);
     setIsScanning(true);
     await bleService.startScan(10);
@@ -31,11 +33,11 @@ export const useAddDevice = () => {
   useEffect(() => {
     rotation.value = withRepeat(
       withTiming(360, {
-        duration: 3500, 
+        duration: 3500,
         easing: Easing.linear,
       }),
       -1,
-      false
+      false,
     );
 
     const initBle = async () => {
@@ -51,9 +53,11 @@ export const useAddDevice = () => {
     const handlerDiscover = bleManagerEmitter.addListener(
       'BleManagerDiscoverPeripheral',
       (peripheral) => {
-        if (!peripheral.name) return;
+        if (!peripheral.name)
+          return;
         setDevices((prev) => {
-          if (prev.find((d) => d.id === peripheral.id)) return prev;
+          if (prev.some(d => d.id === peripheral.id))
+            return prev;
           return [
             ...prev,
             {
@@ -66,7 +70,7 @@ export const useAddDevice = () => {
             },
           ];
         });
-      }
+      },
     );
 
     const handlerStop = bleManagerEmitter.addListener('BleManagerStopScan', () => {
@@ -77,28 +81,29 @@ export const useAddDevice = () => {
       'BleManagerDidUpdateValueForCharacteristic',
       ({ value, peripheral, characteristic }) => {
         if (characteristic.toLowerCase() === CHIP_TX_CHAR_UUID.toLowerCase()) {
-            try {
-                const jsonStr = bleService.bytesToString(value);
-                const handshakeData = JSON.parse(jsonStr);
-                
-                if (handshakeData.mac && handshakeData.session && handshakeData.nonce) {
-                    cryptoService.initSession(
-                        handshakeData.mac, 
-                        handshakeData.session, 
-                        handshakeData.nonce,
-                        handshakeData.pid,
-                        handshakeData.cid
-                    );
-                    
-                    setDevices(prev => 
-                        prev.map(d => d.id === peripheral ? { ...d, status: 'connected' } : d)
-                    );
-                }
-            } catch (e) {
-                console.error("Failed to parse handshake", e);
+          try {
+            const jsonStr = bleService.bytesToString(value);
+            const handshakeData = JSON.parse(jsonStr);
+
+            if (handshakeData.mac && handshakeData.session && handshakeData.nonce) {
+              cryptoService.initSession({
+                mac: handshakeData.mac,
+                session: handshakeData.session,
+                nonce: handshakeData.nonce,
+                deviceCode: handshakeData.pid,
+                partnerId: handshakeData.cid,
+              });
+
+              setDevices(prev =>
+                prev.map(d => d.id === peripheral ? { ...d, status: 'connected' } : d),
+              );
             }
+          }
+          catch (e) {
+            console.error('Failed to parse handshake', e);
+          }
         }
-      }
+      },
     );
 
     return () => {
@@ -116,7 +121,8 @@ export const useAddDevice = () => {
       await bleService.retrieveServices(device.id);
       await bleService.requestMTU(device.id, 512);
       setStep(EAddDeviceStep.SETUP);
-    } catch (error) {
+    }
+    catch (error) {
       console.error('Connection failed', error);
       setDevices(prev => prev.map(d => d.id === device.id ? { ...d, status: 'failed' } : d));
     }
@@ -138,32 +144,33 @@ export const useAddDevice = () => {
         setDevices(prev => prev.map(d => d.id === device.id ? { ...d, status: 'failed' } : d));
         return;
       }
-      
+
       const response = await registerDevice({
         protocol: DeviceProtocol.MQTT,
         identifier: macAddress,
-        deviceCode: deviceCode, 
-        partnerId: partnerId, 
+        deviceCode,
+        partnerId,
         name: deviceName || device.name,
       });
 
       const serverResponse = response?.data || response;
 
       const payload = {
-        cmd: "set_wifi",
+        cmd: 'set_wifi',
         wifi_ssid: wifiSsid,
         wifi_pass: wifiPass,
-        mqtt_broker: serverResponse.mqtt_broker || "mqtt.eec.com",
-        mqtt_token_device: serverResponse.mqtt_token_device || "token_fallback",
-        mqtt_username: serverResponse.mqtt_username || "user_fallback",
-        mqtt_pass: serverResponse.mqtt_pass || "pass_fallback"
+        mqtt_broker: serverResponse.mqtt_broker || 'mqtt.eec.com',
+        mqtt_token_device: serverResponse.mqtt_token_device || 'token_fallback',
+        mqtt_username: serverResponse.mqtt_username || 'user_fallback',
+        mqtt_pass: serverResponse.mqtt_pass || 'pass_fallback',
       };
 
       const encryptedBytes = cryptoService.encryptAES128ECB(JSON.stringify(payload));
       await bleService.writeWithoutResponse(device.id, encryptedBytes);
-      
+
       Alert.alert('Thành công', 'Đã gửi cấu hình WiFi xuống mạch. Vui lòng chờ thiết bị khởi động lại và kết nối.');
-    } catch (error) {
+    }
+    catch (error) {
       console.error('Failed to register or send config', error);
     }
   };
@@ -185,4 +192,4 @@ export const useAddDevice = () => {
     connectDevice,
     submitDeviceConfig,
   };
-};
+}

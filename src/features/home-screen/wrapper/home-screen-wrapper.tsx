@@ -94,11 +94,11 @@ export const HomeScreenWrapper = memo(({ className }: { className?: string }) =>
     }
   }, [currentFloorIdx]);
 
-  const handleError = useCallback(() => {
+  const handleError = () => {
     animatedHeight.value = withTiming(animatedHeight.value > 0 ? 0 : heightVideoOnScreen, {
       duration: ANIMATION_DURATION,
     });
-  }, [animatedHeight]);
+  };
 
   const toggleExpand = () => {
     const nextState = !showRoomViewExpand;

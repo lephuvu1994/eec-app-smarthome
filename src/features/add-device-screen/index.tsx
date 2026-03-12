@@ -1,8 +1,8 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { router, Stack } from 'expo-router';
-import { useAnimatedStyle } from 'react-native-reanimated';
 import { StyleSheet } from 'react-native';
+import { useAnimatedStyle } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 import { BaseLayout } from '@/components/layout/BaseLayout';
@@ -10,20 +10,20 @@ import { Text, TouchableOpacity, View } from '@/components/ui';
 import { translate } from '@/lib/i18n';
 import { ETheme } from '@/types/base';
 
-import { EAddDeviceStep } from './types';
-import { PRIMARY_GREEN_HEX, TEXT_PRIMARY, TEXT_SECONDARY } from './constants';
-import { useAddDevice } from './hooks/use-add-device';
-
+import { DeviceList } from './components/device-list';
 // Sub-components
 import { RadarView } from './components/radar-view';
-import { DeviceList } from './components/device-list';
-import { SetupForm } from './components/setup-form';
 import { RoomAssignment } from './components/room-assignment';
+
+import { SetupForm } from './components/setup-form';
+import { PRIMARY_GREEN_HEX, TEXT_PRIMARY, TEXT_SECONDARY } from './constants';
+import { useAddDevice } from './hooks/use-add-device';
+import { EAddDeviceStep } from './types';
 
 export function AddDeviceScreen() {
   const insets = useSafeAreaInsets();
   const { theme } = useUniwind();
-  
+
   const {
     step,
     setStep,
@@ -105,7 +105,7 @@ export function AddDeviceScreen() {
 
   return (
     <BaseLayout>
-      <Stack.Screen options={{ headerShown: false } } />
+      <Stack.Screen options={{ headerShown: false }} />
       <View className="relative w-full flex-1">
         <Image
           source={theme === ETheme.Dark ? require('@@/assets/base/background-dark.png') : require('@@/assets/base/background-light.png')}
@@ -124,7 +124,7 @@ export function AddDeviceScreen() {
           <View className="h-14 flex-row items-center px-5">
             <TouchableOpacity
               onPress={() => {
-                router.back()
+                router.back();
               }}
               className="size-10 items-center justify-center rounded-full bg-white/60"
               style={{
@@ -143,19 +143,20 @@ export function AddDeviceScreen() {
           </View>
 
           {step === EAddDeviceStep.SEARCH && renderSearchStep()}
-          
+
           {step === EAddDeviceStep.RESULTS && (
-            <DeviceList 
-              devices={devices} 
+            <DeviceList
+              devices={devices}
               onContinue={() => {
                 const device = devices[0]; // Logic for selecting device
-                if (device) connectDevice(device);
-              }} 
+                if (device)
+                  connectDevice(device);
+              }}
             />
           )}
 
           {step === EAddDeviceStep.SETUP && (
-            <SetupForm 
+            <SetupForm
               deviceName={deviceName}
               setDeviceName={setDeviceName}
               wifiSsid={wifiSsid}
@@ -167,12 +168,13 @@ export function AddDeviceScreen() {
           )}
 
           {step === EAddDeviceStep.ROOM_ASSIGN && (
-            <RoomAssignment 
+            <RoomAssignment
               devices={devices}
               isRegistering={isRegistering}
               onFinish={() => {
                 const connectedDevice = devices.find(d => d.status === 'connected');
-                if (connectedDevice) submitDeviceConfig(connectedDevice);
+                if (connectedDevice)
+                  submitDeviceConfig(connectedDevice);
               }}
             />
           )}

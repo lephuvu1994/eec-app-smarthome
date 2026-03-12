@@ -1,13 +1,15 @@
-import { memo, useMemo } from 'react';
+import type { Href } from 'expo-router';
+import type { TMenuElement } from '@/components/ui/zeego-native-menu';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import { router } from 'expo-router';
+import { memo, useMemo } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 import { Text, TouchableOpacity, View } from '@/components/ui';
 import { BellIcon, SnownyIcon } from '@/components/ui/icons';
-import { ETheme } from '@/types/base';
+import { ZeegoNativeMenu } from '@/components/ui/zeego-native-menu';
 import { translate } from '@/lib/i18n';
-import { Href, router } from 'expo-router';
-import { TMenuElement, ZeegoNativeMenu } from '@/components/ui/zeego-native-menu';
+import { ETheme } from '@/types/base';
 import { PulseDot } from '../PulseDot';
 
 export const PrimaryHeaderHome: React.FC = memo(() => {

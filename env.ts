@@ -11,10 +11,10 @@ const envSchema = z.object({
   EXPO_PUBLIC_PACKAGE: z.string(),
   EXPO_PUBLIC_VERSION: z.string(),
   EXPO_PUBLIC_API_URL: z.string().url(),
-  EXPO_PUBLIC_BLE_AES_KEY: z.string().length(16).default("1234567890123456"),
-  EXPO_PUBLIC_BLE_SERVICE_UUID: z.string().uuid().default("55535343-fe7d-4ae5-8fa9-9fafd205e455"),
-  EXPO_PUBLIC_BLE_TX_UUID: z.string().uuid().default("49535343-8841-43f4-a8d4-ecbe34729bb3"),
-  EXPO_PUBLIC_BLE_RX_UUID: z.string().uuid().default("49535343-1e4d-4bd9-ba61-23c647249616"),
+  EXPO_PUBLIC_BLE_AES_KEY: z.string().length(16).default('1234567890123456'),
+  EXPO_PUBLIC_BLE_SERVICE_UUID: z.string().uuid().default('55535343-fe7d-4ae5-8fa9-9fafd205e455'),
+  EXPO_PUBLIC_BLE_TX_UUID: z.string().uuid().default('49535343-8841-43f4-a8d4-ecbe34729bb3'),
+  EXPO_PUBLIC_BLE_RX_UUID: z.string().uuid().default('49535343-1e4d-4bd9-ba61-23c647249616'),
 });
 
 // Config records per environment
