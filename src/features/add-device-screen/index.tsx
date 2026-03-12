@@ -163,18 +163,23 @@ export function AddDeviceScreen() {
               setWifiSsid={setWifiSsid}
               wifiPass={wifiPass}
               setWifiPass={setWifiPass}
-              onContinue={() => setStep(EAddDeviceStep.ROOM_ASSIGN)}
+              isSubmitting={isRegistering}
+              onContinue={() => {
+                // Flow restructure: Submit config immediately from SETUP step
+                const connectedDevice = devices.find(d => d.status === 'connected');
+                if (connectedDevice)
+                  submitDeviceConfig(connectedDevice);
+              }}
             />
           )}
 
           {step === EAddDeviceStep.ROOM_ASSIGN && (
             <RoomAssignment
               devices={devices}
-              isRegistering={isRegistering}
+              isRegistering={false}
               onFinish={() => {
-                const connectedDevice = devices.find(d => d.status === 'connected');
-                if (connectedDevice)
-                  submitDeviceConfig(connectedDevice);
+                // Room assignment is optional — go back to home
+                router.back();
               }}
             />
           )}

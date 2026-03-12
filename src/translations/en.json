@@ -13,6 +13,8 @@
     "back": "Back",
     "bedroom": "Bedroom",
     "cancel": "Cancel",
+    "configureDevice": "Configure Device",
+    "configureDeviceDesc": "Enter a convenient name and the Wi-Fi credentials for your new device.",
     "confirmButton": "Confirm",
     "connectLabel": "Connect",
     "connectedStatus": "Connected",
@@ -21,6 +23,8 @@
     "createUser": "Create User",
     "deleteButton": "Delete",
     "device": "Devices",
+    "deviceName": "Device Name",
+    "deviceNamePlaceholder": "e.g. Living Room Lamp",
     "devices": "DEVICES",
     "disconnectedStatus": "Disconnected",
     "editButton": "Edit",
@@ -43,7 +47,11 @@
     "searchingDesc": "Please make sure all your devices are connected to Wi-Fi or Bluetooth.",
     "selectRoom": "SELECT ROOM",
     "selectRoomTitle": "Select room",
-    "unableToConnect": "Unable to connect"
+    "unableToConnect": "Unable to connect",
+    "wifiNetwork": "Wi-Fi Network",
+    "wifiPassword": "Wi-Fi Password",
+    "wifiPasswordPlaceholder": "Enter password",
+    "wifiSsidPlaceholder": "Enter Wi-Fi SSID"
   },
   "formAuth": {
     "createPassword": "Create password",

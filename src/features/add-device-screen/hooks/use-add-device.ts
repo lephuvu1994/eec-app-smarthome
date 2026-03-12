@@ -1,5 +1,5 @@
 import type { DeviceResult } from '../types';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, NativeEventEmitter, NativeModules } from 'react-native';
 import { Easing, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 import { useRegisterDevice } from '@/hooks/use-register-device';
@@ -21,6 +21,9 @@ export function useAddDevice() {
 
   const rotation = useSharedValue(0);
   const { mutateAsync: registerDevice, isPending: isRegistering } = useRegisterDevice();
+
+  // Track connected device ID for cleanup
+  const connectedDeviceIdRef = useRef<string | null>(null);
 
   const startScan = useCallback(async () => {
     if (isScanning)
@@ -97,6 +100,9 @@ export function useAddDevice() {
               setDevices(prev =>
                 prev.map(d => d.id === peripheral ? { ...d, status: 'connected' } : d),
               );
+
+              // Bug 2 fix: Only move to SETUP after handshake is received
+              setStep(EAddDeviceStep.SETUP);
             }
           }
           catch (e) {
@@ -106,13 +112,21 @@ export function useAddDevice() {
       },
     );
 
+    // Bug 3 fix: Cleanup BLE connection on unmount
     return () => {
       handlerDiscover.remove();
       handlerStop.remove();
       handlerValueUpdate.remove();
       bleService.stopScan();
+
+      // Disconnect if we have an active connection
+      if (connectedDeviceIdRef.current) {
+        bleService.stopNotification(connectedDeviceIdRef.current).catch(() => {});
+        bleService.disconnect(connectedDeviceIdRef.current).catch(() => {});
+        connectedDeviceIdRef.current = null;
+      }
     };
-  }, [startScan]);
+  }, [startScan, rotation]);
 
   const connectDevice = async (device: DeviceResult) => {
     try {
@@ -120,18 +134,28 @@ export function useAddDevice() {
       await bleService.connect(device.id);
       await bleService.retrieveServices(device.id);
       await bleService.requestMTU(device.id, 512);
-      setStep(EAddDeviceStep.SETUP);
+
+      // Bug 1 fix: Subscribe to notifications on TX characteristic
+      await bleService.startNotification(device.id);
+      connectedDeviceIdRef.current = device.id;
+
+      // Bug 2 fix: DON'T set step here — wait for handshake in the event handler above
+      // setStep(EAddDeviceStep.SETUP) is called in handlerValueUpdate after handshake
     }
     catch (error) {
       console.error('Connection failed', error);
       setDevices(prev => prev.map(d => d.id === device.id ? { ...d, status: 'failed' } : d));
+      Alert.alert('Lỗi kết nối', 'Không thể kết nối thiết bị. Vui lòng thử lại.');
     }
   };
 
+  // Flow restructure: submitDeviceConfig is called directly from SETUP step (after WiFi form)
+  // Room assignment is optional and happens AFTER this
   const submitDeviceConfig = async (device: DeviceResult) => {
     try {
       if (!cryptoService.getSessionNonce()) {
         console.warn('Cannot send config: No session established.');
+        Alert.alert('Lỗi', 'Chưa thiết lập phiên kết nối. Vui lòng kết nối lại thiết bị.');
         return;
       }
 
@@ -145,6 +169,7 @@ export function useAddDevice() {
         return;
       }
 
+      // Step 1: Register device on server (without room — room is optional)
       const response = await registerDevice({
         protocol: DeviceProtocol.MQTT,
         identifier: macAddress,
@@ -153,8 +178,9 @@ export function useAddDevice() {
         name: deviceName || device.name,
       });
 
-      const serverResponse = response?.data || response;
+      const serverResponse = response.data;
 
+      // Step 2: Build config payload and encrypt
       const payload = {
         cmd: 'set_wifi',
         wifi_ssid: wifiSsid,
@@ -166,12 +192,18 @@ export function useAddDevice() {
       };
 
       const encryptedBytes = cryptoService.encryptAES128ECB(JSON.stringify(payload));
+
+      // Step 3: Send encrypted config to chip via BLE
       await bleService.writeWithoutResponse(device.id, encryptedBytes);
 
-      Alert.alert('Thành công', 'Đã gửi cấu hình WiFi xuống mạch. Vui lòng chờ thiết bị khởi động lại và kết nối.');
+      // Success — move to optional room assignment
+      setStep(EAddDeviceStep.ROOM_ASSIGN);
     }
     catch (error) {
+      // Bug 4 fix: Show user-facing error alert
       console.error('Failed to register or send config', error);
+      Alert.alert('Lỗi', 'Không thể đăng ký thiết bị. Vui lòng thử lại.');
+      setDevices(prev => prev.map(d => d.id === device.id ? { ...d, status: 'failed' } : d));
     }
   };
 

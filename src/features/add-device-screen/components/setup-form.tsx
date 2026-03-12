@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { TextInput } from 'react-native';
+import { ActivityIndicator, TextInput } from 'react-native';
 import { ScrollView, Text, TouchableOpacity, View } from '@/components/ui';
-import { PRIMARY_GREEN_HEX, TEXT_PRIMARY, TEXT_SECONDARY } from '../constants';
+import { translate } from '@/lib/i18n';
+import { PRIMARY_GREEN_HEX } from '../constants';
 
 export function SetupForm({
   deviceName,
@@ -10,6 +11,7 @@ export function SetupForm({
   setWifiSsid,
   wifiPass,
   setWifiPass,
+  isSubmitting = false,
   onContinue,
 }: {
   deviceName: string;
@@ -18,6 +20,7 @@ export function SetupForm({
   setWifiSsid: (v: string) => void;
   wifiPass: string;
   setWifiPass: (v: string) => void;
+  isSubmitting?: boolean;
   onContinue: () => void;
 }) {
   return (
@@ -25,45 +28,45 @@ export function SetupForm({
       className="flex-1 px-5 pt-8"
       contentContainerStyle={{ paddingBottom: 100 }}
     >
-      <Text className="text-2xl font-bold" style={{ color: TEXT_PRIMARY }}>
-        Configure Device
+      <Text className="text-2xl font-bold text-[#1A1A1A] dark:text-white">
+        {translate('base.configureDevice')}
       </Text>
-      <Text className="mt-2 text-[15px] font-medium" style={{ color: TEXT_SECONDARY }}>
-        Enter a convenient name and the Wi-Fi credentials for your new device.
+      <Text className="mt-2 text-[15px] font-medium text-[#666666] dark:text-neutral-400">
+        {translate('base.configureDeviceDesc')}
       </Text>
 
       <View className="mt-10 gap-y-4">
-        <View className="rounded-2xl border border-neutral-100 bg-white px-4 py-3">
-          <Text className="mb-1 text-xs font-bold text-neutral-400">Device Name</Text>
+        <View className="rounded-2xl border border-neutral-100 bg-white px-4 py-3 dark:border-neutral-700 dark:bg-neutral-800">
+          <Text className="mb-1 text-xs font-bold text-neutral-400">{translate('base.deviceName')}</Text>
           <TextInput
             value={deviceName}
             onChangeText={setDeviceName}
-            placeholder="e.g. Living Room Lamp"
-            className="text-[16px] font-medium"
-            style={{ color: TEXT_PRIMARY }}
+            placeholder={translate('base.deviceNamePlaceholder')}
+            placeholderTextColor="#9CA3AF"
+            className="text-[16px] font-medium text-[#1A1A1A] dark:text-white"
           />
         </View>
 
-        <View className="rounded-2xl border border-neutral-100 bg-white px-4 py-3">
-          <Text className="mb-1 text-xs font-bold text-neutral-400">Wi-Fi Network</Text>
+        <View className="rounded-2xl border border-neutral-100 bg-white px-4 py-3 dark:border-neutral-700 dark:bg-neutral-800">
+          <Text className="mb-1 text-xs font-bold text-neutral-400">{translate('base.wifiNetwork')}</Text>
           <TextInput
             value={wifiSsid}
             onChangeText={setWifiSsid}
-            placeholder="Enter Wi-Fi SSID"
-            className="text-[16px] font-medium"
-            style={{ color: TEXT_PRIMARY }}
+            placeholder={translate('base.wifiSsidPlaceholder')}
+            placeholderTextColor="#9CA3AF"
+            className="text-[16px] font-medium text-[#1A1A1A] dark:text-white"
           />
         </View>
 
-        <View className="rounded-2xl border border-neutral-100 bg-white px-4 py-3">
-          <Text className="mb-1 text-xs font-bold text-neutral-400">Wi-Fi Password</Text>
+        <View className="rounded-2xl border border-neutral-100 bg-white px-4 py-3 dark:border-neutral-700 dark:bg-neutral-800">
+          <Text className="mb-1 text-xs font-bold text-neutral-400">{translate('base.wifiPassword')}</Text>
           <TextInput
             value={wifiPass}
             onChangeText={setWifiPass}
-            placeholder="Enter password"
+            placeholder={translate('base.wifiPasswordPlaceholder')}
+            placeholderTextColor="#9CA3AF"
             secureTextEntry
-            className="text-[16px] font-medium"
-            style={{ color: TEXT_PRIMARY }}
+            className="text-[16px] font-medium text-[#1A1A1A] dark:text-white"
           />
         </View>
       </View>
@@ -71,10 +74,16 @@ export function SetupForm({
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={onContinue}
-        className="mt-10 h-14 w-full items-center justify-center rounded-2xl"
-        style={{ backgroundColor: PRIMARY_GREEN_HEX }}
+        disabled={isSubmitting || !wifiSsid.trim()}
+        className="mt-10 h-14 w-full flex-row items-center justify-center rounded-2xl"
+        style={{
+          backgroundColor: PRIMARY_GREEN_HEX,
+          opacity: isSubmitting || !wifiSsid.trim() ? 0.5 : 1,
+        }}
       >
-        <Text className="text-[16px] font-bold text-white">Continue</Text>
+        {isSubmitting
+          ? <ActivityIndicator size="small" color="#1B1B1B" />
+          : <Text className="text-[16px] font-bold text-[#1B1B1B]">{translate('base.continue')}</Text>}
       </TouchableOpacity>
     </ScrollView>
   );
