@@ -114,7 +114,7 @@ class BleService {
 
   // Helper
   bytesToString(bytes: number[]): string {
-    return String.fromCharCode(...bytes);
+    return new TextDecoder('utf-8').decode(new Uint8Array(bytes));
   }
 }
 

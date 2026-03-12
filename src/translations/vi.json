@@ -13,6 +13,8 @@
     "back": "Quay lại",
     "bedroom": "Phòng ngủ",
     "cancel": "Huỷ",
+    "configureDevice": "Cấu hình thiết bị",
+    "configureDeviceDesc": "Nhập tên thuận tiện và thông tin Wi-Fi cho thiết bị mới của bạn.",
     "confirmButton": "Đồng ý",
     "connectLabel": "Kết nối",
     "connectedStatus": "Đã kết nối",
@@ -21,6 +23,8 @@
     "createUser": "Tạo tài khoản",
     "deleteButton": "Xoá",
     "device": "Thiết bị",
+    "deviceName": "Tên thiết bị",
+    "deviceNamePlaceholder": "VD: Đèn phòng khách",
     "devices": "THIẾT BỊ",
     "disconnectedStatus": "Mất kết nối",
     "editButton": "Sửa",
@@ -43,7 +47,11 @@
     "searchingDesc": "Vui lòng đảm bảo tất cả thiết bị của bạn đã được kết nối với Wi-Fi hoặc Bluetooth.",
     "selectRoom": "CHỌN PHÒNG",
     "selectRoomTitle": "Chọn phòng",
-    "unableToConnect": "Không thể kết nối"
+    "unableToConnect": "Không thể kết nối",
+    "wifiNetwork": "Mạng Wi-Fi",
+    "wifiPassword": "Mật khẩu Wi-Fi",
+    "wifiPasswordPlaceholder": "Nhập mật khẩu",
+    "wifiSsidPlaceholder": "Nhập tên Wi-Fi (SSID)"
   },
   "formAuth": {
     "createPassword": "Tạo mật khẩu",
