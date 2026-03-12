@@ -1,6 +1,6 @@
 import type { DeviceResult } from '../types';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, NativeEventEmitter, NativeModules } from 'react-native';
+import { Alert, Linking, NativeEventEmitter, NativeModules } from 'react-native';
 import { Easing, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 import { useRegisterDevice } from '@/hooks/use-register-device';
 import { DeviceProtocol } from '@/lib/api/devices/device.service';
@@ -48,6 +48,16 @@ export function useAddDevice() {
       if (allowed) {
         await bleService.enableBluetooth();
         startScan();
+      }
+      else {
+        Alert.alert(
+          'Cần quyền Bluetooth',
+          'Vui lòng vào Cài đặt để cho phép ứng dụng truy cập Bluetooth.',
+          [
+            { text: 'Huỷ', style: 'cancel' },
+            { text: 'Mở Cài đặt', onPress: () => Linking.openSettings() },
+          ],
+        );
       }
     };
 
