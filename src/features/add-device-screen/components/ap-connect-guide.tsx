@@ -44,7 +44,7 @@ export function ApConnectGuide({
 
       <View className="mt-8 gap-y-5">
         {steps.map((step, index) => (
-          <View key={index} className="flex-row items-start">
+          <View key={step.icon} className="flex-row items-start">
             <View className="size-10 items-center justify-center rounded-full bg-emerald-50 dark:bg-emerald-900/30">
               <MaterialCommunityIcons
                 name={step.icon}
@@ -76,7 +76,7 @@ export function ApConnectGuide({
           }}
         >
           <Text className="text-[16px] font-bold text-[#1B1B1B]">
-            {isConnecting ? translate('base.connecting') : translate('base.apConnected')}
+            {isConnecting ? translate('base.connecting') : translate('base.apConfirmConnected')}
           </Text>
         </TouchableOpacity>
       </View>
