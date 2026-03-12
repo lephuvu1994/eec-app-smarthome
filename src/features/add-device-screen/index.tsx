@@ -16,7 +16,7 @@ import { RadarView } from './components/radar-view';
 import { RoomAssignment } from './components/room-assignment';
 
 import { SetupForm } from './components/setup-form';
-import { PRIMARY_GREEN_HEX, TEXT_PRIMARY, TEXT_SECONDARY } from './constants';
+import { PRIMARY_GREEN_HEX } from './constants';
 import { useAddDevice } from './hooks/use-add-device';
 import { EAddDeviceStep } from './types';
 
@@ -50,12 +50,12 @@ export function AddDeviceScreen() {
         <RadarView devices={devices} rotation={rotation} beamStyle={beamStyle} />
 
         <View className="mt-8 items-center">
-          <Text className="text-center text-[24px] font-bold" style={{ color: TEXT_PRIMARY }}>
+          <Text className="text-center text-[24px] font-bold text-[#1A1A1A] dark:text-white">
             {translate('base.searching')}
           </Text>
           <Text
-            className="mt-2 text-center text-[14px]/[20px] font-normal"
-            style={{ color: TEXT_SECONDARY, paddingHorizontal: 40 }}
+            className="mt-2 text-center text-[14px]/[20px] font-normal text-[#666666] dark:text-neutral-400"
+            style={{ paddingHorizontal: 40 }}
           >
             {translate('base.searchingDesc')}
           </Text>
@@ -64,7 +64,7 @@ export function AddDeviceScreen() {
 
       <View className="mt-auto pb-10">
         <View
-          className="mb-8 flex-row items-center rounded-2xl bg-white p-4 shadow-sm"
+          className="mb-8 flex-row items-center rounded-2xl bg-white p-4 shadow-sm dark:bg-neutral-800"
           style={{
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 2 },
@@ -73,11 +73,11 @@ export function AddDeviceScreen() {
             elevation: 2,
           }}
         >
-          <View className="size-12 items-center justify-center rounded-xl bg-neutral-100">
-            <MaterialCommunityIcons name="camera-outline" size={24} color="#737373" />
+          <View className="size-12 items-center justify-center rounded-xl bg-neutral-100 dark:bg-neutral-700">
+            <MaterialCommunityIcons name="camera-outline" size={24} color={theme === ETheme.Dark ? '#FFFFFF' : '#737373'} />
           </View>
           <View className="ml-4 flex-1">
-            <Text className="text-[15px] font-bold" style={{ color: TEXT_PRIMARY }}>
+            <Text className="text-[15px] font-bold text-[#1A1A1A] dark:text-white">
               Tapo TP-Link C210 360°
             </Text>
             <Text className="text-xs font-semibold text-amber-500">{translate('base.connecting')}</Text>
@@ -90,14 +90,14 @@ export function AddDeviceScreen() {
           className="h-14 w-full items-center justify-center rounded-2xl"
           style={{ backgroundColor: PRIMARY_GREEN_HEX }}
         >
-          <Text className="text-[16px] font-bold text-white">{translate('base.allowAndContinue')}</Text>
+          <Text className="text-[16px] font-bold text-[#1B1B1B] dark:text-[#1B1B1B]">{translate('base.allowAndContinue')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           activeOpacity={0.7}
-          className="mt-4 h-14 w-full items-center justify-center rounded-2xl bg-neutral-100"
+          className="mt-4 h-14 w-full items-center justify-center rounded-2xl bg-neutral-100 dark:bg-neutral-800"
         >
-          <Text className="text-[16px] font-semibold text-neutral-600">{translate('base.addManually')}</Text>
+          <Text className="text-[16px] font-semibold text-neutral-600 dark:text-neutral-300">{translate('base.addManually')}</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -121,12 +121,12 @@ export function AddDeviceScreen() {
           contentFit="cover"
         />
         <View style={{ paddingTop: insets.top, flex: 1 }}>
-          <View className="h-14 flex-row items-center px-5">
+          <View className="relative h-14 flex-row items-center justify-center px-5">
             <TouchableOpacity
               onPress={() => {
                 router.back();
               }}
-              className="size-10 items-center justify-center rounded-full bg-white/60"
+              className="absolute left-5 z-10 size-10 items-center justify-center rounded-full bg-white/60 dark:bg-white/10"
               style={{
                 shadowColor: '#000',
                 shadowOffset: { width: 0, height: 1 },
@@ -135,9 +135,9 @@ export function AddDeviceScreen() {
                 elevation: 1,
               }}
             >
-              <MaterialCommunityIcons name="chevron-left" size={28} color="#1B1B1B" />
+              <MaterialCommunityIcons name="chevron-left" size={28} color={theme === ETheme.Dark ? '#FFFFFF' : '#1B1B1B'} />
             </TouchableOpacity>
-            <Text className="ml-4 text-[18px] font-bold" style={{ color: TEXT_PRIMARY }}>
+            <Text className="text-[18px] font-bold text-[#1B1B1B] dark:text-white">
               {translate('base.addDevice')}
             </Text>
           </View>

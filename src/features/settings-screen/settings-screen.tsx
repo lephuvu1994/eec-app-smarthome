@@ -136,15 +136,17 @@ export function SettingsScreen() {
           </TouchableOpacity>
 
           {/* ─── Energy Card ─── */}
-          <View className="relative mx-4 mb-6 overflow-hidden rounded-2xl border border-[#FFFFFF99] shadow-sm">
-            {/* --- LỚP NỀN 2: Ở GIỮA (Hình ảnh có chứa độ trong suốt) --- */}
-            <Image
-              source={require('@@/assets/settings/enery-bg.png')} // Bác thay đường dẫn ảnh thật vào đây
-              style={StyleSheet.absoluteFillObject}
-              contentFit="cover" // Tương đương "cover" trong CSS
-            />
+          <View className="relative mx-4 mb-6 overflow-hidden rounded-2xl border border-[#FFFFFF99] shadow-sm dark:border-neutral-700 dark:bg-neutral-800/90">
+            {/* --- LỚP NỀN: Hình ảnh (chỉ hiện ở Light mode) --- */}
+            {theme !== ETheme.Dark && (
+              <Image
+                source={require('@@/assets/settings/enery-bg.png')}
+                style={StyleSheet.absoluteFillObject}
+                contentFit="cover"
+              />
+            )}
 
-            {/* --- LỚP NỘI DUNG 3: TRÊN CÙNG (Bọc thêm z-10 để chữ luôn nổi lên) --- */}
+            {/* --- LỚP NỘI DUNG: TRÊN CÙNG --- */}
             <View className="relative z-10">
               {/* Card Header */}
               <View className="flex-row items-center justify-between px-4 pt-4 pb-2">
@@ -166,39 +168,37 @@ export function SettingsScreen() {
                   {' '}
                   <Text className="text-2xl font-semibold text-[#1B1B1B] dark:text-white">KW</Text>
                 </Text>
-                <Text className="mt-0.5 text-xs text-neutral-400">
+                <Text className="mt-0.5 text-xs text-neutral-400 dark:text-neutral-300">
                   {translate('settings.energyCard.currentUsage')}
                 </Text>
               </View>
 
               {/* Stats Row */}
-              {/* GHI CHÚ: Dòng này đang có bg-neutral-50, nó sẽ che khuất phần nền Gradient/Image ở đáy.
-        Nếu bác muốn nhìn xuyên thấu xuống nền gốc, hãy đổi thành bg-white/50 hoặc bg-transparent */}
-              <View className="flex-row border-t border-neutral-100 dark:border-neutral-700">
+              <View className="flex-row border-t border-neutral-100 bg-white/60 dark:border-white/10 dark:bg-black/30">
                 {/* Left stat */}
                 <View className="flex-1 flex-row items-center gap-2.5 px-4 py-3">
-                  <View className="size-9 items-center justify-center rounded-full bg-neutral-200 dark:bg-neutral-700">
-                    <MaterialCommunityIcons name="lightning-bolt" size={18} color="#525252" />
+                  <View className="size-9 items-center justify-center rounded-full bg-neutral-200 dark:bg-white/20">
+                    <MaterialCommunityIcons name="lightning-bolt" size={18} color={theme === ETheme.Dark ? '#FFFFFF' : '#525252'} />
                   </View>
                   <View>
                     <Text className="text-base font-semibold text-[#1B1B1B] dark:text-white">48 KWh</Text>
-                    <Text className="text-xs text-neutral-400">
+                    <Text className="text-xs text-neutral-400 dark:text-neutral-300">
                       {translate('settings.energyCard.last24h')}
                     </Text>
                   </View>
                 </View>
 
                 {/* Divider */}
-                <View className="my-3 w-px bg-neutral-200 dark:bg-neutral-700" />
+                <View className="my-3 w-px bg-neutral-200 dark:bg-white/20" />
 
                 {/* Right stat */}
                 <View className="flex-1 flex-row items-center gap-2.5 px-4 py-3">
-                  <View className="size-9 items-center justify-center rounded-full bg-neutral-200 dark:bg-neutral-700">
-                    <MaterialCommunityIcons name="wallet-outline" size={18} color="#525252" />
+                  <View className="size-9 items-center justify-center rounded-full bg-neutral-200 dark:bg-white/20">
+                    <MaterialCommunityIcons name="wallet-outline" size={18} color={theme === ETheme.Dark ? '#FFFFFF' : '#525252'} />
                   </View>
                   <View>
                     <Text className="text-base font-semibold text-[#1B1B1B] dark:text-white">120.000 đ</Text>
-                    <Text className="text-xs text-neutral-400">
+                    <Text className="text-xs text-neutral-400 dark:text-neutral-300">
                       {translate('settings.energyCard.estimatedCost')}
                     </Text>
                   </View>

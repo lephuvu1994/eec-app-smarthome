@@ -118,7 +118,7 @@ export function ProfileScreen() {
               onPress={() => { }}
             >
               <View className="size-9 items-center justify-center rounded-xl bg-neutral-100 dark:bg-neutral-700">
-                <MaterialCommunityIcons name="account-outline" size={20} color="#525252" />
+                <MaterialCommunityIcons name="account-outline" size={20} color={theme === ETheme.Dark ? '#FFFFFF' : '#525252'} />
               </View>
               <View className="flex-1">
                 <Text className="text-xs text-neutral-400">{translate('formAuth.firstName')}</Text>
@@ -126,7 +126,7 @@ export function ProfileScreen() {
                   {hasName ? userName : '—'}
                 </Text>
               </View>
-              <MaterialCommunityIcons name="pencil-outline" size={18} color="#A3A3A3" />
+              <MaterialCommunityIcons name="pencil-outline" size={18} color={theme === ETheme.Dark ? '#9CA3AF' : '#A3A3A3'} />
             </TouchableOpacity>
 
             <View className="ml-[60px] h-px bg-neutral-100 dark:bg-neutral-700" />
@@ -134,7 +134,7 @@ export function ProfileScreen() {
             {/* Phone row */}
             <View className="flex-row items-center gap-3 px-4 py-4">
               <View className="size-9 items-center justify-center rounded-xl bg-neutral-100 dark:bg-neutral-700">
-                <MaterialCommunityIcons name="phone-outline" size={20} color="#525252" />
+                <MaterialCommunityIcons name="phone-outline" size={20} color={theme === ETheme.Dark ? '#FFFFFF' : '#525252'} />
               </View>
               <View className="flex-1">
                 <Text className="text-xs text-neutral-400">{translate('formAuth.phoneNumber')}</Text>
@@ -149,7 +149,7 @@ export function ProfileScreen() {
             {/* Email row */}
             <View className="flex-row items-center gap-3 px-4 py-4">
               <View className="size-9 items-center justify-center rounded-xl bg-neutral-100 dark:bg-neutral-700">
-                <MaterialCommunityIcons name="email-outline" size={20} color="#525252" />
+                <MaterialCommunityIcons name="email-outline" size={20} color={theme === ETheme.Dark ? '#FFFFFF' : '#525252'} />
               </View>
               <View className="flex-1">
                 <Text className="text-xs text-neutral-400">{translate('formAuth.emailTitle')}</Text>

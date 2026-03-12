@@ -26,17 +26,17 @@ function SettingScreen() {
               <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={() => {}}
-                style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(0,0,0,0.06)', alignItems: 'center', justifyContent: 'center' }}
+                className="size-9 items-center justify-center rounded-full bg-white/40 shadow-sm dark:bg-black/40"
               >
-                <MaterialCommunityIcons name="line-scan" size={20} color={theme === 'dark' ? '#fff' : '#1B1B1B'} />
+                <MaterialCommunityIcons name="line-scan" size={20} color={theme === ETheme.Dark ? '#fff' : '#1B1B1B'} />
               </TouchableOpacity>
               {/* Button 2: General / Preferences */}
               <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={() => router.push('/(app)/(mobile)/(settings)/general' as any)}
-                style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(0,0,0,0.06)', alignItems: 'center', justifyContent: 'center' }}
+                className="size-9 items-center justify-center rounded-full bg-white/40 shadow-sm dark:bg-black/40"
               >
-                <MaterialCommunityIcons name="tune-variant" size={20} color={theme === 'dark' ? '#fff' : '#1B1B1B'} />
+                <MaterialCommunityIcons name="tune-variant" size={20} color={theme === ETheme.Dark ? '#fff' : '#1B1B1B'} />
               </TouchableOpacity>
             </View>
           ),
