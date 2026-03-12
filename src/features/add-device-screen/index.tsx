@@ -10,15 +10,16 @@ import { Text, TouchableOpacity, View } from '@/components/ui';
 import { translate } from '@/lib/i18n';
 import { ETheme } from '@/types/base';
 
+import { ApConnectGuide } from './components/ap-connect-guide';
+import { ConfiguringView } from './components/configuring-view';
 import { DeviceList } from './components/device-list';
-// Sub-components
+import { LedConfirm } from './components/led-confirm';
 import { RadarView } from './components/radar-view';
 import { RoomAssignment } from './components/room-assignment';
-
 import { SetupForm } from './components/setup-form';
 import { PRIMARY_GREEN_HEX } from './constants';
 import { useAddDevice } from './hooks/use-add-device';
-import { EAddDeviceStep } from './types';
+import { EAddDeviceStep, EPairingMode } from './types';
 
 export function AddDeviceScreen() {
   const insets = useSafeAreaInsets();
@@ -27,6 +28,7 @@ export function AddDeviceScreen() {
   const {
     step,
     setStep,
+    pairingMode,
     devices,
     deviceName,
     setDeviceName,
@@ -36,7 +38,12 @@ export function AddDeviceScreen() {
     setWifiPass,
     rotation,
     isRegistering,
-    connectDevice,
+    isConnectingAP,
+    selectedDevice,
+    configuringStatus,
+    selectDevice,
+    choosePairingMode,
+    connectDeviceAP,
     submitDeviceConfig,
   } = useAddDevice();
 
@@ -44,7 +51,7 @@ export function AddDeviceScreen() {
     transform: [{ rotate: `${rotation.value}deg` }],
   }));
 
-  const renderSearchStep = () => (
+  const renderScanningStep = () => (
     <View className="flex-1 px-5">
       <View className="items-center justify-center py-8">
         <RadarView devices={devices} rotation={rotation} beamStyle={beamStyle} />
@@ -63,45 +70,91 @@ export function AddDeviceScreen() {
       </View>
 
       <View className="mt-auto pb-10">
-        <View
-          className="mb-8 flex-row items-center rounded-2xl bg-white p-4 shadow-sm dark:bg-neutral-800"
-          style={{
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.05,
-            shadowRadius: 8,
-            elevation: 2,
-          }}
-        >
-          <View className="size-12 items-center justify-center rounded-xl bg-neutral-100 dark:bg-neutral-700">
-            <MaterialCommunityIcons name="camera-outline" size={24} color={theme === ETheme.Dark ? '#FFFFFF' : '#737373'} />
-          </View>
-          <View className="ml-4 flex-1">
-            <Text className="text-[15px] font-bold text-[#1A1A1A] dark:text-white">
-              Tapo TP-Link C210 360°
-            </Text>
-            <Text className="text-xs font-semibold text-amber-500">{translate('base.connecting')}</Text>
-          </View>
-        </View>
-
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => setStep(EAddDeviceStep.RESULTS)}
-          className="h-14 w-full items-center justify-center rounded-2xl"
-          style={{ backgroundColor: PRIMARY_GREEN_HEX }}
-        >
-          <Text className="text-[16px] font-bold text-[#1B1B1B] dark:text-[#1B1B1B]">{translate('base.allowAndContinue')}</Text>
-        </TouchableOpacity>
+        {devices.length > 0 && (
+          <DeviceList
+            devices={devices}
+            onContinue={() => {
+              const device = devices[0];
+              if (device) selectDevice(device);
+            }}
+          />
+        )}
 
         <TouchableOpacity
           activeOpacity={0.7}
+          onPress={() => {
+            // Skip straight to LED confirm for manual add
+            setStep(EAddDeviceStep.LED_CONFIRM);
+          }}
           className="mt-4 h-14 w-full items-center justify-center rounded-2xl bg-neutral-100 dark:bg-neutral-800"
         >
-          <Text className="text-[16px] font-semibold text-neutral-600 dark:text-neutral-300">{translate('base.addManually')}</Text>
+          <Text className="text-[16px] font-semibold text-neutral-600 dark:text-neutral-300">
+            {translate('base.addManually')}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
   );
+
+  const renderStepContent = () => {
+    switch (step) {
+      case EAddDeviceStep.SCANNING:
+        return renderScanningStep();
+
+      case EAddDeviceStep.LED_CONFIRM:
+        return <LedConfirm onSelect={choosePairingMode} />;
+
+      case EAddDeviceStep.CONNECTING:
+        if (pairingMode === EPairingMode.AP) {
+          return (
+            <ApConnectGuide
+              isConnecting={isConnectingAP}
+              onConnect={connectDeviceAP}
+            />
+          );
+        }
+        // BLE connecting — show a loading state
+        return (
+          <View className="flex-1 items-center justify-center">
+            <Text className="text-lg font-bold text-[#1A1A1A] dark:text-white">
+              {translate('base.connecting')}
+            </Text>
+            <Text className="mt-2 text-[#666666] dark:text-neutral-400">
+              {translate('base.searchingDesc')}
+            </Text>
+          </View>
+        );
+
+      case EAddDeviceStep.SETUP:
+        return (
+          <SetupForm
+            deviceName={deviceName}
+            setDeviceName={setDeviceName}
+            wifiSsid={wifiSsid}
+            setWifiSsid={setWifiSsid}
+            wifiPass={wifiPass}
+            setWifiPass={setWifiPass}
+            isSubmitting={isRegistering}
+            onContinue={submitDeviceConfig}
+          />
+        );
+
+      case EAddDeviceStep.CONFIGURING:
+        return <ConfiguringView statusText={configuringStatus} />;
+
+      case EAddDeviceStep.COMPLETE:
+        return (
+          <RoomAssignment
+            devices={devices}
+            isRegistering={false}
+            onFinish={() => router.back()}
+          />
+        );
+
+      default:
+        return null;
+    }
+  };
 
   return (
     <BaseLayout>
@@ -124,7 +177,22 @@ export function AddDeviceScreen() {
           <View className="relative h-14 flex-row items-center justify-center px-5">
             <TouchableOpacity
               onPress={() => {
-                router.back();
+                // Go back one step or exit
+                if (step === EAddDeviceStep.SCANNING) {
+                  router.back();
+                }
+                else if (step === EAddDeviceStep.LED_CONFIRM) {
+                  setStep(EAddDeviceStep.SCANNING);
+                }
+                else if (step === EAddDeviceStep.CONNECTING) {
+                  setStep(EAddDeviceStep.LED_CONFIRM);
+                }
+                else if (step === EAddDeviceStep.SETUP) {
+                  setStep(EAddDeviceStep.LED_CONFIRM);
+                }
+                else {
+                  router.back();
+                }
               }}
               className="absolute left-5 z-10 size-10 items-center justify-center rounded-full bg-white/60 dark:bg-white/10"
               style={{
@@ -142,47 +210,7 @@ export function AddDeviceScreen() {
             </Text>
           </View>
 
-          {step === EAddDeviceStep.SEARCH && renderSearchStep()}
-
-          {step === EAddDeviceStep.RESULTS && (
-            <DeviceList
-              devices={devices}
-              onContinue={() => {
-                const device = devices[0]; // Logic for selecting device
-                if (device)
-                  connectDevice(device);
-              }}
-            />
-          )}
-
-          {step === EAddDeviceStep.SETUP && (
-            <SetupForm
-              deviceName={deviceName}
-              setDeviceName={setDeviceName}
-              wifiSsid={wifiSsid}
-              setWifiSsid={setWifiSsid}
-              wifiPass={wifiPass}
-              setWifiPass={setWifiPass}
-              isSubmitting={isRegistering}
-              onContinue={() => {
-                // Flow restructure: Submit config immediately from SETUP step
-                const connectedDevice = devices.find(d => d.status === 'connected');
-                if (connectedDevice)
-                  submitDeviceConfig(connectedDevice);
-              }}
-            />
-          )}
-
-          {step === EAddDeviceStep.ROOM_ASSIGN && (
-            <RoomAssignment
-              devices={devices}
-              isRegistering={false}
-              onFinish={() => {
-                // Room assignment is optional — go back to home
-                router.back();
-              }}
-            />
-          )}
+          {renderStepContent()}
         </View>
       </View>
     </BaseLayout>

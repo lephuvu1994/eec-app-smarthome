@@ -1,8 +1,15 @@
 export enum EAddDeviceStep {
-  SEARCH = 0,
-  RESULTS = 1,
-  SETUP = 2,
-  ROOM_ASSIGN = 3,
+  SCANNING = 0,
+  LED_CONFIRM = 1,
+  CONNECTING = 2,
+  SETUP = 3,
+  CONFIGURING = 4,
+  COMPLETE = 5,
+}
+
+export enum EPairingMode {
+  BLE = 'BLE',
+  AP = 'AP',
 }
 
 export type DeviceResult = {

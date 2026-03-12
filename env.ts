@@ -15,6 +15,9 @@ const envSchema = z.object({
   EXPO_PUBLIC_BLE_SERVICE_UUID: z.string().uuid().default('55535343-fe7d-4ae5-8fa9-9fafd205e455'),
   EXPO_PUBLIC_BLE_TX_UUID: z.string().uuid().default('49535343-8841-43f4-a8d4-ecbe34729bb3'),
   EXPO_PUBLIC_BLE_RX_UUID: z.string().uuid().default('49535343-1e4d-4bd9-ba61-23c647249616'),
+  EXPO_PUBLIC_AP_SSID_PREFIX: z.string().default('EEC_'),
+  EXPO_PUBLIC_AP_GATEWAY_IP: z.string().default('192.168.4.1'),
+  EXPO_PUBLIC_AP_PORT: z.string().default('8080'),
 });
 
 // Config records per environment
@@ -56,6 +59,9 @@ const _env: z.infer<typeof envSchema> = {
   EXPO_PUBLIC_BLE_SERVICE_UUID: process.env.EXPO_PUBLIC_BLE_SERVICE_UUID ?? '55535343-fe7d-4ae5-8fa9-9fafd205e455',
   EXPO_PUBLIC_BLE_TX_UUID: process.env.EXPO_PUBLIC_BLE_TX_UUID ?? '49535343-8841-43f4-a8d4-ecbe34729bb3',
   EXPO_PUBLIC_BLE_RX_UUID: process.env.EXPO_PUBLIC_BLE_RX_UUID ?? '49535343-1e4d-4bd9-ba61-23c647249616',
+  EXPO_PUBLIC_AP_SSID_PREFIX: process.env.EXPO_PUBLIC_AP_SSID_PREFIX ?? 'EEC_',
+  EXPO_PUBLIC_AP_GATEWAY_IP: process.env.EXPO_PUBLIC_AP_GATEWAY_IP ?? '192.168.4.1',
+  EXPO_PUBLIC_AP_PORT: process.env.EXPO_PUBLIC_AP_PORT ?? '8080',
 };
 
 function getValidatedEnv(env: z.infer<typeof envSchema>) {
