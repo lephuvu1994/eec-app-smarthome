@@ -74,9 +74,11 @@ export function useAddDevice() {
     const handlerDiscover = bleManagerEmitter.addListener(
       'BleManagerDiscoverPeripheral',
       (peripheral) => {
-        if (!peripheral.name) return;
+        if (!peripheral.name)
+          return;
         setDevices((prev) => {
-          if (prev.some(d => d.id === peripheral.id)) return prev;
+          if (prev.some(d => d.id === peripheral.id))
+            return prev;
           return [
             ...prev,
             {
@@ -179,7 +181,16 @@ export function useAddDevice() {
   const choosePairingMode = (mode: EPairingMode) => {
     setPairingMode(mode);
     if (mode === EPairingMode.BLE) {
-      connectDeviceBLE();
+      if (!selectedDevice) {
+        // No device selected (came from "Add manually") — go back to scan first
+        Alert.alert(
+          'Chưa chọn thiết bị',
+          'Vui lòng quay lại và chọn thiết bị từ danh sách tìm thấy.',
+        );
+        setStep(EAddDeviceStep.SCANNING);
+        return;
+      }
+      connectDeviceBLE(selectedDevice);
     }
     else {
       setStep(EAddDeviceStep.CONNECTING); // Show AP connect guide
@@ -187,10 +198,7 @@ export function useAddDevice() {
   };
 
   // ─── BLE Connect ──────────────────────────────
-  const connectDeviceBLE = async () => {
-    if (!selectedDevice) return;
-    const device = selectedDevice;
-
+  const connectDeviceBLE = async (device: DeviceResult) => {
     try {
       setStep(EAddDeviceStep.CONNECTING);
       setDevices(prev => prev.map(d => d.id === device.id ? { ...d, status: 'connecting' } : d));
