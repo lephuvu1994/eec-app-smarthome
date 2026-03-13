@@ -1,4 +1,4 @@
-import type { Floor, Home, Room } from '@/lib/api/homes/home.service';
+import type { TFloor, THome, TRoom } from '@/lib/api/homes/home.service';
 
 import { useQuery } from '@tanstack/react-query';
 
@@ -19,7 +19,7 @@ export const homeKeys = {
 
 /** Get all homes for current user */
 export function useHomes() {
-  return useQuery<Home[]>({
+  return useQuery<THome[]>({
     queryKey: homeKeys.all,
     queryFn: homeService.getHomes,
   });
@@ -27,7 +27,7 @@ export function useHomes() {
 
 /** Get floors for a specific home (includes nested rooms) */
 export function useFloors(homeId: string) {
-  return useQuery<Floor[]>({
+  return useQuery<TFloor[]>({
     queryKey: homeKeys.floors(homeId),
     queryFn: () => homeService.getFloors(homeId),
     enabled: !!homeId,
@@ -36,7 +36,7 @@ export function useFloors(homeId: string) {
 
 /** Get all rooms for a specific home */
 export function useRooms(homeId: string) {
-  return useQuery<Room[]>({
+  return useQuery<TRoom[]>({
     queryKey: homeKeys.rooms(homeId),
     queryFn: () => homeService.getRooms(homeId),
     enabled: !!homeId,

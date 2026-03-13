@@ -1,6 +1,6 @@
 import { client } from '../common';
 
-export enum DeviceProtocol {
+export enum EDeviceProtocol {
   WIFI = 'WIFI',
   ZIGBEE = 'ZIGBEE',
   BLE = 'BLE',
@@ -12,7 +12,7 @@ export enum DeviceProtocol {
 // ============================================================
 // TYPES
 // ============================================================
-export type DeviceFeature = {
+export type TDeviceFeature = {
   id: string;
   code: string;
   name: string;
@@ -22,23 +22,23 @@ export type DeviceFeature = {
   currentValue?: any;
 };
 
-export type Device = {
+export type TDevice = {
   id: string;
   name: string;
   identifier: string;
   token: string;
   status: 'online' | 'offline';
   room?: { id: string; name: string } | null;
-  features: DeviceFeature[];
+  features: TDeviceFeature[];
 };
 
-export type DeviceListResponse = {
+export type TDeviceListResponse = {
   statusCode: number;
-  data: Device[];
+  data: TDevice[];
   meta: { total: number; page: number; lastPage: number };
 };
 
-export type SiriSyncDevice = {
+export type TSiriSyncDevice = {
   id: string;
   name: string;
   token: string;
@@ -51,19 +51,19 @@ export type SiriSyncDevice = {
   features: { code: string; name: string; type: string; category: string }[];
 };
 
-export type SiriSyncScene = {
+export type TSiriSyncScene = {
   id: string;
   name: string;
   homeId: string;
 };
 
-export type SiriSyncData = {
-  devices: SiriSyncDevice[];
-  scenes: SiriSyncScene[];
+export type TSiriSyncData = {
+  devices: TSiriSyncDevice[];
+  scenes: TSiriSyncScene[];
 };
 
-export type RegisterDeviceVariables = {
-  protocol: DeviceProtocol;
+export type TRegisterDeviceVariables = {
+  protocol: EDeviceProtocol;
   identifier: string;
   deviceCode: string;
   partnerId: string;
@@ -73,7 +73,7 @@ export type RegisterDeviceVariables = {
 };
 
 // Response from the server containing the device and MQTT config
-export type RegisterDeviceResponse = {
+export type TRegisterDeviceResponse = {
   statusCode: number;
   message: string;
   data: {
@@ -88,27 +88,26 @@ export type RegisterDeviceResponse = {
 // API SERVICE
 // ============================================================
 export const deviceService = {
-  registerDevice: async (variables: RegisterDeviceVariables): Promise<RegisterDeviceResponse> => {
-    const { data } = await client.post<RegisterDeviceResponse>(
+  registerDevice: async (variables: TRegisterDeviceVariables): Promise<TRegisterDeviceResponse> => {
+    const { data } = await client.post<TRegisterDeviceResponse>(
       '/devices/register',
       variables,
     );
     return data;
   },
 
-  getDevices: async (params?: { homeId?: string; page?: number; limit?: number }): Promise<DeviceListResponse> => {
-    const { data } = await client.get<DeviceListResponse>('/devices', { params });
+  getDevices: async (params?: { homeId?: string; page?: number; limit?: number }): Promise<TDeviceListResponse> => {
+    const { data } = await client.get<TDeviceListResponse>('/devices', { params });
     return data;
   },
 
-  getDeviceDetail: async (id: string): Promise<Device> => {
+  getDeviceDetail: async (id: string): Promise<TDevice> => {
     const { data } = await client.get(`/devices/${id}`);
     return data.data?.device || data.data || data;
   },
 
-  getSiriSync: async (): Promise<SiriSyncData> => {
+  getSiriSync: async (): Promise<TSiriSyncData> => {
     const { data } = await client.get('/devices/siri-sync');
     return data.data || data;
   },
 };
-

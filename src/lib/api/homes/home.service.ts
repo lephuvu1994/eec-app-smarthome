@@ -3,7 +3,7 @@ import { client } from '../common';
 // ============================================================
 // TYPES
 // ============================================================
-export type Home = {
+export type THome = {
   id: string;
   name: string;
   ownerId: string;
@@ -12,15 +12,15 @@ export type Home = {
   radius?: number;
 };
 
-export type Floor = {
+export type TFloor = {
   id: string;
   name: string;
   homeId: string;
   sortOrder: number;
-  rooms?: Room[];
+  rooms?: TRoom[];
 };
 
-export type Room = {
+export type TRoom = {
   id: string;
   name: string;
   homeId: string;
@@ -31,17 +31,17 @@ export type Room = {
 // API SERVICE
 // ============================================================
 export const homeService = {
-  getHomes: async (): Promise<Home[]> => {
+  getHomes: async (): Promise<THome[]> => {
     const { data } = await client.get('/homes');
     return data.data || data;
   },
 
-  getFloors: async (homeId: string): Promise<Floor[]> => {
+  getFloors: async (homeId: string): Promise<TFloor[]> => {
     const { data } = await client.get(`/homes/${homeId}/floors`);
     return data.data || data;
   },
 
-  getRooms: async (homeId: string): Promise<Room[]> => {
+  getRooms: async (homeId: string): Promise<TRoom[]> => {
     const { data } = await client.get(`/homes/${homeId}/rooms`);
     return data.data || data;
   },

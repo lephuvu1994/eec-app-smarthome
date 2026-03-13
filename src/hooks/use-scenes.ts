@@ -1,4 +1,4 @@
-import type { RunSceneResponse, Scene } from '@/lib/api/scenes/scene.service';
+import type { TRunSceneResponse, TScene } from '@/lib/api/scenes/scene.service';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -19,7 +19,7 @@ export const sceneKeys = {
 
 /** Get scenes for a specific home */
 export function useScenes(homeId: string) {
-  return useQuery<Scene[]>({
+  return useQuery<TScene[]>({
     queryKey: sceneKeys.list(homeId),
     queryFn: () => sceneService.getScenes(homeId),
     enabled: !!homeId,
@@ -30,7 +30,7 @@ export function useScenes(homeId: string) {
 export function useRunScene() {
   const queryClient = useQueryClient();
 
-  return useMutation<RunSceneResponse, Error, string>({
+  return useMutation<TRunSceneResponse, Error, string>({
     mutationFn: (sceneId: string) => sceneService.runScene(sceneId),
     onSuccess: () => {
       // Optionally invalidate devices after scene runs

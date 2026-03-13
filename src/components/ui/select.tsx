@@ -55,16 +55,16 @@ const selectTv = tv({
 
 const List = Platform.OS === 'web' ? FlashList : BottomSheetFlatList;
 
-export type OptionType = { label: string; value: string | number };
+export type TOptionType = { label: string; value: string | number };
 
 type OptionsProps = {
-  options: OptionType[];
-  onSelect: (option: OptionType) => void;
+  options: TOptionType[];
+  onSelect: (option: TOptionType) => void;
   value?: string | number;
   testID?: string;
 };
 
-function keyExtractor(item: OptionType) {
+function keyExtractor(item: TOptionType) {
   return `select-item-${item.value}`;
 }
 
@@ -75,7 +75,7 @@ export function Options({ ref, options, onSelect, value, testID }: OptionsProps 
   const isDark = theme === 'dark';
 
   const renderSelectItem = React.useCallback(
-    ({ item }: { item: OptionType }) => (
+    ({ item }: { item: TOptionType }) => (
       <Option
         key={`select-item-${item.value}`}
         label={item.label}
@@ -128,18 +128,18 @@ const Option = React.memo(
   },
 );
 
-export type SelectProps = {
+export type TSelectProps = {
   value?: string | number;
   label?: string;
   disabled?: boolean;
   error?: string;
-  options?: OptionType[];
+  options?: TOptionType[];
   onSelect?: (value: string | number) => void;
   placeholder?: string;
   testID?: string;
 };
 
-export function Select(props: SelectProps) {
+export function Select(props: TSelectProps) {
   const {
     label,
     value,
@@ -153,7 +153,7 @@ export function Select(props: SelectProps) {
   const modal = useModal();
 
   const onSelectOption = React.useCallback(
-    (option: OptionType) => {
+    (option: TOptionType) => {
       onSelect?.(option.value);
       modal.dismiss();
     },

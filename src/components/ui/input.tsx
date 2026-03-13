@@ -40,13 +40,13 @@ const inputTv = tv({
   },
 });
 
-export type NInputProps = {
+export type TNInputProps = {
   label?: string;
   disabled?: boolean;
   error?: string;
 } & TextInputProps;
 
-export function Input({ ref, ...props }: NInputProps & { ref?: React.Ref<NTextInput | null> }) {
+export function Input({ ref, ...props }: TNInputProps & { ref?: React.Ref<NTextInput | null> }) {
   const { label, error, testID, onBlur: onBlurProp, onFocus: onFocusProp, ...inputProps } = props;
   const [isFocussed, setIsFocussed] = React.useState(false);
 
