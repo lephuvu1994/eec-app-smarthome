@@ -58,7 +58,8 @@ export class TcpClient {
       }
 
       this.client.write(`${data}\n`, 'utf-8', (error) => {
-        if (error) reject(error);
+        if (error)
+          reject(error);
         else resolve();
       });
     });
@@ -77,7 +78,8 @@ export class TcpClient {
       // Convert to base64 string + newline delimiter
       const base64 = Buffer.from(bytes).toString('base64');
       this.client.write(`${base64}\n`, 'utf-8', (error) => {
-        if (error) reject(error);
+        if (error)
+          reject(error);
         else resolve();
       });
     });
@@ -106,7 +108,8 @@ export class TcpClient {
       };
 
       // Check buffer immediately
-      if (checkBuffer()) return;
+      if (checkBuffer())
+        return;
 
       // Otherwise wait for new data
       const onData = () => {

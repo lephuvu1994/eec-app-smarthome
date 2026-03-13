@@ -1,4 +1,3 @@
-/* eslint-disable e18e/ban-dependencies */
 import type { AxiosInstance, AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios';
 import Env from '@env';
 import axios from 'axios';
