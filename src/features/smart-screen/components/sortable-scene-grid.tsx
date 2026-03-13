@@ -39,6 +39,9 @@ export function SortableSceneGrid({ initialCards, onCardPress }: TProps) {
   const cardsRef = useRef(cards);
   cardsRef.current = cards;
 
+  // Track drag state để tránh onPress fire sau khi drag xong (drop tại chỗ)
+  const isDraggingRef = useRef(false);
+
   const fullWidth = layout.width - BASE_SPACE_HORIZONTAL * 2;
   const halfWidth = (fullWidth - GAP_DEVICE_VIEW_MOBILE) / 2;
 
@@ -48,6 +51,17 @@ export function SortableSceneGrid({ initialCards, onCardPress }: TProps) {
     if (reordered.length > 0) {
       setCards(reordered);
     }
+  }, []);
+
+  const handleDragStart = useCallback(() => {
+    isDraggingRef.current = true;
+  }, []);
+
+  const handleDragEnd = useCallback(() => {
+    // Delay reset để press event bubble qua trước, tránh fire onPress ngay lập tức
+    setTimeout(() => {
+      isDraggingRef.current = false;
+    }, 100);
   }, []);
 
   const getCardStyle = useMemo(
@@ -61,6 +75,8 @@ export function SortableSceneGrid({ initialCards, onCardPress }: TProps) {
     <View className="px-4">
       <Sortable.Flex
         onOrderChange={handleOrderChange}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
         flexDirection="row"
         flexWrap="wrap"
         gap={GAP_DEVICE_VIEW_MOBILE}
@@ -82,7 +98,14 @@ export function SortableSceneGrid({ initialCards, onCardPress }: TProps) {
             menuIconColor={card.menuIconColor}
             showGlossyEffect={card.showGlossyEffect}
             containerStyle={getCardStyle(card)}
-            onPress={onCardPress ? () => onCardPress(card) : undefined}
+            onPress={onCardPress
+              ? () => {
+                  // Không fire onPress nếu đang trong trạng thái drag
+                  if (!isDraggingRef.current) {
+                    onCardPress(card);
+                  }
+                }
+              : undefined}
           />
         ))}
       </Sortable.Flex>
