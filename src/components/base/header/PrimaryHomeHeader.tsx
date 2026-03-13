@@ -8,6 +8,7 @@ import { useUniwind } from 'uniwind';
 import { Text, TouchableOpacity, View } from '@/components/ui';
 import { BellIcon, SnownyIcon } from '@/components/ui/icons';
 import { ZeegoNativeMenu } from '@/components/ui/zeego-native-menu';
+import { useUserManager } from '@/features/auth/user-store';
 import { useHomes } from '@/hooks/use-homes';
 import { translate } from '@/lib/i18n';
 import { useHomeStore } from '@/stores/home/home-store';
@@ -20,20 +21,27 @@ export const PrimaryHeaderHome: React.FC = memo(() => {
 
   // ─── Home data ─────────────────────────────
   const { data: homes } = useHomes();
+  const { id: currentUserId } = useUserManager();
+  const selectedHome = useHomeStore(s => s.selectedHome);
   const selectedHomeId = useHomeStore(s => s.selectedHomeId);
-  const setSelectedHomeId = useHomeStore(s => s.setSelectedHomeId);
+  const setSelectedHome = useHomeStore(s => s.setSelectedHome);
+  const setHomes = useHomeStore(s => s.setHomes);
 
-  // Auto-select first home when data arrives and nothing is selected
+  // Sync homes list vào store khi fetch xong
+  useEffect(() => {
+    if (homes?.length) {
+      setHomes(homes);
+    }
+  }, [homes, setHomes]);
+
+  // Auto-select first home khi chưa có selection
   useEffect(() => {
     if (homes?.length && !selectedHomeId) {
-      setSelectedHomeId(homes[0].id);
+      const first = homes[0];
+      const role = first.ownerId === currentUserId ? 'OWNER' : 'MEMBER';
+      setSelectedHome(first, role);
     }
-  }, [homes, selectedHomeId, setSelectedHomeId]);
-
-  const selectedHome = useMemo(
-    () => homes?.find(h => h.id === selectedHomeId) ?? homes?.[0],
-    [homes, selectedHomeId],
-  );
+  }, [homes, selectedHomeId, currentUserId, setSelectedHome]);
 
   // ─── Home selection menu ───────────────────
   const homeMenuItems: TMenuElement[] = useMemo(() => {
@@ -43,9 +51,12 @@ export const PrimaryHeaderHome: React.FC = memo(() => {
       key: home.id,
       title: home.name,
       icon: { ios: selectedHomeId === home.id ? 'checkmark' : 'house' },
-      onPress: () => setSelectedHomeId(home.id),
+      onPress: () => {
+        const role = home.ownerId === currentUserId ? 'OWNER' : 'MEMBER';
+        setSelectedHome(home, role);
+      },
     }));
-  }, [homes, selectedHomeId, setSelectedHomeId]);
+  }, [homes, selectedHomeId, currentUserId, setSelectedHome]);
 
   // ─── Header right menu ─────────────────────
   const headerRightMenu: TMenuElement[] = useMemo(() => [
