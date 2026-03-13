@@ -22,28 +22,48 @@ export type TSceneCard = {
   showGlossyEffect?: boolean;
   bgPattern?: ImageSourcePropType;
   icon: ReactNode | null;
+  /**
+   * Danh sách filter tags card thuộc về.
+   * VD: ['favorite'] | ['floor-1'] | ['room-bed', 'floor-2']
+   * Nếu undefined → luôn hiển thị (không thuộc filter nào)
+   */
+  filterTags?: string[];
 };
 
 type TProps = {
   initialCards: TSceneCard[];
+  /** Set các filter đang được chọn. Nếu empty → show tất cả */
+  activeFilters?: Set<string>;
   /** Nếu truyền vào → card có thể press được (tap-to-run). Nếu undefined → không press (automation) */
   onCardPress?: (card: TSceneCard) => void;
 };
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-export function SortableSceneGrid({ initialCards, onCardPress }: TProps) {
+export function SortableSceneGrid({ initialCards, activeFilters, onCardPress }: TProps) {
   const layout = useWindowDimensions();
   const [cards, setCards] = useState<TSceneCard[]>(initialCards);
 
   const cardsRef = useRef(cards);
   cardsRef.current = cards;
 
-  // Track drag state để tránh onPress fire sau khi drag xong (drop tại chỗ)
+  // Track drag state để tránh onPress fire sau khi drag xong
   const isDraggingRef = useRef(false);
 
   const fullWidth = layout.width - BASE_SPACE_HORIZONTAL * 2;
   const halfWidth = (fullWidth - GAP_DEVICE_VIEW_MOBILE) / 2;
+
+  // ── Filter logic ──────────────────────────────────────────────────────────
+  // Nếu không có filter nào active → show tất cả
+  // Nếu có filter → show card không có filterTags (luôn show) + card match bất kỳ filter nào
+  const visibleCards = useMemo(() => {
+    if (!activeFilters || activeFilters.size === 0)
+      return cards;
+    return cards.filter(card =>
+      !card.filterTags // không có tag → luôn show
+      || card.filterTags.some(tag => activeFilters.has(tag)),
+    );
+  }, [cards, activeFilters]);
 
   const handleOrderChange = useCallback(({ indexToKey }: OrderChangeParams) => {
     const currentKeyToCard = Object.fromEntries(cardsRef.current.map(c => [c.key, c]));
@@ -58,10 +78,9 @@ export function SortableSceneGrid({ initialCards, onCardPress }: TProps) {
   }, []);
 
   const handleDragEnd = useCallback(() => {
-    // Delay reset để press event bubble qua trước, tránh fire onPress ngay lập tức
     setTimeout(() => {
       isDraggingRef.current = false;
-    }, 100);
+    }, 200);
   }, []);
 
   const getCardStyle = useMemo(
@@ -86,7 +105,7 @@ export function SortableSceneGrid({ initialCards, onCardPress }: TProps) {
           borderColor: colors.primaryActive,
         }}
       >
-        {cards.map(card => (
+        {visibleCards.map(card => (
           <PrimarySceneCard
             key={card.key}
             title={card.title}
@@ -100,7 +119,6 @@ export function SortableSceneGrid({ initialCards, onCardPress }: TProps) {
             containerStyle={getCardStyle(card)}
             onPress={onCardPress
               ? () => {
-                  // Không fire onPress nếu đang trong trạng thái drag
                   if (!isDraggingRef.current) {
                     onCardPress(card);
                   }
