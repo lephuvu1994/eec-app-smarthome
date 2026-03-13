@@ -20,7 +20,7 @@ export const deviceKeys = {
 // ============================================================
 
 /** Get paginated device list (optionally filtered by homeId) */
-export function useDevices(params?: { homeId?: string; page?: number; limit?: number }) {
+export function useDevices(params?: { homeId?: string; roomId?: string; page?: number; limit?: number }) {
   return useQuery<TDeviceListResponse>({
     queryKey: deviceKeys.list(params),
     queryFn: () => deviceService.getDevices(params),

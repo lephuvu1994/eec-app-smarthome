@@ -2,13 +2,15 @@ import type { Href } from 'expo-router';
 import type { TMenuElement } from '@/components/ui/zeego-native-menu';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { router } from 'expo-router';
-import { memo, useMemo } from 'react';
+import { memo, useEffect, useMemo } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 import { Text, TouchableOpacity, View } from '@/components/ui';
 import { BellIcon, SnownyIcon } from '@/components/ui/icons';
 import { ZeegoNativeMenu } from '@/components/ui/zeego-native-menu';
+import { useHomes } from '@/hooks/use-homes';
 import { translate } from '@/lib/i18n';
+import { useHomeStore } from '@/stores/home/home-store';
 import { ETheme } from '@/types/base';
 import { PulseDot } from '../PulseDot';
 
@@ -16,6 +18,35 @@ export const PrimaryHeaderHome: React.FC = memo(() => {
   const { theme } = useUniwind();
   const insets = useSafeAreaInsets();
 
+  // ─── Home data ─────────────────────────────
+  const { data: homes } = useHomes();
+  const selectedHomeId = useHomeStore(s => s.selectedHomeId);
+  const setSelectedHomeId = useHomeStore(s => s.setSelectedHomeId);
+
+  // Auto-select first home when data arrives and nothing is selected
+  useEffect(() => {
+    if (homes?.length && !selectedHomeId) {
+      setSelectedHomeId(homes[0].id);
+    }
+  }, [homes, selectedHomeId, setSelectedHomeId]);
+
+  const selectedHome = useMemo(
+    () => homes?.find(h => h.id === selectedHomeId) ?? homes?.[0],
+    [homes, selectedHomeId],
+  );
+
+  // ─── Home selection menu ───────────────────
+  const homeMenuItems: TMenuElement[] = useMemo(() => {
+    if (!homes?.length) return [];
+    return homes.map(home => ({
+      key: home.id,
+      title: home.name,
+      icon: { ios: selectedHomeId === home.id ? 'checkmark' : 'house' },
+      onPress: () => setSelectedHomeId(home.id),
+    }));
+  }, [homes, selectedHomeId, setSelectedHomeId]);
+
+  // ─── Header right menu ─────────────────────
   const headerRightMenu: TMenuElement[] = useMemo(() => [
     {
       key: 'add device',
@@ -50,11 +81,19 @@ export const PrimaryHeaderHome: React.FC = memo(() => {
       }}
     >
       <View className="flex-1 flex-col">
-        <TouchableOpacity className="flex-row items-center gap-2.5" onPress={() => { }}>
-          <AntDesign name="home" size={18} color={theme === ETheme.Light ? '#1B1B1B' : '#FFFFFF'} />
-          <Text className="text-[#1B1B1B] dark:text-white">Nhà của tôi</Text>
-          <AntDesign className="mt-1" name="caret-down" size={16} color={theme === ETheme.Light ? '#1B1B1B' : '#FFFFFF'} />
-        </TouchableOpacity>
+        {/* Home selector */}
+        <ZeegoNativeMenu
+          triggerComponent={(
+            <TouchableOpacity className="flex-row items-center gap-2.5">
+              <AntDesign name="home" size={18} color={theme === ETheme.Light ? '#1B1B1B' : '#FFFFFF'} />
+              <Text className="text-[#1B1B1B] dark:text-white">
+                {selectedHome?.name ?? translate('base.home')}
+              </Text>
+              <AntDesign className="mt-1" name="caret-down" size={16} color={theme === ETheme.Light ? '#1B1B1B' : '#FFFFFF'} />
+            </TouchableOpacity>
+          )}
+          elements={homeMenuItems}
+        />
         <View className="flex-row items-center gap-1">
           <SnownyIcon />
           <Text className="text-sm text-[#06B6D4] dark:text-[#06B6D4]">20°C</Text>

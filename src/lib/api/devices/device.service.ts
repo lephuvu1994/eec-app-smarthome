@@ -96,7 +96,7 @@ export const deviceService = {
     return data;
   },
 
-  getDevices: async (params?: { homeId?: string; page?: number; limit?: number }): Promise<TDeviceListResponse> => {
+  getDevices: async (params?: { homeId?: string; roomId?: string; page?: number; limit?: number }): Promise<TDeviceListResponse> => {
     const { data } = await client.get<TDeviceListResponse>('/devices', { params });
     return data;
   },

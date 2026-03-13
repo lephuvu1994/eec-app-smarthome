@@ -1,3 +1,4 @@
+/* eslint-disable e18e/ban-dependencies */
 import type { AxiosInstance, AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios';
 import Env from '@env';
 import axios from 'axios';
@@ -41,7 +42,8 @@ function setupAuthInterceptor(instance: AxiosInstance) {
     async (error) => {
       const statusCode = get(error, 'response.status');
       const prevRequest = error?.config;
-      if (statusCode === 401) {
+      if (statusCode === 401 && !prevRequest?._retry) {
+        prevRequest._retry = true;
         const refreshToken = useUserManager.getState().refreshToken;
         if (refreshToken) {
           const state = useUserManager.getState();
@@ -55,8 +57,9 @@ function setupAuthInterceptor(instance: AxiosInstance) {
             });
             return instance(prevRequest);
           }
-          catch {
-            console.log('error', error);
+          catch (refreshError) {
+            console.log('[Auth] Refresh token failed:', refreshError);
+            console.log('[Auth] Original request:', prevRequest?.url);
             state.signOut();
           }
         }
