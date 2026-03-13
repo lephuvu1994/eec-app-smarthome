@@ -1,4 +1,3 @@
-/* eslint-disable e18e/ban-dependencies */
 import type { AxiosError } from 'axios';
 import type { UserResponse } from '@/features/auth/types/response';
 

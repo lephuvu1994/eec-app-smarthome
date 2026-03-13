@@ -54,7 +54,9 @@ export const HomeScreenWrapper = memo(({ className }: { className?: string }) =>
   // Build groups dynamically: Favorite + Floors from API
   const groups: TGroup[] = useMemo(() => {
     const favoriteGroup: TGroup = { key: 'favorite', title: 'Favorite' };
-    if (!floors?.length) return [favoriteGroup];
+    if (!floors?.length) {
+      return [favoriteGroup];
+    }
     const floorGroups: TGroup[] = floors
       .sort((a, b) => a.sortOrder - b.sortOrder)
       .map(f => ({ key: f.id, title: f.name, floor: f }));

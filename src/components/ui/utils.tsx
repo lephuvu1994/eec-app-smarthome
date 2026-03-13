@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-// eslint-disable-next-line e18e/ban-dependencies
+
 import type { AxiosError } from 'axios';
 import { Dimensions, Platform } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
