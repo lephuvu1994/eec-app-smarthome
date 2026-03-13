@@ -17,7 +17,6 @@ import { LedConfirm } from './components/led-confirm';
 import { RadarView } from './components/radar-view';
 import { RoomAssignment } from './components/room-assignment';
 import { SetupForm } from './components/setup-form';
-import { PRIMARY_GREEN_HEX } from './constants';
 import { useAddDevice } from './hooks/use-add-device';
 import { EAddDeviceStep, EPairingMode } from './types';
 
@@ -39,7 +38,6 @@ export function AddDeviceScreen() {
     rotation,
     isRegistering,
     isConnectingAP,
-    selectedDevice,
     configuringStatus,
     selectDevice,
     choosePairingMode,
@@ -75,7 +73,8 @@ export function AddDeviceScreen() {
             devices={devices}
             onContinue={() => {
               const device = devices[0];
-              if (device) selectDevice(device);
+              if (device)
+                selectDevice(device);
             }}
           />
         )}
