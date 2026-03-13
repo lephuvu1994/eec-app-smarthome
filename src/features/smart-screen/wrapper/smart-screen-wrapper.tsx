@@ -11,6 +11,7 @@ import { translate } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 import { ETabSmart, ETabSmartKey } from '../types/types';
 import { AutomationListSceneWrapper } from './automation-scene-screen';
+import { TapToRunSceneWrapper } from './tab-to-run-scene-screen';
 
 const ROUTES = [
   { key: ETabSmartKey.tapToRun, title: translate('scene.tapToRun') },
@@ -29,7 +30,7 @@ export function SmartScreenWrapper({ className }: { className?: string }) {
         );
       case ETabSmartKey.tapToRun:
         return (
-          <AutomationListSceneWrapper className="pt-4" />);
+          <TapToRunSceneWrapper className="pt-4" />);
     }
   };
 

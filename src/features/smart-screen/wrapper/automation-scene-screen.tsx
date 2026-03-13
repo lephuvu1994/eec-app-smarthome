@@ -1,34 +1,14 @@
-import type { ReactNode } from 'react';
-import type { ImageSourcePropType, ViewStyle } from 'react-native';
-import type { OrderChangeParams } from 'react-native-sortables';
+import type { TSceneCard } from '../components/sortable-scene-grid';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useCallback, useMemo, useRef, useState } from 'react';
-import { ScrollView, useWindowDimensions } from 'react-native';
-import Sortable from 'react-native-sortables';
+import { ScrollView } from 'react-native';
 import { PrimarySceneCard } from '@/components/base/scene/PrimarySceneCard';
 import { RecommendationCard } from '@/components/base/scene/RecommendationCard';
-import { colors, Text, View } from '@/components/ui';
-import { BASE_SPACE_HORIZONTAL, GAP_DEVICE_VIEW_MOBILE } from '@/constants';
-
-// ─── Types ──────────────────────────────────────────────────────────────────
-
-type TSceneCard = {
-  key: string;
-  title: string;
-  colSpan: 1 | 2; // 1 = half-width (2 items/row), 2 = full-width (1 item/row)
-  cardColor?: string;
-  bgGradient?: [string, string];
-  iconBgColor?: string;
-  textColor?: string;
-  menuIconColor?: string;
-  showGlossyEffect?: boolean;
-  bgPattern?: ImageSourcePropType;
-  icon: ReactNode | null;
-};
+import { Text, View } from '@/components/ui';
+import { SortableSceneGrid } from '../components/sortable-scene-grid';
 
 // ─── Static Data ─────────────────────────────────────────────────────────────
 
-const INITIAL_SCENE_CARDS: TSceneCard[] = [
+const AUTOMATION_CARDS: TSceneCard[] = [
   {
     key: 'home',
     title: 'Về nhà',
@@ -83,7 +63,7 @@ const INITIAL_SCENE_CARDS: TSceneCard[] = [
   },
   {
     key: 'sleep2',
-    title: 'Đi ngủ',
+    title: 'Đi ngủ 2',
     colSpan: 1,
     cardColor: '#EFF6FF',
     iconBgColor: '#DBEAFE',
@@ -94,7 +74,7 @@ const INITIAL_SCENE_CARDS: TSceneCard[] = [
   {
     key: 'power-off',
     title: 'Tắt toàn bộ thiết bị nhà',
-    colSpan: 2, // full-width — chiếm toàn hàng
+    colSpan: 2,
     cardColor: '#FEE2E2',
     textColor: '#991B1B',
     menuIconColor: '#EF4444',
@@ -109,69 +89,16 @@ type TProps = {
 };
 
 export const AutomationListSceneWrapper: React.FC<TProps> = ({ className }) => {
-  const layout = useWindowDimensions();
-  const [cards, setCards] = useState<TSceneCard[]>(INITIAL_SCENE_CARDS);
-
-  // Dùng ref để handleOrderChange luôn đọc cards mới nhất, tránh stale closure
-  const cardsRef = useRef(cards);
-  cardsRef.current = cards;
-
-  // Width cho half-width card (colSpan: 1)
-  const halfWidth = (layout.width - BASE_SPACE_HORIZONTAL * 2 - GAP_DEVICE_VIEW_MOBILE) / 2;
-
-  // onOrderChange nhận { indexToKey } = mảng key theo thứ tự mới
-  const handleOrderChange = useCallback(({ indexToKey }: OrderChangeParams) => {
-    const currentKeyToCard = Object.fromEntries(cardsRef.current.map(c => [c.key, c]));
-    const reordered = indexToKey.map(k => currentKeyToCard[k]).filter(Boolean) as TSceneCard[];
-    if (reordered.length > 0) {
-      setCards(reordered);
-    }
-  }, []);
-
-  const getCardStyle = useMemo(
-    () => (card: TSceneCard): ViewStyle => ({
-      width: card.colSpan === 2 ? layout.width - BASE_SPACE_HORIZONTAL * 2 : halfWidth,
-    }),
-    [layout.width, halfWidth],
-  );
-
   return (
     <ScrollView
       className={className}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{ paddingBottom: 100 }}
     >
-      {/* --- SORTABLE FLEX (MIXED LAYOUT) --- */}
-      <View className="px-4">
-        <Sortable.Flex
-          onOrderChange={handleOrderChange}
-          flexDirection="row"
-          flexWrap="wrap"
-          gap={GAP_DEVICE_VIEW_MOBILE}
-          showDropIndicator
-          dropIndicatorStyle={{
-            backgroundColor: '#F9FAFB',
-            borderColor: colors.primaryActive,
-          }}
-        >
-          {cards.map(card => (
-            <PrimarySceneCard
-              key={card.key}
-              title={card.title}
-              icon={card.icon}
-              cardColor={card.cardColor}
-              bgGradient={card.bgGradient}
-              iconBgColor={card.iconBgColor}
-              textColor={card.textColor}
-              menuIconColor={card.menuIconColor}
-              showGlossyEffect={card.showGlossyEffect}
-              containerStyle={getCardStyle(card)}
-            />
-          ))}
-        </Sortable.Flex>
-      </View>
+      {/* Grid drag & drop — không có onCardPress (automation chỉ xem/sắp xếp) */}
+      <SortableSceneGrid initialCards={AUTOMATION_CARDS} />
 
-      {/* --- BANNER (FULL BỀ NGANG) — nằm ngoài Sortable --- */}
+      {/* --- BANNER (FULL BỀ NGANG) --- */}
       <View className="mt-6 px-4">
         <PrimarySceneCard
           title="Chế độ Tự động làm mát & Hệ thống sinh thái xanh"
@@ -193,18 +120,16 @@ export const AutomationListSceneWrapper: React.FC<TProps> = ({ className }) => {
         </View>
       </View>
 
-      {/* --- PHẦN ĐỀ XUẤT (RECOMMENDATION) — nằm ngoài Sortable --- */}
+      {/* --- PHẦN ĐỀ XUẤT (RECOMMENDATION) --- */}
       <View className="mt-4 w-full px-4">
         <View className="mb-2 border-x-0 border-y border-[#E5E7EB] py-3">
           <Text className="ml-1 text-[16px] font-semibold text-[#1B1B1B]">Đề xuất</Text>
         </View>
-
         <RecommendationCard
           title="Bật tất cả công tắc"
           usageCount="498.7K"
           bgImage={require('@@/assets/scene/recommendation-bg.png')}
         />
-
         <RecommendationCard
           title="Tắt toàn bộ thiết bị"
           usageCount="498.7K"
