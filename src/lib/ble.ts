@@ -54,8 +54,6 @@ class BleService {
 
   async startScan(seconds: number = 5): Promise<void> {
     await this.init();
-    // In many modern versions, options is the third parameter but the signatures can vary.
-    // Ensure we match index.d.ts of the exact version by only passing the required valid args.
     await BleManager.scan({
       serviceUUIDs: [CHIP_SERVICE_UUID],
       seconds,

@@ -2,7 +2,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { router, Stack } from 'expo-router';
 import { StyleSheet } from 'react-native';
-import { useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOut, useAnimatedStyle } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 import { BaseLayout } from '@/components/layout/BaseLayout';
@@ -17,6 +17,7 @@ import { LedConfirm } from './components/led-confirm';
 import { RadarView } from './components/radar-view';
 import { RoomAssignment } from './components/room-assignment';
 import { SetupForm } from './components/setup-form';
+import { RADAR_SIZE } from './constants';
 import { useAddDevice } from './hooks/use-add-device';
 import { EAddDeviceStep, EPairingMode } from './types';
 
@@ -49,43 +50,50 @@ export function AddDeviceScreen() {
     transform: [{ rotate: `${rotation.value}deg` }],
   }));
 
+  const hasDevices = devices.length > 0;
+
   const renderScanningStep = () => (
     <View className="flex-1 px-5">
-      <View className="items-center justify-center py-8">
-        <RadarView devices={devices} rotation={rotation} beamStyle={beamStyle} />
+      {/* Radar — shrink when devices found */}
+      <View
+        className={`items-center justify-center ${hasDevices ? 'py-2' : 'py-8'}`}
+        style={{ transform: [{ scale: 0.85 }] }}
+      >
+        <RadarView radarSize={RADAR_SIZE} devices={devices} rotation={rotation} beamStyle={beamStyle} />
+      </View>
 
-        <View className="mt-8 items-center">
+      {/* Searching text — only when no devices */}
+      {!hasDevices && (
+        <Animated.View entering={FadeIn.duration(400)} exiting={FadeOut.duration(300)} className="items-center">
           <Text className="text-center text-[24px] font-bold text-[#1A1A1A] dark:text-white">
             {translate('base.searching')}
           </Text>
           <Text
-            className="mt-2 text-center text-[14px]/[20px] font-normal text-[#666666] dark:text-neutral-400"
-            style={{ paddingHorizontal: 40 }}
+            className="mt-2 px-10 text-center text-[14px]/[20px] font-normal text-[#666666] dark:text-neutral-400"
           >
             {translate('base.searchingDesc')}
           </Text>
-        </View>
-      </View>
+        </Animated.View>
+      )}
 
-      <View className="mt-auto pb-10">
-        {devices.length > 0 && (
+      {/* Device list */}
+      {hasDevices && (
+        <View className="flex-1">
           <DeviceList
             devices={devices}
-            onContinue={() => {
-              const device = devices[0];
-              if (device)
-                selectDevice(device);
-            }}
+            onSelect={selectDevice}
           />
-        )}
+        </View>
+      )}
 
+      {/* Add manually — always at the bottom */}
+      <View className="mt-auto">
         <TouchableOpacity
           activeOpacity={0.7}
           onPress={() => {
-            // Skip straight to LED confirm for manual add
             setStep(EAddDeviceStep.LED_CONFIRM);
           }}
-          className="mt-4 h-14 w-full items-center justify-center rounded-2xl bg-neutral-100 dark:bg-neutral-800"
+          className="mt-4 mb-10 h-14 w-full items-center justify-center rounded-2xl bg-neutral-100 dark:bg-neutral-800"
         >
           <Text className="text-[16px] font-semibold text-neutral-600 dark:text-neutral-300">
             {translate('base.addManually')}
@@ -112,7 +120,6 @@ export function AddDeviceScreen() {
             />
           );
         }
-        // BLE connecting — show a loading state
         return (
           <View className="flex-1 items-center justify-center">
             <Text className="text-lg font-bold text-[#1A1A1A] dark:text-white">
@@ -176,7 +183,6 @@ export function AddDeviceScreen() {
           <View className="relative h-14 flex-row items-center justify-center px-5">
             <TouchableOpacity
               onPress={() => {
-                // Go back one step or exit
                 if (step === EAddDeviceStep.SCANNING) {
                   router.back();
                 }
@@ -184,10 +190,10 @@ export function AddDeviceScreen() {
                   setStep(EAddDeviceStep.SCANNING);
                 }
                 else if (step === EAddDeviceStep.CONNECTING) {
-                  setStep(EAddDeviceStep.LED_CONFIRM);
+                  setStep(pairingMode === EPairingMode.AP ? EAddDeviceStep.LED_CONFIRM : EAddDeviceStep.SCANNING);
                 }
                 else if (step === EAddDeviceStep.SETUP) {
-                  setStep(EAddDeviceStep.LED_CONFIRM);
+                  setStep(pairingMode === EPairingMode.AP ? EAddDeviceStep.LED_CONFIRM : EAddDeviceStep.SCANNING);
                 }
                 else {
                   router.back();

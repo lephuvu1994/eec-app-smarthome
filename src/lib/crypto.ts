@@ -11,7 +11,7 @@ export class CryptoService {
   private sessionKey: string | null = null;
   private mac: string | null = null;
   private deviceCode: string | null = null;
-  private partnerId: string | null = null;
+  private partnerCode: string | null = null;
 
   /**
    * Initializes session data received from the BLE handshake
@@ -21,12 +21,12 @@ export class CryptoService {
     session: number;
     nonce: number;
     deviceCode?: string;
-    partnerId?: string;
+    partnerCode?: string;
   }) {
     this.mac = params.mac;
     this.sessionNonce = params.nonce;
     this.deviceCode = params.deviceCode || null;
-    this.partnerId = params.partnerId || null;
+    this.partnerCode = params.partnerCode || null;
     // By default, firmware just uses APP_AES_SECRET_KEY directly for ECB.
     // If future firmware derives a key using the nonce, set it here.
     this.sessionKey = APP_AES_SECRET_KEY;
@@ -44,8 +44,8 @@ export class CryptoService {
     return this.deviceCode;
   }
 
-  getPartnerId() {
-    return this.partnerId;
+  getPartnerCode() {
+    return this.partnerCode;
   }
 
   /**

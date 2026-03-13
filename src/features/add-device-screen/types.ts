@@ -15,7 +15,7 @@ export enum EPairingMode {
 export type TDeviceResult = {
   id: string;
   name: string;
-  status: 'connecting' | 'connected' | 'failed';
+  status: 'found' | 'connecting' | 'connected' | 'failed';
   imageUrl: string;
   angle: number;
   radius: number;

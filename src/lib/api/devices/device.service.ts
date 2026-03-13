@@ -66,7 +66,7 @@ export type TRegisterDeviceVariables = {
   protocol: EDeviceProtocol;
   identifier: string;
   deviceCode: string;
-  partnerId: string;
+  partnerCode: string;
   name: string;
   homeId?: string;
   roomId?: string;
