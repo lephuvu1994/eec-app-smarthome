@@ -1,9 +1,98 @@
+import type { ReactNode } from 'react';
+import type { ImageSourcePropType, ViewStyle } from 'react-native';
+import type { OrderChangeParams } from 'react-native-sortables';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useCallback, useState } from 'react';
 import { ScrollView, useWindowDimensions } from 'react-native';
+import Sortable from 'react-native-sortables';
 import { PrimarySceneCard } from '@/components/base/scene/PrimarySceneCard';
 import { RecommendationCard } from '@/components/base/scene/RecommendationCard';
 import { Text, View } from '@/components/ui';
-import { BASE_SPACE_HORIZONTAL, GAP_DEVICE_VIEW_MOBILE, GRID_VIEW_DEVICE_MOBILE } from '@/constants';
+import { BASE_SPACE_HORIZONTAL, GAP_DEVICE_VIEW_MOBILE } from '@/constants';
+
+// ─── Types ──────────────────────────────────────────────────────────────────
+
+type TSceneCard = {
+  key: string;
+  title: string;
+  colSpan: 1 | 2; // 1 = half-width (2 items/row), 2 = full-width (1 item/row)
+  cardColor?: string;
+  bgGradient?: [string, string];
+  iconBgColor?: string;
+  textColor?: string;
+  menuIconColor?: string;
+  showGlossyEffect?: boolean;
+  bgPattern?: ImageSourcePropType;
+  icon: ReactNode | null;
+};
+
+// ─── Static Data ─────────────────────────────────────────────────────────────
+
+const INITIAL_SCENE_CARDS: TSceneCard[] = [
+  {
+    key: 'home',
+    title: 'Về nhà',
+    colSpan: 1,
+    cardColor: '#FFFFFF',
+    iconBgColor: '#F2FCEE',
+    textColor: '#1B1B1B',
+    menuIconColor: '#9CA3AF',
+    icon: <MaterialCommunityIcons name="home-outline" size={20} color="#84CC16" />,
+  },
+  {
+    key: 'wakeup',
+    title: 'Thức dậy sớm',
+    colSpan: 1,
+    bgGradient: ['#FBBF24', '#F59E0B'],
+    textColor: '#FFFFFF',
+    menuIconColor: '#FFFFFF',
+    iconBgColor: 'transparent',
+    icon: <MaterialCommunityIcons name="white-balance-sunny" size={24} color="#FFFFFF" />,
+  },
+  {
+    key: 'movie',
+    title: 'Giải trí (Phim)',
+    colSpan: 1,
+    cardColor: '#1F2937',
+    iconBgColor: '#374151',
+    textColor: '#F9FAFB',
+    menuIconColor: '#9CA3AF',
+    showGlossyEffect: true,
+    icon: <MaterialCommunityIcons name="movie-open-outline" size={20} color="#A78BFA" />,
+  },
+  {
+    key: 'alarm',
+    title: 'Báo động',
+    colSpan: 1,
+    cardColor: '#7F1D1D',
+    iconBgColor: '#991B1B',
+    textColor: '#FFFFFF',
+    menuIconColor: '#FDA4AF',
+    showGlossyEffect: true,
+    icon: <MaterialCommunityIcons name="shield-alert-outline" size={20} color="#FECACA" />,
+  },
+  {
+    key: 'sleep',
+    title: 'Đi ngủ',
+    colSpan: 1,
+    cardColor: '#EFF6FF',
+    iconBgColor: '#DBEAFE',
+    textColor: '#1E3A8A',
+    menuIconColor: '#60A5FA',
+    icon: <MaterialCommunityIcons name="weather-night" size={20} color="#3B82F6" />,
+  },
+  {
+    key: 'power-off',
+    title: 'Tắt toàn bộ thiết bị nhà',
+    colSpan: 2, // full-width — chiếm toàn hàng
+    cardColor: '#FEE2E2',
+    textColor: '#991B1B',
+    menuIconColor: '#EF4444',
+    icon: null,
+  },
+];
+
+// ─── Component ───────────────────────────────────────────────────────────────
 
 type TProps = {
   className?: string;
@@ -11,103 +100,71 @@ type TProps = {
 
 export const AutomationListSceneWrapper: React.FC<TProps> = ({ className }) => {
   const layout = useWindowDimensions();
-  const cardWidth = (layout.width - BASE_SPACE_HORIZONTAL * 2 - GAP_DEVICE_VIEW_MOBILE) / GRID_VIEW_DEVICE_MOBILE;
+  const [cards, setCards] = useState<TSceneCard[]>(INITIAL_SCENE_CARDS);
+
+  // Map key → card để tra nhanh khi reorder
+  const keyToCard = Object.fromEntries(cards.map(c => [c.key, c]));
+
+  // Width cho half-width card (colSpan: 1)
+  const halfWidth = (layout.width - BASE_SPACE_HORIZONTAL * 2 - GAP_DEVICE_VIEW_MOBILE) / 2;
+
+  // onOrderChange nhận { indexToKey } = mảng key theo thứ tự mới
+  const handleOrderChange = useCallback(
+    ({ indexToKey }: OrderChangeParams) => {
+      setCards(indexToKey.map(k => keyToCard[k]!));
+    },
+    [keyToCard],
+  );
+
+  const getCardStyle = useCallback(
+    (card: TSceneCard): ViewStyle => ({
+      width: card.colSpan === 2 ? '100%' : halfWidth,
+    }),
+    [halfWidth],
+  );
 
   return (
-    <ScrollView className={className} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
-      {/* Tiêu đề cho Grid */}
-      <View className="mb-3 px-4">
-        {/* Có thể thêm tựa đề hoặc tuỳ chọn filter ở đây */}
+    <ScrollView
+      className={className}
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{ paddingBottom: 100 }}
+    >
+      {/* --- SORTABLE FLEX (MIXED LAYOUT) --- */}
+      <View className="px-4">
+        <Sortable.Flex
+          onOrderChange={handleOrderChange}
+          flexDirection="row"
+          flexWrap="wrap"
+          gap={GAP_DEVICE_VIEW_MOBILE}
+        >
+          {cards.map(card => (
+            <PrimarySceneCard
+              key={card.key}
+              title={card.title}
+              icon={card.icon}
+              cardColor={card.cardColor}
+              bgGradient={card.bgGradient}
+              iconBgColor={card.iconBgColor}
+              textColor={card.textColor}
+              menuIconColor={card.menuIconColor}
+              showGlossyEffect={card.showGlossyEffect}
+              containerStyle={getCardStyle(card)}
+            />
+          ))}
+        </Sortable.Flex>
       </View>
 
-      {/* --- GRID (2 CỘT) --- */}
-      <View className="w-full flex-row flex-wrap px-4" style={{ gap: GAP_DEVICE_VIEW_MOBILE }}>
-
-        {/* 1. Mẫu Cơ Bản: Tối giản (Hình 1) */}
-        <PrimarySceneCard
-          title="Về nhà"
-          cardColor="#FFFFFF" // Nền thẻ màu trắng
-          iconBgColor="#F2FCEE" // Nền icon xanh lá nhạt
-          textColor="#1B1B1B" // Chữ màu đen
-          menuIconColor="#9CA3AF" // Nút 3 chấm màu xám
-          icon={<MaterialCommunityIcons name="home-outline" size={20} color="#84CC16" />}
-          containerStyle={{ width: cardWidth }}
-        />
-
-        {/* 2. Mẫu Nền Gradient Tươi Sáng & Không nền Icon */}
-        <PrimarySceneCard
-          title="Thức dậy sớm"
-          bgGradient={['#FBBF24', '#F59E0B']} // Vàng sang cam
-          textColor="#FFFFFF" // Chữ trắng
-          menuIconColor="#FFFFFF"
-          iconBgColor="transparent" // Bỏ nền của ô vuông chứa icon
-          icon={<MaterialCommunityIcons name="white-balance-sunny" size={24} color="#FFFFFF" />}
-          containerStyle={{ width: cardWidth }}
-        />
-
-        {/* 3. Mẫu Dark Mode + Quầng sáng Glossy */}
-        <PrimarySceneCard
-          title="Giải trí (Phim)"
-          cardColor="#1F2937" // Nền xám than đậm
-          iconBgColor="#374151" // Nền icon xám nhạt hơn xíu
-          textColor="#F9FAFB" // Chữ trắng xám
-          menuIconColor="#9CA3AF"
-          icon={<MaterialCommunityIcons name="movie-open-outline" size={20} color="#A78BFA" />} // Icon màu đỏ dâu/tím
-          showGlossyEffect={true} // BẬT HIỆU ỨNG GLOSSY (Hình 3)
-          containerStyle={{ width: cardWidth }}
-        />
-
-        {/* 4. Mẫu Nguy Hiểm / Cảnh Báo + Quầng sáng Glossy */}
-        <PrimarySceneCard
-          title="Báo động"
-          cardColor="#7F1D1D" // Màu đỏ đậm mận
-          iconBgColor="#991B1B" // Đỏ nhạt hơn xíu cho icon box
-          textColor="#FFFFFF"
-          menuIconColor="#FDA4AF"
-          icon={<MaterialCommunityIcons name="shield-alert-outline" size={20} color="#FECACA" />}
-          showGlossyEffect={true} // BẬT HIỆU ỨNG GLOSSY
-          containerStyle={{ width: cardWidth }}
-        />
-
-        {/* 5. Mẫu Nền Pastel Dành Cho Case Nhẹ Nhàng */}
-        <PrimarySceneCard
-          title="Đi ngủ"
-          cardColor="#EFF6FF" // Màu xanh dương pastel nhạt
-          iconBgColor="#DBEAFE"
-          textColor="#1E3A8A" // Xanh dương đậm
-          menuIconColor="#60A5FA"
-          icon={<MaterialCommunityIcons name="weather-night" size={20} color="#3B82F6" />}
-          containerStyle={{ width: cardWidth }}
-        />
-
-        {/* 6. Mẫu Không Có Icon (Chỉ Text) */}
-        <PrimarySceneCard
-          title="Tắt toàn bộ thiết bị nhà"
-          cardColor="#FEE2E2" // Đỏ cực nhạt (Pastel)
-          textColor="#991B1B" // Chữ đỏ đậm
-          menuIconColor="#EF4444"
-          icon={null} // KHÔNG TRUYỀN ICON ĐỂ BACKGROUND TEXT DỊCH LÊN
-          containerStyle={{ width: cardWidth }}
-        />
-      </View>
-
-      {/* --- BANNER (FULL BỀ NGANG) DÙNG CHO QUẢNG CÁO HOẶC NHẤN MẠNH --- */}
+      {/* --- BANNER (FULL BỀ NGANG) — nằm ngoài Sortable --- */}
       <View className="mt-6 px-4">
         <PrimarySceneCard
           title="Chế độ Tự động làm mát & Hệ thống sinh thái xanh"
-          bgGradient={['#34D399', '#059669']} // Xanh Gradient
+          bgGradient={['#34D399', '#059669']}
           textColor="#FFFFFF"
           menuIconColor="#FFFFFF"
           iconBgColor="rgba(255, 255, 255, 0.2)"
           icon={<MaterialCommunityIcons name="spa-outline" size={24} color="#FFFFFF" />}
           showGlossyEffect={true}
-
-          /* Ở đây có thể dùng ảnh ImageSource truyền vào bgPattern. VD:
-             bgPattern={require('@/assets/images/leaf-pattern.png')}
-             bgPatternStyle={{ opacity: 0.15, right: -20, bottom: -20, width: 120, height: 120 }}
-          */
-
-          containerStyle={{ width: '100%', height: 130 }} // Set cứng chiều cao bự hơn
+          containerStyle={{ width: '100%', height: 130 }}
         />
       </View>
 
@@ -119,9 +176,9 @@ export const AutomationListSceneWrapper: React.FC<TProps> = ({ className }) => {
         </View>
       </View>
 
-      {/* --- PHẦN ĐỀ XUẤT (RECOMMENDATION) --- */}
+      {/* --- PHẦN ĐỀ XUẤT (RECOMMENDATION) — nằm ngoài Sortable --- */}
       <View className="mt-4 w-full px-4">
-        <View className="mb-2 border-x-0 border-t border-b border-[#E5E7EB] py-3">
+        <View className="mb-2 border-x-0 border-y border-[#E5E7EB] py-3">
           <Text className="ml-1 text-[16px] font-semibold text-[#1B1B1B]">Đề xuất</Text>
         </View>
 
