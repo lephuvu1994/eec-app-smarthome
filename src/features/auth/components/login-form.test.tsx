@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { cleanup, screen, setup, waitFor } from '@/lib/test-utils';
-import { LoginForm, type LoginFormProps } from './login-form';
+import { LoginForm, type TLoginFormProps } from './login-form';
 
 jest.mock('@/components/ui', () => {
   const actual = jest.requireActual('@/components/ui');
@@ -54,7 +54,7 @@ jest.mock('expo-blur', () => {
 afterEach(cleanup);
 
 const onSubmitMock = jest.fn(
-  async (_value: Parameters<NonNullable<LoginFormProps['onSubmit']>>[0]) => {},
+  async (_value: Parameters<NonNullable<TLoginFormProps['onSubmit']>>[0]) => {},
 );
 
 describe('LoginForm', () => {

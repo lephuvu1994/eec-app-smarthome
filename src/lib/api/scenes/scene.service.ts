@@ -3,7 +3,7 @@ import { client } from '../common';
 // ============================================================
 // TYPES
 // ============================================================
-export type Scene = {
+export type TScene = {
   id: string;
   name: string;
   active: boolean;
@@ -14,7 +14,7 @@ export type Scene = {
   updatedAt: string;
 };
 
-export type RunSceneResponse = {
+export type TRunSceneResponse = {
   jobId: string;
   message: string;
 };
@@ -23,17 +23,17 @@ export type RunSceneResponse = {
 // API SERVICE
 // ============================================================
 export const sceneService = {
-  getScenes: async (homeId: string): Promise<Scene[]> => {
+  getScenes: async (homeId: string): Promise<TScene[]> => {
     const { data } = await client.get('/scenes', { params: { homeId } });
     return data.data || data;
   },
 
-  getScene: async (sceneId: string): Promise<Scene> => {
+  getScene: async (sceneId: string): Promise<TScene> => {
     const { data } = await client.get(`/scenes/${sceneId}`);
     return data.data || data;
   },
 
-  runScene: async (sceneId: string): Promise<RunSceneResponse> => {
+  runScene: async (sceneId: string): Promise<TRunSceneResponse> => {
     const { data } = await client.post(`/scenes/${sceneId}/run`);
     return data.data || data;
   },

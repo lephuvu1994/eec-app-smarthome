@@ -35,13 +35,13 @@ const schema = z.object({
     .min(6, translate('formAuth.error.passwordInvalidFormat')),
 });
 
-export type FormType = z.infer<typeof schema>;
+export type TFormType = z.infer<typeof schema>;
 
-export type LoginFormProps = {
-  onSubmit: (value: FormType) => Promise<void>;
+export type TLoginFormProps = {
+  onSubmit: (value: TFormType) => Promise<void>;
 };
 
-export function LoginForm({ onSubmit }: LoginFormProps) {
+export function LoginForm({ onSubmit }: TLoginFormProps) {
   const { bottom } = useSafeAreaInsets();
 
   const form = useForm({

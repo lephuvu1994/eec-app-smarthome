@@ -1,4 +1,4 @@
-import type { Device, DeviceListResponse, SiriSyncData } from '@/lib/api/devices/device.service';
+import type { TDevice, TDeviceListResponse, TSiriSyncData } from '@/lib/api/devices/device.service';
 
 import { useQuery } from '@tanstack/react-query';
 
@@ -21,7 +21,7 @@ export const deviceKeys = {
 
 /** Get paginated device list (optionally filtered by homeId) */
 export function useDevices(params?: { homeId?: string; page?: number; limit?: number }) {
-  return useQuery<DeviceListResponse>({
+  return useQuery<TDeviceListResponse>({
     queryKey: deviceKeys.list(params),
     queryFn: () => deviceService.getDevices(params),
   });
@@ -29,7 +29,7 @@ export function useDevices(params?: { homeId?: string; page?: number; limit?: nu
 
 /** Get single device detail */
 export function useDeviceDetail(id: string) {
-  return useQuery<Device>({
+  return useQuery<TDevice>({
     queryKey: deviceKeys.detail(id),
     queryFn: () => deviceService.getDeviceDetail(id),
     enabled: !!id,
@@ -38,7 +38,7 @@ export function useDeviceDetail(id: string) {
 
 /** Get all devices + scenes for Siri entity sync */
 export function useSiriSync() {
-  return useQuery<SiriSyncData>({
+  return useQuery<TSiriSyncData>({
     queryKey: deviceKeys.siriSync,
     queryFn: deviceService.getSiriSync,
   });

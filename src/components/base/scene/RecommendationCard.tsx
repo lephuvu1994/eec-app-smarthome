@@ -7,7 +7,7 @@ import { StyleSheet } from 'react-native';
 import { Text, TouchableOpacity, View } from '@/components/ui';
 import { cn } from '@/lib/utils';
 
-export type RecommendationCardProps = {
+export type TRecommendationCardProps = {
   title: string;
   usageCount: string;
 
@@ -20,7 +20,7 @@ export type RecommendationCardProps = {
   containerStyle?: ViewStyle;
 };
 
-export const RecommendationCard: React.FC<RecommendationCardProps> = ({
+export const RecommendationCard: React.FC<TRecommendationCardProps> = ({
   title,
   usageCount,
   bgGradient,

@@ -1,9 +1,9 @@
-import type { DeviceResult } from '../types';
+import type { TDeviceResult } from '../types';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, Linking, NativeEventEmitter, NativeModules } from 'react-native';
 import { Easing, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 import { useRegisterDevice } from '@/hooks/use-register-device';
-import { DeviceProtocol } from '@/lib/api/devices/device.service';
+import { EDeviceProtocol } from '@/lib/api/devices/device.service';
 import { bleService, CHIP_TX_CHAR_UUID } from '@/lib/ble';
 import { cryptoService } from '@/lib/crypto';
 import { tcpClient } from '../lib/tcp-client';
@@ -15,13 +15,13 @@ const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
 export function useAddDevice() {
   const [step, setStep] = useState<EAddDeviceStep>(EAddDeviceStep.SCANNING);
   const [pairingMode, setPairingMode] = useState<EPairingMode>(EPairingMode.BLE);
-  const [devices, setDevices] = useState<DeviceResult[]>([]);
+  const [devices, setDevices] = useState<TDeviceResult[]>([]);
   const [isScanning, setIsScanning] = useState(false);
   const [isConnectingAP, setIsConnectingAP] = useState(false);
   const [deviceName, setDeviceName] = useState('');
   const [wifiSsid, setWifiSsid] = useState('');
   const [wifiPass, setWifiPass] = useState('');
-  const [selectedDevice, setSelectedDevice] = useState<DeviceResult | null>(null);
+  const [selectedDevice, setSelectedDevice] = useState<TDeviceResult | null>(null);
   const [configuringStatus, setConfiguringStatus] = useState('');
 
   const rotation = useSharedValue(0);
@@ -172,7 +172,7 @@ export function useAddDevice() {
   }, []);
 
   // ─── Device Selection → LED Confirm ───────────
-  const selectDevice = (device: DeviceResult) => {
+  const selectDevice = (device: TDeviceResult) => {
     setSelectedDevice(device);
     setStep(EAddDeviceStep.LED_CONFIRM);
   };
@@ -198,7 +198,7 @@ export function useAddDevice() {
   };
 
   // ─── BLE Connect ──────────────────────────────
-  const connectDeviceBLE = async (device: DeviceResult) => {
+  const connectDeviceBLE = async (device: TDeviceResult) => {
     try {
       setStep(EAddDeviceStep.CONNECTING);
       setDevices(prev => prev.map(d => d.id === device.id ? { ...d, status: 'connecting' } : d));
@@ -285,7 +285,7 @@ export function useAddDevice() {
 
       // Step 1: Register device on server
       const response = await registerDevice({
-        protocol: DeviceProtocol.MQTT,
+        protocol: EDeviceProtocol.MQTT,
         identifier: macAddress,
         deviceCode,
         partnerId,

@@ -4,7 +4,7 @@ import { Image as NImage } from 'expo-image';
 import * as React from 'react';
 import { withUniwind } from 'uniwind';
 
-export type ImgProps = ImageProps & {
+export type TImgProps = ImageProps & {
   className?: string;
 };
 
@@ -15,7 +15,7 @@ export function Image({
   className,
   placeholder = 'L6PZfSi_.AyE_3t7t7R**0o#DgR4',
   ...props
-}: ImgProps) {
+}: TImgProps) {
   return (
     <StyledImage
       className={className}

@@ -1,4 +1,4 @@
-import type { OptionType } from '@/components/ui';
+import type { TOptionType } from '@/components/ui';
 
 import * as React from 'react';
 import { cleanup, render, screen, setup } from '@/lib/test-utils';
@@ -8,7 +8,7 @@ import { Select } from './select';
 afterEach(cleanup);
 
 describe('select component ', () => {
-  const options: OptionType[] = [
+  const options: TOptionType[] = [
     { value: 'chocolate', label: 'Chocolate' },
     { value: 'strawberry', label: 'Strawberry' },
     { value: 'vanilla', label: 'Vanilla' },
