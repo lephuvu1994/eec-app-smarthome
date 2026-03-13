@@ -2,6 +2,8 @@ import type { TSceneCard } from '../components/sortable-scene-grid';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useCallback } from 'react';
 import { ScrollView } from 'react-native';
+import { PrimarySceneCard } from '@/components/base/scene/PrimarySceneCard';
+import { RecommendationCard } from '@/components/base/scene/RecommendationCard';
 import { showSuccessMessage, Text, View } from '@/components/ui';
 import { SortableSceneGrid } from '../components/sortable-scene-grid';
 
@@ -88,9 +90,43 @@ export const TapToRunSceneWrapper: React.FC<TProps> = ({ className }) => {
         onCardPress={handleRunScene}
       />
 
-      {/* --- FOOTER INFO --- */}
+      {/* --- BANNER (FULL BỀ NGANG) --- */}
+      <View className="mt-6 px-4">
+        <PrimarySceneCard
+          title="Chế độ Tự động làm mát & Hệ thống sinh thái xanh"
+          bgGradient={['#34D399', '#059669']}
+          textColor="#FFFFFF"
+          menuIconColor="#FFFFFF"
+          iconBgColor="rgba(255, 255, 255, 0.2)"
+          icon={<MaterialCommunityIcons name="spa-outline" size={24} color="#FFFFFF" />}
+          showGlossyEffect={true}
+          containerStyle={{ width: '100%', height: 130 }}
+        />
+      </View>
+
+      {/* --- TEXT CẢNH BÁO KỊCH BẢN --- */}
       <View className="mt-6 mb-2 w-full flex-row flex-wrap items-center justify-center px-4">
-        <Text className="text-sm text-[#6B7280]">Nhấn vào card để chạy kịch bản tức thì</Text>
+        <Text className="text-sm text-[#1B1B1B]">1 kịch bản chưa khả dụng. </Text>
+        <View>
+          <Text className="text-sm font-medium text-[#059669] underline">Nhấn để xem thêm.</Text>
+        </View>
+      </View>
+
+      {/* --- PHẦN ĐỀ XUẤT (RECOMMENDATION) --- */}
+      <View className="mt-4 w-full px-4">
+        <View className="mb-2 border-x-0 border-y border-[#E5E7EB] py-3">
+          <Text className="ml-1 text-[16px] font-semibold text-[#1B1B1B]">Đề xuất</Text>
+        </View>
+        <RecommendationCard
+          title="Bật tất cả công tắc"
+          usageCount="498.7K"
+          bgImage={require('@@/assets/scene/recommendation-bg.png')}
+        />
+        <RecommendationCard
+          title="Tắt toàn bộ thiết bị"
+          usageCount="498.7K"
+          bgImage={require('@@/assets/scene/recommendation-bg-off.png')}
+        />
       </View>
     </ScrollView>
   );
