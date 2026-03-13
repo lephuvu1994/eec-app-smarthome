@@ -56,7 +56,7 @@ const schema = z
     message: translate('formAuth.error.passwordNotMatch'),
   });
 
-export type FormType = z.infer<typeof schema>;
+export type TFormType = z.infer<typeof schema>;
 
 // Tạo component AnimatedTextInput
 

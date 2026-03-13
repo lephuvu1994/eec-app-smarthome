@@ -14,11 +14,11 @@ type Props = {
   className?: string;
 };
 
-export type ProgressBarRef = {
+export type TProgressBarRef = {
   setProgress: (value: number) => void;
 };
 
-export function ProgressBar({ ref, initialProgress = 0, className = '' }: Props & { ref?: React.RefObject<ProgressBarRef | null> }) {
+export function ProgressBar({ ref, initialProgress = 0, className = '' }: Props & { ref?: React.RefObject<TProgressBarRef | null> }) {
   const progress = useSharedValue<number>(initialProgress ?? 0);
   useImperativeHandle(ref, () => {
     return {

@@ -7,7 +7,7 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Text } from '@/components/ui';
 import { cn } from '@/lib/utils';
 
-export type SceneCardProps = {
+export type TSceneCardProps = {
   title: string;
   icon?: React.ReactNode;
 
@@ -31,7 +31,7 @@ export type SceneCardProps = {
   containerStyle?: ViewStyle;
 };
 
-export const PrimarySceneCard: React.FC<SceneCardProps> = ({
+export const PrimarySceneCard: React.FC<TSceneCardProps> = ({
   title,
   icon,
   cardColor = '#FFFFFF',

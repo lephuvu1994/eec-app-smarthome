@@ -12,7 +12,7 @@ export enum EPairingMode {
   AP = 'AP',
 }
 
-export type DeviceResult = {
+export type TDeviceResult = {
   id: string;
   name: string;
   status: 'connecting' | 'connected' | 'failed';

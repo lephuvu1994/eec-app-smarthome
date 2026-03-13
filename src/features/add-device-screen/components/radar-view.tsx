@@ -1,4 +1,4 @@
-import type { DeviceResult } from '../types';
+import type { TDeviceResult } from '../types';
 import { Canvas, Circle as SkiaCircle, LinearGradient as SkiaLinearGradient, SweepGradient, vec } from '@shopify/react-native-skia';
 import { Image } from 'expo-image';
 import * as React from 'react';
@@ -10,7 +10,7 @@ function RadarDeviceIcon({
   device,
   currentBeamRotation,
 }: {
-  device: DeviceResult;
+  device: TDeviceResult;
   currentBeamRotation: number;
 }) {
   const rad = (device.angle * Math.PI) / 180;
@@ -75,7 +75,7 @@ export function RadarView({
   rotation,
   beamStyle,
 }: {
-  devices: DeviceResult[];
+  devices: TDeviceResult[];
   rotation: { value: number };
   beamStyle: any;
 }) {
