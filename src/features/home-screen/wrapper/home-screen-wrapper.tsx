@@ -1,6 +1,7 @@
 import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
+import type { TFloor } from '@/lib/api/homes/home.service';
 import { FontAwesome6 } from '@expo/vector-icons';
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView } from 'react-native';
 
 import Animated, {
@@ -15,26 +16,27 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useUniwind } from 'uniwind';
 import { LiveCameraWrapper } from '@/components/base/LiveCameraWrapper';
-import { Pressable, Text, View, WIDTH } from '@/components/ui';
+import { Pressable, Skeleton, Text, View, WIDTH } from '@/components/ui';
 import { ANIMATION_DURATION, ASPECT_RATIO_VIDEO, BASE_SPACE_HORIZONTAL } from '@/constants';
+import { useFloors } from '@/hooks/use-homes';
 import { translate } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 import { useConfigManager } from '@/stores/config/config';
+import { useHomeStore } from '@/stores/home/home-store';
 import { ETheme } from '@/types/base';
 import { GroupPage } from '../components/tab/group-page';
 
 // --- Cấu hình dữ liệu ---
 const heightVideoOnScreen = ((WIDTH - BASE_SPACE_HORIZONTAL * 2) / ASPECT_RATIO_VIDEO);
 
-const GROUPS = [
-  { key: 'favorite', title: 'Favorite' },
-  { key: 't1', title: 'Tầng 1' },
-  { key: 't2', title: 'Tầng 2' },
-  { key: 't3', title: 'Tầng 3' },
-];
+type TGroup = {
+  key: string;
+  title: string;
+  floor?: TFloor;
+};
 
 // ==========================================
-// 2. MAIN WRAPPER COMPONENT (Lớp ngoài)
+// MAIN WRAPPER COMPONENT
 // Quản lý việc cuộn ngang giữa các tầng và Camera Preview
 // ==========================================
 export const HomeScreenWrapper = memo(({ className }: { className?: string }) => {
@@ -44,6 +46,29 @@ export const HomeScreenWrapper = memo(({ className }: { className?: string }) =>
   const animatedHeight = useSharedValue(heightVideoOnScreen);
   const showRoomViewExpand = useConfigManager(state => state.showRoomViewExpand);
   const setShowRoomViewExpand = useConfigManager(state => state.setShowRoomViewExpand);
+
+  // ─── API data ──────────────────────────────
+  const selectedHomeId = useHomeStore(s => s.selectedHomeId);
+  const { data: floors, isLoading: isLoadingFloors } = useFloors(selectedHomeId ?? '');
+
+  // Build groups dynamically: Favorite + Floors from API
+  const groups: TGroup[] = useMemo(() => {
+    const favoriteGroup: TGroup = { key: 'favorite', title: 'Favorite' };
+    if (!floors?.length) return [favoriteGroup];
+    const floorGroups: TGroup[] = floors
+      .sort((a, b) => a.sortOrder - b.sortOrder)
+      .map(f => ({ key: f.id, title: f.name, floor: f }));
+    return [favoriteGroup, ...floorGroups];
+  }, [floors]);
+
+  // Reset floor index when home changes
+  const prevHomeIdRef = useRef(selectedHomeId);
+  if (prevHomeIdRef.current !== selectedHomeId) {
+    prevHomeIdRef.current = selectedHomeId;
+    if (currentFloorIdx !== 0) {
+      setCurrentFloorIdx(0);
+    }
+  }
 
   const primaryTabRef = useAnimatedRef<Animated.ScrollView>();
   const outerScrollRef = useRef<ScrollView>(null);
@@ -64,7 +89,7 @@ export const HomeScreenWrapper = memo(({ className }: { className?: string }) =>
       duration: 250,
       easing: Easing.out(Easing.ease),
     });
-  }, [currentFloorIdx]);
+  }, [currentFloorIdx, primarySharedIdx]);
 
   // Cuộn thanh Tab chính dựa trên index hiện tại
   useDerivedValue(() => {
@@ -79,10 +104,10 @@ export const HomeScreenWrapper = memo(({ className }: { className?: string }) =>
     const offsetX = e.nativeEvent.contentOffset.x;
     const index = Math.round(offsetX / WIDTH);
 
-    if (index >= 0 && index < GROUPS.length && index !== currentFloorIdx) {
+    if (index >= 0 && index < groups.length && index !== currentFloorIdx) {
       setCurrentFloorIdx(index);
     }
-  }, [currentFloorIdx]);
+  }, [currentFloorIdx, groups.length]);
 
   // Điều hướng khi nhấn Tab Tầng
   const jumpToFloor = useCallback((idx: number) => {
@@ -102,20 +127,19 @@ export const HomeScreenWrapper = memo(({ className }: { className?: string }) =>
 
   const toggleExpand = () => {
     const nextState = !showRoomViewExpand;
-    setShowRoomViewExpand(nextState); // Đổi state -> RoomTabItem tự re-render -> Kích hoạt LinearTransition
+    setShowRoomViewExpand(nextState);
   };
 
-  // 1. Tạo shared value để tracking trạng thái xoay
+  // Shared value để tracking trạng thái xoay
   const rotateProgress = useDerivedValue(() => {
     return withTiming(showRoomViewExpand ? 1 : 0, { duration: 300 });
   });
 
-  // 2. Định nghĩa style xoay
   const arrowStyle = useAnimatedStyle(() => {
     const rotateValue = interpolate(
       rotateProgress.value,
       [0, 1],
-      [-90, 0], // Xoay từ 0 đến 180 độ
+      [-90, 0],
     );
     return {
       transform: [{ rotate: `${rotateValue}deg` }],
@@ -150,28 +174,38 @@ export const HomeScreenWrapper = memo(({ className }: { className?: string }) =>
         </Pressable>
 
         <View className="h-8 flex-1">
-          <Animated.ScrollView
-            ref={primaryTabRef}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ gap: 8 }}
-          >
-            {GROUPS.slice(1).map((group, offsetIdx) => {
-              const realIdx = offsetIdx + 1;
-              const focused = currentFloorIdx === realIdx;
-              return (
-                <Pressable key={group.key} onPress={() => jumpToFloor(realIdx)} className="px-2">
-                  <Text className={cn(
-                    'h-8 text-lg font-normal text-neutral-500 dark:text-neutral-400',
-                    focused && 'font-bold text-neutral-700 dark:text-white',
-                  )}
-                  >
-                    {group.title}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </Animated.ScrollView>
+          {isLoadingFloors
+            ? (
+                <View className="flex-1 flex-row items-center gap-2">
+                  <Skeleton width={60} height={24} borderRadius={8} />
+                  <Skeleton width={60} height={24} borderRadius={8} />
+                  <Skeleton width={60} height={24} borderRadius={8} />
+                </View>
+              )
+            : (
+                <Animated.ScrollView
+                  ref={primaryTabRef}
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={{ gap: 8 }}
+                >
+                  {groups.slice(1).map((group, offsetIdx) => {
+                    const realIdx = offsetIdx + 1;
+                    const focused = currentFloorIdx === realIdx;
+                    return (
+                      <Pressable key={group.key} onPress={() => jumpToFloor(realIdx)} className="px-2">
+                        <Text className={cn(
+                          'h-8 text-lg font-normal text-neutral-500 dark:text-neutral-400',
+                          focused && 'font-bold text-neutral-700 dark:text-white',
+                        )}
+                        >
+                          {group.title}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </Animated.ScrollView>
+              )}
         </View>
 
         {/* Nút Chevron */}
@@ -201,9 +235,17 @@ export const HomeScreenWrapper = memo(({ className }: { className?: string }) =>
           contentContainerStyle={{ flexGrow: 1 }}
           className="flex-1"
         >
-          {GROUPS.map((group) => {
+          {groups.map((group) => {
+            const rooms = group.floor?.rooms?.map(r => ({ id: r.id, title: r.name })) ?? [];
             return (
-              <GroupPage isCurrentGroup={GROUPS[currentFloorIdx].key === group.key} key={group.key} group={group} theme={theme as ETheme} />
+              <GroupPage
+                isCurrentGroup={groups[currentFloorIdx]?.key === group.key}
+                key={group.key}
+                group={group}
+                rooms={rooms}
+                homeId={selectedHomeId ?? ''}
+                theme={theme as ETheme}
+              />
             );
           })}
         </ScrollView>
