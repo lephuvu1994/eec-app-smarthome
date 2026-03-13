@@ -1,37 +1,47 @@
+import type { SharedValue } from 'react-native-reanimated';
 import type { TDeviceResult } from '../types';
 import { Canvas, Circle as SkiaCircle, LinearGradient as SkiaLinearGradient, SweepGradient, vec } from '@shopify/react-native-skia';
 import { Image } from 'expo-image';
 import * as React from 'react';
 import { View } from 'react-native';
-import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import { CENTER, HIGHLIGHT_COLOR, RADAR_SIZE } from '../constants';
+import Animated, { interpolate, interpolateColor, useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
+import { HIGHLIGHT_COLOR, RADAR_SIZE } from '../constants';
 
 function RadarDeviceIcon({
   device,
-  currentBeamRotation,
+  rotation,
+  radarSize,
 }: {
   device: TDeviceResult;
-  currentBeamRotation: number;
+  rotation: SharedValue<number>;
+  radarSize: number;
 }) {
   const rad = (device.angle * Math.PI) / 180;
-  const activeRadius = RADAR_SIZE * 0.45;
-  const x = CENTER + activeRadius * device.radius * Math.cos(rad);
-  const y = CENTER + activeRadius * device.radius * Math.sin(rad);
+  const activeRadius = radarSize * 0.45;
+  const x = radarSize / 2 + activeRadius * device.radius * Math.cos(rad);
+  const y = radarSize / 2 + activeRadius * device.radius * Math.sin(rad);
 
   const ICON_CONTAINER_SIZE = 64;
 
-  const animatedStyle = useAnimatedStyle(() => {
-    const currentRot = currentBeamRotation % 360;
+  // Derived value: only triggers withTiming when isScanning changes
+  const progress = useDerivedValue(() => {
+    'worklet';
+    const currentRot = rotation.value % 360;
     let diff = currentRot - device.angle;
     if (diff < 0)
       diff += 360;
     const isScanning = diff > 0 && diff < 133;
+    return withTiming(isScanning ? 1 : 0, { duration: 100 });
+  });
 
+  const outerStyle = useAnimatedStyle(() => {
+    'worklet';
+    const p = progress.value;
     return {
-      transform: [{ scale: withTiming(isScanning ? 1.15 : 1, { duration: 300 }) }],
-      borderColor: withTiming(isScanning ? HIGHLIGHT_COLOR : 'transparent', { duration: 300 }),
-      borderWidth: withTiming(isScanning ? 3 : 0, { duration: 300 }),
-      opacity: withTiming(isScanning ? 1 : 0.7, { duration: 300 }),
+      transform: [{ scale: interpolate(p, [0, 1], [1, 1.1]) }],
+      borderColor: interpolateColor(p, [0, 1], ['rgba(230, 230, 230, 0.35)', HIGHLIGHT_COLOR]),
+      borderWidth: interpolate(p, [0, 1], [0.5, 2.5]),
+      opacity: interpolate(p, [0, 1], [0.8, 1]),
     };
   });
 
@@ -45,27 +55,34 @@ function RadarDeviceIcon({
           width: ICON_CONTAINER_SIZE,
           height: ICON_CONTAINER_SIZE,
           borderRadius: ICON_CONTAINER_SIZE / 2,
-          backgroundColor: 'white',
-          alignItems: 'center',
-          justifyContent: 'center',
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 6 },
-          shadowOpacity: 0.1,
+          shadowColor: HIGHLIGHT_COLOR,
+          shadowOffset: { width: 0, height: 0 },
           shadowRadius: 12,
-          elevation: 6,
+          elevation: 8,
         },
-        animatedStyle,
+        outerStyle,
       ]}
     >
-      <Image
-        source={{ uri: device.imageUrl }}
+      <View
         style={{
-          width: ICON_CONTAINER_SIZE - 12,
-          height: ICON_CONTAINER_SIZE - 12,
-          borderRadius: (ICON_CONTAINER_SIZE - 12) / 2,
+          flex: 1,
+          borderRadius: ICON_CONTAINER_SIZE / 2,
+          overflow: 'hidden',
+          backgroundColor: 'rgba(255, 255, 255, 0.45)',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
-        contentFit="cover"
-      />
+      >
+        <Image
+          source={require('@@/assets/device/camera.png')}
+          style={{
+            width: ICON_CONTAINER_SIZE - 12,
+            height: ICON_CONTAINER_SIZE - 12,
+            borderRadius: (ICON_CONTAINER_SIZE - 12) / 2,
+          }}
+          contentFit="cover"
+        />
+      </View>
     </Animated.View>
   );
 }
@@ -74,47 +91,49 @@ export function RadarView({
   devices,
   rotation,
   beamStyle,
+  radarSize = RADAR_SIZE,
 }: {
   devices: TDeviceResult[];
-  rotation: { value: number };
+  rotation: SharedValue<number>;
   beamStyle: any;
+  radarSize?: number;
 }) {
   return (
     <View
       className="relative items-center justify-center"
-      style={{ width: RADAR_SIZE, height: RADAR_SIZE }}
+      style={{ width: radarSize, height: radarSize }}
     >
-      <Canvas style={{ position: 'absolute', width: RADAR_SIZE, height: RADAR_SIZE }}>
-        <SkiaCircle cx={CENTER} cy={CENTER} r={RADAR_SIZE * 0.48}>
+      <Canvas style={{ position: 'absolute', width: radarSize, height: radarSize }}>
+        <SkiaCircle cx={radarSize / 2} cy={radarSize / 2} r={radarSize * 0.48}>
           <SkiaLinearGradient
-            start={vec(CENTER, 0)}
-            end={vec(CENTER, RADAR_SIZE)}
+            start={vec(radarSize / 2, 0)}
+            end={vec(radarSize / 2, radarSize)}
             colors={['rgba(163, 236, 62, 0.05)', 'rgba(163, 236, 62, 0.1)']}
           />
         </SkiaCircle>
-        <SkiaCircle cx={CENTER} cy={CENTER} r={RADAR_SIZE * 0.35}>
+        <SkiaCircle cx={radarSize / 2} cy={radarSize / 2} r={radarSize * 0.35}>
           <SkiaLinearGradient
-            start={vec(CENTER, 0)}
-            end={vec(CENTER, RADAR_SIZE)}
+            start={vec(radarSize / 2, 0)}
+            end={vec(radarSize / 2, radarSize)}
             colors={['rgba(163, 236, 62, 0.05)', 'rgba(163, 236, 62, 0.2)']}
           />
         </SkiaCircle>
-        <SkiaCircle cx={CENTER} cy={CENTER} r={RADAR_SIZE * 0.20}>
+        <SkiaCircle cx={radarSize / 2} cy={radarSize / 2} r={radarSize * 0.20}>
           <SkiaLinearGradient
-            start={vec(CENTER, 0)}
-            end={vec(CENTER, RADAR_SIZE)}
+            start={vec(radarSize / 2, 0)}
+            end={vec(radarSize / 2, radarSize)}
             colors={['rgba(163, 236, 62, 0.05)', 'rgba(163, 236, 62, 0.1)']}
           />
         </SkiaCircle>
       </Canvas>
 
       <Animated.View
-        style={[beamStyle, { position: 'absolute', width: RADAR_SIZE, height: RADAR_SIZE }]}
+        style={[beamStyle, { position: 'absolute', width: radarSize, height: radarSize }]}
       >
         <Canvas style={{ flex: 1 }}>
-          <SkiaCircle cx={CENTER} cy={CENTER} r={RADAR_SIZE / 2}>
+          <SkiaCircle cx={radarSize / 2} cy={radarSize / 2} r={radarSize / 2}>
             <SweepGradient
-              c={vec(CENTER, CENTER)}
+              c={vec(radarSize / 2, radarSize / 2)}
               colors={[
                 'rgba(163, 236, 62, 0)',
                 'rgba(163, 236, 62, 0)',
@@ -127,7 +146,7 @@ export function RadarView({
       </Animated.View>
 
       {devices.map(device => (
-        <RadarDeviceIcon key={device.id} device={device} currentBeamRotation={rotation.value} />
+        <RadarDeviceIcon radarSize={radarSize} key={device.id} device={device} rotation={rotation} />
       ))}
     </View>
   );

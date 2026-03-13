@@ -1,8 +1,9 @@
 import type { TDeviceResult } from '../types';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Linking, NativeEventEmitter, NativeModules } from 'react-native';
+import { Linking } from 'react-native';
+import BleManager from 'react-native-ble-manager';
 import { Easing, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
-import { IS_IOS, showErrorMessage } from '@/components/ui';
+import { showErrorMessage } from '@/components/ui';
 import { useRegisterDevice } from '@/hooks/use-register-device';
 import { EDeviceProtocol } from '@/lib/api/devices/device.service';
 import { bleService, CHIP_TX_CHAR_UUID } from '@/lib/ble';
@@ -10,9 +11,6 @@ import { cryptoService } from '@/lib/crypto';
 import { translate } from '@/lib/i18n';
 import { tcpClient } from '../lib/tcp-client';
 import { EAddDeviceStep, EPairingMode } from '../types';
-
-const BleManagerModule = NativeModules.BleManager;
-const bleManagerEmitter = new NativeEventEmitter(IS_IOS ? BleManagerModule : undefined);
 
 export function useAddDevice() {
   const [step, setStep] = useState<EAddDeviceStep>(EAddDeviceStep.SCANNING);
@@ -32,18 +30,26 @@ export function useAddDevice() {
   // Track connected device ID for cleanup
   const connectedDeviceIdRef = useRef<string | null>(null);
   const isScanningRef = useRef(false);
+  const stepRef = useRef(step);
+  const rescanTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const startScan = useCallback(async () => {
+  const startScan = useCallback(async (clearList = false) => {
     if (isScanningRef.current)
       return;
-    setDevices([]);
+    if (clearList)
+      setDevices([]);
     setIsScanning(true);
     isScanningRef.current = true;
+    // Stop any stale scan from previous mount/hot reload
+    await BleManager.stopScan().catch(() => {});
     await bleService.startScan(10);
   }, []);
 
   // ─── BLE Event Listeners ───────────────────
   useEffect(() => {
+    // Keep stepRef in sync
+    stepRef.current = step;
+
     rotation.value = withRepeat(
       withTiming(360, {
         duration: 3500,
@@ -54,6 +60,8 @@ export function useAddDevice() {
     );
 
     const initBle = async () => {
+      // Force BleManager.start() on every mount (handles hot reload)
+      await BleManager.start({ showAlert: false });
       const allowed = await bleService.requestPermissions();
       if (allowed) {
         await bleService.enableBluetooth();
@@ -67,10 +75,11 @@ export function useAddDevice() {
 
     initBle();
 
-    const handlerDiscover = bleManagerEmitter.addListener(
-      'BleManagerDiscoverPeripheral',
+    const handlerDiscover = BleManager.onDiscoverPeripheral(
       (peripheral) => {
-        if (!peripheral.name)
+        // Use advertising localName (actual BLE name) over cached peripheral.name
+        const deviceName = peripheral.advertising?.localName || peripheral.name;
+        if (!deviceName || !deviceName.includes('BKTech'))
           return;
         setDevices((prev) => {
           if (prev.some(d => d.id === peripheral.id))
@@ -79,8 +88,8 @@ export function useAddDevice() {
             ...prev,
             {
               id: peripheral.id,
-              name: peripheral.name,
-              status: 'connecting',
+              name: deviceName,
+              status: 'found',
               imageUrl: 'https://images.unsplash.com/photo-1557324232-b8917d3c3dcb?w=200&h=200&fit=crop',
               angle: Math.random() * 360,
               radius: 0.5 + Math.random() * 0.4,
@@ -90,13 +99,18 @@ export function useAddDevice() {
       },
     );
 
-    const handlerStop = bleManagerEmitter.addListener('BleManagerStopScan', () => {
+    const handlerStop = BleManager.onStopScan(() => {
       setIsScanning(false);
       isScanningRef.current = false;
+      // Auto-restart scan if still on scanning step
+      rescanTimerRef.current = setTimeout(() => {
+        if (stepRef.current === EAddDeviceStep.SCANNING) {
+          startScan();
+        }
+      }, 1000);
     });
 
-    const handlerValueUpdate = bleManagerEmitter.addListener(
-      'BleManagerDidUpdateValueForCharacteristic',
+    const handlerValueUpdate = BleManager.onDidUpdateValueForCharacteristic(
       ({ value, peripheral, characteristic }) => {
         if (characteristic.toLowerCase() === CHIP_TX_CHAR_UUID.toLowerCase()) {
           try {
@@ -109,7 +123,7 @@ export function useAddDevice() {
                 session: handshakeData.session,
                 nonce: handshakeData.nonce,
                 deviceCode: handshakeData.pid,
-                partnerId: handshakeData.cid,
+                partnerCode: handshakeData.cid,
               });
 
               setDevices(prev =>
@@ -127,9 +141,8 @@ export function useAddDevice() {
       },
     );
 
-    const handlerStateUpdate = bleManagerEmitter.addListener(
-      'BleManagerDidUpdateState',
-      ({ state }: { state: string }) => {
+    const handlerStateUpdate = BleManager.onDidUpdateState(
+      ({ state }) => {
         if (state === 'off' || state === 'turning_off') {
           setIsScanning(false);
           isScanningRef.current = false;
@@ -150,6 +163,10 @@ export function useAddDevice() {
       handlerStateUpdate.remove();
       bleService.stopScan();
 
+      if (rescanTimerRef.current) {
+        clearTimeout(rescanTimerRef.current);
+      }
+
       if (connectedDeviceIdRef.current) {
         bleService.stopNotification(connectedDeviceIdRef.current).catch(() => {});
         bleService.disconnect(connectedDeviceIdRef.current).catch(() => {});
@@ -161,10 +178,12 @@ export function useAddDevice() {
     };
   }, []);
 
-  // ─── Device Selection → LED Confirm ───────────
+  // ─── Device Selection → Connect ───────────
   const selectDevice = (device: TDeviceResult) => {
     setSelectedDevice(device);
-    setStep(EAddDeviceStep.LED_CONFIRM);
+    // BLE scanned device → connect directly (skip LED confirm)
+    setPairingMode(EPairingMode.BLE);
+    connectDeviceBLE(device);
   };
 
   // ─── LED Confirm → Choose pairing mode ────────
@@ -200,7 +219,7 @@ export function useAddDevice() {
       console.error('BLE connection failed', error);
       setDevices(prev => prev.map(d => d.id === device.id ? { ...d, status: 'failed' } : d));
       showErrorMessage(translate('base.bleConnectionError'));
-      setStep(EAddDeviceStep.LED_CONFIRM);
+      setStep(EAddDeviceStep.SCANNING);
     }
   };
 
@@ -225,7 +244,7 @@ export function useAddDevice() {
           session: handshakeData.session,
           nonce: handshakeData.nonce,
           deviceCode: handshakeData.pid,
-          partnerId: handshakeData.cid,
+          partnerCode: handshakeData.cid,
         });
 
         setStep(EAddDeviceStep.SETUP);
@@ -259,9 +278,9 @@ export function useAddDevice() {
 
       const macAddress = cryptoService.getMac();
       const deviceCode = cryptoService.getDeviceCode();
-      const partnerId = cryptoService.getPartnerId();
+      const partnerCode = cryptoService.getPartnerCode();
 
-      if (!deviceCode || !partnerId || !macAddress) {
+      if (!deviceCode || !partnerCode || !macAddress) {
         showErrorMessage(translate('base.unsupportedDevice'));
         setStep(EAddDeviceStep.SETUP);
         return;
@@ -272,7 +291,7 @@ export function useAddDevice() {
         protocol: EDeviceProtocol.MQTT,
         identifier: macAddress,
         deviceCode,
-        partnerId,
+        partnerCode,
         name: deviceName || device?.name || 'Device',
       });
 
