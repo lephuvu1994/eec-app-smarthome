@@ -10,4 +10,4 @@ export const resources = {
   },
 };
 
-export type Language = keyof typeof resources;
+export type TLanguage = keyof typeof resources;

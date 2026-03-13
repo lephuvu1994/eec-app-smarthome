@@ -3,7 +3,7 @@ import type {
   GetPreviousPageParamFunction,
 } from '@tanstack/react-query';
 
-import type { PaginateQuery } from '../utils';
+import type { TPaginateQuery } from '../utils';
 
 type KeyParams = {
   [key: string]: any;
@@ -17,7 +17,7 @@ export function getQueryKey<T extends KeyParams>(key: string, params?: T) {
 }
 
 // for infinite query pages  to flatList data
-export function normalizePages<T>(pages?: PaginateQuery<T>[]): T[] {
+export function normalizePages<T>(pages?: TPaginateQuery<T>[]): T[] {
   return pages
     ? pages.reduce((prev: T[], current) => [...prev, ...current.results], [])
     : [];
@@ -43,10 +43,10 @@ export function getUrlParameters(
 
 export const getPreviousPageParam: GetNextPageParamFunction<
   unknown,
-  PaginateQuery<unknown>
+  TPaginateQuery<unknown>
 > = page => getUrlParameters(page.previous)?.offset ?? null;
 
 export const getNextPageParam: GetPreviousPageParamFunction<
   unknown,
-  PaginateQuery<unknown>
+  TPaginateQuery<unknown>
 > = page => getUrlParameters(page.next)?.offset ?? null;

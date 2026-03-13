@@ -1,4 +1,4 @@
-import type { Language } from '@/lib/i18n/resources';
+import type { TLanguage } from '@/lib/i18n/resources';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useHeaderHeight } from '@react-navigation/elements';
 import * as Haptics from 'expo-haptics';
@@ -293,7 +293,7 @@ export function GeneralSettingsScreen() {
               label={v === 'vi' ? translate('settings.language.vietnam') : translate('settings.language.english')}
               selected={language === v}
               onPress={() => {
-                setLanguage(v as Language);
+                setLanguage(v as TLanguage);
                 languageModal.dismiss();
               }}
             />

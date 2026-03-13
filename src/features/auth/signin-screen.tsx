@@ -1,4 +1,4 @@
-import type { LoginFormProps } from '@/features/auth/components/login-form';
+import type { TLoginFormProps } from '@/features/auth/components/login-form';
 import type { UserResponse } from '@/features/auth/types/response';
 
 import { useHeaderHeight } from '@react-navigation/elements';
@@ -19,7 +19,7 @@ export function SignIn() {
 
   const { mutateAsync: login } = useLogin();
 
-  const onSubmit: LoginFormProps['onSubmit'] = async (data: any) => {
+  const onSubmit: TLoginFormProps['onSubmit'] = async (data: any) => {
     await login(
       { identifier: data.identifier, password: data.password },
       {

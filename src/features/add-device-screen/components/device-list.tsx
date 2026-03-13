@@ -1,4 +1,4 @@
-import type { DeviceResult } from '../types';
+import type { TDeviceResult } from '../types';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as React from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from '@/components/ui';
@@ -9,7 +9,7 @@ export function DeviceList({
   devices,
   onContinue,
 }: {
-  devices: DeviceResult[];
+  devices: TDeviceResult[];
   onContinue: () => void;
 }) {
   return (

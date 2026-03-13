@@ -1,12 +1,11 @@
-import type { AxiosError } from 'axios';
-import type { RegisterDeviceResponse, RegisterDeviceVariables } from '@/lib/api/devices/device.service';
+import type { TRegisterDeviceResponse, TRegisterDeviceVariables } from '@/lib/api/devices/device.service';
 import { createMutation } from 'react-query-kit';
 import { deviceService } from '@/lib/api/devices/device.service';
 
 export const useRegisterDevice = createMutation<
-  RegisterDeviceResponse,
-  RegisterDeviceVariables,
-  AxiosError
+  TRegisterDeviceResponse,
+  TRegisterDeviceVariables,
+  Error
 >({
   mutationFn: deviceService.registerDevice,
 });

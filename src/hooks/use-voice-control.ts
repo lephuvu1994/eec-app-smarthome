@@ -6,6 +6,7 @@ import { Platform } from 'react-native';
 import { EAuthStatus } from '@/features/auth/types/enum';
 import { useUserManager } from '@/features/auth/user-store';
 import { client } from '@/lib/api';
+import { deviceService } from '@/lib/api/devices/device.service';
 
 export function useVoiceControl() {
   const { status } = useUserManager();
@@ -27,9 +28,9 @@ export function useVoiceControl() {
     if (status === EAuthStatus.signIn) {
       const sync = async () => {
         if (Platform.OS === 'ios') {
-          const res = await client.get('/devices/siri-sync');
-          if (res.data)
-            await updateSiriEntities(res.data);
+          const siriData = await deviceService.getSiriSync();
+          if (siriData)
+            await updateSiriEntities(siriData as any);
         }
         else {
           await client.post('/google/request-sync');

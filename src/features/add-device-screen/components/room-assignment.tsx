@@ -1,4 +1,4 @@
-import type { DeviceResult } from '../types';
+import type { TDeviceResult } from '../types';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as React from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from '@/components/ui';
@@ -10,7 +10,7 @@ export function RoomAssignment({
   isRegistering,
   onFinish,
 }: {
-  devices: DeviceResult[];
+  devices: TDeviceResult[];
   isRegistering: boolean;
   onFinish: () => void;
 }) {
