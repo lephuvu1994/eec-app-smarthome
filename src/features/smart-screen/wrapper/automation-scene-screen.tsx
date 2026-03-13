@@ -2,12 +2,12 @@ import type { ReactNode } from 'react';
 import type { ImageSourcePropType, ViewStyle } from 'react-native';
 import type { OrderChangeParams } from 'react-native-sortables';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { ScrollView, useWindowDimensions } from 'react-native';
 import Sortable from 'react-native-sortables';
 import { PrimarySceneCard } from '@/components/base/scene/PrimarySceneCard';
 import { RecommendationCard } from '@/components/base/scene/RecommendationCard';
-import { Text, View } from '@/components/ui';
+import { colors, Text, View } from '@/components/ui';
 import { BASE_SPACE_HORIZONTAL, GAP_DEVICE_VIEW_MOBILE } from '@/constants';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -82,6 +82,16 @@ const INITIAL_SCENE_CARDS: TSceneCard[] = [
     icon: <MaterialCommunityIcons name="weather-night" size={20} color="#3B82F6" />,
   },
   {
+    key: 'sleep2',
+    title: 'Đi ngủ',
+    colSpan: 1,
+    cardColor: '#EFF6FF',
+    iconBgColor: '#DBEAFE',
+    textColor: '#1E3A8A',
+    menuIconColor: '#60A5FA',
+    icon: <MaterialCommunityIcons name="weather-night" size={20} color="#3B82F6" />,
+  },
+  {
     key: 'power-off',
     title: 'Tắt toàn bộ thiết bị nhà',
     colSpan: 2, // full-width — chiếm toàn hàng
@@ -102,25 +112,27 @@ export const AutomationListSceneWrapper: React.FC<TProps> = ({ className }) => {
   const layout = useWindowDimensions();
   const [cards, setCards] = useState<TSceneCard[]>(INITIAL_SCENE_CARDS);
 
-  // Map key → card để tra nhanh khi reorder
-  const keyToCard = Object.fromEntries(cards.map(c => [c.key, c]));
+  // Dùng ref để handleOrderChange luôn đọc cards mới nhất, tránh stale closure
+  const cardsRef = useRef(cards);
+  cardsRef.current = cards;
 
   // Width cho half-width card (colSpan: 1)
   const halfWidth = (layout.width - BASE_SPACE_HORIZONTAL * 2 - GAP_DEVICE_VIEW_MOBILE) / 2;
 
   // onOrderChange nhận { indexToKey } = mảng key theo thứ tự mới
-  const handleOrderChange = useCallback(
-    ({ indexToKey }: OrderChangeParams) => {
-      setCards(indexToKey.map(k => keyToCard[k]!));
-    },
-    [keyToCard],
-  );
+  const handleOrderChange = useCallback(({ indexToKey }: OrderChangeParams) => {
+    const currentKeyToCard = Object.fromEntries(cardsRef.current.map(c => [c.key, c]));
+    const reordered = indexToKey.map(k => currentKeyToCard[k]).filter(Boolean) as TSceneCard[];
+    if (reordered.length > 0) {
+      setCards(reordered);
+    }
+  }, []);
 
-  const getCardStyle = useCallback(
-    (card: TSceneCard): ViewStyle => ({
-      width: card.colSpan === 2 ? '100%' : halfWidth,
+  const getCardStyle = useMemo(
+    () => (card: TSceneCard): ViewStyle => ({
+      width: card.colSpan === 2 ? layout.width - BASE_SPACE_HORIZONTAL * 2 : halfWidth,
     }),
-    [halfWidth],
+    [layout.width, halfWidth],
   );
 
   return (
@@ -136,6 +148,11 @@ export const AutomationListSceneWrapper: React.FC<TProps> = ({ className }) => {
           flexDirection="row"
           flexWrap="wrap"
           gap={GAP_DEVICE_VIEW_MOBILE}
+          showDropIndicator
+          dropIndicatorStyle={{
+            backgroundColor: '#F9FAFB',
+            borderColor: colors.primaryActive,
+          }}
         >
           {cards.map(card => (
             <PrimarySceneCard
