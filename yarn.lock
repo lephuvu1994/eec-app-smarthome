@@ -9940,6 +9940,7 @@ __metadata:
     react-native-restart: "npm:0.0.27"
     react-native-safe-area-context: "npm:5.6.2"
     react-native-screens: "npm:4.16.0"
+    react-native-sortables: "npm:^1.9.4"
     react-native-svg: "npm:~15.12.1"
     react-native-tab-view: "npm:^4.2.2"
     react-native-tcp-socket: "npm:^6.4.1"
@@ -17372,6 +17373,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-haptic-feedback@npm:>=2.0.0":
+  version: 2.3.3
+  resolution: "react-native-haptic-feedback@npm:2.3.3"
+  peerDependencies:
+    react-native: ">=0.60.0"
+  checksum: 10c0/de65b6a0088cf8c14b6248eddb1275233c400a52f818eda640d1475ecaa38dc059b3c37fce7f0a0bd0c33c4e1fb7537bc31fed60e94d026638993dd5d916b35e
+  languageName: node
+  linkType: hard
+
 "react-native-hash@npm:3.0.3":
   version: 3.0.3
   resolution: "react-native-hash@npm:3.0.3"
@@ -17602,6 +17612,23 @@ __metadata:
   dependencies:
     prop-types: "npm:^15.5.6"
   checksum: 10c0/903e231f384674b1ec0a39728df10baab9e3beff270b047ac9187a9fe4d5ae5b751a88c40547b91d2d071462073129bd90bccdc4dda2be7b16bf9678d27d1b79
+  languageName: node
+  linkType: hard
+
+"react-native-sortables@npm:^1.9.4":
+  version: 1.9.4
+  resolution: "react-native-sortables@npm:1.9.4"
+  dependencies:
+    react-native-haptic-feedback: "npm:>=2.0.0"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+    react-native-gesture-handler: ">=2.0.0"
+    react-native-reanimated: ">=3.0.0"
+  dependenciesMeta:
+    react-native-haptic-feedback:
+      optional: true
+  checksum: 10c0/dcc1bf2c10d4714e9ec71d7f0f782c45961894e818084cd1c8a4991068206a9d78266ae0b1bd47589d816eb130dc0bbf27a28210b22d2c5f48c57d630897fe99
   languageName: node
   linkType: hard
 
@@ -20009,9 +20036,9 @@ __metadata:
   linkType: hard
 
 "undici@npm:^6.18.2":
-  version: 6.23.0
-  resolution: "undici@npm:6.23.0"
-  checksum: 10c0/d846b3fdfd05aa6081ba1eab5db6bbc21b283042c7a43722b86d1ee2bf749d7c990ceac0c809f9a07ffd88b1b0f4c0f548a8362c035088cb1997d63abdda499c
+  version: 6.24.0
+  resolution: "undici@npm:6.24.0"
+  checksum: 10c0/a97d7f1214b34c5b2802558d06cbed97ff96a27ab6548972ba9d07c13951c69e2e9f2f01581f71c86b74755d2bf92e64091cf8f2c6eba4184f10c6d583e60388
   languageName: node
   linkType: hard
 

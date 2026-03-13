@@ -461,7 +461,79 @@ import Animated, { FadeInRight, FadeInUp, FadeOutLeft } from 'react-native-reani
 
 ---
 
-## 14. BLE (Bluetooth Low Energy)
+## 14. Drag & Drop (react-native-sortables)
+
+### Thư viện:
+- Package: **`react-native-sortables`** (peer deps: reanimated >=3, gesture-handler >=2 — đã có)
+- Install: `npx expo install react-native-sortables`
+
+### Khi nào dùng component nào:
+
+| Component | Khi nào dùng |
+|---|---|
+| `Sortable.Flex` | **Mixed layout** — items có width khác nhau (1 item full hàng, 2 item/hàng) |
+| `Sortable.Grid` | **Uniform grid** — tất cả items cùng số cột cố định |
+
+### Pattern cho Mixed Layout (`Sortable.Flex`):
+
+```tsx
+import Sortable from 'react-native-sortables';
+
+// Data model: mỗi item cần `key` duy nhất và `colSpan: 1 | 2`
+type TSceneItem = {
+  key: string;
+  title: string;
+  colSpan: 1 | 2; // 1 = half-width (2 item/row), 2 = full-width (1 item/row)
+  // ...other props
+};
+
+const SCENE_CARDS: TSceneItem[] = [
+  { key: 'home', title: 'Về nhà', colSpan: 1, ... },
+  { key: 'wakeup', title: 'Thức dậy sớm', colSpan: 1, ... },
+  { key: 'power-off', title: 'Tắt toàn bộ thiết bị', colSpan: 2, ... }, // full hàng
+];
+
+// Width tính theo colSpan
+const GAP = GAP_DEVICE_VIEW_MOBILE;
+const halfWidth = (layout.width - BASE_SPACE_HORIZONTAL * 2 - GAP) / 2;
+
+// Trong component
+<Sortable.Flex
+  data={cards}
+  keyExtractor={item => item.key}
+  renderItem={({ item }) => (
+    <PrimarySceneCard
+      {...item}
+      containerStyle={{ width: item.colSpan === 2 ? '100%' : halfWidth }}
+    />
+  )}
+  onOrderChange={newOrder => setCards(newOrder)}
+  style={{ flexDirection: 'row', flexWrap: 'wrap', gap: GAP }}
+/>
+```
+
+### Pattern cho Uniform Grid (`Sortable.Grid`):
+
+```tsx
+<Sortable.Grid
+  data={items}
+  columns={2}
+  keyExtractor={item => item.key}
+  renderItem={({ item }) => <MyCard {...item} />}
+  onOrderChange={newOrder => setItems(newOrder)}
+/>
+```
+
+### Rules:
+- **PHẢI** wrap `Sortable.Flex` / `Sortable.Grid` bên trong `ScrollView` nếu nội dung dài
+- **Chỉ** đặt các card cần drag vào trong `Sortable.*` — banner, section title, footer để **ngoài**
+- `key` của mỗi item **PHẢI** unique và stable (không dùng index)
+- `onOrderChange` nhận array items theo thứ tự mới — dùng `useState` để lưu
+- Dùng `colSpan: 1 | 2` (không hardcode width string) để layout linh hoạt
+
+---
+
+## 15. BLE (Bluetooth Low Energy)
 
 ```typescript
 import { NativeEventEmitter, NativeModules } from 'react-native';
@@ -475,7 +547,7 @@ const bleManagerEmitter = new NativeEventEmitter(IS_IOS ? BleManagerModule : und
 
 ---
 
-## 15. Testing
+## 16. Testing
 
 - Framework: **Jest** + React Native Testing Library
 - Test files: cùng folder với source, suffix `.test.tsx` / `.test.ts`
@@ -485,7 +557,7 @@ Chưa có quy chuẩn và coverage requirement cho app — cần đề xuất sa
 
 ---
 
-## 16. ESLint, TypeScript & Formatting
+## 17. ESLint, TypeScript & Formatting
 
 ### ESLint (`eslint.config.mjs`)
 
@@ -595,7 +667,7 @@ yarn lint:fix          # Auto-fix lint issues
 
 ---
 
-## 17. Khi Tạo Feature Mới — Checklist
+## 18. Khi Tạo Feature Mới — Checklist
 
 1. **Tạo folder** trong `src/features/{feature-name}/`
 2. **Tạo screen** component: `{feature-name}-screen.tsx`
@@ -608,3 +680,8 @@ yarn lint:fix          # Auto-fix lint issues
 9. **Import UI** từ `@/components/ui` barrel export
 10. **Error handling** dùng `showErrorMessage()` + `translate()`
 11. **Chạy `yarn check-all`** trước khi commit
+
+
+Lưu ý: File skill.md (Superpowers) là QUY TRÌNH LÀM VIỆC của bạn. File AI_INSTRUCTIONS.md là PHONG CÁCH VIẾT CODE. Bạn phải tuân thủ QUY TRÌNH trước, tuyệt đối không được skip bước.
+
+TASK CỦA BẠN HIỆN TẠI CHỈ LÀ BƯỚC 1 (BRAINSTORM & PLAN). TÔI CẤM BẠN VIẾT BẤT KỲ DÒNG CODE NÀO CHO ĐẾN KHI TÔI GÕ CHỮ 'DUYỆT PLAN'. NẾU BẠN VIẾT CODE NGAY, BẠN ĐÃ VI PHẠM LUẬT.
