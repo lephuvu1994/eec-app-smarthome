@@ -1,11 +1,14 @@
+import type { TSceneFilterTab } from '../components/scene-filter-tab-bar';
 import type { TSceneCard } from '../components/sortable-scene-grid';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { ScrollView } from 'react-native';
 import { PrimarySceneCard } from '@/components/base/scene/PrimarySceneCard';
 import { RecommendationCard } from '@/components/base/scene/RecommendationCard';
 import { Text, View } from '@/components/ui';
-import { DEFAULT_FILTER_TABS, SceneFilterTabBar } from '../components/scene-filter-tab-bar';
+import { useFloors, useRooms } from '@/hooks/use-homes';
+import { useHomeStore } from '@/stores/home/home-store';
+import { SceneFilterTabBar } from '../components/scene-filter-tab-bar';
 import { SortableSceneGrid } from '../components/sortable-scene-grid';
 
 // ─── Static Data ─────────────────────────────────────────────────────────────
@@ -20,7 +23,6 @@ const AUTOMATION_CARDS: TSceneCard[] = [
     textColor: '#1B1B1B',
     menuIconColor: '#9CA3AF',
     icon: <MaterialCommunityIcons name="home-outline" size={20} color="#84CC16" />,
-    // không có filterTags → luôn hiển thị
   },
   {
     key: 'wakeup',
@@ -31,7 +33,7 @@ const AUTOMATION_CARDS: TSceneCard[] = [
     menuIconColor: '#FFFFFF',
     iconBgColor: 'transparent',
     icon: <MaterialCommunityIcons name="white-balance-sunny" size={24} color="#FFFFFF" />,
-    filterTags: ['favorite', 'floor-1'],
+    filterTags: ['favorite', 'room-living'],
   },
   {
     key: 'movie',
@@ -43,7 +45,7 @@ const AUTOMATION_CARDS: TSceneCard[] = [
     menuIconColor: '#9CA3AF',
     showGlossyEffect: true,
     icon: <MaterialCommunityIcons name="movie-open-outline" size={20} color="#A78BFA" />,
-    filterTags: ['room-living', 'floor-1'],
+    filterTags: ['room-living'],
   },
   {
     key: 'alarm',
@@ -66,7 +68,7 @@ const AUTOMATION_CARDS: TSceneCard[] = [
     textColor: '#1E3A8A',
     menuIconColor: '#60A5FA',
     icon: <MaterialCommunityIcons name="weather-night" size={20} color="#3B82F6" />,
-    filterTags: ['room-bed', 'floor-2'],
+    filterTags: ['room-bed'],
   },
   {
     key: 'sleep2',
@@ -77,7 +79,7 @@ const AUTOMATION_CARDS: TSceneCard[] = [
     textColor: '#1E3A8A',
     menuIconColor: '#60A5FA',
     icon: <MaterialCommunityIcons name="weather-night" size={20} color="#3B82F6" />,
-    filterTags: ['room-bed', 'floor-1'],
+    filterTags: ['room-bed'],
   },
   {
     key: 'power-off',
@@ -87,7 +89,6 @@ const AUTOMATION_CARDS: TSceneCard[] = [
     textColor: '#991B1B',
     menuIconColor: '#EF4444',
     icon: null,
-    // không có filterTags → luôn hiển thị
   },
 ];
 
@@ -98,9 +99,35 @@ type TProps = {
 };
 
 export const AutomationListSceneWrapper: React.FC<TProps> = ({ className }) => {
-  const [activeFilters, setActiveFilters] = useState<Set<string>>(new Set());
+  const homeId = useHomeStore.use.selectedHomeId();
+  const [activeFilters, setActiveFilters] = useState<Set<string>>(() => new Set());
 
-  // Toggle filter: nếu đang active thì bỏ, chưa active thì thêm
+  // Lấy floors + rooms từ API
+  const { data: floors = [] } = useFloors(homeId ?? '');
+  const { data: rooms = [] } = useRooms(homeId ?? '');
+
+  // Map floorId → floor name để tra nhanh
+  const floorNameMap = useMemo(
+    () => Object.fromEntries(floors.map(f => [f.id, f.name])),
+    [floors],
+  );
+
+  // Build tab list: Yêu thích → rooms
+  // Label của room: nếu có floor thì "Tầng X - Phòng Y", không có thì chỉ "Phòng Y"
+  const filterTabs = useMemo<TSceneFilterTab[]>(() => {
+    const roomTabs: TSceneFilterTab[] = rooms.map(room => ({
+      id: `room-${room.id}`,
+      label: room.floorId && floorNameMap[room.floorId]
+        ? `${floorNameMap[room.floorId]} - ${room.name}`
+        : room.name,
+    }));
+
+    return [
+      { id: 'favorite', label: 'Yêu thích' },
+      ...roomTabs,
+    ];
+  }, [rooms, floorNameMap]);
+
   const handleToggleFilter = useCallback((id: string) => {
     setActiveFilters((prev) => {
       const next = new Set(prev);
@@ -114,20 +141,33 @@ export const AutomationListSceneWrapper: React.FC<TProps> = ({ className }) => {
     });
   }, []);
 
+  // Không có homeId (chưa chọn nhà) thì ẩn tab bar
+  if (!homeId) {
+    return (
+      <ScrollView
+        className={className}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 100 }}
+      >
+        <SortableSceneGrid initialCards={AUTOMATION_CARDS} />
+      </ScrollView>
+    );
+  }
+
   return (
     <ScrollView
       className={className}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{ paddingBottom: 100 }}
     >
-      {/* --- TAB BAR FILTER (Yêu thích / Tầng / Phòng) --- */}
+      {/* --- TAB BAR FILTER (Yêu thích + Rooms từ API) --- */}
       <SceneFilterTabBar
-        tabs={DEFAULT_FILTER_TABS}
+        tabs={filterTabs}
         selected={activeFilters}
         onToggle={handleToggleFilter}
       />
 
-      {/* Grid drag & drop — không có onCardPress (automation chỉ xem/sắp xếp) */}
+      {/* Grid drag & drop */}
       <SortableSceneGrid
         initialCards={AUTOMATION_CARDS}
         activeFilters={activeFilters}
@@ -142,7 +182,7 @@ export const AutomationListSceneWrapper: React.FC<TProps> = ({ className }) => {
           menuIconColor="#FFFFFF"
           iconBgColor="rgba(255, 255, 255, 0.2)"
           icon={<MaterialCommunityIcons name="spa-outline" size={24} color="#FFFFFF" />}
-          showGlossyEffect={true}
+          showGlossyEffect
           containerStyle={{ width: '100%', height: 130 }}
         />
       </View>

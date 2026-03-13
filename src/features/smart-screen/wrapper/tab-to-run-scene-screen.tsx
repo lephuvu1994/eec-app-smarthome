@@ -1,10 +1,14 @@
+import type { TSceneFilterTab } from '../components/scene-filter-tab-bar';
 import type { TSceneCard } from '../components/sortable-scene-grid';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useCallback } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { ScrollView } from 'react-native';
 import { PrimarySceneCard } from '@/components/base/scene/PrimarySceneCard';
 import { RecommendationCard } from '@/components/base/scene/RecommendationCard';
 import { showSuccessMessage, Text, View } from '@/components/ui';
+import { useFloors, useRooms } from '@/hooks/use-homes';
+import { useHomeStore } from '@/stores/home/home-store';
+import { SceneFilterTabBar } from '../components/scene-filter-tab-bar';
 import { SortableSceneGrid } from '../components/sortable-scene-grid';
 
 // ─── Static Data (sẽ thay bằng API sau) ─────────────────────────────────────
@@ -40,6 +44,7 @@ const TAP_TO_RUN_CARDS: TSceneCard[] = [
     menuIconColor: '#9CA3AF',
     showGlossyEffect: true,
     icon: <MaterialCommunityIcons name="movie-open-outline" size={20} color="#A78BFA" />,
+    filterTags: ['favorite', 'room-living'],
   },
   {
     key: 'tap-sleep',
@@ -50,6 +55,7 @@ const TAP_TO_RUN_CARDS: TSceneCard[] = [
     textColor: '#1E3A8A',
     menuIconColor: '#60A5FA',
     icon: <MaterialCommunityIcons name="weather-night" size={20} color="#3B82F6" />,
+    filterTags: ['room-bed'],
   },
   {
     key: 'tap-eco',
@@ -61,6 +67,7 @@ const TAP_TO_RUN_CARDS: TSceneCard[] = [
     iconBgColor: 'rgba(255,255,255,0.2)',
     showGlossyEffect: true,
     icon: <MaterialCommunityIcons name="leaf" size={22} color="#FFFFFF" />,
+    filterTags: ['favorite'],
   },
 ];
 
@@ -71,10 +78,42 @@ type TProps = {
 };
 
 export const TapToRunSceneWrapper: React.FC<TProps> = ({ className }) => {
+  const homeId = useHomeStore.use.selectedHomeId();
+  const [activeFilters, setActiveFilters] = useState<Set<string>>(() => new Set());
+
+  const { data: floors = [] } = useFloors(homeId ?? '');
+  const { data: rooms = [] } = useRooms(homeId ?? '');
+
+  const floorNameMap = useMemo(
+    () => Object.fromEntries(floors.map(f => [f.id, f.name])),
+    [floors],
+  );
+
+  const filterTabs = useMemo<TSceneFilterTab[]>(() => {
+    const roomTabs: TSceneFilterTab[] = rooms.map(room => ({
+      id: `room-${room.id}`,
+      label: room.floorId && floorNameMap[room.floorId]
+        ? `${floorNameMap[room.floorId]} - ${room.name}`
+        : room.name,
+    }));
+    return [{ id: 'favorite', label: 'Yêu thích' }, ...roomTabs];
+  }, [rooms, floorNameMap]);
+
+  const handleToggleFilter = useCallback((id: string) => {
+    setActiveFilters((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      }
+      else {
+        next.add(id);
+      }
+      return next;
+    });
+  }, []);
+
   // TODO: thay bằng useMutation khi có API endpoint
   const handleRunScene = useCallback((card: TSceneCard) => {
-    // TODO: gọi API chạy scene
-    // runSceneMutation.mutate({ sceneId: card.key });
     showSuccessMessage(`Đang chạy: ${card.title}`);
   }, []);
 
@@ -84,9 +123,19 @@ export const TapToRunSceneWrapper: React.FC<TProps> = ({ className }) => {
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{ paddingBottom: 100 }}
     >
+      {/* --- TAB BAR FILTER (Yêu thích + Rooms từ API) --- */}
+      {homeId && (
+        <SceneFilterTabBar
+          tabs={filterTabs}
+          selected={activeFilters}
+          onToggle={handleToggleFilter}
+        />
+      )}
+
       {/* Grid drag & drop — có onCardPress → card pressable để chạy scene */}
       <SortableSceneGrid
         initialCards={TAP_TO_RUN_CARDS}
+        activeFilters={activeFilters}
         onCardPress={handleRunScene}
       />
 
@@ -99,7 +148,7 @@ export const TapToRunSceneWrapper: React.FC<TProps> = ({ className }) => {
           menuIconColor="#FFFFFF"
           iconBgColor="rgba(255, 255, 255, 0.2)"
           icon={<MaterialCommunityIcons name="spa-outline" size={24} color="#FFFFFF" />}
-          showGlossyEffect={true}
+          showGlossyEffect
           containerStyle={{ width: '100%', height: 130 }}
         />
       </View>
