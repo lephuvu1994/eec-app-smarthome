@@ -10,6 +10,7 @@
     "addManually": "Add manually",
     "addScene": "Add scene",
     "allowAndContinue": "Allow and Continue",
+    "apConfirmConnected": "I've connected to device Wi-Fi",
     "apConnectDesc": "Follow the steps below to connect your app to the device via Wi-Fi.",
     "apConnectTitle": "Connect to device Wi-Fi",
     "apConnected": "Connected",
