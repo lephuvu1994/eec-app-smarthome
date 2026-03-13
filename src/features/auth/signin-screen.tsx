@@ -10,6 +10,7 @@ import { showErrorMessage, Text, View } from '@/components/ui';
 import { LoginForm } from '@/features/auth/components/login-form';
 import { useUserManager } from '@/features/auth/user-store';
 import { useLogin } from '@/lib/api';
+import { translate } from '@/lib/i18n';
 
 export function SignIn() {
   const router = useRouter();
@@ -25,15 +26,15 @@ export function SignIn() {
       {
         onSuccess: (data: UserResponse) => {
           if (data.statusCode !== 200) {
-            showErrorMessage(`Login falied ${JSON.stringify(data.message)}`);
+            showErrorMessage(translate('formAuth.loginFailed'));
           }
           else if (data) {
             signIn({ ...data.data.user, accessToken: data.data.accessToken, refreshToken: data.data.refreshToken });
             router.push('/(app)');
           }
         },
-        onError: (error: any) => {
-          showErrorMessage(`Login falied ${JSON.stringify(error)}`);
+        onError: (_error: any) => {
+          showErrorMessage(translate('formAuth.loginFailed'));
         },
       },
     );

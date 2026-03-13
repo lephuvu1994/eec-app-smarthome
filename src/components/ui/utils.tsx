@@ -1,7 +1,9 @@
 /* eslint-disable react-refresh/only-export-components */
+// eslint-disable-next-line e18e/ban-dependencies
 import type { AxiosError } from 'axios';
 import { Dimensions, Platform } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
+import { translate } from '@/lib/i18n';
 
 export const IS_IOS = Platform.OS === 'ios';
 const { width, height } = Dimensions.get('screen');
@@ -23,7 +25,7 @@ export function showError(error: AxiosError) {
   });
 }
 
-export function showSuccessMessage(message: string = 'Thành công') {
+export function showSuccessMessage(message: string = translate('base.success')) {
   showMessage({
     message,
     type: 'success',
@@ -31,7 +33,7 @@ export function showSuccessMessage(message: string = 'Thành công') {
   });
 }
 
-export function showErrorMessage(message: string = 'Something went wrong ') {
+export function showErrorMessage(message: string = translate('base.somethingWentWrong')) {
   showMessage({
     message,
     type: 'danger',
@@ -60,5 +62,5 @@ export function extractError(data: unknown): string {
     });
     return `${messages.join('')} `;
   }
-  return 'Something went wrong ';
+  return translate('base.somethingWentWrong');
 }

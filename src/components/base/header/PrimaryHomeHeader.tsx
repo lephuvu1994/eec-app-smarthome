@@ -37,7 +37,8 @@ export const PrimaryHeaderHome: React.FC = memo(() => {
 
   // ─── Home selection menu ───────────────────
   const homeMenuItems: TMenuElement[] = useMemo(() => {
-    if (!homes?.length) return [];
+    if (!homes?.length)
+      return [];
     return homes.map(home => ({
       key: home.id,
       title: home.name,

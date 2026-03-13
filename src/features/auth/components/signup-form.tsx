@@ -1,7 +1,6 @@
 import Feather from '@expo/vector-icons/Feather';
 import Fontisto from '@expo/vector-icons/Fontisto';
 import { useForm } from '@tanstack/react-form';
-import { useMutation } from '@tanstack/react-query';
 import { BlurView } from 'expo-blur';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -15,7 +14,6 @@ import {
   Button,
   FloatInput,
   IS_IOS,
-  showErrorMessage,
   Text,
   TouchableOpacity,
   View,
@@ -23,6 +21,7 @@ import {
 import { getFieldError } from '@/components/ui/form-utils';
 import { translate } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
+import { useSignUp } from '../hooks/use-sign-up';
 import { emailRegex, phoneRegex } from '../utils/constants';
 
 // 1. Cập nhật Schema: Bổ sung thêm trường OTP
@@ -79,44 +78,15 @@ export function SignUpForm() {
       onChange: schema as any,
     },
     onSubmit: async ({ value }) => {
-      // Gọi API đăng ký thực tế ở đây
-      _signUp(value);
+      await submitSignUp({ identifier: value.identifier, password: value.password! });
     },
   });
 
-  const identifierValue = form.getFieldValue('identifier');
+  const { submitSignUp, isSigningUp, isChecking, handleCheckAndProceed } = useSignUp();
 
-  const { mutate: _signUp } = useMutation({
-    mutationFn: async (variables: any) => {
-      // Mock API Call
-      // const resultData = await client.post<UserResponse>('/auth/signup', variables);
-      // return resultData.data;
-      console.log('ĐĂNG KÝ THÀNH CÔNG VỚI DATA:', variables);
-    },
-  });
-  // MOCK: API Check tài khoản tồn tại
-  const { mutateAsync: checkAccountExists } = useMutation({
-    mutationFn: async (_identifier: string) => {
-      // TODO: Thay bằng API gọi NestJS
-      // Trả về true nếu đã tồn tại, false nếu chưa
-      return new Promise<boolean>(resolve => setTimeout(resolve, 1000, true));
-    },
-  });
-
-  // Giả lập API Gửi OTP
-  const handleNextStep = async () => {
-    try {
-      const exists = await checkAccountExists(identifierValue);
-      if (exists) {
-        showErrorMessage('Tài khoản này đã được đăng ký. Vui lòng đăng nhập!');
-      }
-      else {
-        setStep(2); // Tài khoản mới -> Cho phép nhập mật khẩu
-      }
-    }
-    catch (error) {
-      console.error(error);
-    }
+  const handleNextStep = () => {
+    const currentIdentifier = form.getFieldValue('identifier');
+    handleCheckAndProceed(currentIdentifier, () => setStep(2));
   };
 
   return (
@@ -191,11 +161,12 @@ export function SignUpForm() {
                               rightIcon={<Fontisto name="email" size={18} color="#9CA3AF" />}
                             />
                             <Button
-                              className={cn('mt-4 h-12 w-full rounded-full p-0 shadow-sm', (!field.state.value || hasError)
+                              className={cn('mt-4 h-12 w-full rounded-full p-0 shadow-sm', (!field.state.value || hasError || isChecking)
                                 ? 'bg-[#A3E635]/50'
                                 : 'bg-[#A3E635]')}
                               onPress={handleNextStep}
-                              disabled={!field.state.value || hasError}
+                              disabled={!field.state.value || hasError || isChecking}
+                              loading={isChecking}
                               textClassName="text-base font-semibold text-[#0F0F0F]"
                               label={translate('formAuth.titleSignUp')}
                             />
@@ -313,7 +284,7 @@ export function SignUpForm() {
                       values: state.values,
                     })}
                     children={({ canSubmit, isSubmitting, values }) => {
-                      const isDisabled = !canSubmit || isSubmitting || !values?.password || !values.repeatPassword;
+                      const isDisabled = !canSubmit || isSubmitting || isSigningUp || !values?.password || !values.repeatPassword;
                       return (
                         <Button
                           className={cn('my-4 h-12 w-full rounded-full p-0 shadow-sm', isDisabled
@@ -321,7 +292,7 @@ export function SignUpForm() {
                             : 'bg-[#A3E635] dark:bg-[#A3E635]')}
                           onPress={() => form.handleSubmit()}
                           disabled={isDisabled}
-                          loading={isSubmitting}
+                          loading={isSubmitting || isSigningUp}
                           textClassName="text-base font-semibold text-[#0F0F0F] dark:text-[#0F0F0F]"
                           label={translate('formAuth.titleSignUp')}
                         />

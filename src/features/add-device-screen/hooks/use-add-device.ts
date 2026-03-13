@@ -1,16 +1,18 @@
 import type { TDeviceResult } from '../types';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, Linking, NativeEventEmitter, NativeModules } from 'react-native';
+import { Linking, NativeEventEmitter, NativeModules } from 'react-native';
 import { Easing, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
+import { IS_IOS, showErrorMessage } from '@/components/ui';
 import { useRegisterDevice } from '@/hooks/use-register-device';
 import { EDeviceProtocol } from '@/lib/api/devices/device.service';
 import { bleService, CHIP_TX_CHAR_UUID } from '@/lib/ble';
 import { cryptoService } from '@/lib/crypto';
+import { translate } from '@/lib/i18n';
 import { tcpClient } from '../lib/tcp-client';
 import { EAddDeviceStep, EPairingMode } from '../types';
 
 const BleManagerModule = NativeModules.BleManager;
-const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
+const bleManagerEmitter = new NativeEventEmitter(IS_IOS ? BleManagerModule : undefined);
 
 export function useAddDevice() {
   const [step, setStep] = useState<EAddDeviceStep>(EAddDeviceStep.SCANNING);
@@ -58,14 +60,8 @@ export function useAddDevice() {
         startScan();
       }
       else {
-        Alert.alert(
-          'Cần quyền Bluetooth',
-          'Vui lòng vào Cài đặt để cho phép ứng dụng truy cập Bluetooth.',
-          [
-            { text: 'Huỷ', style: 'cancel' },
-            { text: 'Mở Cài đặt', onPress: () => Linking.openSettings() },
-          ],
-        );
+        showErrorMessage(translate('base.bluetoothPermissionRequired'));
+        Linking.openSettings();
       }
     };
 
@@ -137,14 +133,8 @@ export function useAddDevice() {
         if (state === 'off' || state === 'turning_off') {
           setIsScanning(false);
           isScanningRef.current = false;
-          Alert.alert(
-            'Bluetooth đã tắt',
-            'Vui lòng bật Bluetooth để tìm kiếm thiết bị.',
-            [
-              { text: 'Huỷ', style: 'cancel' },
-              { text: 'Mở Cài đặt', onPress: () => Linking.openSettings() },
-            ],
-          );
+          showErrorMessage(translate('base.bluetoothOff'));
+          Linking.openSettings();
         }
         else if (state === 'on') {
           startScan();
@@ -183,10 +173,7 @@ export function useAddDevice() {
     if (mode === EPairingMode.BLE) {
       if (!selectedDevice) {
         // No device selected (came from "Add manually") — go back to scan first
-        Alert.alert(
-          'Chưa chọn thiết bị',
-          'Vui lòng quay lại và chọn thiết bị từ danh sách tìm thấy.',
-        );
+        showErrorMessage(translate('base.noDeviceSelected'));
         setStep(EAddDeviceStep.SCANNING);
         return;
       }
@@ -212,7 +199,7 @@ export function useAddDevice() {
     catch (error) {
       console.error('BLE connection failed', error);
       setDevices(prev => prev.map(d => d.id === device.id ? { ...d, status: 'failed' } : d));
-      Alert.alert('Lỗi kết nối', 'Không thể kết nối thiết bị qua BLE. Vui lòng thử lại.');
+      showErrorMessage(translate('base.bleConnectionError'));
       setStep(EAddDeviceStep.LED_CONFIRM);
     }
   };
@@ -249,10 +236,7 @@ export function useAddDevice() {
     }
     catch (error) {
       console.error('AP connection failed', error);
-      Alert.alert(
-        'Lỗi kết nối',
-        'Không thể kết nối với thiết bị qua Wi-Fi. Đảm bảo bạn đã kết nối mạng WiFi của thiết bị.',
-      );
+      showErrorMessage(translate('base.wifiConnectionError'));
     }
     finally {
       setIsConnectingAP(false);
@@ -265,10 +249,10 @@ export function useAddDevice() {
 
     try {
       setStep(EAddDeviceStep.CONFIGURING);
-      setConfiguringStatus('Đang đăng ký thiết bị...');
+      setConfiguringStatus(translate('base.registeringDevice'));
 
       if (!cryptoService.getSessionNonce()) {
-        Alert.alert('Lỗi', 'Chưa thiết lập phiên kết nối. Vui lòng kết nối lại thiết bị.');
+        showErrorMessage(translate('base.noSessionError'));
         setStep(EAddDeviceStep.SETUP);
         return;
       }
@@ -278,7 +262,7 @@ export function useAddDevice() {
       const partnerId = cryptoService.getPartnerId();
 
       if (!deviceCode || !partnerId || !macAddress) {
-        Alert.alert('Lỗi', 'Không hỗ trợ thiết bị này.');
+        showErrorMessage(translate('base.unsupportedDevice'));
         setStep(EAddDeviceStep.SETUP);
         return;
       }
@@ -295,7 +279,7 @@ export function useAddDevice() {
       const serverResponse = response.data;
 
       // Step 2: Build config payload and encrypt
-      setConfiguringStatus('Đang gửi cấu hình...');
+      setConfiguringStatus(translate('base.sendingConfig'));
 
       const payload = {
         cmd: 'set_wifi',
@@ -324,7 +308,7 @@ export function useAddDevice() {
     }
     catch (error) {
       console.error('Failed to register or send config', error);
-      Alert.alert('Lỗi', 'Không thể đăng ký thiết bị. Vui lòng thử lại.');
+      showErrorMessage(translate('base.registerDeviceFailed'));
       setStep(EAddDeviceStep.SETUP);
     }
   };
