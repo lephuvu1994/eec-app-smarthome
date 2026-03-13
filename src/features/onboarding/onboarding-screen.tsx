@@ -13,6 +13,7 @@ import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } fr
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, FocusAwareStatusBar, HEIGHT, List, Text, TouchableOpacity, View, WIDTH } from '@/components/ui';
 import { useIsFirstTime } from '@/lib/hooks';
+import { translate } from '@/lib/i18n';
 
 /**
  * DESIGN COLORS
@@ -27,21 +28,21 @@ const COLORS = {
 const DATA = [
   {
     id: '1',
-    title: 'Chào mừng bạn đến với\nEuro Smart',
-    description: 'Kết nối và điều khiển ngôi nhà dễ dàng',
-    image: require('@@/assets/onboarding/onboarding-step1.png'), // Reuse existing or equivalent
+    title: translate('onboarding.slide1Title'),
+    description: translate('onboarding.slide1Desc'),
+    image: require('@@/assets/onboarding/onboarding-step1.png'),
   },
   {
     id: '2',
-    title: 'Kết nối dễ dàng',
-    description: 'Kết nối mọi thiết bị chỉ trong vài giây.\nĐơn giản, nhanh chóng, tiện lợi.',
-    image: require('@@/assets/onboarding/onboarding-step2.png'), // Reuse existing or equivalent
+    title: translate('onboarding.slide2Title'),
+    description: translate('onboarding.slide2Desc'),
+    image: require('@@/assets/onboarding/onboarding-step2.png'),
   },
   {
     id: '3',
-    title: 'Kiểm soát toàn diện',
-    description: 'Điều khiển và giám sát ngôi nhà của\nbạn mọi lúc, mọi nơi',
-    image: require('@@/assets/onboarding/onboarding-step3.png'), // Reuse existing or equivalent
+    title: translate('onboarding.slide3Title'),
+    description: translate('onboarding.slide3Desc'),
+    image: require('@@/assets/onboarding/onboarding-step3.png'),
   },
 ];
 

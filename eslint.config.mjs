@@ -47,6 +47,7 @@ export default antfu(
       '**/*.test.tsx',
       '**/*.spec.ts',
       '**/*.spec.tsx',
+      'AI_INSTRUCTIONS.md',
     ],
   },
 

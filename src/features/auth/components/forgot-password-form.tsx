@@ -1,11 +1,10 @@
 import { Fontisto } from '@expo/vector-icons';
 import Feather from '@expo/vector-icons/Feather';
 import { useForm } from '@tanstack/react-form';
-import { useMutation } from '@tanstack/react-query';
 import { BlurView } from 'expo-blur';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Alert, StyleSheet, TextInput } from 'react-native';
+import { StyleSheet, TextInput } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import Animated, { FadeInRight, FadeInUp, FadeOutLeft } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -15,6 +14,7 @@ import { Button, FloatInput, IS_IOS, Text, TouchableOpacity, View } from '@/comp
 import { getFieldError } from '@/components/ui/form-utils';
 import { translate } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
+import { useForgotPassword } from '../hooks/use-forgot-password';
 import { emailRegex, nonDigitRegex, phoneRegex } from '../utils/constants';
 import { ResendOtpButton } from './resend-button';
 
@@ -34,54 +34,35 @@ export function ForgotPasswordForm() {
   const { bottom } = useSafeAreaInsets();
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  const [step, setStep] = useState<1 | 2 | 3>(1);
+
+  const {
+    step,
+    setStep,
+    isSendingOtp,
+    isVerifyingOtp,
+    isResettingPassword,
+    handleRequestOTP,
+    handleVerifyOTP,
+    handleResetPassword,
+  } = useForgotPassword();
 
   const form = useForm({
     defaultValues: { identifier: '', otp: '', password: '', repeatPassword: '' },
     validators: { onChange: forgotSchema as any },
     onSubmit: async ({ value }) => {
-      _resetPassword(value);
+      handleResetPassword(value.identifier, value.password);
     },
   });
 
-  const identifierValue = form.getFieldValue('identifier');
-  const isEmail = identifierValue.includes('@');
-
-  // MOCK API: Check tồn tại & Gửi OTP
-  const { mutateAsync: sendOtp } = useMutation({
-    mutationFn: async (_identifier: string) => {
-      // 1. Gọi API NestJS check tồn tại.
-      // 2. Nếu không tồn tại -> throw Error("Tài khoản không tồn tại")
-      // 3. Nếu tồn tại -> NestJS bắn OTP qua SMS/Email -> resolve
-      return new Promise<boolean>(resolve => setTimeout(resolve, 1000, true));
-    },
-  });
-
-  // MOCK API: Đổi mật khẩu mới
-  const { mutate: _resetPassword } = useMutation({
-    mutationFn: async (variables: any) => {
-      console.log('🔑 ĐỔI MẬT KHẨU THÀNH CÔNG:', variables);
-      Alert.alert('Thành công', 'Đã đổi mật khẩu. Vui lòng đăng nhập lại.', [
-        { text: 'OK', onPress: () => router.back() },
-      ]);
-    },
-  });
-
-  const handleRequestOTP = async () => {
-    try {
-      // API báo gửi thành công thì mới chuyển bước
-      await sendOtp(identifierValue);
-      setStep(2);
-    }
-    // eslint-disable-next-line unused-imports/no-unused-vars
-    catch (error) {
-      Alert.alert('Lỗi', 'Tài khoản không tồn tại trong hệ thống!');
-    }
+  const onRequestOTP = () => {
+    const currentIdentifier = form.getFieldValue('identifier');
+    handleRequestOTP(currentIdentifier);
   };
 
-  const handleVerifyOTP = () => {
-    // TODO: Có thể gọi API verify OTP riêng hoặc gộp chung lúc submit reset password
-    setStep(3);
+  const onVerifyOTP = () => {
+    const currentIdentifier = form.getFieldValue('identifier');
+    const otpValue = form.getFieldValue('otp');
+    handleVerifyOTP(currentIdentifier, otpValue);
   };
 
   return (
@@ -125,7 +106,7 @@ export function ForgotPasswordForm() {
                     ? translate('formAuth.titleSignIn')
                     : step === 2
                       ? translate('formAuth.verifyIdentifier', {
-                          identifier: isEmail ? translate('formAuth.emailTitle') : translate('formAuth.phoneNumber'),
+                          identifier: form.getFieldValue('identifier').includes('@') ? translate('formAuth.emailTitle') : translate('formAuth.phoneNumber'),
                         })
                       : translate('formAuth.createPassword')}
                 </Text>
@@ -163,8 +144,9 @@ export function ForgotPasswordForm() {
                               className={cn('mt-4 h-12 w-full rounded-full p-0 shadow-sm', (!field.state.value || hasError)
                                 ? 'bg-[#A3E635]/50'
                                 : 'bg-[#A3E635]')}
-                              onPress={handleRequestOTP}
-                              disabled={!field.state.value || hasError}
+                              onPress={onRequestOTP}
+                              disabled={!field.state.value || hasError || isSendingOtp}
+                              loading={isSendingOtp}
                               textClassName="text-base font-semibold text-[#0F0F0F]"
                               label={translate('formAuth.titleSignUp')}
                             />
@@ -208,7 +190,7 @@ export function ForgotPasswordForm() {
                     className="mb-6 text-center text-[#4B5563]"
                   >
                     {translate('formAuth.messageDescriptionOtp', {
-                      identifier: isEmail ? (`${translate('formAuth.emailTitle')} address`) : translate('formAuth.phoneNumber'),
+                      identifier: form.getFieldValue('identifier').includes('@') ? (`${translate('formAuth.emailTitle')} address`) : translate('formAuth.phoneNumber'),
                     })}
                   </Text>
 
@@ -245,7 +227,7 @@ export function ForgotPasswordForm() {
                             field.handleChange(formatted);
                             // Auto submit nếu đủ 4 số
                             if (formatted.length === 4) {
-                              handleVerifyOTP();
+                              onVerifyOTP();
                             }
                           }}
                           maxLength={4}
@@ -256,15 +238,16 @@ export function ForgotPasswordForm() {
 
                         <Button
                           className={cn('h-12 w-full rounded-full p-0 shadow-sm', field.state.value.length !== 4
-                            ? 'bg-[#DE1E23]/50' // Design của bạn để nút OTP màu đỏ, tôi dùng mã màu đỏ ví dụ
+                            ? 'bg-[#DE1E23]/50'
                             : 'bg-[#DE1E23]')}
-                          onPress={handleVerifyOTP}
-                          disabled={field.state.value.length !== 4}
+                          onPress={onVerifyOTP}
+                          disabled={field.state.value.length !== 4 || isVerifyingOtp}
+                          loading={isVerifyingOtp}
                           textClassName="text-base font-semibold text-white"
                           label={translate('formAuth.verifyCode')}
                         />
 
-                        <ResendOtpButton onResend={handleRequestOTP} />
+                        <ResendOtpButton onResend={onRequestOTP} />
                       </View>
                     )}
                   />
@@ -352,7 +335,7 @@ export function ForgotPasswordForm() {
                       values: state.values,
                     })}
                     children={({ canSubmit, isSubmitting, values }) => {
-                      const isDisabled = !canSubmit || isSubmitting || !values?.password || !values.repeatPassword;
+                      const isDisabled = !canSubmit || isSubmitting || isResettingPassword || !values?.password || !values.repeatPassword;
                       return (
                         <Button
                           className={cn('my-4 h-12 w-full rounded-full p-0 shadow-sm', isDisabled
@@ -360,7 +343,7 @@ export function ForgotPasswordForm() {
                             : 'bg-[#A3E635] dark:bg-[#A3E635]')}
                           onPress={() => form.handleSubmit()}
                           disabled={isDisabled}
-                          loading={isSubmitting}
+                          loading={isSubmitting || isResettingPassword}
                           textClassName="text-base font-semibold text-[#0F0F0F] dark:text-[#0F0F0F]"
                           label={translate('formAuth.titleSignUp')}
                         />

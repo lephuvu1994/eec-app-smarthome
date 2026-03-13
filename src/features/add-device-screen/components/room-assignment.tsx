@@ -113,7 +113,7 @@ export function RoomAssignment({
         style={{ backgroundColor: PRIMARY_GREEN_HEX }}
       >
         <Text className="text-[16px] font-bold text-white">
-          {isRegistering ? 'Loading...' : translate('base.finish')}
+          {isRegistering ? translate('base.loading') : translate('base.finish')}
         </Text>
       </TouchableOpacity>
     </View>
