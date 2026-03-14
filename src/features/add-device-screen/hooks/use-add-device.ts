@@ -9,6 +9,7 @@ import { EDeviceProtocol } from '@/lib/api/devices/device.service';
 import { bleService, CHIP_TX_CHAR_UUID } from '@/lib/ble';
 import { cryptoService } from '@/lib/crypto';
 import { translate } from '@/lib/i18n';
+import { BLE_ACK_TIMEOUT } from '../constants';
 import { tcpClient } from '../lib/tcp-client';
 import { EAddDeviceStep, EPairingMode } from '../types';
 
@@ -315,11 +316,34 @@ export function useAddDevice() {
       // Step 3: Send config via BLE or TCP
       if (pairingMode === EPairingMode.BLE && device) {
         await bleService.writeWithoutResponse(device.id, encryptedBytes);
+
+        // Step 4: Wait for ACK from chip before it reboots
+        setConfiguringStatus(translate('base.waitingForDeviceAck'));
+        const ackBytes = await bleService.waitForNotification(device.id, BLE_ACK_TIMEOUT);
+        const ackData = JSON.parse(bleService.bytesToString(ackBytes));
+
+        if (ackData.status !== 'ok') {
+          throw new Error(ackData.message || 'Device rejected config');
+        }
+
+        // Step 5: Graceful disconnect (chip will reboot shortly after ACK)
+        await bleService.gracefulDisconnect(device.id);
+        connectedDeviceIdRef.current = null;
       }
       else {
         // AP mode — send via TCP socket
         await tcpClient.sendBytes(encryptedBytes);
-        tcpClient.disconnect(); // Chip will auto-reset
+
+        // Wait for ACK via TCP
+        setConfiguringStatus(translate('base.waitingForDeviceAck'));
+        const ackResponse = await tcpClient.receive();
+        const ackData = JSON.parse(ackResponse);
+
+        if (ackData.status !== 'ok') {
+          throw new Error(ackData.message || 'Device rejected config');
+        }
+
+        tcpClient.disconnect();
       }
 
       // Success

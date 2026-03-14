@@ -87,6 +87,7 @@
     "success": "Thành công",
     "unableToConnect": "Không thể kết nối",
     "unsupportedDevice": "Không hỗ trợ thiết bị này.",
+    "waitingForDeviceAck": "Đang chờ thiết bị xác nhận...",
     "wifiConnectionError": "Không thể kết nối với thiết bị qua Wi-Fi. Đảm bảo bạn đã kết nối mạng WiFi của thiết bị.",
     "wifiNetwork": "Mạng Wi-Fi",
     "wifiPassword": "Mật khẩu Wi-Fi",

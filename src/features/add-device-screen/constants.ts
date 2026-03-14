@@ -13,3 +13,4 @@ export const AP_SSID_PREFIX = Env.EXPO_PUBLIC_AP_SSID_PREFIX;
 export const AP_GATEWAY_IP = Env.EXPO_PUBLIC_AP_GATEWAY_IP;
 export const AP_PORT = Number(Env.EXPO_PUBLIC_AP_PORT);
 export const AP_CONNECT_TIMEOUT = 10_000; // 10s
+export const BLE_ACK_TIMEOUT = 10_000; // 10s — wait for chip ACK after sending config
