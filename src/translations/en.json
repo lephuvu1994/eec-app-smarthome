@@ -87,6 +87,7 @@
     "success": "Success",
     "unableToConnect": "Unable to connect",
     "unsupportedDevice": "This device is not supported.",
+    "waitingForDeviceAck": "Waiting for device confirmation...",
     "wifiConnectionError": "Cannot connect to device via Wi-Fi. Make sure you are connected to the device's Wi-Fi network.",
     "wifiNetwork": "Wi-Fi Network",
     "wifiPassword": "Wi-Fi Password",

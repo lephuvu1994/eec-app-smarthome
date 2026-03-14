@@ -114,6 +114,41 @@ class BleService {
   bytesToString(bytes: number[]): string {
     return new TextDecoder('utf-8').decode(new Uint8Array(bytes));
   }
+
+  /**
+   * Wait for a BLE notification on the TX characteristic.
+   * Resolves with the received bytes, or rejects on timeout.
+   */
+  waitForNotification(deviceId: string, timeoutMs: number = 10_000): Promise<number[]> {
+    return new Promise((resolve, reject) => {
+      const timer = setTimeout(() => {
+        subscription.remove();
+        reject(new Error(`BLE notification timeout after ${timeoutMs}ms`));
+      }, timeoutMs);
+
+      const subscription = BleManager.onDidUpdateValueForCharacteristic(
+        ({ value, peripheral, characteristic }) => {
+          if (
+            peripheral === deviceId
+            && characteristic.toLowerCase() === CHIP_TX_CHAR_UUID.toLowerCase()
+          ) {
+            clearTimeout(timer);
+            subscription.remove();
+            resolve(value);
+          }
+        },
+      );
+    });
+  }
+
+  /**
+   * Gracefully stop notifications and disconnect, ignoring errors.
+   * Used after ACK to cleanly close BLE before chip reboots.
+   */
+  async gracefulDisconnect(deviceId: string): Promise<void> {
+    await this.stopNotification(deviceId).catch(() => {});
+    await this.disconnect(deviceId).catch(() => {});
+  }
 }
 
 export const bleService = new BleService();
