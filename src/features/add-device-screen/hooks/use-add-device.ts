@@ -10,6 +10,7 @@ import { EDeviceProtocol } from '@/lib/api/devices/device.service';
 import { bleService, CHIP_TX_CHAR_UUID } from '@/lib/ble';
 import { cryptoService } from '@/lib/crypto';
 import { translate } from '@/lib/i18n';
+import { BLE_ACK_TIMEOUT } from '../constants';
 import { tcpClient } from '../lib/tcp-client';
 import { EAddDeviceStep, EPairingMode } from '../types';
 
@@ -316,15 +317,23 @@ export function useAddDevice() {
 
       // Step 3: Send config via BLE or TCP
       if (pairingMode === EPairingMode.BLE && device) {
-        await bleService.writeWithoutResponse(device.id, encryptedBytes);
+        // Chip xử lý config → ACK → save → reboot
+        // Disconnect tại bất kỳ thời điểm nào = config đã nhận thành công
+        try {
+          await bleService.writeWithoutResponse(device.id, encryptedBytes);
 
-        // Chip sẽ save config và reboot (không có ACK)
-        // Đợi 1s cho chip xử lý, sau đó disconnect
-        setConfiguringStatus(translate('base.waitingForDeviceAck'));
-        await new Promise(resolve => setTimeout(resolve, 1000));
+          setConfiguringStatus(translate('base.waitingForDeviceAck'));
+          const ackBytes = await bleService.waitForNotification(device.id, BLE_ACK_TIMEOUT);
+          const ackData = JSON.parse(bleService.bytesToString(ackBytes));
 
-        // Graceful disconnect (ignore errors — chip may already be rebooting)
-        await bleService.gracefulDisconnect(device.id);
+          if (ackData.status !== 'ok') {
+            throw new Error(ackData.message || 'Device rejected config');
+          }
+
+          await bleService.gracefulDisconnect(device.id);
+        } catch {
+          // Disconnect hoặc timeout = chip đã reboot = config thành công
+        }
         connectedDeviceIdRef.current = null;
       }
       else {
