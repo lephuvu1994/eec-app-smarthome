@@ -81,6 +81,7 @@ export type TRegisterDeviceResponse = {
     mqtt_token_device?: string;
     mqtt_username?: string;
     mqtt_pass?: string;
+    license_days?: number;
   };
 };
 
