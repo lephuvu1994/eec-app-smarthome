@@ -1,5 +1,5 @@
 import type { TDeviceResult } from '../types';
-import { Buffer } from 'node:buffer';
+
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Linking } from 'react-native';
 import BleManager from 'react-native-ble-manager';
@@ -10,7 +10,6 @@ import { EDeviceProtocol } from '@/lib/api/devices/device.service';
 import { bleService, CHIP_TX_CHAR_UUID } from '@/lib/ble';
 import { cryptoService } from '@/lib/crypto';
 import { translate } from '@/lib/i18n';
-import { BLE_ACK_TIMEOUT } from '../constants';
 import { tcpClient } from '../lib/tcp-client';
 import { EAddDeviceStep, EPairingMode } from '../types';
 
@@ -319,34 +318,12 @@ export function useAddDevice() {
       if (pairingMode === EPairingMode.BLE && device) {
         await bleService.writeWithoutResponse(device.id, encryptedBytes);
 
-        // Step 4: Wait for ACK from chip before it reboots.
-        // If chip disconnects during wait (old firmware or fast reboot),
-        // treat as success since config was already written.
+        // Chip sẽ save config và reboot (không có ACK)
+        // Đợi 1s cho chip xử lý, sau đó disconnect
         setConfiguringStatus(translate('base.waitingForDeviceAck'));
-        try {
-          const ackBytes = await bleService.waitForNotification(device.id, BLE_ACK_TIMEOUT);
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
-          // ACK is AES-encrypted — decrypt before parsing
-          const ackBase64 = Buffer.from(ackBytes).toString('base64');
-          const ackJson = cryptoService.decryptAES128ECB(ackBase64);
-          const ackData = JSON.parse(ackJson);
-
-          if (ackData.status !== 'ok') {
-            throw new Error(ackData.message || 'Device rejected config');
-          }
-        }
-        catch (ackError: any) {
-          const msg = String(ackError?.message || ackError || '').toLowerCase();
-          const isDisconnect = msg.includes('disconnect') || msg.includes('not find peripheral');
-
-          if (!isDisconnect) {
-            throw ackError; // Re-throw timeout or real errors
-          }
-          // Disconnect during ACK wait = chip is rebooting, config was received
-          console.warn('[BLE] Chip disconnected before ACK — assuming config received');
-        }
-
-        // Step 5: Graceful disconnect (ignore errors — chip may already be gone)
+        // Graceful disconnect (ignore errors — chip may already be rebooting)
         await bleService.gracefulDisconnect(device.id);
         connectedDeviceIdRef.current = null;
       }
