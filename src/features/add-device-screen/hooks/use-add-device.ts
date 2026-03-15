@@ -309,6 +309,7 @@ export function useAddDevice() {
         mqtt_token_device: serverResponse.mqtt_token_device,
         mqtt_username: serverResponse.mqtt_username,
         mqtt_pass: serverResponse.mqtt_pass,
+        license_days: serverResponse.license_days,
       };
 
       const encryptedBytes = cryptoService.encryptAES128ECB(JSON.stringify(payload));
