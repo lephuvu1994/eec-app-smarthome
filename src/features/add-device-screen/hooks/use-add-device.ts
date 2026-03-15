@@ -1,4 +1,5 @@
 import type { TDeviceResult } from '../types';
+import { Buffer } from 'node:buffer';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Linking } from 'react-native';
 import BleManager from 'react-native-ble-manager';
@@ -324,7 +325,11 @@ export function useAddDevice() {
         setConfiguringStatus(translate('base.waitingForDeviceAck'));
         try {
           const ackBytes = await bleService.waitForNotification(device.id, BLE_ACK_TIMEOUT);
-          const ackData = JSON.parse(bleService.bytesToString(ackBytes));
+
+          // ACK is AES-encrypted — decrypt before parsing
+          const ackBase64 = Buffer.from(ackBytes).toString('base64');
+          const ackJson = cryptoService.decryptAES128ECB(ackBase64);
+          const ackData = JSON.parse(ackJson);
 
           if (ackData.status !== 'ok') {
             throw new Error(ackData.message || 'Device rejected config');
