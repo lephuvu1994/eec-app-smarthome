@@ -1,6 +1,6 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useEffect } from 'react';
-import Animated, { Easing, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 import { Text, View } from '@/components/ui';
 import { translate } from '@/lib/i18n';
 import { PRIMARY_GREEN_HEX } from '../constants';
@@ -20,13 +20,15 @@ export function ConfiguringView({
     );
   }, [rotation]);
 
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${rotation.value}deg` }],
+  }));
+
   return (
     <View className="flex-1 items-center justify-center px-5">
       <Animated.View
         className="size-20 items-center justify-center rounded-full bg-emerald-50 dark:bg-emerald-900/30"
-        style={{
-          transform: [{ rotate: `${rotation.value}deg` }],
-        }}
+        style={animatedStyle}
       >
         <MaterialCommunityIcons name="cog" size={40} color={PRIMARY_GREEN_HEX} />
       </Animated.View>

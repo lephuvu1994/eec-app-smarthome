@@ -121,8 +121,14 @@ class BleService {
    */
   waitForNotification(deviceId: string, timeoutMs: number = 10_000): Promise<number[]> {
     return new Promise((resolve, reject) => {
-      const timer = setTimeout(() => {
+      const cleanup = () => {
+        clearTimeout(timer);
         subscription.remove();
+        disconnectSub.remove();
+      };
+
+      const timer = setTimeout(() => {
+        cleanup();
         reject(new Error(`BLE notification timeout after ${timeoutMs}ms`));
       }, timeoutMs);
 
@@ -132,9 +138,18 @@ class BleService {
             peripheral === deviceId
             && characteristic.toLowerCase() === CHIP_TX_CHAR_UUID.toLowerCase()
           ) {
-            clearTimeout(timer);
-            subscription.remove();
+            cleanup();
             resolve(value);
+          }
+        },
+      );
+
+      // Fast-fail if peripheral disconnects while waiting
+      const disconnectSub = BleManager.onDisconnectPeripheral(
+        ({ peripheral }) => {
+          if (peripheral === deviceId) {
+            cleanup();
+            reject(new Error(`Peripheral did disconnect: ${deviceId}`));
           }
         },
       );
