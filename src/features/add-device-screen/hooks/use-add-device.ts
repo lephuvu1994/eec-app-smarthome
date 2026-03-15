@@ -318,16 +318,30 @@ export function useAddDevice() {
       if (pairingMode === EPairingMode.BLE && device) {
         await bleService.writeWithoutResponse(device.id, encryptedBytes);
 
-        // Step 4: Wait for ACK from chip before it reboots
+        // Step 4: Wait for ACK from chip before it reboots.
+        // If chip disconnects during wait (old firmware or fast reboot),
+        // treat as success since config was already written.
         setConfiguringStatus(translate('base.waitingForDeviceAck'));
-        const ackBytes = await bleService.waitForNotification(device.id, BLE_ACK_TIMEOUT);
-        const ackData = JSON.parse(bleService.bytesToString(ackBytes));
+        try {
+          const ackBytes = await bleService.waitForNotification(device.id, BLE_ACK_TIMEOUT);
+          const ackData = JSON.parse(bleService.bytesToString(ackBytes));
 
-        if (ackData.status !== 'ok') {
-          throw new Error(ackData.message || 'Device rejected config');
+          if (ackData.status !== 'ok') {
+            throw new Error(ackData.message || 'Device rejected config');
+          }
+        }
+        catch (ackError: any) {
+          const msg = String(ackError?.message || ackError || '').toLowerCase();
+          const isDisconnect = msg.includes('disconnect') || msg.includes('not find peripheral');
+
+          if (!isDisconnect) {
+            throw ackError; // Re-throw timeout or real errors
+          }
+          // Disconnect during ACK wait = chip is rebooting, config was received
+          console.warn('[BLE] Chip disconnected before ACK — assuming config received');
         }
 
-        // Step 5: Graceful disconnect (chip will reboot shortly after ACK)
+        // Step 5: Graceful disconnect (ignore errors — chip may already be gone)
         await bleService.gracefulDisconnect(device.id);
         connectedDeviceIdRef.current = null;
       }
