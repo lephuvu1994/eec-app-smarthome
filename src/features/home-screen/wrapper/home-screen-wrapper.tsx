@@ -18,6 +18,7 @@ import { useUniwind } from 'uniwind';
 import { LiveCameraWrapper } from '@/components/base/LiveCameraWrapper';
 import { Pressable, Skeleton, Text, View, WIDTH } from '@/components/ui';
 import { ANIMATION_DURATION, ASPECT_RATIO_VIDEO, BASE_SPACE_HORIZONTAL } from '@/constants';
+import { useHomeDevices } from '@/hooks/use-devices';
 import { useFloors } from '@/hooks/use-homes';
 import { translate } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
@@ -50,6 +51,9 @@ export const HomeScreenWrapper = memo(({ className }: { className?: string }) =>
   // ─── API data ──────────────────────────────
   const selectedHomeId = useHomeStore(s => s.selectedHomeId);
   const { data: floors, isLoading: isLoadingFloors } = useFloors(selectedHomeId ?? '');
+
+  // Fetch ALL devices once → syncs to Zustand deviceStore
+  useHomeDevices(selectedHomeId ?? '');
 
   // Build groups dynamically: Favorite + Floors from API
   const groups: TGroup[] = useMemo(() => {

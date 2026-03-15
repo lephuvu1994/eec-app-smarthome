@@ -3,6 +3,7 @@ import type { TDevice, TDeviceListResponse, TSiriSyncData } from '@/lib/api/devi
 import { useQuery } from '@tanstack/react-query';
 
 import { deviceService } from '@/lib/api/devices/device.service';
+import { useDeviceStore } from '@/stores/device/device-store';
 
 // ============================================================
 // QUERY KEYS
@@ -18,6 +19,24 @@ export const deviceKeys = {
 // ============================================================
 // HOOKS
 // ============================================================
+
+/** Fetch ALL devices for a home — syncs to Zustand store */
+export function useHomeDevices(homeId: string) {
+  const setDevices = useDeviceStore(s => s.setDevices);
+  const setLoading = useDeviceStore(s => s.setLoading);
+
+  return useQuery<TDeviceListResponse>({
+    queryKey: deviceKeys.list({ homeId }),
+    queryFn: async () => {
+      setLoading(true);
+      const result = await deviceService.getDevices({ homeId, limit: 50 });
+      setDevices(result.data);
+      return result;
+    },
+    staleTime: 30_000,
+    enabled: !!homeId,
+  });
+}
 
 /** Get paginated device list (optionally filtered by homeId) */
 export function useDevices(params?: { homeId?: string; roomId?: string; page?: number; limit?: number }) {
@@ -43,3 +62,4 @@ export function useSiriSync() {
     queryFn: deviceService.getSiriSync,
   });
 }
+
