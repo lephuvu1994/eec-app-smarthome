@@ -4,7 +4,6 @@ import { translate } from '@/lib/i18n';
 import { useDeviceStore } from '@/stores/device/device-store';
 import { useFavoriteStore } from '@/stores/device/favorite-store';
 import { ETypeViewDevice } from '@/types/device';
-import { getDeviceImage } from '../../utils/device-image';
 import { DeviceItem } from './DeviceItem';
 
 type TListDeviceProps = {
@@ -14,9 +13,10 @@ type TListDeviceProps = {
 };
 
 export function ListDevice({ roomId, isFavorite }: TListDeviceProps) {
-  const allDevices = useDeviceStore(s => s.devices);
-  const isLoading = useDeviceStore(s => s.isLoading);
-  const favoriteIds = useFavoriteStore(s => s.favoriteIds);
+  const storeDevices = useDeviceStore.use.devices();
+  const allDevices = Array.isArray(storeDevices) ? storeDevices : [];
+  const isLoading = useDeviceStore.use.isLoading();
+  const favoriteIds = useFavoriteStore(s => s.favoriteIds) ?? [];
 
   // Filter devices from store
   const devices = isFavorite
@@ -34,7 +34,7 @@ export function ListDevice({ roomId, isFavorite }: TListDeviceProps) {
     );
   }
 
-  if (devices.length === 0) {
+  else if (devices.length === 0 && !isLoading) {
     return (
       <View className="items-center justify-center py-8">
         <Text className="text-neutral-400 dark:text-neutral-500">
@@ -46,24 +46,13 @@ export function ListDevice({ roomId, isFavorite }: TListDeviceProps) {
 
   return (
     <View className="flex-row flex-wrap" style={{ gap: GAP_DEVICE_VIEW_MOBILE }}>
-      {devices.map((device, idx) => {
-        // Map API TDevice to UI TDevice shape
-        const uiDevice = {
-          id: device.id,
-          name: device.name,
-          type: device.features?.[0]?.category ?? 'camera',
-          status: device.status === 'online' ? 'CONNECTED' as const : 'DISCONNECTED' as const,
-          image: getDeviceImage(device.features?.[0]?.category ?? 'camera'),
-        };
-
-        return (
-          <DeviceItem
-            key={device.id}
-            device={uiDevice as any}
-            typeViewDevice={idx % 3 === 0 ? ETypeViewDevice.FullWidth : ETypeViewDevice.Grid}
-          />
-        );
-      })}
+      {devices.map((device, idx) => (
+        <DeviceItem
+          key={device.id}
+          device={device}
+          typeViewDevice={idx % 3 === 0 ? ETypeViewDevice.FullWidth : ETypeViewDevice.Grid}
+        />
+      ))}
     </View>
   );
 }
