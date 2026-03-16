@@ -1,5 +1,8 @@
 import { client } from '../common';
 
+// ============================================================
+// ENUMS
+// ============================================================
 export enum EDeviceProtocol {
   WIFI = 'WIFI',
   ZIGBEE = 'ZIGBEE',
@@ -7,6 +10,16 @@ export enum EDeviceProtocol {
   MATTER = 'MATTER',
   MQTT = 'MQTT',
   GSM_4G = 'GSM_4G',
+}
+
+export enum EDeviceStatus {
+  ONLINE = 'online',
+  OFFLINE = 'offline',
+}
+
+export enum EOwnership {
+  OWNER = 'OWNER',
+  SHARED = 'SHARED',
 }
 
 // ============================================================
@@ -27,7 +40,12 @@ export type TDevice = {
   name: string;
   identifier: string;
   token: string;
-  status: 'online' | 'offline';
+  status: EDeviceStatus;
+  type: string;                        // DeviceModel.code (e.g. "SHUTTER_DOOR")
+  modelName: string;                   // DeviceModel.name (e.g. "Cửa cuốn")
+  protocol: EDeviceProtocol;
+  ownership: EOwnership;
+  sortOrder: number;
   room?: { id: string; name: string } | null;
   features: TDeviceFeature[];
 };

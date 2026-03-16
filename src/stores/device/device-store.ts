@@ -1,5 +1,8 @@
 import type { TDevice } from '@/lib/api/devices/device.service';
+
 import { create } from 'zustand';
+
+import { EDeviceStatus } from '@/lib/api/devices/device.service';
 import { createSelectors } from '@/lib/utils';
 
 // ============================================================
@@ -11,7 +14,7 @@ type TDeviceStoreState = {
 
   setDevices: (devices: TDevice[]) => void;
   setLoading: (loading: boolean) => void;
-  updateDeviceStatus: (id: string, status: 'online' | 'offline') => void;
+  updateDeviceStatus: (id: string, status: EDeviceStatus) => void;
   reorderInRoom: (roomId: string, orderedIds: string[]) => void;
   clear: () => void;
 };

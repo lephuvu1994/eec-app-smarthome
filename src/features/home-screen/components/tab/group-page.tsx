@@ -1,4 +1,5 @@
 import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
+import type { ETheme } from '@/types/base';
 import { AntDesign } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -6,7 +7,6 @@ import { ScrollView, Text, TouchableOpacity, View, WIDTH } from '@/components/ui
 import { useSmartTabBarHeight } from '@/hooks/use-smart-tabbar-height';
 import { translate } from '@/lib/i18n';
 import { useConfigManager } from '@/stores/config/config';
-import { ETheme } from '@/types/base';
 import { calculateCenterOffset } from '../../utils/utils';
 import { ListDevice } from '../device/ListDevice';
 import { RoomTabItem } from './room-tab';
@@ -123,12 +123,6 @@ export const GroupPage = memo(({ group, rooms, homeId, theme, isCurrentGroup }: 
                   contentContainerStyle={{ flexGrow: 1, paddingBottom: heightBottomTab }}
                 >
                   <View className="flex-1 gap-2">
-                    <View className="flex-row items-center justify-between">
-                      <Text className="text-lg font-semibold">{translate('app.favoriteTab')}</Text>
-                      <TouchableOpacity onPress={() => router.push('/device/add')} className="h-8 w-8 items-center justify-center rounded-full bg-white/40 shadow-sm dark:bg-black/40">
-                        <AntDesign name="plus" size={16} color={theme === ETheme.Light ? '#737373' : '#FFFFFF'} />
-                      </TouchableOpacity>
-                    </View>
                     <ListDevice isFavorite homeId={homeId} />
                   </View>
                 </ScrollView>
@@ -165,12 +159,6 @@ export const GroupPage = memo(({ group, rooms, homeId, theme, isCurrentGroup }: 
                         contentContainerStyle={{ flexGrow: 1, paddingBottom: heightBottomTab }}
                       >
                         <View className="flex-1 gap-2">
-                          <View className="flex-row items-center justify-between">
-                            <Text className="text-lg font-semibold">{translate('base.device')}</Text>
-                            <TouchableOpacity onPress={() => router.push('/device/add')} className="h-8 w-8 items-center justify-center rounded-full bg-white/40 shadow-sm dark:bg-black/40">
-                              <AntDesign name="plus" size={16} color={theme === ETheme.Light ? '#737373' : '#FFFFFF'} />
-                            </TouchableOpacity>
-                          </View>
                           <ListDevice roomId={item.id} homeId={homeId} />
                         </View>
                       </ScrollView>
