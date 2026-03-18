@@ -41,8 +41,8 @@ export type TDevice = {
   identifier: string;
   token: string;
   status: EDeviceStatus;
-  type: string;                        // DeviceModel.code (e.g. "SHUTTER_DOOR")
-  modelName: string;                   // DeviceModel.name (e.g. "Cửa cuốn")
+  type: string; // DeviceModel.code (e.g. "SHUTTER_DOOR")
+  modelName: string; // DeviceModel.name (e.g. "Cửa cuốn")
   protocol: EDeviceProtocol;
   ownership: EOwnership;
   sortOrder: number;

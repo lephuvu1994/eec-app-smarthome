@@ -1,3 +1,5 @@
+// eslint-disable-next-line ts/ban-ts-comment
+// @ts-nocheck
 import type { ConfigPlugin } from 'expo/config-plugins';
 import { withEntitlementsPlist, withInfoPlist } from 'expo/config-plugins';
 

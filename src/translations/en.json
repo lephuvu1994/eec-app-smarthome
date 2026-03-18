@@ -42,13 +42,13 @@
     "createUser": "Create User",
     "deleteButton": "Delete",
     "device": "Devices",
-    "feature": "features",
     "deviceName": "Device Name",
     "deviceNamePlaceholder": "e.g. Living Room Lamp",
     "devices": "DEVICES",
     "disconnectedStatus": "Disconnected",
     "editButton": "Edit",
     "error": "Error",
+    "feature": "features",
     "finish": "Finish",
     "foundDevices": "Found {{count}} devices",
     "home": "Home",
@@ -132,7 +132,7 @@
   },
   "onboarding": {
     "slide1Desc": "Connect and control your home easily",
-    "slide1Title": "Welcome to\nEuro Smart",
+    "slide1Title": "Welcome to\nSensaSpace",
     "slide2Desc": "Connect all devices in just seconds.\nSimple, fast, convenient.",
     "slide2Title": "Easy Connection",
     "slide3Desc": "Control and monitor your home\nanytime, anywhere",
@@ -144,7 +144,7 @@
   },
   "settings": {
     "about": "About",
-    "account": "EEC Account",
+    "account": "SensaSpace Account",
     "defaultUser": "User",
     "energyCard": {
       "currentUsage": "Current consumption",

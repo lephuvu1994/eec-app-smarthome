@@ -24,24 +24,24 @@ const envSchema = z.object({
 const EXPO_PUBLIC_APP_ENV = (process.env.EXPO_PUBLIC_APP_ENV ?? 'development') as z.infer<typeof envSchema>['EXPO_PUBLIC_APP_ENV'];
 
 const BUNDLE_IDS = {
-  development: 'eurosmart.vincent.le.development',
-  preview: 'eurosmart.vincent.le.preview',
-  production: 'eurosmart',
+  development: 'sensaspace.development',
+  preview: 'sensaspace.preview',
+  production: 'sensaspace',
 } as const;
 
 const PACKAGES = {
-  development: 'eurosmart.vincent.le.development',
-  preview: 'eurosmart.vincent.le.preview',
-  production: 'eurosmart',
+  development: 'sensaspace.development',
+  preview: 'sensaspace.preview',
+  production: 'sensaspace',
 } as const;
 
 const SCHEMES = {
-  development: 'eurosmart',
-  preview: 'eurosmart.preview',
-  production: 'eurosmart',
+  development: 'sensaspace',
+  preview: 'sensaspace.preview',
+  production: 'sensaspace',
 } as const;
 
-const NAME = 'EuroSmart';
+const NAME = 'SensaSpace';
 
 // Check if strict validation is required (before prebuild)
 const STRICT_ENV_VALIDATION = process.env.STRICT_ENV_VALIDATION === '1';

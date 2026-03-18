@@ -75,14 +75,16 @@ export const DeviceItem: React.FC<TProps> = ({ device, typeViewDevice, onExpand 
         {/* Feature count */}
         <View className="flex-row items-center justify-between">
           <Text className="text-[11px] text-neutral-400">
-            {device.features?.length ?? 0} {translate('base.feature')}
+            {device.features?.length ?? 0}
+            {' '}
+            {translate('base.feature')}
           </Text>
         </View>
 
         {hasMultipleFeatures && (
           <TouchableOpacity
             onPress={() => onExpand?.(device)}
-            className="absolute bottom-2 right-2 h-7 w-7 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800"
+            className="absolute right-2 bottom-2 h-7 w-7 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800"
           >
             <FontAwesome6 name="grip" size={12} color="#A3A3A3" />
           </TouchableOpacity>
@@ -124,7 +126,7 @@ export const DeviceItem: React.FC<TProps> = ({ device, typeViewDevice, onExpand 
       {hasMultipleFeatures && (
         <TouchableOpacity
           onPress={() => onExpand?.(device)}
-          className="absolute bottom-2 right-2 h-7 w-7 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800"
+          className="absolute right-2 bottom-2 h-7 w-7 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800"
         >
           <FontAwesome6 name="grip" size={12} color="#A3A3A3" />
         </TouchableOpacity>

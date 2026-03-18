@@ -1,8 +1,7 @@
-import type { TDevice } from '@/lib/api/devices/device.service';
+import type { type EDeviceStatus, TDevice } from '@/lib/api/devices/device.service';
 
 import { create } from 'zustand';
 
-import { EDeviceStatus } from '@/lib/api/devices/device.service';
 import { createSelectors } from '@/lib/utils';
 
 // ============================================================
@@ -27,9 +26,9 @@ const _useDeviceStore = create<TDeviceStoreState>()(
     devices: [],
     isLoading: false,
 
-    setDevices: (devices) => set({ devices, isLoading: false }),
+    setDevices: devices => set({ devices, isLoading: false }),
 
-    setLoading: (isLoading) => set({ isLoading }),
+    setLoading: isLoading => set({ isLoading }),
 
     updateDeviceStatus: (id, status) => {
       set({

@@ -42,13 +42,13 @@
     "createUser": "Tạo tài khoản",
     "deleteButton": "Xoá",
     "device": "Thiết bị",
-    "feature": "tính năng",
     "deviceName": "Tên thiết bị",
     "deviceNamePlaceholder": "VD: Đèn phòng khách",
     "devices": "THIẾT BỊ",
     "disconnectedStatus": "Mất kết nối",
     "editButton": "Sửa",
     "error": "Lỗi",
+    "feature": "tính năng",
     "finish": "Hoàn tất",
     "foundDevices": "Đã tìm thấy {{count}} thiết bị",
     "home": "Nhà",
@@ -132,7 +132,7 @@
   },
   "onboarding": {
     "slide1Desc": "Kết nối và điều khiển ngôi nhà dễ dàng",
-    "slide1Title": "Chào mừng bạn đến với\nEuro Smart",
+    "slide1Title": "Chào mừng bạn đến với\nSensaSpace",
     "slide2Desc": "Kết nối mọi thiết bị chỉ trong vài giây.\nĐơn giản, nhanh chóng, tiện lợi.",
     "slide2Title": "Kết nối dễ dàng",
     "slide3Desc": "Điều khiển và giám sát ngôi nhà của\nbạn mọi lúc, mọi nơi",
@@ -144,7 +144,7 @@
   },
   "settings": {
     "about": "Giới thiệu",
-    "account": "Tài khoản EEC",
+    "account": "Tài khoản SensaSpace",
     "defaultUser": "Người dùng",
     "energyCard": {
       "currentUsage": "Mức tiêu thụ hiện tại",
