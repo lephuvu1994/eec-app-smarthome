@@ -92,7 +92,7 @@ export function OnboardingScreen() {
           }}
         >
           <Text className="mb-4 w-full text-[32px]/10 font-bold text-[#1B1B1B] dark:text-[#1B1B1B]" style={{ color: COLORS.textPrimary }}>
-            {item.title.split('Euro Smart').map((part: string, index: number, array: string[]) => (
+            {item.title.split('Sensa Space').map((part: string, index: number, array: string[]) => (
               <Text
                 className="text-3xl font-bold"
                 key={index}
@@ -102,7 +102,7 @@ export function OnboardingScreen() {
               >
                 {part}
                 {index < array.length - 1 && (
-                  <Text className="text-3xl font-bold" style={{ color: '#93D737' }}>Euro Smart</Text>
+                  <Text className="text-3xl font-bold" style={{ color: '#93D737' }}>Sensa Space</Text>
                 )}
               </Text>
             ),

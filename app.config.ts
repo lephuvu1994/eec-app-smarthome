@@ -8,7 +8,7 @@ import 'tsx/cjs';
 // eslint-disable-next-line perfectionist/sort-imports
 import Env from './env';
 
-const EXPO_ACCOUNT_OWNER = 'eecApp';
+const EXPO_ACCOUNT_OWNER = 'sensaspace';
 const EAS_PROJECT_ID = 'cac68faf-437c-429b-9739-907402d5e399';
 
 const appIconBadgeConfig: AppIconBadgeConfig = {
@@ -33,7 +33,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   description: `${Env.EXPO_PUBLIC_NAME} Mobile App`,
   owner: EXPO_ACCOUNT_OWNER,
   scheme: Env.EXPO_PUBLIC_SCHEME,
-  slug: 'eec-smarthome',
+  slug: 'sensaspace',
   version: Env.EXPO_PUBLIC_VERSION.toString(),
   orientation: 'portrait',
   icon: './assets/logo.png',
@@ -142,6 +142,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       },
     ],
     'expo-localization',
+    './plugins/withLocalizedPermissions',
     'expo-router',
     ['app-icon-badge', appIconBadgeConfig],
     [

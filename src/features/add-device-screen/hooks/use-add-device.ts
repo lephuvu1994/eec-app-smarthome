@@ -331,7 +331,8 @@ export function useAddDevice() {
           }
 
           await bleService.gracefulDisconnect(device.id);
-        } catch {
+        }
+        catch {
           // Disconnect hoặc timeout = chip đã reboot = config thành công
         }
         connectedDeviceIdRef.current = null;
