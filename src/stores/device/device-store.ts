@@ -1,4 +1,4 @@
-import type { type EDeviceStatus, TDevice } from '@/lib/api/devices/device.service';
+import type { EDeviceStatus, TDevice } from '@/lib/api/devices/device.service';
 
 import { create } from 'zustand';
 

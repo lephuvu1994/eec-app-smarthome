@@ -1,4 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
+import { useRouter } from 'expo-router';
 import { showErrorMessage } from '@/components/ui';
 import { authService } from '@/lib/api/auth/auth.service';
 import { translate } from '@/lib/i18n';
@@ -6,6 +7,7 @@ import { useUserManager } from '../user-store';
 
 export function useSignUp() {
   const signIn = useUserManager(s => s.signIn);
+  const router = useRouter();
 
   const { mutateAsync: submitSignUp, isPending: isSigningUp } = useMutation({
     mutationFn: async (variables: { identifier: string; password: string }) => {
@@ -27,6 +29,7 @@ export function useSignUp() {
         accessToken: response.accessToken,
         refreshToken: response.refreshToken,
       });
+      router.replace('/(app)');
     },
     onError: (error: any) => {
       showErrorMessage(error?.message ?? translate('formAuth.signupFailed'));
