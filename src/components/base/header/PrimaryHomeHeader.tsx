@@ -12,6 +12,7 @@ import { useUserManager } from '@/features/auth/user-store';
 import { useHomes } from '@/hooks/use-homes';
 import { translate } from '@/lib/i18n';
 import { useHomeStore } from '@/stores/home/home-store';
+import { EHomeRole } from '@/stores/home/types';
 import { ETheme } from '@/types/base';
 import { PulseDot } from '../PulseDot';
 
@@ -26,19 +27,27 @@ export const PrimaryHeaderHome: React.FC = memo(() => {
   const selectedHomeId = useHomeStore(s => s.selectedHomeId);
   const setSelectedHome = useHomeStore(s => s.setSelectedHome);
   const setHomes = useHomeStore(s => s.setHomes);
+  const clearSelectedHome = useHomeStore(s => s.clearSelectedHome);
 
-  // Sync homes list vào store khi fetch xong
+  // Sync homes list vào store khi fetch xong + xử lý stale selectedHome
   useEffect(() => {
     if (homes?.length) {
       setHomes(homes);
+
+      // Nếu selectedHomeId không còn tồn tại trong danh sách homes mới → clear và chọn home đầu tiên
+      if (selectedHomeId && !homes.some(h => h.id === selectedHomeId)) {
+        const first = homes[0];
+        const role = first.ownerId === currentUserId ? EHomeRole.OWNER : EHomeRole.MEMBER;
+        setSelectedHome(first, role);
+      }
     }
-  }, [homes, setHomes]);
+  }, [homes, setHomes, selectedHomeId, currentUserId, setSelectedHome, clearSelectedHome]);
 
   // Auto-select first home khi chưa có selection
   useEffect(() => {
     if (homes?.length && !selectedHomeId) {
       const first = homes[0];
-      const role = first.ownerId === currentUserId ? 'OWNER' : 'MEMBER';
+      const role = first.ownerId === currentUserId ? EHomeRole.OWNER : EHomeRole.MEMBER;
       setSelectedHome(first, role);
     }
   }, [homes, selectedHomeId, currentUserId, setSelectedHome]);
@@ -52,7 +61,7 @@ export const PrimaryHeaderHome: React.FC = memo(() => {
       title: home.name,
       icon: { ios: selectedHomeId === home.id ? 'checkmark' : 'house' },
       onPress: () => {
-        const role = home.ownerId === currentUserId ? 'OWNER' : 'MEMBER';
+        const role = home.ownerId === currentUserId ? EHomeRole.OWNER : EHomeRole.MEMBER;
         setSelectedHome(home, role);
       },
     }));
