@@ -461,7 +461,58 @@ import Animated, { FadeInRight, FadeInUp, FadeOutLeft } from 'react-native-reani
 
 ---
 
-## 14. Drag & Drop (react-native-sortables)
+## 14. Zeego Native Menu — Known Issues & Workarounds
+
+### ⚠️ Bug: ZeegoNativeMenu trong `headerRight` (React Navigation)
+
+**Vấn đề:** Khi đặt `ZeegoNativeMenu` (hoặc Zeego `DropdownMenu.Root`) bên trong `headerRight` của React Navigation / Expo Router, `DropdownMenu.Root` tự expand chiếm full width của `headerRight` container (~50% header width). Trigger button sẽ bị lệch sang trái thay vì nằm ở góc phải.
+
+- GitHub Issue: [nandorojo/zeego#180](https://github.com/nandorojo/zeego/issues/180)
+- **Chỉ xảy ra** khi ZeegoNativeMenu nằm trong `headerRight` — dùng bên ngoài header (e.g., custom header trong screen content) thì hoàn toàn bình thường.
+- Regular `TouchableOpacity` trong `headerRight` **KHÔNG** bị lỗi này.
+
+### Workaround: Custom `headerTitle` với `paddingRight`
+
+Dùng custom `headerTitle` component để ép `headerRight` container về đúng kích thước:
+
+```tsx
+const HEADER_RIGHT_WIDTH = 32; // Điều chỉnh theo kích thước trigger
+
+<Stack.Screen
+  options={{
+    headerTransparent: true,
+    // ⚠️ Workaround Zeego #180: custom headerTitle ép headerRight width
+    headerTitle: () => (
+      <View className="flex-1" style={{ paddingRight: HEADER_RIGHT_WIDTH }}>
+        <Text className="text-center text-[17px] font-semibold text-[#1B1B1B] dark:text-white">
+          {translate('base.screenTitle')}
+        </Text>
+      </View>
+    ),
+    headerRight: () => (
+      <ZeegoNativeMenu
+        elements={menuElements}
+        triggerComponent={(
+          <View pointerEvents="none" className="size-8 items-center justify-center rounded-full bg-white/40 shadow-sm dark:bg-black/40">
+            <AntDesign name="plus" size={18} color={tintColor} />
+          </View>
+        )}
+      />
+    ),
+  }}
+/>
+```
+
+### Rules cho ZeegoNativeMenu:
+- **Trigger:** Dùng `<View pointerEvents="none">` làm trigger — Zeego `DropdownMenu.Trigger` tự handle press
+- **KHÔNG** dùng `TouchableOpacity` làm trigger — sẽ conflict với Zeego's native press handling
+- **Khi dùng trong `headerRight`:** BẮT BUỘC áp dụng workaround `headerTitle` ở trên
+- **Khi dùng trong custom header hoặc screen content:** Dùng bình thường, không cần workaround
+- Tham khảo `PrimaryHomeHeader.tsx` cho pattern chuẩn khi dùng ngoài `headerRight`
+
+---
+
+## 15. Drag & Drop (react-native-sortables)
 
 ### Thư viện:
 - Package: **`react-native-sortables`** (peer deps: reanimated >=3, gesture-handler >=2 — đã có)
@@ -533,7 +584,7 @@ const halfWidth = (layout.width - BASE_SPACE_HORIZONTAL * 2 - GAP) / 2;
 
 ---
 
-## 15. BLE (Bluetooth Low Energy)
+## 16. BLE (Bluetooth Low Energy)
 
 ```typescript
 import { NativeEventEmitter, NativeModules } from 'react-native';
@@ -547,7 +598,7 @@ const bleManagerEmitter = new NativeEventEmitter(IS_IOS ? BleManagerModule : und
 
 ---
 
-## 16. Testing
+## 17. Testing
 
 - Framework: **Jest** + React Native Testing Library
 - Test files: cùng folder với source, suffix `.test.tsx` / `.test.ts`
@@ -557,7 +608,7 @@ Chưa có quy chuẩn và coverage requirement cho app — cần đề xuất sa
 
 ---
 
-## 17. ESLint, TypeScript & Formatting
+## 18. ESLint, TypeScript & Formatting
 
 ### ESLint (`eslint.config.mjs`)
 
@@ -667,7 +718,7 @@ yarn lint:fix          # Auto-fix lint issues
 
 ---
 
-## 18. Khi Tạo Feature Mới — Checklist
+## 19. Khi Tạo Feature Mới — Checklist
 
 1. **Tạo folder** trong `src/features/{feature-name}/`
 2. **Tạo screen** component: `{feature-name}-screen.tsx`

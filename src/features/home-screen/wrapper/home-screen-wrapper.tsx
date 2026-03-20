@@ -1,9 +1,6 @@
 import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
-import type { TMenuElement } from '@/components/ui/zeego-native-menu';
-import type { TFloor } from '@/lib/api/homes/home.service';
 import type { ETheme } from '@/types/base';
 import { FontAwesome6 } from '@expo/vector-icons';
-import { router } from 'expo-router';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { ScrollView } from 'react-native';
@@ -22,12 +19,13 @@ import { Pressable, Skeleton, Text, View, WIDTH } from '@/components/ui';
 import { ZeegoNativeMenu } from '@/components/ui/zeego-native-menu';
 import { ANIMATION_DURATION, ASPECT_RATIO_VIDEO, BASE_SPACE_HORIZONTAL } from '@/constants';
 import { useHomeDevices } from '@/hooks/use-devices';
-import { useFloors } from '@/hooks/use-homes';
+import { useFloors, useRooms } from '@/hooks/use-homes';
 import { translate } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 import { useConfigManager } from '@/stores/config/config';
 import { useHomeStore } from '@/stores/home/home-store';
 import { GroupPage } from '../components/tab/group-page';
+import { useHomeMenu } from '../hooks/use-home-menu';
 
 // --- Cấu hình dữ liệu ---
 const heightVideoOnScreen = ((WIDTH - BASE_SPACE_HORIZONTAL * 2) / ASPECT_RATIO_VIDEO);
@@ -35,7 +33,10 @@ const heightVideoOnScreen = ((WIDTH - BASE_SPACE_HORIZONTAL * 2) / ASPECT_RATIO_
 type TGroup = {
   key: string;
   title: string;
-  floor?: TFloor;
+  /** Floor data — present when mode = grouped (has ≥1 floor) */
+  floor?: { id: string; name: string; sortOrder: number; rooms?: { id: string; name: string; homeId: string; floorId?: string }[] };
+  /** Room data — present when mode = flat (0 floors, each room is a primary tab) */
+  rooms?: { id: string; title: string }[];
 };
 
 // ==========================================
@@ -45,82 +46,62 @@ type TGroup = {
 export const HomeScreenWrapper = memo(({ className }: { className?: string }) => {
   const { theme } = useUniwind();
   const [currentFloorIdx, setCurrentFloorIdx] = useState(0);
+  const [targetRoomId, setTargetRoomId] = useState<string | null>(null);
   const showCameraPreview = useConfigManager(state => !state.showCameraPreview);
   const animatedHeight = useSharedValue(heightVideoOnScreen);
 
   // ─── API data ──────────────────────────────
   const selectedHomeId = useHomeStore(s => s.selectedHomeId);
   const { data: floors, isLoading: isLoadingFloors } = useFloors(selectedHomeId ?? '');
+  const { data: allRooms } = useRooms(selectedHomeId ?? '');
 
   // Fetch ALL devices once → syncs to Zustand deviceStore
   useHomeDevices(selectedHomeId ?? '');
 
-  // Build groups dynamically: Favorite + Floors from API
+  // Build groups dynamically based on floor data
   const groups: TGroup[] = useMemo(() => {
     const favoriteGroup: TGroup = { key: 'favorite', title: 'Favorite' };
-    if (!floors?.length) {
-      return [favoriteGroup];
+    const hasFloors = !!floors?.length;
+
+    if (!hasFloors) {
+      // CASE 1: 0 floors → mỗi room = 1 primary tab (flat mode, no secondary tabs)
+      if (!allRooms?.length)
+        return [favoriteGroup];
+      const roomGroups: TGroup[] = allRooms.map(r => ({
+        key: r.id,
+        title: r.name,
+        rooms: [{ id: r.id, title: r.name }],
+      }));
+      return [favoriteGroup, ...roomGroups];
     }
+
+    // CASE 2: ≥1 floor → floors = primary tabs, rooms = secondary tabs
     const floorGroups: TGroup[] = floors
       .sort((a, b) => a.sortOrder - b.sortOrder)
       .map(f => ({ key: f.id, title: f.name, floor: f }));
-    return [favoriteGroup, ...floorGroups];
-  }, [floors]);
 
-  // ─── Menu elements cho ZeegoNativeMenu ───────
-  const menuElements: TMenuElement[] = useMemo(() => {
-    const items: TMenuElement[] = [
-      {
-        key: 'device-management',
-        title: translate('base.deviceManagement'),
-        icon: { ios: 'iphone.gen3' },
-        onPress: () => router.push('/(app)/(mobile)/add-device' as any),
-      },
-      {
-        key: 'room-management',
-        title: translate('base.roomManagement'),
-        icon: { ios: 'square.grid.2x2' },
-        onPress: () => router.push('/(app)/(mobile)/(tabs)/(settings)/homeManagement' as any),
-      },
-      { type: 'separator', key: 'sep-1' },
-    ];
-
-    // Thêm các tầng với phòng bên trong dưới dạng submenu
-    floors?.forEach((floor) => {
-      if (floor.rooms?.length) {
-        items.push({
-          key: floor.id,
-          title: floor.name,
-          icon: { ios: 'building.2' },
-          children: floor.rooms.map(room => ({
-            key: room.id,
-            title: room.name,
-            icon: { ios: 'door.left.hand.open' },
-          })),
-        });
-      }
-    });
-
-    // Tìm phòng chưa thuộc tầng nào (ungrouped rooms)
-    const ungroupedRooms = floors
-      ?.flatMap(f => f.rooms ?? [])
-      .filter(r => !r.floorId) ?? [];
+    // Ungrouped rooms: rooms không thuộc floor nào
+    const floorRoomIds = new Set(floors.flatMap(f => f.rooms?.map(r => r.id) ?? []));
+    const ungroupedRooms = allRooms?.filter(r => !floorRoomIds.has(r.id)) ?? [];
 
     if (ungroupedRooms.length > 0) {
-      items.push({
+      floorGroups.push({
         key: 'ungrouped',
         title: translate('base.ungroupedRooms'),
-        icon: { ios: 'questionmark.folder' },
-        children: ungroupedRooms.map(room => ({
-          key: `ungrouped-${room.id}`,
-          title: room.name,
-          icon: { ios: 'door.left.hand.open' },
-        })),
+        floor: {
+          id: 'ungrouped',
+          name: translate('base.ungroupedRooms'),
+          sortOrder: 999,
+          rooms: ungroupedRooms,
+        },
       });
     }
 
-    return items;
-  }, [floors]);
+    return [favoriteGroup, ...floorGroups];
+  }, [floors, allRooms]);
+
+  // ─── Group keys cho menu hook ───────
+  const groupKeys = useMemo(() => groups.map(g => g.key), [groups]);
 
   // Reset floor index when home changes
   const prevHomeIdRef = useRef(selectedHomeId);
@@ -180,6 +161,24 @@ export const HomeScreenWrapper = memo(({ className }: { className?: string }) =>
     }
   }, [currentFloorIdx]);
 
+  // ─── Navigation: bấm room trong menu → cuộn đến group + room ───────
+  const navigateToRoom = useCallback((groupIdx: number, roomId: string) => {
+    jumpToFloor(groupIdx);
+    setTargetRoomId(roomId);
+  }, [jumpToFloor]);
+
+  const handleRoomNavigated = useCallback(() => {
+    setTargetRoomId(null);
+  }, []);
+
+  // ─── Menu elements từ hook ───────
+  const menuElements = useHomeMenu({
+    floors,
+    allRooms,
+    groupKeys,
+    onNavigateToRoom: navigateToRoom,
+  });
+
   const handleError = () => {
     animatedHeight.value = withTiming(animatedHeight.value > 0 ? 0 : heightVideoOnScreen, {
       duration: ANIMATION_DURATION,
@@ -191,7 +190,7 @@ export const HomeScreenWrapper = memo(({ className }: { className?: string }) =>
       {/* Vùng xem Camera */}
       <Animated.View style={[animatedStyle]} className="mb-2 w-full items-center justify-center overflow-hidden px-4">
         {showCameraPreview && (
-          <View className="h-full w-full flex-row justify-between">
+          <View className="size-full flex-row justify-between">
             <LiveCameraWrapper
               videoUrl="rtsp://admin:EEVN1234%40@vanphongeec.ddns.net:1024/Streaming/channels/201"
               defaultImage=""
@@ -275,15 +274,20 @@ export const HomeScreenWrapper = memo(({ className }: { className?: string }) =>
           className="flex-1"
         >
           {groups.map((group) => {
-            const rooms = group.floor?.rooms?.map(r => ({ id: r.id, title: r.name })) ?? [];
+            // Flat mode: group.rooms đã có sẵn; Grouped mode: lấy từ floor
+            const rooms = group.rooms ?? group.floor?.rooms?.map(r => ({ id: r.id, title: r.name })) ?? [];
+            const isCurrentGroup = groups[currentFloorIdx]?.key === group.key;
             return (
               <GroupPage
-                isCurrentGroup={groups[currentFloorIdx]?.key === group.key}
+                isCurrentGroup={isCurrentGroup}
+                isFlat={!!group.rooms}
                 key={group.key}
                 group={group}
                 rooms={rooms}
                 homeId={selectedHomeId ?? ''}
                 theme={theme as ETheme}
+                targetRoomId={isCurrentGroup ? targetRoomId : null}
+                onRoomNavigated={handleRoomNavigated}
               />
             );
           })}

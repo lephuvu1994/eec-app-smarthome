@@ -95,7 +95,7 @@ export function OnboardingScreen() {
             {item.title.split('Sensa Space').map((part: string, index: number, array: string[]) => (
               <Text
                 className="text-3xl font-bold"
-                key={index}
+                key={part}
                 numberOfLines={1} // Bắt buộc phải có để báo cho RN biết giới hạn dòng
                 adjustsFontSizeToFit // Tự động bóp nhỏ font nếu text quá dài
                 minimumFontScale={0.5}

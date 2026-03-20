@@ -57,21 +57,6 @@ function SettingScreen() {
         }}
       />
       <Stack.Screen
-        name="homeManagement"
-        options={{
-          headerShown: true,
-          headerTransparent: true,
-          title: translate('settings.homeManagement'),
-          headerTitleAlign: 'center',
-          headerTintColor: theme === 'dark' ? '#ffffff' : '#1B1B1B',
-          headerTitleStyle: {
-            color: theme === 'dark' ? '#ffffff' : '#1B1B1B',
-            fontWeight: '600', // Sẵn tiện cho nó đậm lên tí nhìn cho sang
-          },
-          headerBackTitle: '',
-        }}
-      />
-      <Stack.Screen
         name="general"
         options={{
           headerShown: true,

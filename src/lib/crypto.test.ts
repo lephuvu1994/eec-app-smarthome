@@ -42,13 +42,13 @@ describe('CryptoService', () => {
         session: 1,
         nonce: 12345,
         deviceCode: 'DEV001',
-        partnerId: 'PARTNER001',
+        partnerCode: 'PARTNER001',
       });
 
       expect(service.getMac()).toBe('AA:BB:CC:DD:EE:FF');
       expect(service.getSessionNonce()).toBe(12345);
       expect(service.getDeviceCode()).toBe('DEV001');
-      expect(service.getPartnerId()).toBe('PARTNER001');
+      expect(service.getPartnerCode()).toBe('PARTNER001');
     });
 
     it('should set deviceCode and partnerId to null when not provided', () => {
@@ -61,7 +61,7 @@ describe('CryptoService', () => {
       expect(service.getMac()).toBe('AA:BB:CC:DD:EE:FF');
       expect(service.getSessionNonce()).toBe(99999);
       expect(service.getDeviceCode()).toBeNull();
-      expect(service.getPartnerId()).toBeNull();
+      expect(service.getPartnerCode()).toBeNull();
     });
 
     it('should overwrite previous session data', () => {
@@ -70,7 +70,7 @@ describe('CryptoService', () => {
         session: 1,
         nonce: 111,
         deviceCode: 'OLD',
-        partnerId: 'OLD_PARTNER',
+        partnerCode: 'OLD_PARTNER',
       });
 
       service.initSession({
@@ -78,13 +78,13 @@ describe('CryptoService', () => {
         session: 2,
         nonce: 222,
         deviceCode: 'NEW',
-        partnerId: 'NEW_PARTNER',
+        partnerCode: 'NEW_PARTNER',
       });
 
       expect(service.getMac()).toBe('11:22:33:44:55:66');
       expect(service.getSessionNonce()).toBe(222);
       expect(service.getDeviceCode()).toBe('NEW');
-      expect(service.getPartnerId()).toBe('NEW_PARTNER');
+      expect(service.getPartnerCode()).toBe('NEW_PARTNER');
     });
   });
 
@@ -93,7 +93,7 @@ describe('CryptoService', () => {
       expect(service.getMac()).toBeNull();
       expect(service.getSessionNonce()).toBeNull();
       expect(service.getDeviceCode()).toBeNull();
-      expect(service.getPartnerId()).toBeNull();
+      expect(service.getPartnerCode()).toBeNull();
     });
   });
 
