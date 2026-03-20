@@ -19,10 +19,10 @@ import { Pressable, Skeleton, Text, View, WIDTH } from '@/components/ui';
 import { ZeegoNativeMenu } from '@/components/ui/zeego-native-menu';
 import { ANIMATION_DURATION, ASPECT_RATIO_VIDEO, BASE_SPACE_HORIZONTAL } from '@/constants';
 import { useHomeDevices } from '@/hooks/use-devices';
-import { useFloors, useRooms } from '@/hooks/use-homes';
 import { translate } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 import { useConfigManager } from '@/stores/config/config';
+import { useHomeDataStore } from '@/stores/home/home-data-store';
 import { useHomeStore } from '@/stores/home/home-store';
 import { GroupPage } from '../components/tab/group-page';
 import { useHomeMenu } from '../hooks/use-home-menu';
@@ -33,6 +33,8 @@ const heightVideoOnScreen = ((WIDTH - BASE_SPACE_HORIZONTAL * 2) / ASPECT_RATIO_
 type TGroup = {
   key: string;
   title: string;
+  /** Pre-computed rooms for GroupPage (stable reference) */
+  computedRooms: { id: string; title: string }[];
   /** Floor data — present when mode = grouped (has ≥1 floor) */
   floor?: { id: string; name: string; sortOrder: number; rooms?: { id: string; name: string; homeId: string; floorId?: string }[] };
   /** Room data — present when mode = flat (0 floors, each room is a primary tab) */
@@ -50,17 +52,25 @@ export const HomeScreenWrapper = memo(({ className }: { className?: string }) =>
   const showCameraPreview = useConfigManager(state => !state.showCameraPreview);
   const animatedHeight = useSharedValue(heightVideoOnScreen);
 
-  // ─── API data ──────────────────────────────
+  // ─── Store data ──────────────────────────────
   const selectedHomeId = useHomeStore(s => s.selectedHomeId);
-  const { data: floors, isLoading: isLoadingFloors } = useFloors(selectedHomeId ?? '');
-  const { data: allRooms } = useRooms(selectedHomeId ?? '');
+  const floors = useHomeDataStore(s => s.floors);
+  const allRooms = useHomeDataStore(s => s.rooms);
+  const isLoadingFloors = useHomeDataStore(s => s.isLoading);
+  const syncFromAPI = useHomeDataStore(s => s.syncFromAPI);
+
+  // Sync store khi đổi home
+  useEffect(() => {
+    if (selectedHomeId)
+      syncFromAPI(selectedHomeId);
+  }, [selectedHomeId, syncFromAPI]);
 
   // Fetch ALL devices once → syncs to Zustand deviceStore
   useHomeDevices(selectedHomeId ?? '');
 
   // Build groups dynamically based on floor data
   const groups: TGroup[] = useMemo(() => {
-    const favoriteGroup: TGroup = { key: 'favorite', title: 'Favorite' };
+    const favoriteGroup: TGroup = { key: 'favorite', title: 'Favorite', computedRooms: [] };
     const hasFloors = !!floors?.length;
 
     if (!hasFloors) {
@@ -70,6 +80,7 @@ export const HomeScreenWrapper = memo(({ className }: { className?: string }) =>
       const roomGroups: TGroup[] = allRooms.map(r => ({
         key: r.id,
         title: r.name,
+        computedRooms: [{ id: r.id, title: r.name }],
         rooms: [{ id: r.id, title: r.name }],
       }));
       return [favoriteGroup, ...roomGroups];
@@ -78,7 +89,12 @@ export const HomeScreenWrapper = memo(({ className }: { className?: string }) =>
     // CASE 2: ≥1 floor → floors = primary tabs, rooms = secondary tabs
     const floorGroups: TGroup[] = floors
       .sort((a, b) => a.sortOrder - b.sortOrder)
-      .map(f => ({ key: f.id, title: f.name, floor: f }));
+      .map(f => ({
+        key: f.id,
+        title: f.name,
+        computedRooms: f.rooms?.map(r => ({ id: r.id, title: r.name })) ?? [],
+        floor: f,
+      }));
 
     // Ungrouped rooms: rooms không thuộc floor nào
     const floorRoomIds = new Set(floors.flatMap(f => f.rooms?.map(r => r.id) ?? []));
@@ -88,6 +104,7 @@ export const HomeScreenWrapper = memo(({ className }: { className?: string }) =>
       floorGroups.push({
         key: 'ungrouped',
         title: translate('base.ungroupedRooms'),
+        computedRooms: ungroupedRooms.map(r => ({ id: r.id, title: r.name })),
         floor: {
           id: 'ungrouped',
           name: translate('base.ungroupedRooms'),
@@ -153,13 +170,11 @@ export const HomeScreenWrapper = memo(({ className }: { className?: string }) =>
 
   // Điều hướng khi nhấn Tab Tầng
   const jumpToFloor = useCallback((idx: number) => {
-    if (idx !== currentFloorIdx) {
-      isManualOuterScrollingRef.current = true;
-      setCurrentFloorIdx(idx);
-      outerScrollRef.current?.scrollTo({ x: idx * WIDTH, animated: true });
-      setTimeout(() => isManualOuterScrollingRef.current = false, 400);
-    }
-  }, [currentFloorIdx]);
+    isManualOuterScrollingRef.current = true;
+    setCurrentFloorIdx(idx);
+    outerScrollRef.current?.scrollTo({ x: idx * WIDTH, animated: true });
+    setTimeout(() => isManualOuterScrollingRef.current = false, 400);
+  }, []);
 
   // ─── Navigation: bấm room trong menu → cuộn đến group + room ───────
   const navigateToRoom = useCallback((groupIdx: number, roomId: string) => {
@@ -274,8 +289,7 @@ export const HomeScreenWrapper = memo(({ className }: { className?: string }) =>
           className="flex-1"
         >
           {groups.map((group) => {
-            // Flat mode: group.rooms đã có sẵn; Grouped mode: lấy từ floor
-            const rooms = group.rooms ?? group.floor?.rooms?.map(r => ({ id: r.id, title: r.name })) ?? [];
+            const rooms = group.computedRooms;
             const isCurrentGroup = groups[currentFloorIdx]?.key === group.key;
             return (
               <GroupPage

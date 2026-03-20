@@ -55,33 +55,31 @@ export const GroupPage = memo(({ group, rooms, homeId, theme, isCurrentGroup, is
     }
   }, [showRoomViewExpand, isCurrentGroup, activeRoomIdx, minWidths]);
 
-  // Dùng onMomentumScrollEnd để chống nháy tab (Phantom Scroll)
+  // Sync tab khi swipe content xong
   const handleScrollEnd = useCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => {
     if (isManualRoomScrollingRef.current)
       return;
     const offsetX = e.nativeEvent.contentOffset.x;
     const index = Math.round(offsetX / WIDTH);
 
-    if (index >= 0 && index < rooms.length && index !== activeRoomIdx) {
+    if (index >= 0 && index < rooms.length) {
       setActiveRoomIdx(index);
       const targetOffset = calculateCenterOffset(minWidths, index, showRoomViewExpand);
       secondaryTabRef?.current?.scrollTo({ x: targetOffset, animated: true });
     }
-  }, [rooms.length, secondaryTabRef, minWidths, activeRoomIdx, showRoomViewExpand]);
+  }, [rooms.length, secondaryTabRef, minWidths, showRoomViewExpand]);
 
   const jumpToRoom = useCallback((idx: number) => {
-    if (idx !== activeRoomIdx) {
-      isManualRoomScrollingRef.current = true;
-      setActiveRoomIdx(idx);
-      innerScrollRef.current?.scrollTo({ x: idx * WIDTH, animated: true });
+    isManualRoomScrollingRef.current = true;
+    setActiveRoomIdx(idx);
+    innerScrollRef.current?.scrollTo({ x: idx * WIDTH, animated: true });
 
-      const targetOffset = calculateCenterOffset(minWidths, idx, showRoomViewExpand);
-      secondaryTabRef?.current?.scrollTo({ x: targetOffset, animated: true });
-      setTimeout(() => {
-        isManualRoomScrollingRef.current = false;
-      }, 400);
-    }
-  }, [activeRoomIdx, secondaryTabRef, showRoomViewExpand, minWidths]);
+    const targetOffset = calculateCenterOffset(minWidths, idx, showRoomViewExpand);
+    secondaryTabRef?.current?.scrollTo({ x: targetOffset, animated: true });
+    setTimeout(() => {
+      isManualRoomScrollingRef.current = false;
+    }, 400);
+  }, [secondaryTabRef, showRoomViewExpand, minWidths]);
 
   // Auto-scroll đến room khi nhận targetRoomId từ menu
   useEffect(() => {
@@ -176,7 +174,7 @@ export const GroupPage = memo(({ group, rooms, homeId, theme, isCurrentGroup, is
                     pagingEnabled
                     bounces={false}
                     showsHorizontalScrollIndicator={false}
-                    onScroll={handleScrollEnd}
+                    onMomentumScrollEnd={handleScrollEnd}
                     scrollEventThrottle={16}
                     decelerationRate="fast"
                     overScrollMode="never"

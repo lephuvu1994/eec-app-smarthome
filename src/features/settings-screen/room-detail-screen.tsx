@@ -9,9 +9,9 @@ import { useUniwind } from 'uniwind';
 
 import { BaseLayout } from '@/components/layout/BaseLayout';
 import { ScrollView, Text, TouchableOpacity, View } from '@/components/ui';
-import { useDeleteRoom, useFloors, useUpdateRoom } from '@/hooks/use-homes';
+import { useDeleteRoom, useUpdateRoom } from '@/hooks/use-homes';
 import { translate } from '@/lib/i18n';
-import { useHomeStore } from '@/stores/home/home-store';
+import { useHomeDataStore } from '@/stores/home/home-data-store';
 import { ETheme } from '@/types/base';
 
 // ─── Setting Row ──────────────────────────
@@ -44,12 +44,11 @@ export function RoomDetailScreen() {
   const { theme } = useUniwind();
   const isDark = theme === ETheme.Dark;
   const insets = useSafeAreaInsets();
-  const homeId = useHomeStore(s => s.selectedHomeId) ?? '';
 
-  const { data: floors } = useFloors(homeId);
+  const floors = useHomeDataStore(s => s.floors);
   const [name, setName] = useState(roomName ?? '');
-  const updateRoom = useUpdateRoom(homeId);
-  const deleteRoom = useDeleteRoom(homeId);
+  const updateRoom = useUpdateRoom();
+  const deleteRoom = useDeleteRoom();
 
   // Find which floor this room belongs to
   const currentFloor = useMemo(() => {

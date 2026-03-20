@@ -18,101 +18,121 @@ type TUseHomeMenuParams = {
 /**
  * Xây dựng menuElements cho ZeegoNativeMenu trên Home Screen.
  *
- * Cấu trúc:
- *   Phần 1 (cố định): Device Management + Room Management
- *   Phần 2 (động):
- *     - Flat mode (0 floors): rooms as flat items → navigate to room's primary tab
- *     - Grouped mode (≥1 floors): Floors → rooms submenu + Ungrouped Rooms
+ * Layout flat + grouped:
+ *   Group 1 (cố định): Device Management + Room Management
+ *   Group 2..N (động): mỗi floor = 1 group, rooms flat bên trong
+ *     - Bấm floor title → jump to floor tab
+ *     - Bấm room → jump to room
+ *   Group cuối: Ungrouped rooms (nếu có)
  */
 export function useHomeMenu({ floors, allRooms, groupKeys, onNavigateToRoom }: TUseHomeMenuParams): TMenuElement[] {
   return useMemo(() => {
-    // ─── Phần 1: Cố định ───────────────────────────
-    const fixedItems: TMenuElement[] = [
-      {
-        key: 'device-management',
-        title: translate('base.deviceManagement'),
-        icon: { ios: 'iphone.gen3' },
-        onPress: () => router.push('/(app)/(mobile)/device-management' as any),
-      },
-      {
-        key: 'room-management',
-        title: translate('base.roomManagement'),
-        icon: { ios: 'square.grid.2x2' },
-        onPress: () => router.push('/(app)/(mobile)/home-management' as any),
-      },
-    ];
+    // ─── Group 1: Cố định ───────────────────────────
+    const fixedGroup: TMenuElement = {
+      type: 'group',
+      key: 'fixed',
+      items: [
+        {
+          key: 'device-management',
+          title: translate('base.deviceManagement'),
+          icon: { ios: 'iphone.gen3' },
+          onPress: () => router.push('/(app)/(mobile)/device-management' as any),
+        },
+        {
+          key: 'room-management',
+          title: translate('base.roomManagement'),
+          icon: { ios: 'square.grid.2x2' },
+          onPress: () => router.push('/(app)/(mobile)/home-management' as any),
+        },
+      ],
+    };
 
-    // ─── Phần 2: Động — floors + rooms ──────────────
-    const dynamicItems: TMenuElement[] = [];
+    // ─── Dynamic groups ──────────────────────────
+    const dynamicGroups: TMenuElement[] = [];
     const hasFloors = !!floors?.length;
 
     if (!hasFloors) {
-      // FLAT MODE: mỗi room = 1 primary tab → flat menu items (không submenu)
-      allRooms?.forEach((room) => {
-        const groupIdx = groupKeys.findIndex(k => k === room.id);
-        dynamicItems.push({
-          key: room.id,
-          title: room.name,
-          icon: { ios: 'door.left.hand.open' },
-          onPress: () => onNavigateToRoom(groupIdx, room.id),
-        });
-      });
-    }
-    else {
-      // GROUPED MODE: floors → submenu rooms
-      const findGroupIdx = (floorId: string) =>
-        groupKeys.findIndex(k => k === floorId);
-
-      floors.forEach((floor) => {
-        if (!floor.rooms?.length)
-          return;
-
-        const groupIdx = findGroupIdx(floor.id);
-        dynamicItems.push({
-          key: floor.id,
-          title: floor.name,
-          icon: { ios: 'building.2' },
-          children: floor.rooms.map(room => ({
+      // FLAT MODE: 0 floors → tất cả rooms flat trong 1 group
+      if (allRooms?.length) {
+        const roomItems: TMenuElement[] = allRooms.map((room) => {
+          const groupIdx = groupKeys.findIndex(k => k === room.id);
+          return {
             key: room.id,
             title: room.name,
             icon: { ios: 'door.left.hand.open' },
             onPress: () => onNavigateToRoom(groupIdx, room.id),
-          })),
+          };
         });
-      });
 
-      // Ungrouped rooms (rooms không thuộc floor nào)
+        dynamicGroups.push({
+          type: 'group',
+          key: 'all-rooms',
+          title: translate('base.roomManagement'),
+          items: roomItems,
+        });
+      }
+    }
+    else {
+      // GROUPED MODE: mỗi floor = 1 group
+      floors
+        .sort((a, b) => a.sortOrder - b.sortOrder)
+        .forEach((floor) => {
+          const groupIdx = groupKeys.findIndex(k => k === floor.id);
+
+          const floorItem: TMenuElement = {
+            key: `floor-${floor.id}`,
+            title: floor.name,
+            icon: { ios: 'folder' },
+            onPress: () => onNavigateToRoom(groupIdx, ''),
+          };
+
+          const roomItems: TMenuElement[] = (floor.rooms ?? []).map(room => ({
+            key: room.id,
+            title: `  ${room.name}`,
+            onPress: () => onNavigateToRoom(groupIdx, room.id),
+          }));
+
+          dynamicGroups.push({
+            type: 'group',
+            key: `group-${floor.id}`,
+            items: [floorItem, ...roomItems],
+          });
+        });
+
+      // Ungrouped rooms
       const floorRoomIds = new Set(floors.flatMap(f => f.rooms?.map(r => r.id) ?? []));
       const ungroupedRooms = allRooms?.filter(r => !floorRoomIds.has(r.id)) ?? [];
 
       if (ungroupedRooms.length > 0) {
         const ungroupedIdx = groupKeys.findIndex(k => k === 'ungrouped');
-        dynamicItems.push({
-          key: 'ungrouped',
+
+        const ungroupedHeader: TMenuElement = {
+          key: 'ungrouped-header',
           title: translate('base.ungroupedRooms'),
-          icon: { ios: 'questionmark.folder' },
-          children: ungroupedRooms.map(room => ({
-            key: `ungrouped-${room.id}`,
-            title: room.name,
-            icon: { ios: 'door.left.hand.open' },
-            onPress: () => onNavigateToRoom(
-              ungroupedIdx >= 0 ? ungroupedIdx : groupKeys.length - 1,
-              room.id,
-            ),
-          })),
+          icon: { ios: 'folder' },
+          onPress: () => onNavigateToRoom(
+            ungroupedIdx >= 0 ? ungroupedIdx : groupKeys.length - 1,
+            '',
+          ),
+        };
+
+        const ungroupedItems: TMenuElement[] = ungroupedRooms.map(room => ({
+          key: `ungrouped-${room.id}`,
+          title: `  ${room.name}`,
+          onPress: () => onNavigateToRoom(
+            ungroupedIdx >= 0 ? ungroupedIdx : groupKeys.length - 1,
+            room.id,
+          ),
+        }));
+
+        dynamicGroups.push({
+          type: 'group',
+          key: 'ungrouped',
+          items: [ungroupedHeader, ...ungroupedItems],
         });
       }
     }
 
-    // Kết hợp: cố định + separator + động
-    if (dynamicItems.length > 0) {
-      return [
-        ...fixedItems,
-        { type: 'separator' as const, key: 'sep-1' },
-        ...dynamicItems,
-      ];
-    }
-
-    return fixedItems;
+    return [fixedGroup, ...dynamicGroups];
   }, [floors, allRooms, groupKeys, onNavigateToRoom]);
 }

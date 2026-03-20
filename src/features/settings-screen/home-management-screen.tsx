@@ -12,8 +12,8 @@ import { useUniwind } from 'uniwind';
 
 import { BaseLayout } from '@/components/layout/BaseLayout';
 import { ScrollView, Text, TouchableOpacity, View } from '@/components/ui';
-import { useFloors, useRooms } from '@/hooks/use-homes';
 import { translate } from '@/lib/i18n';
+import { useHomeDataStore } from '@/stores/home/home-data-store';
 import { useHomeStore } from '@/stores/home/home-store';
 import { ETheme } from '@/types/base';
 
@@ -113,8 +113,8 @@ export function HomeManagement({ ref }: { ref?: Ref<THomeManagementHandle> }) {
   const isDark = theme === ETheme.Dark;
   const selectedHomeId = useHomeStore(s => s.selectedHomeId) ?? '';
 
-  const { data: floors } = useFloors(selectedHomeId);
-  const { data: allRooms } = useRooms(selectedHomeId);
+  const floors = useHomeDataStore(s => s.floors);
+  const allRooms = useHomeDataStore(s => s.rooms);
 
   const createFloorRef = useRef<BottomSheetModal>(null);
   const createRoomRef = useRef<BottomSheetModal>(null);

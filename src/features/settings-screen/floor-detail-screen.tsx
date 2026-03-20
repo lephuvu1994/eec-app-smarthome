@@ -9,9 +9,9 @@ import { useUniwind } from 'uniwind';
 
 import { BaseLayout } from '@/components/layout/BaseLayout';
 import { ScrollView, Text, TouchableOpacity, View } from '@/components/ui';
-import { useDeleteFloor, useFloors, useUpdateFloor } from '@/hooks/use-homes';
+import { useDeleteFloor, useUpdateFloor } from '@/hooks/use-homes';
 import { translate } from '@/lib/i18n';
-import { useHomeStore } from '@/stores/home/home-store';
+import { useHomeDataStore } from '@/stores/home/home-data-store';
 import { ETheme } from '@/types/base';
 
 export function FloorDetailScreen() {
@@ -20,14 +20,13 @@ export function FloorDetailScreen() {
   const { theme } = useUniwind();
   const isDark = theme === ETheme.Dark;
   const insets = useSafeAreaInsets();
-  const homeId = useHomeStore(s => s.selectedHomeId) ?? '';
 
-  const { data: floors } = useFloors(homeId);
+  const floors = useHomeDataStore(s => s.floors);
   const floor = floors?.find(f => f.id === floorId);
 
   const [name, setName] = useState(floorName ?? '');
-  const updateFloor = useUpdateFloor(homeId);
-  const deleteFloor = useDeleteFloor(homeId);
+  const updateFloor = useUpdateFloor();
+  const deleteFloor = useDeleteFloor();
 
   const handleSave = useCallback(() => {
     if (!floorId || !name.trim())
