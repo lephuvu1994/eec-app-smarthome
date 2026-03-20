@@ -13,6 +13,7 @@ import { useUniwind } from 'uniwind';
 import { BaseLayout } from '@/components/layout/BaseLayout';
 import { ScrollView, Text, TouchableOpacity, View } from '@/components/ui';
 import { translate } from '@/lib/i18n';
+import { useDeviceStore } from '@/stores/device/device-store';
 import { useHomeDataStore } from '@/stores/home/home-data-store';
 import { useHomeStore } from '@/stores/home/home-store';
 import { ETheme } from '@/types/base';
@@ -29,6 +30,10 @@ export type THomeManagementHandle = {
 
 // ─── Room Item ────────────────────────────
 function RoomItem({ room }: { room: TRoom }) {
+  const deviceCount = useDeviceStore(s =>
+    s.devices.filter(d => d.room?.id === room.id).length,
+  );
+
   const handlePress = useCallback(() => {
     router.push({
       pathname: '/(app)/(mobile)/room-detail' as any,
@@ -46,9 +51,14 @@ function RoomItem({ room }: { room: TRoom }) {
         <View className="size-9 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-900/30">
           <MaterialCommunityIcons name="door-open" size={18} color="#3B82F6" />
         </View>
-        <Text className="text-[15px] font-medium text-[#1B1B1B] dark:text-white">
-          {room.name}
-        </Text>
+        <View>
+          <Text className="text-[15px] font-medium text-[#1B1B1B] dark:text-white">
+            {room.name}
+          </Text>
+          <Text className="text-xs text-neutral-400">
+            {translate('roomManagement.deviceCount', { count: deviceCount })}
+          </Text>
+        </View>
       </View>
       <MaterialCommunityIcons name="chevron-right" size={20} color="#A3A3A3" />
     </TouchableOpacity>
@@ -171,10 +181,18 @@ export function HomeManagement({ ref }: { ref?: Ref<THomeManagementHandle> }) {
 
                     {ungroupedRooms.length > 0 && (
                       <View className="mb-4 overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-neutral-800">
-                        <View className="border-b border-neutral-100 px-4 py-3 dark:border-neutral-700">
-                          <Text className="text-[15px] font-semibold text-neutral-500 dark:text-neutral-400">
-                            {translate('base.ungroupedRooms')}
-                          </Text>
+                        <View className="flex-row items-center gap-3 border-b border-neutral-100 px-4 py-3 dark:border-neutral-700">
+                          <View className="size-9 items-center justify-center rounded-xl bg-amber-50 dark:bg-amber-900/30">
+                            <MaterialCommunityIcons name="folder-question-outline" size={18} color="#D97706" />
+                          </View>
+                          <View>
+                            <Text className="text-[15px] font-semibold text-[#1B1B1B] dark:text-white">
+                              {translate('base.ungroupedRooms')}
+                            </Text>
+                            <Text className="text-xs text-neutral-400">
+                              {translate('roomManagement.roomsCount', { count: ungroupedRooms.length })}
+                            </Text>
+                          </View>
                         </View>
                         {ungroupedRooms.map((room, idx) => (
                           <View key={room.id}>
