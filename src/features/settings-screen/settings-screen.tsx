@@ -36,7 +36,7 @@ export function SettingsScreen() {
           <MaterialCommunityIcons name="home-outline" size={20} color="#059669" />
         </View>
       ),
-      onPress: () => router.push('/(app)/(mobile)/(settings)/homeManagement/' as any),
+      onPress: () => router.push('/(app)/(mobile)/home-management' as any),
     },
     {
       key: 'account',

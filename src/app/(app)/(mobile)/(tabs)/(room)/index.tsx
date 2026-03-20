@@ -1,1 +1,1 @@
-export { RoomScreen as default } from '@/features/room-screen';
+export { RoomScreen as default } from '@/features/room/room-screen';

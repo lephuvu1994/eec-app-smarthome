@@ -15,9 +15,13 @@ type TGroupPageProps = {
   homeId: string;
   theme: ETheme;
   isCurrentGroup: boolean;
+  /** Flat mode: mỗi group chỉ có 1 room, không render secondary tabs */
+  isFlat?: boolean;
+  targetRoomId?: string | null;
+  onRoomNavigated?: () => void;
 };
 
-export const GroupPage = memo(({ group, rooms, homeId, theme, isCurrentGroup }: TGroupPageProps) => {
+export const GroupPage = memo(({ group, rooms, homeId, theme, isCurrentGroup, isFlat, targetRoomId, onRoomNavigated }: TGroupPageProps) => {
   const isFav = group.key === 'favorite';
   const [activeRoomIdx, setActiveRoomIdx] = useState(0);
   const isManualRoomScrollingRef = useRef(false);
@@ -79,10 +83,25 @@ export const GroupPage = memo(({ group, rooms, homeId, theme, isCurrentGroup }: 
     }
   }, [activeRoomIdx, secondaryTabRef, showRoomViewExpand, minWidths]);
 
+  // Auto-scroll đến room khi nhận targetRoomId từ menu
+  useEffect(() => {
+    if (!targetRoomId || !isCurrentGroup)
+      return;
+    const idx = rooms.findIndex(r => r.id === targetRoomId);
+    if (idx >= 0) {
+      // Delay nhẹ để đợi outer scroll view hoàn tất
+      const timeout = setTimeout(() => {
+        jumpToRoom(idx);
+        onRoomNavigated?.();
+      }, 450);
+      return () => clearTimeout(timeout);
+    }
+  }, [targetRoomId, isCurrentGroup, rooms, jumpToRoom, onRoomNavigated]);
+
   return (
     <View style={{ width: WIDTH, flex: 1 }}>
-      {/* THANH TAB PHỤ (SECONDARY TAB) */}
-      {!isFav && rooms.length > 0 && (
+      {/* THANH TAB PHỤ (SECONDARY TAB) — Ẩn khi flat mode */}
+      {!isFav && !isFlat && rooms.length > 0 && (
         <View className="w-full">
           <ScrollView
             ref={secondaryTabRef}
@@ -126,44 +145,60 @@ export const GroupPage = memo(({ group, rooms, homeId, theme, isCurrentGroup }: 
                 </ScrollView>
               </View>
             )
-          : rooms.length === 0
+          : isFlat && rooms.length > 0
             ? (
-                <View className="flex-1 items-center justify-center px-4">
-                  <Text className="text-neutral-400 dark:text-neutral-500">
-                    {translate('base.noRoom')}
-                  </Text>
+                // Flat mode: 1 room = 1 primary tab, render ListDevice trực tiếp
+                <View style={{ width: WIDTH }} className="flex-1 px-4 pt-1">
+                  <ScrollView
+                    showsVerticalScrollIndicator={false}
+                    overScrollMode="never"
+                    className="flex-1"
+                    contentContainerStyle={{ flexGrow: 1, paddingBottom: heightBottomTab }}
+                  >
+                    <View className="flex-1 gap-2">
+                      <ListDevice roomId={rooms[0]?.id} homeId={homeId} />
+                    </View>
+                  </ScrollView>
                 </View>
               )
-            : (
-                <ScrollView
-                  ref={innerScrollRef}
-                  horizontal
-                  pagingEnabled
-                  bounces={false}
-                  showsHorizontalScrollIndicator={false}
-                  onScroll={handleScrollEnd}
-                  scrollEventThrottle={16}
-                  decelerationRate="fast"
-                  overScrollMode="never"
-                  style={{ flex: 1 }}
-                  contentContainerStyle={{ flexGrow: 1 }}
-                >
-                  {rooms.map(item => (
-                    <View key={item.id} style={{ width: WIDTH }} className="px-4 pt-1">
-                      <ScrollView
-                        showsVerticalScrollIndicator={false}
-                        overScrollMode="never"
-                        className="flex-1"
-                        contentContainerStyle={{ flexGrow: 1, paddingBottom: heightBottomTab }}
-                      >
-                        <View className="flex-1 gap-2">
-                          <ListDevice roomId={item.id} homeId={homeId} />
-                        </View>
-                      </ScrollView>
-                    </View>
-                  ))}
-                </ScrollView>
-              )}
+            : rooms.length === 0
+              ? (
+                  <View className="flex-1 items-center justify-center px-4">
+                    <Text className="text-neutral-400 dark:text-neutral-500">
+                      {translate('base.noRoom')}
+                    </Text>
+                  </View>
+                )
+              : (
+                  <ScrollView
+                    ref={innerScrollRef}
+                    horizontal
+                    pagingEnabled
+                    bounces={false}
+                    showsHorizontalScrollIndicator={false}
+                    onScroll={handleScrollEnd}
+                    scrollEventThrottle={16}
+                    decelerationRate="fast"
+                    overScrollMode="never"
+                    style={{ flex: 1 }}
+                    contentContainerStyle={{ flexGrow: 1 }}
+                  >
+                    {rooms.map(item => (
+                      <View key={item.id} style={{ width: WIDTH }} className="px-4 pt-1">
+                        <ScrollView
+                          showsVerticalScrollIndicator={false}
+                          overScrollMode="never"
+                          className="flex-1"
+                          contentContainerStyle={{ flexGrow: 1, paddingBottom: heightBottomTab }}
+                        >
+                          <View className="flex-1 gap-2">
+                            <ListDevice roomId={item.id} homeId={homeId} />
+                          </View>
+                        </ScrollView>
+                      </View>
+                    ))}
+                  </ScrollView>
+                )}
       </View>
     </View>
   );

@@ -1,4 +1,7 @@
+import type { ViewStyle } from 'react-native';
+
 import * as React from 'react';
+import { View } from 'react-native';
 import * as DropdownMenu from 'zeego/dropdown-menu';
 
 // ==========================================
@@ -65,6 +68,13 @@ export type TSharedNativeMenuProps = {
 
   /** (Optional) Căn chỉnh Menu */
   align?: 'start' | 'center' | 'end';
+
+  /**
+   * (Optional) Style cho DropdownMenu.Root container.
+   * Workaround cho Zeego issue #180: khi dùng trong headerRight,
+   * truyền { alignSelf: 'flex-end' } để fix width expand.
+   */
+  style?: ViewStyle;
 };
 
 // ==========================================
@@ -75,6 +85,7 @@ export const ZeegoNativeMenu = React.memo(({
   elements,
   menuTitle,
   align = 'end',
+  style,
 }: TSharedNativeMenuProps) => {
   // Hàm đệ quy: Đọc Data và đẻ ra Native UI tương ứng
   const renderElement = (el: TMenuElement) => {
@@ -153,15 +164,17 @@ export const ZeegoNativeMenu = React.memo(({
   // RENDER GỐC
   // ==========================================
   return (
-    <DropdownMenu.Root>
-      <DropdownMenu.Trigger>
-        {triggerComponent}
-      </DropdownMenu.Trigger>
+    <View style={style}>
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger>
+          {triggerComponent}
+        </DropdownMenu.Trigger>
 
-      <DropdownMenu.Content align={align}>
-        {menuTitle && <DropdownMenu.Label>{menuTitle}</DropdownMenu.Label>}
-        {elements.map(renderElement)}
-      </DropdownMenu.Content>
-    </DropdownMenu.Root>
+        <DropdownMenu.Content align={align}>
+          {menuTitle && <DropdownMenu.Label>{menuTitle}</DropdownMenu.Label>}
+          {elements.map(renderElement)}
+        </DropdownMenu.Content>
+      </DropdownMenu.Root>
+    </View>
   );
 });
