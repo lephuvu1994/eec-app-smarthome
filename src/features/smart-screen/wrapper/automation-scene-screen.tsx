@@ -6,7 +6,7 @@ import { ScrollView } from 'react-native';
 import { PrimarySceneCard } from '@/components/base/scene/PrimarySceneCard';
 import { RecommendationCard } from '@/components/base/scene/RecommendationCard';
 import { Text, View } from '@/components/ui';
-import { useFloors, useRooms } from '@/hooks/use-homes';
+import { useHomeDataStore } from '@/stores/home/home-data-store';
 import { useHomeStore } from '@/stores/home/home-store';
 import { SceneFilterTabBar } from '../components/scene-filter-tab-bar';
 import { SortableSceneGrid } from '../components/sortable-scene-grid';
@@ -103,8 +103,8 @@ export const AutomationListSceneWrapper: React.FC<TProps> = ({ className }) => {
   const [activeFilters, setActiveFilters] = useState<Set<string>>(() => new Set());
 
   // Lấy floors + rooms từ API
-  const { data: floors = [] } = useFloors(homeId ?? '');
-  const { data: rooms = [] } = useRooms(homeId ?? '');
+  const floors = useHomeDataStore(s => s.floors);
+  const rooms = useHomeDataStore(s => s.rooms);
 
   // Map floorId → floor name để tra nhanh
   const floorNameMap = useMemo(

@@ -2,17 +2,18 @@ import type {
   TCreateFloorBody,
   TCreateRoomBody,
   TFloor,
-  THome,
+  THomeWithFloors,
   TRoom,
   TUpdateFloorBody,
   TUpdateRoomBody,
 } from '@/lib/api/homes/home.service';
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 import { showErrorMessage, showSuccessMessage } from '@/components/ui';
 import { homeService } from '@/lib/api/homes/home.service';
 import { translate } from '@/lib/i18n';
+import { useHomeDataStore } from '@/stores/home/home-data-store';
 
 // ============================================================
 // QUERY KEYS
@@ -27,9 +28,9 @@ export const homeKeys = {
 // QUERY HOOKS
 // ============================================================
 
-/** Get all homes for current user */
+/** Get all homes for current user (kèm floors + rooms) */
 export function useHomes() {
-  return useQuery<THome[]>({
+  return useQuery<THomeWithFloors[]>({
     queryKey: homeKeys.all,
     queryFn: homeService.getHomes,
   });
@@ -54,15 +55,14 @@ export function useRooms(homeId: string) {
 }
 
 // ============================================================
-// MUTATION HOOKS — FLOOR
+// MUTATION HOOKS — FLOOR (optimistic store update)
 // ============================================================
 
 export function useCreateFloor(homeId: string) {
-  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (body: TCreateFloorBody) => homeService.createFloor(homeId, body),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: homeKeys.floors(homeId) });
+    onSuccess: (floor) => {
+      useHomeDataStore.getState().addFloor(floor);
       showSuccessMessage(translate('roomManagement.floorCreated'));
     },
     onError: (error: any) => {
@@ -71,13 +71,12 @@ export function useCreateFloor(homeId: string) {
   });
 }
 
-export function useUpdateFloor(homeId: string) {
-  const queryClient = useQueryClient();
+export function useUpdateFloor() {
   return useMutation({
     mutationFn: ({ floorId, body }: { floorId: string; body: TUpdateFloorBody }) =>
       homeService.updateFloor(floorId, body),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: homeKeys.floors(homeId) });
+    onSuccess: (floor) => {
+      useHomeDataStore.getState().updateFloor(floor.id, floor);
       showSuccessMessage(translate('roomManagement.floorUpdated'));
     },
     onError: (error: any) => {
@@ -86,31 +85,38 @@ export function useUpdateFloor(homeId: string) {
   });
 }
 
-export function useDeleteFloor(homeId: string) {
-  const queryClient = useQueryClient();
+export function useDeleteFloor() {
   return useMutation({
-    mutationFn: (floorId: string) => homeService.deleteFloor(homeId, floorId),
+    mutationFn: (floorId: string) => homeService.deleteFloor(floorId),
+    onMutate: (floorId) => {
+      // Optimistic: remove floor, ungrouped rooms
+      const prev = { floors: useHomeDataStore.getState().floors, rooms: useHomeDataStore.getState().rooms };
+      useHomeDataStore.getState().removeFloor(floorId);
+      return prev;
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: homeKeys.floors(homeId) });
       showSuccessMessage(translate('roomManagement.floorDeleted'));
     },
-    onError: (error: any) => {
+    onError: (error: any, _floorId, context) => {
+      // Rollback
+      if (context) {
+        useHomeDataStore.getState().setFloors(context.floors);
+        useHomeDataStore.getState().setRooms(context.rooms);
+      }
       showErrorMessage(error?.message ?? translate('base.somethingWentWrong'));
     },
   });
 }
 
 // ============================================================
-// MUTATION HOOKS — ROOM
+// MUTATION HOOKS — ROOM (optimistic store update)
 // ============================================================
 
 export function useCreateRoom(homeId: string) {
-  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (body: TCreateRoomBody) => homeService.createRoom(homeId, body),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: homeKeys.floors(homeId) });
-      queryClient.invalidateQueries({ queryKey: homeKeys.rooms(homeId) });
+    onSuccess: (room) => {
+      useHomeDataStore.getState().addRoom(room);
       showSuccessMessage(translate('roomManagement.roomCreated'));
     },
     onError: (error: any) => {
@@ -119,14 +125,12 @@ export function useCreateRoom(homeId: string) {
   });
 }
 
-export function useUpdateRoom(homeId: string) {
-  const queryClient = useQueryClient();
+export function useUpdateRoom() {
   return useMutation({
     mutationFn: ({ roomId, body }: { roomId: string; body: TUpdateRoomBody }) =>
       homeService.updateRoom(roomId, body),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: homeKeys.floors(homeId) });
-      queryClient.invalidateQueries({ queryKey: homeKeys.rooms(homeId) });
+    onSuccess: (room) => {
+      useHomeDataStore.getState().updateRoom(room.id, room);
       showSuccessMessage(translate('roomManagement.roomUpdated'));
     },
     onError: (error: any) => {
@@ -135,16 +139,20 @@ export function useUpdateRoom(homeId: string) {
   });
 }
 
-export function useDeleteRoom(homeId: string) {
-  const queryClient = useQueryClient();
+export function useDeleteRoom() {
   return useMutation({
-    mutationFn: (roomId: string) => homeService.deleteRoom(homeId, roomId),
+    mutationFn: (roomId: string) => homeService.deleteRoom(roomId),
+    onMutate: (roomId) => {
+      const prev = useHomeDataStore.getState().rooms;
+      useHomeDataStore.getState().removeRoom(roomId);
+      return prev;
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: homeKeys.floors(homeId) });
-      queryClient.invalidateQueries({ queryKey: homeKeys.rooms(homeId) });
       showSuccessMessage(translate('roomManagement.roomDeleted'));
     },
-    onError: (error: any) => {
+    onError: (error: any, _roomId, context) => {
+      if (context)
+        useHomeDataStore.getState().setRooms(context);
       showErrorMessage(error?.message ?? translate('base.somethingWentWrong'));
     },
   });

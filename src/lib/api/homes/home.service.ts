@@ -23,8 +23,22 @@ export type TFloor = {
 export type TRoom = {
   id: string;
   name: string;
+  sortOrder: number;
   homeId: string;
   floorId?: string;
+};
+
+/** GET /homes trả về home kèm floors + rooms */
+export type THomeWithFloors = THome & {
+  floors: TFloor[];
+  rooms: TRoom[];
+};
+
+/** GET /homes/:id/detail */
+export type THomeDetail = {
+  home: THome;
+  floors: TFloor[];
+  rooms: TRoom[];
 };
 
 export type TCreateRoomBody = {
@@ -51,8 +65,15 @@ export type TUpdateFloorBody = {
 // ============================================================
 export const homeService = {
   // ─── Home ───────────────────────────
-  getHomes: async (): Promise<THome[]> => {
+  /** Lấy danh sách nhà (kèm floors + rooms nested) */
+  getHomes: async (): Promise<THomeWithFloors[]> => {
     const { data } = await client.get('/homes');
+    return data.data || data;
+  },
+
+  /** Chi tiết 1 nhà (home + floors + rooms) */
+  getHomeDetail: async (homeId: string): Promise<THomeDetail> => {
+    const { data } = await client.get(`/homes/${homeId}/detail`);
     return data.data || data;
   },
 
@@ -72,8 +93,13 @@ export const homeService = {
     return data.data || data;
   },
 
-  deleteFloor: async (homeId: string, floorId: string): Promise<void> => {
-    await client.delete(`/homes/${homeId}/floors/${floorId}`);
+  deleteFloor: async (floorId: string): Promise<void> => {
+    await client.delete(`/homes/floors/${floorId}`);
+  },
+
+  reorderFloors: async (homeId: string, ids: string[]): Promise<TFloor[]> => {
+    const { data } = await client.patch(`/homes/${homeId}/floors/reorder`, { ids });
+    return data.data || data;
   },
 
   // ─── Room ──────────────────────────
@@ -92,7 +118,12 @@ export const homeService = {
     return data.data || data;
   },
 
-  deleteRoom: async (homeId: string, roomId: string): Promise<void> => {
-    await client.delete(`/homes/${homeId}/rooms/${roomId}`);
+  deleteRoom: async (roomId: string): Promise<void> => {
+    await client.delete(`/homes/rooms/${roomId}`);
+  },
+
+  reorderRooms: async (homeId: string, ids: string[]): Promise<TRoom[]> => {
+    const { data } = await client.patch(`/homes/${homeId}/rooms/reorder`, { ids });
+    return data.data || data;
   },
 };
