@@ -58,7 +58,7 @@ export function GeneralSettingsScreen() {
   const languageModal = useModal();
   const tempModal = useModal();
 
-  const { allowHaptics, setToggleAllowHaptics, showCameraPreview, setShowCameraPreview } = useConfigManager();
+  const { allowHaptics, setToggleAllowHaptics, showCameraPreview, showRoomViewExpand, setShowCameraPreview, setShowRoomViewExpand } = useConfigManager();
 
   const toggleHaptics = (val: boolean) => {
     setToggleAllowHaptics(val);
@@ -101,22 +101,6 @@ export function GeneralSettingsScreen() {
           ),
         },
         {
-          key: 'theme',
-          label: translate('settings.theme.title'),
-          icon: (
-            <View className="size-9 items-center justify-center rounded-xl bg-amber-100">
-              <MaterialCommunityIcons name="theme-light-dark" size={20} color="#D97706" />
-            </View>
-          ),
-          right: (
-            <View className="flex-row items-center gap-1">
-              <Text className="text-sm text-neutral-400">{themeLabel}</Text>
-              <MaterialCommunityIcons name="chevron-right" size={18} color="#A3A3A3" />
-            </View>
-          ),
-          onPress: themeModal.present,
-        },
-        {
           key: 'camera',
           label: translate('settings.general.cameraView'),
           icon: (
@@ -133,6 +117,40 @@ export function GeneralSettingsScreen() {
             />
           ),
         },
+        {
+          key: 'roomview',
+          label: translate('settings.general.roomView'),
+          icon: (
+            <View className="size-9 items-center justify-center rounded-xl bg-sky-100">
+              <MaterialCommunityIcons name="camera-outline" size={20} color="#0284C7" />
+            </View>
+          ),
+          right: (
+            <Switch
+              value={!showRoomViewExpand}
+              onValueChange={() => setShowRoomViewExpand(!showRoomViewExpand)}
+              trackColor={{ false: '#D4D4D4', true: '#A3E635' }}
+              thumbColor="#fff"
+            />
+          ),
+        },
+        {
+          key: 'theme',
+          label: translate('settings.theme.title'),
+          icon: (
+            <View className="size-9 items-center justify-center rounded-xl bg-amber-100">
+              <MaterialCommunityIcons name="theme-light-dark" size={20} color="#D97706" />
+            </View>
+          ),
+          right: (
+            <View className="flex-row items-center gap-1">
+              <Text className="text-sm text-neutral-400">{themeLabel}</Text>
+              <MaterialCommunityIcons name="chevron-right" size={18} color="#A3A3A3" />
+            </View>
+          ),
+          onPress: themeModal.present,
+        },
+
         {
           key: 'language',
           label: translate('settings.language.title'),

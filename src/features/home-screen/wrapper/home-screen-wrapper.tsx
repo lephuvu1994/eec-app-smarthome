@@ -1,12 +1,14 @@
 import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
+import type { TMenuElement } from '@/components/ui/zeego-native-menu';
 import type { TFloor } from '@/lib/api/homes/home.service';
+import type { ETheme } from '@/types/base';
 import { FontAwesome6 } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ScrollView } from 'react-native';
 
+import { ScrollView } from 'react-native';
 import Animated, {
   Easing,
-  interpolate,
   scrollTo,
   useAnimatedRef,
   useAnimatedStyle,
@@ -17,6 +19,7 @@ import Animated, {
 import { useUniwind } from 'uniwind';
 import { LiveCameraWrapper } from '@/components/base/LiveCameraWrapper';
 import { Pressable, Skeleton, Text, View, WIDTH } from '@/components/ui';
+import { ZeegoNativeMenu } from '@/components/ui/zeego-native-menu';
 import { ANIMATION_DURATION, ASPECT_RATIO_VIDEO, BASE_SPACE_HORIZONTAL } from '@/constants';
 import { useHomeDevices } from '@/hooks/use-devices';
 import { useFloors } from '@/hooks/use-homes';
@@ -24,7 +27,6 @@ import { translate } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 import { useConfigManager } from '@/stores/config/config';
 import { useHomeStore } from '@/stores/home/home-store';
-import { ETheme } from '@/types/base';
 import { GroupPage } from '../components/tab/group-page';
 
 // --- Cấu hình dữ liệu ---
@@ -45,8 +47,6 @@ export const HomeScreenWrapper = memo(({ className }: { className?: string }) =>
   const [currentFloorIdx, setCurrentFloorIdx] = useState(0);
   const showCameraPreview = useConfigManager(state => !state.showCameraPreview);
   const animatedHeight = useSharedValue(heightVideoOnScreen);
-  const showRoomViewExpand = useConfigManager(state => state.showRoomViewExpand);
-  const setShowRoomViewExpand = useConfigManager(state => state.setShowRoomViewExpand);
 
   // ─── API data ──────────────────────────────
   const selectedHomeId = useHomeStore(s => s.selectedHomeId);
@@ -65,6 +65,61 @@ export const HomeScreenWrapper = memo(({ className }: { className?: string }) =>
       .sort((a, b) => a.sortOrder - b.sortOrder)
       .map(f => ({ key: f.id, title: f.name, floor: f }));
     return [favoriteGroup, ...floorGroups];
+  }, [floors]);
+
+  // ─── Menu elements cho ZeegoNativeMenu ───────
+  const menuElements: TMenuElement[] = useMemo(() => {
+    const items: TMenuElement[] = [
+      {
+        key: 'device-management',
+        title: translate('base.deviceManagement'),
+        icon: { ios: 'iphone.gen3' },
+        onPress: () => router.push('/(app)/(mobile)/add-device' as any),
+      },
+      {
+        key: 'room-management',
+        title: translate('base.roomManagement'),
+        icon: { ios: 'square.grid.2x2' },
+        onPress: () => router.push('/(app)/(mobile)/(tabs)/(settings)/homeManagement' as any),
+      },
+      { type: 'separator', key: 'sep-1' },
+    ];
+
+    // Thêm các tầng với phòng bên trong dưới dạng submenu
+    floors?.forEach((floor) => {
+      if (floor.rooms?.length) {
+        items.push({
+          key: floor.id,
+          title: floor.name,
+          icon: { ios: 'building.2' },
+          children: floor.rooms.map(room => ({
+            key: room.id,
+            title: room.name,
+            icon: { ios: 'door.left.hand.open' },
+          })),
+        });
+      }
+    });
+
+    // Tìm phòng chưa thuộc tầng nào (ungrouped rooms)
+    const ungroupedRooms = floors
+      ?.flatMap(f => f.rooms ?? [])
+      .filter(r => !r.floorId) ?? [];
+
+    if (ungroupedRooms.length > 0) {
+      items.push({
+        key: 'ungrouped',
+        title: translate('base.ungroupedRooms'),
+        icon: { ios: 'questionmark.folder' },
+        children: ungroupedRooms.map(room => ({
+          key: `ungrouped-${room.id}`,
+          title: room.name,
+          icon: { ios: 'door.left.hand.open' },
+        })),
+      });
+    }
+
+    return items;
   }, [floors]);
 
   // Reset floor index when home changes
@@ -131,27 +186,6 @@ export const HomeScreenWrapper = memo(({ className }: { className?: string }) =>
     });
   };
 
-  const toggleExpand = () => {
-    const nextState = !showRoomViewExpand;
-    setShowRoomViewExpand(nextState);
-  };
-
-  // Shared value để tracking trạng thái xoay
-  const rotateProgress = useDerivedValue(() => {
-    return withTiming(showRoomViewExpand ? 1 : 0, { duration: 300 });
-  });
-
-  const arrowStyle = useAnimatedStyle(() => {
-    const rotateValue = interpolate(
-      rotateProgress.value,
-      [0, 1],
-      [-90, 0],
-    );
-    return {
-      transform: [{ rotate: `${rotateValue}deg` }],
-    };
-  });
-
   return (
     <View className={cn('flex-1', className)}>
       {/* Vùng xem Camera */}
@@ -214,16 +248,15 @@ export const HomeScreenWrapper = memo(({ className }: { className?: string }) =>
               )}
         </View>
 
-        {/* Nút Chevron */}
-        <Pressable onPress={toggleExpand} className="mr-2 h-7 items-center justify-center rounded-full bg-white/40 px-2 shadow-sm dark:bg-black/40">
-          <Animated.View style={[arrowStyle]}>
-            <FontAwesome6
-              name="chevron-down"
-              size={12}
-              color={theme === ETheme.Light ? '#737373' : '#FFFFFF'}
-            />
-          </Animated.View>
-        </Pressable>
+        {/* UI nút menu room */}
+        <ZeegoNativeMenu
+          triggerComponent={(
+            <View pointerEvents="none" className="size-8 items-center justify-center rounded-full bg-white/40 shadow-sm dark:bg-black/40">
+              <FontAwesome6 name="sliders" size={14} color={theme === 'light' ? '#737373' : '#FFFFFF'} />
+            </View>
+          )}
+          elements={menuElements}
+        />
       </View>
 
       {/* NỘI DUNG CHÍNH: Outer ScrollView chứa các FloorPage */}
