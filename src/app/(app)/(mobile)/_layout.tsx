@@ -68,6 +68,20 @@ export default function MobileLayout() {
           contentStyle: { backgroundColor: colors.screenBackground[theme as ETheme] },
         }}
       />
+      <Stack.Screen
+        name="assign-rooms"
+        options={{
+          headerShown: true,
+          headerTransparent: true,
+          headerShadowVisible: false,
+          title: translate('roomManagement.addRoomToFloor'),
+          headerTitleAlign: 'center',
+          headerTintColor,
+          headerTitleStyle: { color: headerTintColor, fontWeight: '600' },
+          presentation: 'fullScreenModal',
+          contentStyle: { backgroundColor: colors.screenBackground[theme as ETheme] },
+        }}
+      />
     </Stack>
   );
 }

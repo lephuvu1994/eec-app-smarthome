@@ -48,6 +48,7 @@ export type TCreateRoomBody = {
 
 export type TUpdateRoomBody = {
   name?: string;
+  floorId?: string | null;
 };
 
 export type TCreateFloorBody = {

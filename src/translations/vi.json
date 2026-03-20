@@ -144,6 +144,9 @@
   "roomManagement": {
     "addFloor": "Thêm tầng",
     "addRoom": "Thêm phòng",
+    "addRoomToFloor": "Thêm phòng vào tầng",
+    "assignedRooms": "Phòng đã thêm",
+    "availableRooms": "Phòng chờ thêm",
     "cameraLink": "Link camera",
     "confirmDeleteFloor": "Thao tác này sẽ xóa tầng và gỡ nhóm tất cả phòng trong đó. Tiếp tục?",
     "confirmDeleteRoom": "Thao tác này sẽ xóa phòng và gỡ kết nối tất cả thiết bị. Tiếp tục?",

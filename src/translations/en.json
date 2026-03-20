@@ -144,6 +144,9 @@
   "roomManagement": {
     "addFloor": "Add Floor",
     "addRoom": "Add Room",
+    "addRoomToFloor": "Add rooms to floor",
+    "assignedRooms": "Assigned Rooms",
+    "availableRooms": "Available Rooms",
     "cameraLink": "Camera Link",
     "confirmDeleteFloor": "This will delete the floor and ungroup all rooms in it. Continue?",
     "confirmDeleteRoom": "This will permanently delete this room and unassign all devices. Continue?",

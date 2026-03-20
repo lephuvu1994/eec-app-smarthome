@@ -14,6 +14,37 @@ import { translate } from '@/lib/i18n';
 import { useHomeDataStore } from '@/stores/home/home-data-store';
 import { ETheme } from '@/types/base';
 
+// ─── Room Row ─────────────────────────
+function RoomRow({ room, isLast }: { room: { id: string; name: string }; isLast: boolean }) {
+  const handlePress = useCallback(() => {
+    router.push({
+      pathname: '/(app)/(mobile)/room-detail' as any,
+      params: { roomId: room.id, roomName: room.name },
+    });
+  }, [room.id, room.name]);
+
+  return (
+    <>
+      <TouchableOpacity
+        onPress={handlePress}
+        activeOpacity={0.7}
+        className="flex-row items-center justify-between px-4 py-3.5"
+      >
+        <View className="flex-row items-center gap-3">
+          <View className="size-9 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-900/30">
+            <MaterialCommunityIcons name="door-open" size={18} color="#3B82F6" />
+          </View>
+          <Text className="text-[15px] font-medium text-[#1B1B1B] dark:text-white">
+            {room.name}
+          </Text>
+        </View>
+        <MaterialCommunityIcons name="chevron-right" size={20} color="#A3A3A3" />
+      </TouchableOpacity>
+      {!isLast && <View className="ml-[64px] h-px bg-neutral-100 dark:bg-neutral-700" />}
+    </>
+  );
+}
+
 export function FloorDetailScreen() {
   const { floorId, floorName } = useLocalSearchParams<{ floorId: string; floorName: string }>();
   const headerHeight = useHeaderHeight();
@@ -23,6 +54,7 @@ export function FloorDetailScreen() {
 
   const floors = useHomeDataStore(s => s.floors);
   const floor = floors?.find(f => f.id === floorId);
+  const rooms = floor?.rooms ?? [];
 
   const [name, setName] = useState(floorName ?? '');
   const updateFloor = useUpdateFloor();
@@ -54,6 +86,13 @@ export function FloorDetailScreen() {
       ],
     );
   }, [floorId, deleteFloor]);
+
+  const handleOpenAssign = useCallback(() => {
+    router.push({
+      pathname: '/(app)/(mobile)/assign-rooms' as any,
+      params: { floorId },
+    });
+  }, [floorId]);
 
   return (
     <BaseLayout>
@@ -96,18 +135,57 @@ export function FloorDetailScreen() {
             </View>
           </View>
 
-          {/* ─── Room count ─── */}
+          {/* ─── Rooms section ─── */}
           <View className="mx-4 mb-4 overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-neutral-800">
-            <View className="flex-row items-center justify-between px-4 py-3.5">
-              <View className="flex-row items-center gap-3">
-                <View className="size-9 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-900/30">
-                  <MaterialCommunityIcons name="door-open" size={18} color="#3B82F6" />
-                </View>
-                <Text className="text-[15px] font-medium text-[#1B1B1B] dark:text-white">
-                  {translate('roomManagement.roomsCount', { count: floor?.rooms?.length ?? 0 })}
-                </Text>
-              </View>
-            </View>
+            {rooms.length === 0
+              ? (
+                  <View className="items-center py-6">
+                    <View className="size-12 items-center justify-center rounded-2xl bg-neutral-100 dark:bg-neutral-700">
+                      <MaterialCommunityIcons
+                        name="door-open"
+                        size={24}
+                        color={isDark ? '#525252' : '#D4D4D4'}
+                      />
+                    </View>
+                    <Text className="mt-3 text-sm text-neutral-400">
+                      {translate('roomManagement.noRooms')}
+                    </Text>
+                    <TouchableOpacity
+                      onPress={handleOpenAssign}
+                      activeOpacity={0.8}
+                      className="mt-4 flex-row items-center gap-2 rounded-xl bg-indigo-500 px-5 py-2.5"
+                    >
+                      <MaterialCommunityIcons name="plus" size={18} color="#FFFFFF" />
+                      <Text className="text-[14px] font-semibold text-white">
+                        {translate('roomManagement.addRoomToFloor')}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                )
+              : (
+                  <>
+                    <View className="flex-row items-center justify-between border-b border-neutral-100 px-4 py-3 dark:border-neutral-700">
+                      <View className="flex-row items-center gap-3">
+                        <View className="size-9 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-900/30">
+                          <MaterialCommunityIcons name="door-open" size={18} color="#3B82F6" />
+                        </View>
+                        <Text className="text-[15px] font-medium text-[#1B1B1B] dark:text-white">
+                          {translate('roomManagement.roomsCount', { count: rooms.length })}
+                        </Text>
+                      </View>
+                      <TouchableOpacity
+                        onPress={handleOpenAssign}
+                        activeOpacity={0.7}
+                        className="size-8 items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900/40"
+                      >
+                        <MaterialCommunityIcons name="plus" size={18} color="#6366F1" />
+                      </TouchableOpacity>
+                    </View>
+                    {rooms.map((room, idx) => (
+                      <RoomRow key={room.id} room={room} isLast={idx === rooms.length - 1} />
+                    ))}
+                  </>
+                )}
           </View>
 
           {/* ─── Save button ─── */}
