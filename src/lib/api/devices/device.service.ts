@@ -33,6 +33,7 @@ export type TDeviceFeature = {
   category: string;
   readOnly: boolean;
   currentValue?: any;
+  roomId?: string | null;
 };
 
 export type TDevice = {

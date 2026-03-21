@@ -156,6 +156,7 @@
     "deviceCount": "{{count}} thiết bị",
     "devices": "Thiết bị",
     "edit": "Chỉnh sửa",
+    "featuresAssigned": "Gán thiết bị thành công",
     "floorCreated": "Tạo tầng thành công",
     "floorDeleted": "Xóa tầng thành công",
     "floorName": "Tên tầng",
@@ -175,6 +176,7 @@
     "roomsCount": "{{count}} phòng",
     "sceneCount": "{{count}} kịch bản",
     "scenes": "Kịch bản",
+    "scenesAssigned": "Gán kịch bản thành công",
     "showVideoComponent": "Hiển thị Video",
     "viewMode": "Chế độ xem thiết bị"
   },

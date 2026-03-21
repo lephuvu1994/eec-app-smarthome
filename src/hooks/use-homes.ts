@@ -7,6 +7,8 @@ import type {
   TRoom,
   TUpdateFloorBody,
   TUpdateRoomBody,
+  TAssignFeaturesBody,
+  TAssignScenesBody,
 } from '@/lib/api/homes/home.service';
 
 import { useMutation, useQuery } from '@tanstack/react-query';
@@ -168,6 +170,34 @@ export function useDeleteRoom() {
     onError: (error: any, _roomId, context) => {
       if (context)
         useHomeDataStore.getState().setRooms(context);
+      showErrorMessage(error?.message ?? translate('base.somethingWentWrong'));
+    },
+  });
+}
+
+export function useAssignFeaturesToRoom() {
+  return useMutation({
+    mutationFn: ({ roomId, body }: { roomId: string; body: TAssignFeaturesBody }) =>
+      homeService.assignFeaturesToRoom(roomId, body),
+    onSuccess: (room) => {
+      useHomeDataStore.getState().updateRoom(room.id, room);
+      showSuccessMessage(translate('roomManagement.featuresAssigned'));
+    },
+    onError: (error: any) => {
+      showErrorMessage(error?.message ?? translate('base.somethingWentWrong'));
+    },
+  });
+}
+
+export function useAssignScenesToRoom() {
+  return useMutation({
+    mutationFn: ({ roomId, body }: { roomId: string; body: TAssignScenesBody }) =>
+      homeService.assignScenesToRoom(roomId, body),
+    onSuccess: (room) => {
+      useHomeDataStore.getState().updateRoom(room.id, room);
+      showSuccessMessage(translate('roomManagement.scenesAssigned'));
+    },
+    onError: (error: any) => {
       showErrorMessage(error?.message ?? translate('base.somethingWentWrong'));
     },
   });

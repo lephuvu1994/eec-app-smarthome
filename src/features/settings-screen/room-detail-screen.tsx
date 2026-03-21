@@ -134,14 +134,18 @@ export function RoomDetailScreen() {
             <Divider />
             <SettingRow
               label={translate('roomManagement.devices')}
-              value={translate('roomManagement.deviceCount', { count: 0 })}
-              onPress={() => { /* TODO: navigate to device list */ }}
+              value={translate('roomManagement.deviceCount', {
+                count: currentFloor?.rooms?.find((r) => r.id === roomId)?.features?.length ?? 0,
+              })}
+              onPress={() => router.push({ pathname: '/assign-room-features', params: { roomId } })}
             />
             <Divider />
             <SettingRow
               label={translate('roomManagement.scenes')}
-              value={translate('roomManagement.sceneCount', { count: 0 })}
-              onPress={() => { /* TODO: navigate to scene list */ }}
+              value={translate('roomManagement.sceneCount', {
+                count: currentFloor?.rooms?.find((r) => r.id === roomId)?.scenes?.length ?? 0,
+              })}
+              onPress={() => router.push({ pathname: '/assign-room-scenes', params: { roomId } })}
             />
           </View>
 
