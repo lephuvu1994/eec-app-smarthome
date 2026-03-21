@@ -54,7 +54,7 @@ export const LiveCameraWrapper = React.memo(({ videoUrl, imageUrl, defaultImage,
                   aspectRatio: 16 / 9,
                 }}
                 contentFit="cover"
-                source={require('@@/assets/room/default_image.png')}
+                source={require('@@/assets/room/default_camera.jpg')}
                 cachePolicy="memory-disk"
                 transition={500}
               />

@@ -127,7 +127,7 @@ export function GeneralSettingsScreen() {
           ),
           right: (
             <Switch
-              value={!showRoomViewExpand}
+              value={showRoomViewExpand}
               onValueChange={() => setShowRoomViewExpand(!showRoomViewExpand)}
               trackColor={{ false: '#D4D4D4', true: '#A3E635' }}
               thumbColor="#fff"

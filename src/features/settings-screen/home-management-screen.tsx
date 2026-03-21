@@ -30,8 +30,9 @@ export type THomeManagementHandle = {
 
 // ─── Room Item ────────────────────────────
 function RoomItem({ room }: { room: TRoom }) {
-  const deviceCount = useDeviceStore(s =>
-    s.devices.filter(d => d.room?.id === room.id).length,
+  const deviceCount = useDeviceStore((s) => {
+    return s.devices.filter(d => d.room?.id === room.id).length;
+  },
   );
 
   const handlePress = useCallback(() => {

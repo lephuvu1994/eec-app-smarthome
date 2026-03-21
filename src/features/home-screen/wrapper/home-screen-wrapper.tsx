@@ -205,10 +205,9 @@ export const HomeScreenWrapper = memo(({ className }: { className?: string }) =>
       {/* Vùng xem Camera */}
       <Animated.View style={[animatedStyle]} className="mb-2 w-full items-center justify-center overflow-hidden px-4">
         {showCameraPreview && (
-          <View className="size-full flex-row justify-between">
+          <View className="size-full flex-row justify-between overflow-hidden rounded-2xl">
             <LiveCameraWrapper
               videoUrl="rtsp://admin:EEVN1234%40@vanphongeec.ddns.net:1024/Streaming/channels/201"
-              defaultImage=""
               handleError={handleError}
             />
           </View>
@@ -216,8 +215,8 @@ export const HomeScreenWrapper = memo(({ className }: { className?: string }) =>
       </Animated.View>
 
       {/* HEADER: Tab Tầng và Favorite */}
-      <View className="flex-row items-center px-2">
-        <Pressable onPress={() => jumpToFloor(0)} className="px-2">
+      <View className="flex-row items-center gap-1 px-2">
+        <Pressable onPress={() => jumpToFloor(0)} className="px-1">
           <Text className={cn(
             'h-8 text-lg font-normal text-neutral-500 dark:text-neutral-400',
             currentFloorIdx === 0 && 'font-bold text-neutral-700 dark:text-white',
@@ -241,7 +240,7 @@ export const HomeScreenWrapper = memo(({ className }: { className?: string }) =>
                   ref={primaryTabRef}
                   horizontal
                   showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={{ gap: 8 }}
+                  contentContainerStyle={{ gap: 4 }}
                 >
                   {groups.slice(1).map((group, offsetIdx) => {
                     const realIdx = offsetIdx + 1;
