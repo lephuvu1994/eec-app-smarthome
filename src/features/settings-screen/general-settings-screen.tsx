@@ -57,13 +57,22 @@ export function GeneralSettingsScreen() {
   const themeModal = useModal();
   const languageModal = useModal();
   const tempModal = useModal();
+  const displayModal = useModal();
 
-  const { allowHaptics, setToggleAllowHaptics, showCameraPreview, showRoomViewExpand, setShowCameraPreview, setShowRoomViewExpand } = useConfigManager();
+  const {
+    allowHaptics,
+    setToggleAllowHaptics,
+    showCameraPreview,
+    showRoomViewExpand,
+    setShowCameraPreview,
+    setShowRoomViewExpand,
+    deviceViewMode,
+    setDeviceViewMode,
+  } = useConfigManager();
 
   const toggleHaptics = (val: boolean) => {
     setToggleAllowHaptics(val);
-    if (val)
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    if (val) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
   const themeLabel = {
@@ -77,12 +86,35 @@ export function GeneralSettingsScreen() {
     en: translate('settings.language.english'),
   }[language] ?? (language === 'en' ? 'English' : 'Tiếng Việt');
 
-  const tempLabel = '°C'; // placeholder — extend with MMKV later
+  const displayModeLabel =
+    deviceViewMode === 'split'
+      ? translate('settings.general.deviceViewModeSplit')
+      : translate('settings.general.deviceViewModeGrouped');
+
+  const tempLabel = '°C'; // placeholder
 
   const sections: Section[] = [
     {
       title: translate('settings.generale'),
       items: [
+        {
+          key: 'deviceViewMode',
+          label: translate('settings.general.deviceViewMode'),
+          icon: (
+            <View className="size-9 items-center justify-center rounded-xl bg-orange-100 dark:bg-orange-900/30">
+              <MaterialCommunityIcons name="layers-outline" size={20} color="#F97316" />
+            </View>
+          ),
+          right: (
+            <View className="flex-row items-center gap-1">
+              <Text className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
+                {displayModeLabel}
+              </Text>
+              <MaterialCommunityIcons name="chevron-right" size={18} color="#A3A3A3" />
+            </View>
+          ),
+          onPress: displayModal.present,
+        },
         {
           key: 'haptics',
           label: translate('settings.general.haptics'),
@@ -122,7 +154,7 @@ export function GeneralSettingsScreen() {
           label: translate('settings.general.roomView'),
           icon: (
             <View className="size-9 items-center justify-center rounded-xl bg-sky-100">
-              <MaterialCommunityIcons name="camera-outline" size={20} color="#0284C7" />
+              <MaterialCommunityIcons name="home-outline" size={20} color="#0284C7" />
             </View>
           ),
           right: (
@@ -252,12 +284,9 @@ export function GeneralSettingsScreen() {
         >
           {sections.map(section => (
             <View key={section.title} className="mb-6">
-              {/* Section title */}
               <Text className="mb-2 px-4 text-xs font-semibold tracking-widest text-neutral-400 uppercase">
                 {section.title}
               </Text>
-
-              {/* Section items card */}
               <View className="mx-4 overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-neutral-800">
                 {section.items.map((item, idx) => (
                   <View key={item.key}>
@@ -285,7 +314,26 @@ export function GeneralSettingsScreen() {
 
       {/* ─── Modals ─── */}
 
-      {/* Theme Modal */}
+      <Modal ref={displayModal.ref} title={translate('settings.general.deviceViewMode')} snapPoints={[250]}>
+        <View className="mx-4 overflow-hidden rounded-2xl">
+          {(['grouped', 'split'] as const).map(v => (
+            <OptionItem
+              key={v}
+              label={
+                v === 'grouped'
+                  ? translate('settings.general.deviceViewModeGrouped')
+                  : translate('settings.general.deviceViewModeSplit')
+              }
+              selected={deviceViewMode === v}
+              onPress={() => {
+                setDeviceViewMode(v);
+                displayModal.dismiss();
+              }}
+            />
+          ))}
+        </View>
+      </Modal>
+
       <Modal ref={themeModal.ref} title={translate('settings.theme.title')} snapPoints={[300]}>
         <View className="mx-4 overflow-hidden rounded-2xl">
           {(['light', 'dark', 'system'] as const).map(v => (
@@ -302,7 +350,6 @@ export function GeneralSettingsScreen() {
         </View>
       </Modal>
 
-      {/* Language Modal */}
       <Modal ref={languageModal.ref} title={translate('settings.language.title')} snapPoints={[250]}>
         <View className="mx-4 overflow-hidden rounded-2xl">
           {(['vi', 'en'] as const).map(v => (
@@ -319,7 +366,6 @@ export function GeneralSettingsScreen() {
         </View>
       </Modal>
 
-      {/* Temperature Modal */}
       <Modal ref={tempModal.ref} title={translate('settings.general.temperatureUnit')} snapPoints={[250]}>
         <View className="mx-4 overflow-hidden rounded-2xl">
           {['°C', '°F'].map(v => (
@@ -328,7 +374,6 @@ export function GeneralSettingsScreen() {
               label={v}
               selected={tempLabel === v}
               onPress={() => {
-                // handle temp change
                 tempModal.dismiss();
               }}
             />

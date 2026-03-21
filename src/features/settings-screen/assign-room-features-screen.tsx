@@ -13,6 +13,7 @@ import { ScrollView, Text, TouchableOpacity, View } from '@/components/ui';
 import { useHomeDevices } from '@/hooks/use-devices';
 import { useAssignFeaturesToRoom } from '@/hooks/use-homes';
 import { translate } from '@/lib/i18n';
+import { getDependentFeatures, getPrimaryFeatures } from '@/lib/utils/device-feature-helper';
 import { useHomeStore } from '@/stores/home/home-store';
 import { ETheme } from '@/types/base';
 
@@ -50,7 +51,7 @@ function FeatureRow({
             className="text-[15px] font-medium text-[#1B1B1B] dark:text-white"
             numberOfLines={1}
           >
-            {deviceName} - {feature.name}
+            {deviceName} - {feature.name || feature.code}
           </Text>
           <Text
             className={`text-xs mt-0.5 ${
@@ -95,10 +96,10 @@ export function AssignRoomFeaturesScreen() {
 
   const assignFeatures = useAssignFeaturesToRoom();
 
-  // Flatten all features across all devices
+  // Flatten ONLY the Primary logical features across all devices for clean UI
   const allFeatures = useMemo(() => {
     return devices.flatMap(d =>
-      (d.features ?? []).map(f => ({
+      getPrimaryFeatures(d).map(f => ({
         ...f,
         deviceId: d.id,
         deviceName: d.name,
@@ -140,10 +141,6 @@ export function AssignRoomFeaturesScreen() {
   }, [allFeatures, localAssignedIds]);
 
   const availableFeatures = useMemo(() => {
-    // Only features not assigned to ANY room or assigned to NO room, PLUS features assigned to other rooms?
-    // Usually, you can move a feature from one room to another. So we consider any feature not currently selected locally.
-    // Wait, if it's assigned to another room, showing it here might be good to reassign it.
-    // For simplicity, we just show everything not currently selected.
     return allFeatures.filter(f => !localAssignedIds.has(f.id));
   }, [allFeatures, localAssignedIds]);
 
@@ -163,13 +160,27 @@ export function AssignRoomFeaturesScreen() {
     if (!hasChanges || isSaving || !roomId) return;
     setIsSaving(true);
 
+    // Expand localAssignedIds to encompass Dependent Modifiers (e.g. Brightness)
+    // guaranteeing the BE replaces all required sub-endpoints safely
+    const payloadFeatureIds = new Set<string>();
+
+    Array.from(localAssignedIds).forEach(primaryId => {
+      payloadFeatureIds.add(primaryId);
+
+      const parentDevice = devices.find(d => d.features?.some(feat => feat.id === primaryId));
+      if (parentDevice) {
+        const dependents = getDependentFeatures(parentDevice, primaryId);
+        dependents.forEach(dep => payloadFeatureIds.add(dep.id));
+      }
+    });
+
     try {
       await new Promise((resolve, reject) => {
         assignFeatures.mutate(
           {
             roomId,
             body: {
-              featureIds: Array.from(localAssignedIds),
+              featureIds: Array.from(payloadFeatureIds),
             },
           },
           { onSuccess: resolve, onError: reject }
@@ -182,7 +193,7 @@ export function AssignRoomFeaturesScreen() {
     } finally {
       setIsSaving(false);
     }
-  }, [hasChanges, isSaving, localAssignedIds, roomId, assignFeatures, navigation]);
+  }, [hasChanges, isSaving, localAssignedIds, roomId, assignFeatures, devices, navigation]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
