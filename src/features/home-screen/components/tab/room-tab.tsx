@@ -120,7 +120,7 @@ export const RoomTabItem = memo(({ room, focused, theme, onPress, isExpanded }: 
             // start ở giữa ảnh, end ở đáy ảnh
             start={{ x: 0.5, y: 0.5 }}
             end={{ x: 0.5, y: 1 }}
-            colors={['transparent', 'rgba(0, 0, 0, 0.75)']} // Phía trên trong suốt hoàn toàn -> Ảnh sáng
+            colors={['transparent', 'rgba(0, 0, 0, 0.2)']} // Phía trên trong suốt hoàn toàn -> Ảnh sáng
             style={{
               position: 'absolute',
               bottom: 0,
@@ -178,7 +178,7 @@ export const RoomTabItem = memo(({ room, focused, theme, onPress, isExpanded }: 
         className="absolute top-2 left-2 h-6 w-34 flex-row"
         style={[imageOpacityStyle]}
       >
-        <View className="rounder-full h-8 w-14 overflow-hidden">
+        <View className="h-8 w-14 overflow-hidden">
           <BlurView
             intensity={25} // Tương đương khoảng 12px blur
             tint="light" // Tạo lớp phủ trắng sáng
@@ -197,7 +197,7 @@ export const RoomTabItem = memo(({ room, focused, theme, onPress, isExpanded }: 
           </BlurView>
         </View>
 
-        <View className="rounder-full h-8 w-18 overflow-hidden">
+        <View className="h-8 w-18 overflow-hidden">
           <BlurView
             intensity={25} // Tương đương khoảng 12px blur
             tint="light" // Tạo lớp phủ trắng sáng

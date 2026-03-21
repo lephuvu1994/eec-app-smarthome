@@ -1,9 +1,11 @@
 import type { TRoom } from '@/lib/api/homes/home.service';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useHeaderHeight } from '@react-navigation/elements';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { ActivityIndicator } from 'react-native';
+import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 
@@ -61,6 +63,7 @@ export function AssignRoomsScreen() {
   const isDark = theme === ETheme.Dark;
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
+  const headerHeight = useHeaderHeight();
 
   const floors = useHomeDataStore(s => s.floors);
   const allRooms = useHomeDataStore(s => s.rooms);
@@ -183,12 +186,21 @@ export function AssignRoomsScreen() {
   // Header right: confirm button
   useLayoutEffect(() => {
     navigation.setOptions({
+      headerLeft: () => (
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          activeOpacity={0.7}
+          className="size-9 items-center justify-center"
+        >
+          <MaterialCommunityIcons name="close" size={24} color={isDark ? '#FFF' : '#1B1B1B'} />
+        </TouchableOpacity>
+      ),
       headerRight: () => (
         <TouchableOpacity
           onPress={handleSave}
           disabled={!hasChanges || isSaving}
           activeOpacity={0.7}
-          className="mr-4"
+          className="h-9 w-12 items-center justify-center"
         >
           {isSaving
             ? <ActivityIndicator size="small" color="#6366F1" />
@@ -200,13 +212,13 @@ export function AssignRoomsScreen() {
         </TouchableOpacity>
       ),
     });
-  }, [navigation, handleSave, hasChanges, isSaving]);
+  }, [navigation, handleSave, hasChanges, isSaving, isDark]);
 
   return (
     <View className="flex-1 bg-neutral-100 dark:bg-neutral-900">
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: insets.bottom + 24, paddingTop: 16 }}
+        contentContainerStyle={{ paddingBottom: insets.bottom + 24, paddingTop: headerHeight + 16 }}
       >
         {/* ─── Assigned Rooms ─── */}
         <View className="mx-4 mb-5">
@@ -216,7 +228,7 @@ export function AssignRoomsScreen() {
               size={16}
               color={isDark ? '#6EE7B7' : '#059669'}
             />
-            <Text className="text-[13px] font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+            <Text className="text-[13px] font-semibold tracking-wider text-emerald-600 uppercase dark:text-emerald-400">
               {translate('roomManagement.assignedRooms')}
             </Text>
             <View className="ml-auto rounded-full bg-emerald-100 px-2 py-0.5 dark:bg-emerald-900/40">
@@ -226,16 +238,24 @@ export function AssignRoomsScreen() {
             </View>
           </View>
 
-          <View className="overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-neutral-800">
+          <Animated.View
+            className="overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-neutral-800"
+            layout={LinearTransition}
+          >
             {assignedRooms.length > 0
               ? assignedRooms.map((room, idx) => (
-                <View key={room.id}>
-                  <RoomRow room={room} action="remove" onPress={() => handleRemove(room)} />
-                  {idx < assignedRooms.length - 1 && (
-                    <View className="ml-[64px] h-px bg-neutral-100 dark:bg-neutral-700" />
-                  )}
-                </View>
-              ))
+                  <Animated.View
+                    key={room.id}
+                    layout={LinearTransition}
+                    entering={FadeIn}
+                    exiting={FadeOut}
+                  >
+                    <RoomRow room={room} action="remove" onPress={() => handleRemove(room)} />
+                    {idx < assignedRooms.length - 1 && (
+                      <View className="ml-[64px] h-px bg-neutral-100 dark:bg-neutral-700" />
+                    )}
+                  </Animated.View>
+                ))
               : (
                   <View className="items-center py-6">
                     <MaterialCommunityIcons
@@ -248,7 +268,7 @@ export function AssignRoomsScreen() {
                     </Text>
                   </View>
                 )}
-          </View>
+          </Animated.View>
         </View>
 
         {/* ─── Available Rooms ─── */}
@@ -259,7 +279,7 @@ export function AssignRoomsScreen() {
               size={16}
               color={isDark ? '#A5B4FC' : '#6366F1'}
             />
-            <Text className="text-[13px] font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+            <Text className="text-[13px] font-semibold tracking-wider text-indigo-600 uppercase dark:text-indigo-400">
               {translate('roomManagement.availableRooms')}
             </Text>
             <View className="ml-auto rounded-full bg-indigo-100 px-2 py-0.5 dark:bg-indigo-900/40">
@@ -269,16 +289,24 @@ export function AssignRoomsScreen() {
             </View>
           </View>
 
-          <View className="overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-neutral-800">
+          <Animated.View
+            className="overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-neutral-800"
+            layout={LinearTransition}
+          >
             {availableRooms.length > 0
               ? availableRooms.map((room, idx) => (
-                <View key={room.id}>
-                  <RoomRow room={room} action="add" onPress={() => handleAdd(room)} />
-                  {idx < availableRooms.length - 1 && (
-                    <View className="ml-[64px] h-px bg-neutral-100 dark:bg-neutral-700" />
-                  )}
-                </View>
-              ))
+                  <Animated.View
+                    key={room.id}
+                    layout={LinearTransition}
+                    entering={FadeIn}
+                    exiting={FadeOut}
+                  >
+                    <RoomRow room={room} action="add" onPress={() => handleAdd(room)} />
+                    {idx < availableRooms.length - 1 && (
+                      <View className="ml-[64px] h-px bg-neutral-100 dark:bg-neutral-700" />
+                    )}
+                  </Animated.View>
+                ))
               : (
                   <View className="items-center py-6">
                     <MaterialCommunityIcons
@@ -291,7 +319,7 @@ export function AssignRoomsScreen() {
                     </Text>
                   </View>
                 )}
-          </View>
+          </Animated.View>
         </View>
       </ScrollView>
     </View>

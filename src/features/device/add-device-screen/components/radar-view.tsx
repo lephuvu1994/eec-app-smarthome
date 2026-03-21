@@ -23,24 +23,27 @@ function RadarDeviceIcon({
 
   const ICON_CONTAINER_SIZE = 64;
 
-  // Derived value: only triggers withTiming when isScanning changes
-  const progress = useDerivedValue(() => {
+  // 1. Calculate boolean state first.
+  // This runs 60fps but only forces updates when the boolean result flips.
+  const isScanning = useDerivedValue(() => {
     'worklet';
     const currentRot = rotation.value % 360;
     let diff = currentRot - device.angle;
     if (diff < 0)
       diff += 360;
-    const isScanning = diff > 0 && diff < 133;
-    return withTiming(isScanning ? 1 : 0, { duration: 100 });
+    return diff > 0 && diff < 133;
   });
 
+  // 2. Animate based on the boolean state.
+  // This only runs when `isScanning.value` flips (twice per rotation).
   const outerStyle = useAnimatedStyle(() => {
     'worklet';
-    const p = progress.value;
+    const p = withTiming(isScanning.value ? 1 : 0, { duration: 150 });
     return {
       transform: [{ scale: interpolate(p, [0, 1], [1, 1.1]) }],
       borderColor: interpolateColor(p, [0, 1], ['rgba(230, 230, 230, 0.35)', HIGHLIGHT_COLOR]),
       borderWidth: interpolate(p, [0, 1], [0.5, 2.5]),
+      shadowOpacity: interpolate(p, [0, 1], [0.06, 0.35]),
       opacity: interpolate(p, [0, 1], [0.8, 1]),
     };
   });
