@@ -1,4 +1,5 @@
 import type {
+  TAssignRoomsBody,
   TCreateFloorBody,
   TCreateRoomBody,
   TFloor,
@@ -75,6 +76,20 @@ export function useUpdateFloor() {
   return useMutation({
     mutationFn: ({ floorId, body }: { floorId: string; body: TUpdateFloorBody }) =>
       homeService.updateFloor(floorId, body),
+    onSuccess: (floor) => {
+      useHomeDataStore.getState().updateFloor(floor.id, floor);
+      showSuccessMessage(translate('roomManagement.floorUpdated'));
+    },
+    onError: (error: any) => {
+      showErrorMessage(error?.message ?? translate('base.somethingWentWrong'));
+    },
+  });
+}
+
+export function useAssignRooms() {
+  return useMutation({
+    mutationFn: ({ floorId, body }: { floorId: string; body: TAssignRoomsBody }) =>
+      homeService.assignRoomsToFloor(floorId, body),
     onSuccess: (floor) => {
       useHomeDataStore.getState().updateFloor(floor.id, floor);
       showSuccessMessage(translate('roomManagement.floorUpdated'));

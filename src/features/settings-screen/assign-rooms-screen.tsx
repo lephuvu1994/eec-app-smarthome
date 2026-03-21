@@ -10,7 +10,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 
 import { ScrollView, Text, TouchableOpacity, View } from '@/components/ui';
-import { useUpdateRoom } from '@/hooks/use-homes';
+import { useAssignRooms } from '@/hooks/use-homes';
 import { translate } from '@/lib/i18n';
 import { useHomeDataStore } from '@/stores/home/home-data-store';
 import { useHomeStore } from '@/stores/home/home-store';
@@ -69,7 +69,7 @@ export function AssignRoomsScreen() {
   const allRooms = useHomeDataStore(s => s.rooms);
   const syncFromAPI = useHomeDataStore(s => s.syncFromAPI);
   const selectedHomeId = useHomeStore(s => s.selectedHomeId);
-  const updateRoom = useUpdateRoom();
+  const assignRooms = useAssignRooms();
 
   const floor = floors?.find(f => f.id === floorId);
 
@@ -136,39 +136,22 @@ export function AssignRoomsScreen() {
 
   // Batch save: call API for all changed rooms
   const handleSave = useCallback(async () => {
-    if (!hasChanges || isSaving)
+    if (!hasChanges || isSaving || !floorId)
       return;
     setIsSaving(true);
 
     try {
-      const addedIds = [...localAssignedIds].filter(id => !originalRoomIds.has(id));
-      const removedIds = [...originalRoomIds].filter(id => !localAssignedIds.has(id));
-
-      const promises: Promise<any>[] = [];
-
-      for (const roomId of addedIds) {
-        promises.push(
-          new Promise((resolve, reject) => {
-            updateRoom.mutate(
-              { roomId, body: { floorId } },
-              { onSuccess: resolve, onError: reject },
-            );
-          }),
+      await new Promise((resolve, reject) => {
+        assignRooms.mutate(
+          {
+            floorId,
+            body: {
+              roomIds: Array.from(localAssignedIds),
+            },
+          },
+          { onSuccess: resolve, onError: reject }
         );
-      }
-
-      for (const roomId of removedIds) {
-        promises.push(
-          new Promise((resolve, reject) => {
-            updateRoom.mutate(
-              { roomId, body: { floorId: null } },
-              { onSuccess: resolve, onError: reject },
-            );
-          }),
-        );
-      }
-
-      await Promise.all(promises);
+      });
 
       if (selectedHomeId)
         await syncFromAPI(selectedHomeId);
@@ -181,7 +164,7 @@ export function AssignRoomsScreen() {
     finally {
       setIsSaving(false);
     }
-  }, [hasChanges, isSaving, localAssignedIds, originalRoomIds, floorId, updateRoom, syncFromAPI, selectedHomeId, navigation]);
+  }, [hasChanges, isSaving, localAssignedIds, floorId, assignRooms, syncFromAPI, selectedHomeId, navigation]);
 
   // Header right: confirm button
   useLayoutEffect(() => {

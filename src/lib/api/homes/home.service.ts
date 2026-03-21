@@ -61,6 +61,10 @@ export type TUpdateFloorBody = {
   sortOrder?: number;
 };
 
+export type TAssignRoomsBody = {
+  roomIds: string[];
+};
+
 // ============================================================
 // API SERVICE
 // ============================================================
@@ -100,6 +104,11 @@ export const homeService = {
 
   reorderFloors: async (homeId: string, ids: string[]): Promise<TFloor[]> => {
     const { data } = await client.patch(`/homes/${homeId}/floors/reorder`, { ids });
+    return data.data || data;
+  },
+
+  assignRoomsToFloor: async (floorId: string, body: TAssignRoomsBody): Promise<TFloor> => {
+    const { data } = await client.patch(`/homes/floors/${floorId}/rooms`, body);
     return data.data || data;
   },
 
