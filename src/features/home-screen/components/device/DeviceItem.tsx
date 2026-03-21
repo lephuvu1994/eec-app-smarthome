@@ -1,4 +1,4 @@
-import type { TDevice } from '@/lib/api/devices/device.service';
+import type { TDevice, TDeviceFeature } from '@/lib/api/devices/device.service';
 
 import { FontAwesome6 } from '@expo/vector-icons';
 import { Image } from 'expo-image';
@@ -23,14 +23,15 @@ import { getDeviceImage } from '../../utils/device-image';
 type TProps = {
   device: TDevice;
   typeViewDevice: ETypeViewDevice;
+  activeFeature?: TDeviceFeature;
   onExpand?: (device: TDevice) => void;
 };
 
-export const DeviceItem: React.FC<TProps> = ({ device, typeViewDevice, onExpand }) => {
+export const DeviceItem: React.FC<TProps> = ({ device, typeViewDevice, activeFeature, onExpand }) => {
   const layout = useWindowDimensions();
   const isOnline = device.status === EDeviceStatus.ONLINE;
   const hasMultipleFeatures = (device.features?.length ?? 0) > 1;
-  const deviceImage = getDeviceImage(device.type || device.features?.[0]?.category || 'camera');
+  const deviceImage = getDeviceImage(activeFeature?.category || device.type || device.features?.[0]?.category || 'camera');
   const statusLabel = isOnline ? translate('base.online') : translate('base.offline');
 
   // Animation: online = 1, offline = 0
@@ -41,6 +42,8 @@ export const DeviceItem: React.FC<TProps> = ({ device, typeViewDevice, onExpand 
   const animatedGradientStyle = useAnimatedStyle(() => ({
     opacity: interpolate(progress.value, [0, 1], [0, 1], Extrapolation.CLAMP),
   }));
+
+  const displayName = activeFeature ? `${device.name} - ${activeFeature.name || activeFeature.code}` : device.name;
 
   // ─── FullWidth Layout ────────────────────────────
   if (typeViewDevice === ETypeViewDevice.FullWidth) {
@@ -60,7 +63,7 @@ export const DeviceItem: React.FC<TProps> = ({ device, typeViewDevice, onExpand 
             <Image source={deviceImage} style={{ width: 48, height: 48, borderRadius: 12 }} contentFit="cover" />
             <View className="justify-center">
               <Text className="text-base font-bold text-neutral-800 dark:text-white" numberOfLines={1}>
-                {device.name}
+                {displayName}
               </Text>
               <Text className={isOnline ? 'text-xs font-medium text-[#A3EC3E]' : 'text-xs text-neutral-400'}>
                 {statusLabel}
@@ -116,7 +119,7 @@ export const DeviceItem: React.FC<TProps> = ({ device, typeViewDevice, onExpand 
 
       <View>
         <Text className="text-[15px] font-bold text-neutral-800 dark:text-white" numberOfLines={1}>
-          {device.name}
+          {displayName}
         </Text>
         <Text className={isOnline ? 'text-xs font-medium text-[#A3EC3E]' : 'text-xs text-neutral-400'}>
           {statusLabel}

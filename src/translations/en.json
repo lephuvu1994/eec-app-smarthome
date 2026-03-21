@@ -197,6 +197,9 @@
     },
     "general": {
       "cameraView": "Show Camera View",
+      "deviceViewMode": "Device View Mode",
+      "deviceViewModeGrouped": "Grouped (Default)",
+      "deviceViewModeSplit": "Split features",
       "haptics": "Haptic Feedback",
       "introduction": "Introduction",
       "privacyPolicy": "Privacy Policy",

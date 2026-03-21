@@ -197,6 +197,9 @@
     },
     "general": {
       "cameraView": "Hiển thị Camera",
+      "deviceViewMode": "Chế độ hiển thị thiết bị",
+      "deviceViewModeGrouped": "Gộp chung (Mặc định)",
+      "deviceViewModeSplit": "Tách lẻ tính năng",
       "haptics": "Rung khi bấm",
       "introduction": "Giới thiệu",
       "privacyPolicy": "Chính sách bảo mật",
