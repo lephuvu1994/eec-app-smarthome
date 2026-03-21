@@ -96,18 +96,7 @@ export function FloorDetailScreen() {
 
   return (
     <BaseLayout>
-      <Stack.Screen
-        options={{
-          headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => router.back()}
-              className="size-9 items-center justify-center rounded-full bg-white/60 dark:bg-black/30"
-            >
-              <MaterialCommunityIcons name="close" size={24} color={isDark ? '#FFF' : '#1B1B1B'} />
-            </TouchableOpacity>
-          ),
-        }}
-      />
+      <Stack.Screen />
       <View className="relative w-full flex-1">
         <Image
           source={
