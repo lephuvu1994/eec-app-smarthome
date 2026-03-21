@@ -10,6 +10,7 @@ export type TScene = {
   homeId: string;
   triggers: any[];
   actions: any[];
+  roomId?: string | null;
   createdAt: string;
   updatedAt: string;
 };

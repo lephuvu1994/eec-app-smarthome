@@ -156,6 +156,7 @@
     "deviceCount": "{{count}} devices",
     "devices": "Devices",
     "edit": "Edit",
+    "featuresAssigned": "Devices assigned successfully",
     "floorCreated": "Floor created successfully",
     "floorDeleted": "Floor deleted successfully",
     "floorName": "Floor Name",
@@ -175,6 +176,7 @@
     "roomsCount": "{{count}} rooms",
     "sceneCount": "{{count}} scenes",
     "scenes": "Scenes",
+    "scenesAssigned": "Scenes assigned successfully",
     "showVideoComponent": "Show Video Component",
     "viewMode": "Device View Mode"
   },
