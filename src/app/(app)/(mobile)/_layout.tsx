@@ -82,6 +82,34 @@ export default function MobileLayout() {
           contentStyle: { backgroundColor: colors.screenBackground[theme as ETheme] },
         }}
       />
+      <Stack.Screen
+        name="assign-room-features"
+        options={{
+          headerShown: true,
+          headerTransparent: true,
+          headerShadowVisible: false,
+          title: translate('roomManagement.devices'),
+          headerTitleAlign: 'center',
+          headerTintColor,
+          headerTitleStyle: { color: headerTintColor, fontWeight: '600' },
+          presentation: 'fullScreenModal',
+          contentStyle: { backgroundColor: colors.screenBackground[theme as ETheme] },
+        }}
+      />
+      <Stack.Screen
+        name="assign-room-scenes"
+        options={{
+          headerShown: true,
+          headerTransparent: true,
+          headerShadowVisible: false,
+          title: translate('roomManagement.scenes'),
+          headerTitleAlign: 'center',
+          headerTintColor,
+          headerTitleStyle: { color: headerTintColor, fontWeight: '600' },
+          presentation: 'fullScreenModal',
+          contentStyle: { backgroundColor: colors.screenBackground[theme as ETheme] },
+        }}
+      />
     </Stack>
   );
 }
