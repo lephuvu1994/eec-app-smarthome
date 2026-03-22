@@ -213,7 +213,7 @@
     "homeManagement": "Home Management",
     "introduction": {
       "contactTitle": "CONTACT",
-      "description": "Sensa Smart is a smart home management application by Euro Smart. Connect, control, and monitor your IoT devices from anywhere. Designed for simplicity, security, and seamless home automation.",
+      "description": "Sensa Smart is a smart home management application by vincent.le. Connect, control, and monitor your IoT devices from anywhere. Designed for simplicity, security, and seamless home automation.",
       "feature1": "Control lights, switches, and devices remotely",
       "feature2": "Create smart automation and scenes",
       "feature3": "End-to-end encrypted communication",
@@ -261,9 +261,9 @@
       "speechRecognitionDesc": "Used to process voice commands for device control."
     },
     "privacyPolicy": {
-      "contactContent": "If you have questions about this Privacy Policy, please contact us at:\n\nEmail: support@sensaspace.com\nCompany: Euro Smart\nWebsite: www.sensaspace.com",
+      "contactContent": "If you have questions about this Privacy Policy, please contact us at:\n\nEmail: vulewenlian94@gmail.com",
       "contactTitle": "Contact Us",
-      "intro": "Euro Smart (\"we\", \"us\", \"our\") operates the Sensa Smart mobile application. This Privacy Policy explains how we collect, use, and protect your personal information when you use our app.",
+      "intro": "vincent.le (\"I\", \"me\", \"my\") operates the Sensa Smart mobile application. This Privacy Policy explains how I collect, use, and protect your personal information when you use my app.",
       "lastUpdated": "Last Updated: March 2025",
       "section1Content": "We collect the following types of information:\n\n• Account information (email, name, phone number)\n• Device data (device status, configuration, usage patterns)\n• Usage data (app interactions, feature usage, crash reports)\n• Sensor data (temperature, energy consumption from connected devices)",
       "section1Title": "1. Information We Collect",
@@ -275,7 +275,7 @@
       "section4Title": "4. Third-Party Services",
       "section5Content": "Sensa Smart is not intended for children under 13. We do not knowingly collect personal information from children. If you believe a child has provided us with personal data, please contact us.",
       "section5Title": "5. Children's Privacy",
-      "section6Content": "You have the right to:\n\n• Access your personal data\n• Request correction of inaccurate data\n• Request deletion of your account and data\n• Export your data in a portable format\n• Withdraw consent for data processing\n\nTo exercise these rights, contact us at support@sensaspace.com.",
+      "section6Content": "You have the right to:\n\n• Access your personal data\n• Request correction of inaccurate data\n• Request deletion of your account and data\n• Export your data in a portable format\n• Withdraw consent for data processing\n\nTo exercise these rights, contact us at vulewenlian94@gmail.com.",
       "section6Title": "6. Your Rights"
     },
     "support": {

@@ -67,7 +67,7 @@ export function SettingsScreen() {
           <MaterialCommunityIcons name="message-outline" size={20} color="#F59E0B" />
         </View>
       ),
-      onPress: () => router.push('/(app)/(mobile)/(settings)/message-center' as any),
+      onPress: () => router.push('/(app)/(mobile)/(settings)/message-center' as Href),
     },
     {
       key: 'support',

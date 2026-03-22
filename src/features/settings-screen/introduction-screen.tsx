@@ -90,10 +90,7 @@ export function IntroductionScreen() {
               {translate('settings.introduction.contactTitle')}
             </Text>
             <Text className="text-sm text-neutral-600 dark:text-neutral-300">
-              Email: support@sensaspace.com
-            </Text>
-            <Text className="text-sm text-neutral-600 dark:text-neutral-300">
-              Website: www.sensaspace.com
+              Email: vulewenlian94@gmail.com
             </Text>
           </View>
 
@@ -103,7 +100,7 @@ export function IntroductionScreen() {
               Sensa Smart v{appVersion}
             </Text>
             <Text className="mt-1 text-xs text-neutral-400 dark:text-neutral-500">
-              © 2025 Euro Smart. All rights reserved.
+              © 2025 vincent.le. All rights reserved.
             </Text>
           </View>
         </ScrollView>
