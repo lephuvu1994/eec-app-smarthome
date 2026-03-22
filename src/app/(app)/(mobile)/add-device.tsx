@@ -1,1 +1,1 @@
-export { AddDeviceScreen as default } from '@/features/device/add-device-screen';
+export { AddDeviceScreen as default } from '@/features/devices/add-device-screen';
