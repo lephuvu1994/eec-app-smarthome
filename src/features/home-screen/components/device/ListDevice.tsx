@@ -39,9 +39,9 @@ export function ListDevice({ roomId, isFavorite }: TListDeviceProps) {
     return devices.flatMap(device => {
       const primaries = getPrimaryFeatures(device);
       if (primaries.length <= 1) {
-        return [{ device, feature: undefined }];
+        return [{ device, feature: undefined }] as { device: TDevice; feature?: TDeviceFeature }[];
       }
-      return primaries.map(feat => ({ device, feature: feat }));
+      return primaries.map(feat => ({ device, feature: feat })) as { device: TDevice; feature?: TDeviceFeature }[];
     });
   }, [devices, deviceViewMode]);
 
