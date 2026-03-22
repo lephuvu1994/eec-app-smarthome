@@ -23,12 +23,11 @@ export const deviceKeys = {
 /** Fetch ALL devices for a home — syncs to Zustand store */
 export function useHomeDevices(homeId: string) {
   const setDevices = useDeviceStore(s => s.setDevices);
-  const setLoading = useDeviceStore(s => s.setLoading);
 
   return useQuery<TDeviceListResponse>({
     queryKey: deviceKeys.list({ homeId }),
     queryFn: async () => {
-      setLoading(true);
+      // Execute silently in background—do NOT trigger loading state that blocks UI
       const result = await deviceService.getDevices({ homeId, limit: 50 });
       setDevices(result.data);
       return result;
