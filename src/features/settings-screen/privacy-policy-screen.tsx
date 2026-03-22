@@ -76,7 +76,7 @@ export function PrivacyPolicyScreen() {
           {/* Footer */}
           <View className="mt-4 items-center">
             <Text className="text-xs text-neutral-400 dark:text-neutral-500">
-              © 2025 Euro Smart. All rights reserved.
+              © 2025 vincent.le. All rights reserved.
             </Text>
           </View>
         </ScrollView>

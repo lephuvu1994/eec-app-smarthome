@@ -40,7 +40,7 @@ export function SupportScreen() {
           <MaterialCommunityIcons name="email-outline" size={20} color="#059669" />
         </View>
       ),
-      onPress: () => Linking.openURL('mailto:support@sensaspace.com'),
+      onPress: () => Linking.openURL('mailto:vulewenlian94@gmail.com'),
     },
     {
       key: 'userGuide',
