@@ -92,7 +92,7 @@ export function SignUpForm() {
   return (
     <KeyboardAvoidingView
       behavior={IS_IOS ? 'padding' : 'height'}
-      keyboardVerticalOffset={-120}
+      keyboardVerticalOffset={-240}
       className="absolute size-full justify-end px-4"
     >
       <Animated.View

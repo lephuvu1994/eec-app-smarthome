@@ -156,8 +156,10 @@
     "deviceCount": "{{count}} devices",
     "devices": "Devices",
     "edit": "Edit",
+    "featuresAssigned": "Devices assigned successfully",
     "floorCreated": "Floor created successfully",
     "floorDeleted": "Floor deleted successfully",
+    "floorInfo": "Floor Info",
     "floorName": "Floor Name",
     "floorNamePlaceholder": "e.g. Floor 1",
     "floorUpdated": "Floor updated successfully",
@@ -175,6 +177,7 @@
     "roomsCount": "{{count}} rooms",
     "sceneCount": "{{count}} scenes",
     "scenes": "Scenes",
+    "scenesAssigned": "Scenes assigned successfully",
     "showVideoComponent": "Show Video Component",
     "viewMode": "Device View Mode"
   },
@@ -195,6 +198,9 @@
     },
     "general": {
       "cameraView": "Show Camera View",
+      "deviceViewMode": "Device View Mode",
+      "deviceViewModeGrouped": "Grouped (Default)",
+      "deviceViewModeSplit": "Split features",
       "haptics": "Haptic Feedback",
       "introduction": "Introduction",
       "privacyPolicy": "Privacy Policy",

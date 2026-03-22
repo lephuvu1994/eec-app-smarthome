@@ -65,7 +65,7 @@ export function LoginForm({ onSubmit }: TLoginFormProps) {
   return (
     <KeyboardAvoidingView
       behavior="padding"
-      keyboardVerticalOffset={-120}
+      keyboardVerticalOffset={-240}
       className="absolute size-full justify-end px-4"
     >
       <Animated.View

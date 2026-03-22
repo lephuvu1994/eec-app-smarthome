@@ -15,17 +15,19 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useUniwind } from 'uniwind';
 import { LiveCameraWrapper } from '@/components/base/LiveCameraWrapper';
-import { Pressable, Skeleton, Text, View, WIDTH } from '@/components/ui';
+import { Pressable, Text, View, WIDTH } from '@/components/ui';
 import { ZeegoNativeMenu } from '@/components/ui/zeego-native-menu';
 import { ANIMATION_DURATION, ASPECT_RATIO_VIDEO, BASE_SPACE_HORIZONTAL } from '@/constants';
-import { useHomeDevices } from '@/hooks/use-devices';
+import { DeviceControlModal } from '@/features/devices/components/DeviceControlModal';
+import { GroupPage } from '@/features/home-screen/components/tab/group-page';
+import { useHomeMenu } from '@/features/home-screen/hooks/use-home-menu';
+import { deviceService } from '@/lib/api/devices/device.service';
 import { translate } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 import { useConfigManager } from '@/stores/config/config';
+import { useDeviceStore } from '@/stores/device/device-store';
 import { useHomeDataStore } from '@/stores/home/home-data-store';
 import { useHomeStore } from '@/stores/home/home-store';
-import { GroupPage } from '../components/tab/group-page';
-import { useHomeMenu } from '../hooks/use-home-menu';
 
 // --- Cấu hình dữ liệu ---
 const heightVideoOnScreen = ((WIDTH - BASE_SPACE_HORIZONTAL * 2) / ASPECT_RATIO_VIDEO);
@@ -56,17 +58,23 @@ export const HomeScreenWrapper = memo(({ className }: { className?: string }) =>
   const selectedHomeId = useHomeStore(s => s.selectedHomeId);
   const floors = useHomeDataStore(s => s.floors);
   const allRooms = useHomeDataStore(s => s.rooms);
-  const isLoadingFloors = useHomeDataStore(s => s.isLoading);
   const syncFromAPI = useHomeDataStore(s => s.syncFromAPI);
 
-  // Sync store khi đổi home
+  // Sync store khi người dùng chủ động đổi Home qua Dropdown (Bỏ qua lần render đầu do Splash Screen đã làm)
+  const isFirstMountRef = useRef(true);
   useEffect(() => {
-    if (selectedHomeId)
-      syncFromAPI(selectedHomeId);
+    if (isFirstMountRef.current) {
+      isFirstMountRef.current = false;
+      return;
+    }
+    if (selectedHomeId) {
+      void syncFromAPI(selectedHomeId);
+      // Fetch devices thủ công thay vì dùng useHomeDevices để không đụng độ React Query Lifecycle
+      void deviceService.getDevices({ homeId: selectedHomeId, limit: 50 }).then(res =>
+        useDeviceStore.getState().setDevices(res.data),
+      );
+    }
   }, [selectedHomeId, syncFromAPI]);
-
-  // Fetch ALL devices once → syncs to Zustand deviceStore
-  useHomeDevices(selectedHomeId ?? '');
 
   // Build groups dynamically based on floor data
   const groups: TGroup[] = useMemo(() => {
@@ -227,38 +235,28 @@ export const HomeScreenWrapper = memo(({ className }: { className?: string }) =>
         </Pressable>
 
         <View className="h-8 flex-1">
-          {isLoadingFloors
-            ? (
-                <View className="flex-1 flex-row items-center gap-2">
-                  <Skeleton width={60} height={24} borderRadius={8} />
-                  <Skeleton width={60} height={24} borderRadius={8} />
-                  <Skeleton width={60} height={24} borderRadius={8} />
-                </View>
-              )
-            : (
-                <Animated.ScrollView
-                  ref={primaryTabRef}
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={{ gap: 4 }}
-                >
-                  {groups.slice(1).map((group, offsetIdx) => {
-                    const realIdx = offsetIdx + 1;
-                    const focused = currentFloorIdx === realIdx;
-                    return (
-                      <Pressable key={group.key} onPress={() => jumpToFloor(realIdx)} className="px-2">
-                        <Text className={cn(
-                          'h-8 text-lg font-normal text-neutral-500 dark:text-neutral-400',
-                          focused && 'font-bold text-neutral-700 dark:text-white',
-                        )}
-                        >
-                          {group.title}
-                        </Text>
-                      </Pressable>
-                    );
-                  })}
-                </Animated.ScrollView>
-              )}
+          <Animated.ScrollView
+            ref={primaryTabRef}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ gap: 4 }}
+          >
+            {groups.slice(1).map((group, offsetIdx) => {
+              const realIdx = offsetIdx + 1;
+              const focused = currentFloorIdx === realIdx;
+              return (
+                <Pressable key={group.key} onPress={() => jumpToFloor(realIdx)} className="px-2">
+                  <Text className={cn(
+                    'h-8 text-lg font-normal text-neutral-500 dark:text-neutral-400',
+                    focused && 'font-bold text-neutral-700 dark:text-white',
+                  )}
+                  >
+                    {group.title}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </Animated.ScrollView>
         </View>
 
         {/* UI nút menu room */}
@@ -306,6 +304,8 @@ export const HomeScreenWrapper = memo(({ className }: { className?: string }) =>
           })}
         </ScrollView>
       </View>
+
+      <DeviceControlModal />
     </View>
   );
 });

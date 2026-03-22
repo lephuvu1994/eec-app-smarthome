@@ -235,6 +235,13 @@ export const useUserManager = createSelectors(_useGetUser);
 - Export store dưới dạng `use{Name}` (e.g., `useUserManager`, `useHomeStore`)
 - Truy cập ngoài React component: `useUserManager.getState().accessToken`
 
+### ⚠️ Chiến lược "Offline-First / Cache-First" (Kiến trúc chuẩn Apple HomeKit / Tuya)
+Đối với các dữ liệu mang tính cấu trúc vật lý cốt lõi của Smart Home (Homes, Floors, Rooms, Devices Metadata):
+- **BẮT BUỘC lưu trữ ở bộ nhớ đệm (Local Cache)** thông qua Zustand `persist` (MMKV) để đạt trải nghiệm Zero-Latency (Mở app là thấy ngay cấu trúc UI, tuyệt đối cấm dùng biến `isLoading` / vòng quay Loading che màn hình block UI).
+- **Boot-Level Hydration:** Quá trình gọi API đồng bộ dữ liệu ngầm (Background Sync) phải được đưa lên Root Component (trên `_layout.tsx`) để chạy song song với `CustomSplashScreen` thông qua cơ chế `Promise.race`. Không gọi các API nạp cấu trúc tổng ở các màn hình con để tránh đụng độ lifecycle khi khởi động.
+- **Live Status Separation:** Tách biệt dữ liệu cấu trúc (tên thiết bị, icon, phòng) và dữ liệu trạng thái (Bật/Tắt/Độ sáng). UI render trước cấu trúc từ cache, còn trạng thái (Telemetry) lập tức được kéo về qua MQTT/WebSockets và vá (`patch`) thẳng vào Zustand Store.
+
+
 ---
 
 ## 7. API Layer
