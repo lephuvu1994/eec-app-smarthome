@@ -197,14 +197,13 @@ export function AssignRoomFeaturesScreen() {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: translate('roomManagement.devices'),
       headerLeft: () => (
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           activeOpacity={0.7}
-          className="size-9 items-center justify-center -ml-2"
+          className="size-9 items-center justify-center"
         >
-          <MaterialCommunityIcons name="chevron-left" size={32} color={isDark ? '#FFF' : '#1B1B1B'} />
+          <MaterialCommunityIcons name="close" size={24} color={isDark ? '#FFF' : '#1B1B1B'} />
         </TouchableOpacity>
       ),
       headerRight: () => (
@@ -212,7 +211,7 @@ export function AssignRoomFeaturesScreen() {
           onPress={handleSave}
           disabled={!hasChanges || isSaving}
           activeOpacity={0.7}
-          className="h-9 w-12 items-center justify-center pr-2"
+          className="h-9 w-12 items-center justify-center"
         >
           {isSaving ? (
             <ActivityIndicator size="small" color="#6366F1" />
