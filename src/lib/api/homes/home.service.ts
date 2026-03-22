@@ -1,6 +1,7 @@
-import { client } from '../common';
 import type { TDeviceFeature } from '../devices/device.service';
 import type { TScene } from '../scenes/scene.service';
+
+import { client } from '../common';
 
 // ============================================================
 // TYPES
@@ -19,6 +20,9 @@ export type TFloor = {
   name: string;
   homeId: string;
   sortOrder: number;
+  rooms?: TRoom[];
+};
+
 export type TRoom = {
   id: string;
   name: string;

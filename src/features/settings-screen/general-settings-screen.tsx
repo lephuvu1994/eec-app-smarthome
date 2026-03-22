@@ -72,7 +72,8 @@ export function GeneralSettingsScreen() {
 
   const toggleHaptics = (val: boolean) => {
     setToggleAllowHaptics(val);
-    if (val) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    if (val)
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
   const themeLabel = {
@@ -86,8 +87,8 @@ export function GeneralSettingsScreen() {
     en: translate('settings.language.english'),
   }[language] ?? (language === 'en' ? 'English' : 'Tiếng Việt');
 
-  const displayModeLabel =
-    deviceViewMode === 'split'
+  const displayModeLabel
+    = deviceViewMode === 'split'
       ? translate('settings.general.deviceViewModeSplit')
       : translate('settings.general.deviceViewModeGrouped');
 

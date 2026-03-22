@@ -1,3 +1,5 @@
+import type { TRoom } from '@/lib/api/homes/home.service';
+
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { Image } from 'expo-image';
@@ -15,13 +17,15 @@ import { useHomeDataStore } from '@/stores/home/home-data-store';
 import { ETheme } from '@/types/base';
 
 // ─── Room Row ─────────────────────────
-function RoomRow({ room, isLast }: { room: { id: string; name: string }; isLast: boolean }) {
+function RoomRow({ room, isLast }: { room: TRoom; isLast: boolean }) {
   const handlePress = useCallback(() => {
     router.push({
       pathname: '/(app)/(mobile)/room-detail' as any,
       params: { roomId: room.id, roomName: room.name },
     });
   }, [room.id, room.name]);
+
+  const deviceCount = room.features?.length || 0;
 
   return (
     <>
@@ -34,9 +38,16 @@ function RoomRow({ room, isLast }: { room: { id: string; name: string }; isLast:
           <View className="size-9 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-900/30">
             <MaterialCommunityIcons name="door-open" size={18} color="#3B82F6" />
           </View>
-          <Text className="text-[15px] font-medium text-[#1B1B1B] dark:text-white">
-            {room.name}
-          </Text>
+          <View>
+            <Text className="text-[15px] font-medium text-[#1B1B1B] dark:text-white">
+              {room.name}
+            </Text>
+            {deviceCount > 0 && (
+              <Text className="mt-0.5 text-xs text-neutral-400 dark:text-neutral-500">
+                {translate('roomManagement.deviceCount', { count: deviceCount })}
+              </Text>
+            )}
+          </View>
         </View>
         <MaterialCommunityIcons name="chevron-right" size={20} color="#A3A3A3" />
       </TouchableOpacity>
@@ -121,11 +132,23 @@ export function FloorDetailScreen() {
           contentContainerStyle={{ paddingTop: headerHeight + 8, paddingBottom: insets.bottom + 32 }}
         >
           {/* ─── Floor name ─── */}
-          <View className="mx-4 mb-4 overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-neutral-800">
+          <Text className="mx-6 mb-2 text-[13px] font-medium tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
+            {translate('roomManagement.floorInfo', { defaultValue: 'Thông tin tầng' })}
+          </Text>
+          <View className="mx-4 mb-5 overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-neutral-800">
             <View className="px-4 py-3">
-              <Text className="mb-2 text-sm font-medium text-neutral-500 dark:text-neutral-400">
-                {translate('roomManagement.floorName')}
-              </Text>
+              <View className="mb-2 flex-row items-center justify-between">
+                <Text className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+                  {translate('roomManagement.floorName')}
+                </Text>
+                <TouchableOpacity
+                  onPress={handleOpenAssign}
+                  activeOpacity={0.7}
+                  className="size-8 items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900/40"
+                >
+                  <MaterialCommunityIcons name="plus" size={18} color="#6366F1" />
+                </TouchableOpacity>
+              </View>
               <TextInput
                 value={name}
                 onChangeText={setName}
@@ -137,57 +160,49 @@ export function FloorDetailScreen() {
           </View>
 
           {/* ─── Rooms section ─── */}
-          <View className="mx-4 mb-4 overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-neutral-800">
-            {rooms.length === 0
-              ? (
-                  <View className="items-center py-6">
-                    <View className="size-12 items-center justify-center rounded-2xl bg-neutral-100 dark:bg-neutral-700">
-                      <MaterialCommunityIcons
-                        name="door-open"
-                        size={24}
-                        color={isDark ? '#525252' : '#D4D4D4'}
-                      />
-                    </View>
-                    <Text className="mt-3 text-sm text-neutral-400">
-                      {translate('roomManagement.noRooms')}
-                    </Text>
-                    <TouchableOpacity
-                      onPress={handleOpenAssign}
-                      activeOpacity={0.8}
-                      className="mt-4 flex-row items-center gap-2 rounded-xl bg-indigo-500 px-5 py-2.5"
-                    >
-                      <MaterialCommunityIcons name="plus" size={18} color="#FFFFFF" />
-                      <Text className="text-[14px] font-semibold text-white">
-                        {translate('roomManagement.addRoomToFloor')}
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                )
-              : (
-                  <>
-                    <View className="flex-row items-center justify-between border-b border-neutral-100 px-4 py-3 dark:border-neutral-700">
-                      <View className="flex-row items-center gap-3">
-                        <View className="size-9 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-900/30">
-                          <MaterialCommunityIcons name="door-open" size={18} color="#3B82F6" />
-                        </View>
-                        <Text className="text-[15px] font-medium text-[#1B1B1B] dark:text-white">
-                          {translate('roomManagement.roomsCount', { count: rooms.length })}
-                        </Text>
-                      </View>
-                      <TouchableOpacity
-                        onPress={handleOpenAssign}
-                        activeOpacity={0.7}
-                        className="size-8 items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900/40"
-                      >
-                        <MaterialCommunityIcons name="plus" size={18} color="#6366F1" />
-                      </TouchableOpacity>
-                    </View>
-                    {rooms.map((room, idx) => (
-                      <RoomRow key={room.id} room={room} isLast={idx === rooms.length - 1} />
-                    ))}
-                  </>
-                )}
+          <View className="mb-2 flex-row items-end justify-between px-6">
+            <Text className="text-[13px] font-medium tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
+              {translate('roomManagement.assignedRooms', { defaultValue: 'Danh sách phòng' })}
+            </Text>
+            {rooms.length > 0 && (
+              <Text className="text-[12px] font-bold text-neutral-400 dark:text-neutral-500">
+                {rooms.length}
+              </Text>
+            )}
           </View>
+
+          {rooms.length > 0
+            ? (
+                <View className="mx-4 mb-6 overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-neutral-800">
+                  {rooms.map((room, idx) => (
+                    <RoomRow key={room.id} room={room} isLast={idx === rooms.length - 1} />
+                  ))}
+                </View>
+              )
+            : (
+                <View className="mx-4 mb-6 items-center overflow-hidden rounded-2xl bg-white py-6 shadow-sm dark:bg-neutral-800">
+                  <View className="size-12 items-center justify-center rounded-2xl bg-neutral-100 dark:bg-neutral-700">
+                    <MaterialCommunityIcons
+                      name="door-open"
+                      size={24}
+                      color={isDark ? '#525252' : '#D4D4D4'}
+                    />
+                  </View>
+                  <Text className="mt-3 text-sm text-neutral-400">
+                    {translate('roomManagement.noRooms')}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={handleOpenAssign}
+                    activeOpacity={0.8}
+                    className="mt-4 flex-row items-center gap-2 rounded-xl bg-indigo-500 px-5 py-2.5"
+                  >
+                    <MaterialCommunityIcons name="plus" size={18} color="#FFFFFF" />
+                    <Text className="text-[14px] font-semibold text-white">
+                      {translate('roomManagement.addRoomToFloor')}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              )}
 
           {/* ─── Save button ─── */}
           <View className="mx-4 mb-4">

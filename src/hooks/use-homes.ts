@@ -1,5 +1,7 @@
 import type {
+  TAssignFeaturesBody,
   TAssignRoomsBody,
+  TAssignScenesBody,
   TCreateFloorBody,
   TCreateRoomBody,
   TFloor,
@@ -7,8 +9,6 @@ import type {
   TRoom,
   TUpdateFloorBody,
   TUpdateRoomBody,
-  TAssignFeaturesBody,
-  TAssignScenesBody,
 } from '@/lib/api/homes/home.service';
 
 import { useMutation, useQuery } from '@tanstack/react-query';

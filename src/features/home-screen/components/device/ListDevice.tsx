@@ -35,8 +35,8 @@ export function ListDevice({ roomId, isFavorite }: TListDeviceProps) {
     if (deviceViewMode === 'grouped') {
       return devices.map(d => ({ device: d, feature: undefined }));
     }
-    
-    return devices.flatMap(device => {
+
+    return devices.flatMap((device) => {
       const primaries = getPrimaryFeatures(device);
       if (primaries.length <= 1) {
         return [{ device, feature: undefined }] as { device: TDevice; feature?: TDeviceFeature }[];
