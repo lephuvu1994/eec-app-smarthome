@@ -38,7 +38,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   orientation: 'portrait',
   icon: './assets/logo.png',
   userInterfaceStyle: 'automatic',
-  newArchEnabled: true,
   updates: {
     fallbackToCacheTimeout: 0,
   },
@@ -141,6 +140,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         },
       },
     ],
+    '@react-native-community/datetimepicker',
     'expo-localization',
     './plugins/withLocalizedPermissions',
     'expo-router',
@@ -148,7 +148,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       'expo-screen-orientation',
       {
-        initialOrientation: 'DEFAULT',
+        initialOrientation: 'PORTRAIT',
       },
     ],
     [
@@ -178,15 +178,18 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       },
     ],
     ['react-native-edge-to-edge'],
+    'expo-image',
     [
       'expo-build-properties',
       {
         android: {
           usesCleartextTraffic: true,
           reactNativeReleaseLevel: 'experimental',
+          hermesVersion: '1',
         },
         ios: {
           reactNativeReleaseLevel: 'experimental',
+          hermesVersion: '1',
         },
       },
     ],
