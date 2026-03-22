@@ -8,8 +8,8 @@ import 'tsx/cjs';
 // eslint-disable-next-line perfectionist/sort-imports
 import Env from './env';
 
-const EXPO_ACCOUNT_OWNER = 'sensaspace';
-const EAS_PROJECT_ID = 'cac68faf-437c-429b-9739-907402d5e399';
+const EXPO_ACCOUNT_OWNER = 'vule94';
+const EAS_PROJECT_ID = '75ae721d-f4db-4468-ad91-e5e77831ec57';
 
 const appIconBadgeConfig: AppIconBadgeConfig = {
   enabled: Env.EXPO_PUBLIC_APP_ENV !== 'production',
@@ -33,7 +33,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   description: `${Env.EXPO_PUBLIC_NAME} Mobile App`,
   owner: EXPO_ACCOUNT_OWNER,
   scheme: Env.EXPO_PUBLIC_SCHEME,
-  slug: 'sensaspace',
+  slug: 'sensa-smart',
   version: Env.EXPO_PUBLIC_VERSION.toString(),
   orientation: 'portrait',
   icon: './assets/logo.png',

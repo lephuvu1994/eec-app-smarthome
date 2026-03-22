@@ -71,6 +71,96 @@ function SettingScreen() {
           headerBackTitle: '',
         }}
       />
+      <Stack.Screen
+        name="notification"
+        options={{
+          headerShown: true,
+          headerTransparent: true,
+          title: translate('settings.menu.notification'),
+          headerTitleAlign: 'center',
+          headerTintColor: theme === 'dark' ? '#ffffff' : '#1B1B1B',
+          headerTitleStyle: {
+            color: theme === 'dark' ? '#ffffff' : '#1B1B1B',
+            fontWeight: '600',
+          },
+          headerBackTitle: '',
+        }}
+      />
+      <Stack.Screen
+        name="message-center"
+        options={{
+          headerShown: true,
+          headerTransparent: true,
+          title: translate('settings.menu.messageCenter'),
+          headerTitleAlign: 'center',
+          headerTintColor: theme === 'dark' ? '#ffffff' : '#1B1B1B',
+          headerTitleStyle: {
+            color: theme === 'dark' ? '#ffffff' : '#1B1B1B',
+            fontWeight: '600',
+          },
+          headerBackTitle: '',
+        }}
+      />
+      <Stack.Screen
+        name="support"
+        options={{
+          headerShown: true,
+          headerTransparent: true,
+          title: translate('settings.menu.support'),
+          headerTitleAlign: 'center',
+          headerTintColor: theme === 'dark' ? '#ffffff' : '#1B1B1B',
+          headerTitleStyle: {
+            color: theme === 'dark' ? '#ffffff' : '#1B1B1B',
+            fontWeight: '600',
+          },
+          headerBackTitle: '',
+        }}
+      />
+      <Stack.Screen
+        name="introduction"
+        options={{
+          headerShown: true,
+          headerTransparent: true,
+          title: translate('settings.general.introduction'),
+          headerTitleAlign: 'center',
+          headerTintColor: theme === 'dark' ? '#ffffff' : '#1B1B1B',
+          headerTitleStyle: {
+            color: theme === 'dark' ? '#ffffff' : '#1B1B1B',
+            fontWeight: '600',
+          },
+          headerBackTitle: '',
+        }}
+      />
+      <Stack.Screen
+        name="privacy-settings"
+        options={{
+          headerShown: true,
+          headerTransparent: true,
+          title: translate('settings.general.privacySettings'),
+          headerTitleAlign: 'center',
+          headerTintColor: theme === 'dark' ? '#ffffff' : '#1B1B1B',
+          headerTitleStyle: {
+            color: theme === 'dark' ? '#ffffff' : '#1B1B1B',
+            fontWeight: '600',
+          },
+          headerBackTitle: '',
+        }}
+      />
+      <Stack.Screen
+        name="privacy-policy"
+        options={{
+          headerShown: true,
+          headerTransparent: true,
+          title: translate('settings.general.privacyPolicy'),
+          headerTitleAlign: 'center',
+          headerTintColor: theme === 'dark' ? '#ffffff' : '#1B1B1B',
+          headerTitleStyle: {
+            color: theme === 'dark' ? '#ffffff' : '#1B1B1B',
+            fontWeight: '600',
+          },
+          headerBackTitle: '',
+        }}
+      />
     </Stack>
   );
 }

@@ -33,38 +33,38 @@ function escapeXml(str: string): string {
 // ══════════════════════════════════════════════════════════════
 const IOS_STRINGS: Record<string, Record<string, string>> = {
   en: {
-    CFBundleDisplayName: 'SensaSpace',
+    CFBundleDisplayName: 'Sensa Smart',
     NSBluetoothAlwaysUsageDescription:
-      'Allow SensaSpace to use Bluetooth to discover and connect to Smart Home devices.',
+      'Allow Sensa Smart to use Bluetooth to discover and connect to Smart Home devices.',
     NSCameraUsageDescription:
-      'Allow SensaSpace to access your camera for QR code scanning.',
+      'Allow Sensa Smart to access your camera for QR code scanning.',
     NSMicrophoneUsageDescription:
-      'Allow SensaSpace to use the microphone for voice control.',
+      'Allow Sensa Smart to use the microphone for voice control.',
     NSSiriUsageDescription:
-      'Allow SensaSpace to use Siri for voice-controlled device management.',
+      'Allow Sensa Smart to use Siri for voice-controlled device management.',
     NSSpeechRecognitionUsageDescription:
-      'Allow SensaSpace to use speech recognition for voice commands.',
+      'Allow Sensa Smart to use speech recognition for voice commands.',
     NSLocalNetworkUsageDescription:
-      'Allow SensaSpace to discover devices on your local network.',
+      'Allow Sensa Smart to discover devices on your local network.',
     NSPhotoLibraryUsageDescription:
-      'Allow SensaSpace to access your photos for profile and home customization.',
+      'Allow Sensa Smart to access your photos for profile and home customization.',
   },
   vi: {
-    CFBundleDisplayName: 'SensaSpace',
+    CFBundleDisplayName: 'Sensa Smart',
     NSBluetoothAlwaysUsageDescription:
-      'Cho phép SensaSpace sử dụng Bluetooth để tìm kiếm và kết nối thiết bị Smart Home.',
+      'Cho phép Sensa Smart sử dụng Bluetooth để tìm kiếm và kết nối thiết bị Smart Home.',
     NSCameraUsageDescription:
-      'Cho phép SensaSpace truy cập camera để quét mã QR thiết bị.',
+      'Cho phép Sensa Smart truy cập camera để quét mã QR thiết bị.',
     NSMicrophoneUsageDescription:
-      'Cho phép SensaSpace sử dụng micro để điều khiển bằng giọng nói.',
+      'Cho phép Sensa Smart sử dụng micro để điều khiển bằng giọng nói.',
     NSSiriUsageDescription:
-      'Cho phép SensaSpace dùng Siri để điều khiển thiết bị bằng giọng nói.',
+      'Cho phép Sensa Smart dùng Siri để điều khiển thiết bị bằng giọng nói.',
     NSSpeechRecognitionUsageDescription:
-      'Cho phép SensaSpace nhận dạng giọng nói để điều khiển thiết bị.',
+      'Cho phép Sensa Smart nhận dạng giọng nói để điều khiển thiết bị.',
     NSLocalNetworkUsageDescription:
-      'Cho phép SensaSpace tìm kiếm thiết bị trong mạng nội bộ.',
+      'Cho phép Sensa Smart tìm kiếm thiết bị trong mạng nội bộ.',
     NSPhotoLibraryUsageDescription:
-      'Cho phép SensaSpace truy cập ảnh để tuỳ chỉnh hồ sơ và nhà.',
+      'Cho phép Sensa Smart truy cập ảnh để tuỳ chỉnh hồ sơ và nhà.',
   },
 };
 
@@ -73,26 +73,26 @@ const IOS_STRINGS: Record<string, Record<string, string>> = {
 // ══════════════════════════════════════════════════════════════
 const ANDROID_STRINGS: Record<string, Record<string, string>> = {
   en: {
-    app_name: 'SensaSpace',
+    app_name: 'Sensa Smart',
     bluetooth_permission_rationale:
-      'SensaSpace needs Bluetooth to discover and connect to Smart Home devices.',
+      'Sensa Smart needs Bluetooth to discover and connect to Smart Home devices.',
     camera_permission_rationale:
-      'SensaSpace needs camera access to scan QR codes.',
+      'Sensa Smart needs camera access to scan QR codes.',
     microphone_permission_rationale:
-      'SensaSpace needs microphone access for voice control.',
+      'Sensa Smart needs microphone access for voice control.',
     location_permission_rationale:
-      'SensaSpace needs location access to discover nearby devices.',
+      'Sensa Smart needs location access to discover nearby devices.',
   },
   vi: {
-    app_name: 'SensaSpace',
+    app_name: 'Sensa Smart',
     bluetooth_permission_rationale:
-      'SensaSpace cần Bluetooth để tìm kiếm và kết nối thiết bị Smart Home.',
+      'Sensa Smart cần Bluetooth để tìm kiếm và kết nối thiết bị Smart Home.',
     camera_permission_rationale:
-      'SensaSpace cần truy cập camera để quét mã QR.',
+      'Sensa Smart cần truy cập camera để quét mã QR.',
     microphone_permission_rationale:
-      'SensaSpace cần micro để điều khiển bằng giọng nói.',
+      'Sensa Smart cần micro để điều khiển bằng giọng nói.',
     location_permission_rationale:
-      'SensaSpace cần vị trí để tìm kiếm thiết bị gần đây.',
+      'Sensa Smart cần vị trí để tìm kiếm thiết bị gần đây.',
   },
 };
 
@@ -113,7 +113,7 @@ const withLocalizedPermissionsIOS: ConfigPlugin = (config) => {
     async (config) => {
       const projectRoot = config.modRequest.platformProjectRoot;
       const projectName
-        = config.modRequest.projectName ?? config.name ?? 'SensaSpace';
+        = config.modRequest.projectName ?? config.name ?? 'Sensa Smart';
 
       for (const [locale, strings] of Object.entries(IOS_STRINGS)) {
         const lprojDir = path.join(

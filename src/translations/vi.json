@@ -135,7 +135,7 @@
   },
   "onboarding": {
     "slide1Desc": "Kết nối và điều khiển ngôi nhà dễ dàng",
-    "slide1Title": "Chào mừng bạn đến với\nSensaSpace",
+    "slide1Title": "Chào mừng bạn đến với\nSensa Smart",
     "slide2Desc": "Kết nối mọi thiết bị chỉ trong vài giây.\nĐơn giản, nhanh chóng, tiện lợi.",
     "slide2Title": "Kết nối dễ dàng",
     "slide3Desc": "Điều khiển và giám sát ngôi nhà của\nbạn mọi lúc, mọi nơi",
@@ -187,7 +187,7 @@
   },
   "settings": {
     "about": "Giới thiệu",
-    "account": "Tài khoản SensaSpace",
+    "account": "Tài khoản Sensa Smart",
     "defaultUser": "Người dùng",
     "energyCard": {
       "currentUsage": "Mức tiêu thụ hiện tại",
@@ -211,6 +211,16 @@
     },
     "generale": "Thông tin chung",
     "homeManagement": "Quản lý nhà",
+    "introduction": {
+      "contactTitle": "LIÊN HỆ",
+      "description": "Sensa Smart là ứng dụng quản lý nhà thông minh của Euro Smart. Kết nối, điều khiển và giám sát thiết bị IoT từ mọi nơi. Thiết kế đơn giản, bảo mật và tự động hóa liền mạch.",
+      "feature1": "Điều khiển đèn, công tắc và thiết bị từ xa",
+      "feature2": "Tạo kịch bản và tự động hóa thông minh",
+      "feature3": "Mã hóa đầu cuối cho giao tiếp an toàn",
+      "feature4": "Giám sát năng lượng thời gian thực",
+      "featuresTitle": "TÍNH NĂNG CHÍNH",
+      "tagline": "Nhà Thông Minh, Đơn Giản Hơn"
+    },
     "language": {
       "english": "Tiếng Anh",
       "title": "Ngôn ngữ",
@@ -224,6 +234,55 @@
       "messageCenter": "Trung tâm tin nhắn",
       "notification": "Thông báo",
       "support": "Hỗ trợ sử dụng"
+    },
+    "messageCenter": {
+      "emptyDescription": "Bạn chưa có tin nhắn nào. Tin nhắn từ hệ thống sẽ hiển thị tại đây.",
+      "emptyTitle": "Không có tin nhắn"
+    },
+    "notification": {
+      "emptyDescription": "Bạn đã xem hết! Chúng tôi sẽ thông báo khi có điều quan trọng.",
+      "emptyTitle": "Không có thông báo"
+    },
+    "privacy": {
+      "bluetooth": "Bluetooth",
+      "bluetoothDesc": "Dùng để tìm kiếm và kết nối thiết bị Smart Home qua BLE.",
+      "camera": "Camera",
+      "cameraDesc": "Dùng để quét mã QR khi ghép nối thiết bị nhanh.",
+      "headerDesc": "Sensa Smart yêu cầu quyền truy cập một số tính năng thiết bị để cung cấp chức năng nhà thông minh. Bạn có thể quản lý các quyền này bất kỳ lúc nào trong Cài đặt thiết bị.",
+      "microphone": "Micro",
+      "microphoneDesc": "Dùng để điều khiển thiết bị nhà thông minh bằng giọng nói.",
+      "openSettings": "Mở Cài đặt thiết bị",
+      "permissionsTitle": "QUYỀN ỨNG DỤNG",
+      "photos": "Thư viện ảnh",
+      "photosDesc": "Dùng cho ảnh đại diện và tuỳ chỉnh nhà/phòng.",
+      "siri": "Siri & Phím tắt",
+      "siriDesc": "Dùng để điều khiển thiết bị bằng lệnh giọng nói qua Siri.",
+      "speechRecognition": "Nhận dạng giọng nói",
+      "speechRecognitionDesc": "Dùng để xử lý lệnh giọng nói điều khiển thiết bị."
+    },
+    "privacyPolicy": {
+      "contactContent": "Nếu bạn có câu hỏi về Chính sách bảo mật này, vui lòng liên hệ:\n\nEmail: support@sensaspace.com\nCông ty: Euro Smart\nWebsite: www.sensaspace.com",
+      "contactTitle": "Liên hệ",
+      "intro": "Euro Smart (\"chúng tôi\") vận hành ứng dụng di động Sensa Smart. Chính sách bảo mật này giải thích cách chúng tôi thu thập, sử dụng và bảo vệ thông tin cá nhân của bạn khi sử dụng ứng dụng.",
+      "lastUpdated": "Cập nhật lần cuối: Tháng 3, 2025",
+      "section1Content": "Chúng tôi thu thập các loại thông tin sau:\n\n• Thông tin tài khoản (email, tên, số điện thoại)\n• Dữ liệu thiết bị (trạng thái, cấu hình, mẫu sử dụng)\n• Dữ liệu sử dụng (tương tác ứng dụng, tính năng, báo cáo lỗi)\n• Dữ liệu cảm biến (nhiệt độ, tiêu thụ năng lượng từ thiết bị)",
+      "section1Title": "1. Thông tin chúng tôi thu thập",
+      "section2Content": "Thông tin của bạn được sử dụng để:\n\n• Cung cấp và duy trì chức năng điều khiển nhà thông minh\n• Cải thiện hiệu suất và trải nghiệm người dùng\n• Gửi thông báo quan trọng về thiết bị\n• Hỗ trợ khách hàng\n• Đảm bảo bảo mật và ngăn chặn truy cập trái phép",
+      "section2Title": "2. Cách chúng tôi sử dụng thông tin",
+      "section3Content": "Chúng tôi áp dụng các biện pháp bảo mật tiêu chuẩn:\n\n• Mã hóa đầu cuối cho giao tiếp thiết bị\n• Kết nối HTTPS an toàn cho tất cả API\n• Lưu trữ dữ liệu mã hóa trên máy chủ\n• Kiểm tra và cập nhật bảo mật định kỳ",
+      "section3Title": "3. Bảo mật dữ liệu",
+      "section4Content": "Chúng tôi không bán thông tin cá nhân. Chúng tôi có thể chia sẻ dữ liệu với:\n\n• Nhà cung cấp dịch vụ đám mây (lưu trữ và xử lý)\n• Dịch vụ phân tích (chỉ dữ liệu ẩn danh)\n• Cơ quan pháp luật (khi luật yêu cầu)",
+      "section4Title": "4. Dịch vụ bên thứ ba",
+      "section5Content": "Sensa Smart không dành cho trẻ em dưới 13 tuổi. Chúng tôi không cố ý thu thập thông tin từ trẻ em. Nếu bạn tin rằng trẻ em đã cung cấp dữ liệu cho chúng tôi, vui lòng liên hệ.",
+      "section5Title": "5. Quyền riêng tư trẻ em",
+      "section6Content": "Bạn có quyền:\n\n• Truy cập dữ liệu cá nhân\n• Yêu cầu sửa dữ liệu không chính xác\n• Yêu cầu xóa tài khoản và dữ liệu\n• Xuất dữ liệu ở định dạng di động\n• Rút lại đồng ý xử lý dữ liệu\n\nĐể thực hiện các quyền này, liên hệ support@sensaspace.com.",
+      "section6Title": "6. Quyền của bạn"
+    },
+    "support": {
+      "contactUs": "Liên hệ chúng tôi",
+      "faq": "Câu hỏi thường gặp",
+      "feedback": "Gửi phản hồi",
+      "userGuide": "Hướng dẫn sử dụng"
     },
     "tapToSetName": "Nhấn để đặt tên",
     "theme": {
