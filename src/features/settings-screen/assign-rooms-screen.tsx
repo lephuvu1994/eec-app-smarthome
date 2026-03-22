@@ -149,7 +149,7 @@ export function AssignRoomsScreen() {
               roomIds: Array.from(localAssignedIds),
             },
           },
-          { onSuccess: resolve, onError: reject }
+          { onSuccess: resolve, onError: reject },
         );
       });
 

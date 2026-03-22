@@ -51,10 +51,13 @@ function FeatureRow({
             className="text-[15px] font-medium text-[#1B1B1B] dark:text-white"
             numberOfLines={1}
           >
-            {deviceName} - {feature.name || feature.code}
+            {deviceName}
+            {' '}
+            -
+            {feature.name || feature.code}
           </Text>
           <Text
-            className={`text-xs mt-0.5 ${
+            className={`mt-0.5 text-xs ${
               isOnline ? 'text-emerald-500' : 'text-neutral-400'
             }`}
           >
@@ -104,14 +107,14 @@ export function AssignRoomFeaturesScreen() {
         deviceId: d.id,
         deviceName: d.name,
         isOnline: d.status === 'online',
-      }))
+      })),
     );
   }, [devices]);
 
   // Original UI IDs belonging to this room
   const originalFeatureIds = useMemo(
     () => new Set(allFeatures.filter(f => f.roomId === roomId).map(f => f.id)),
-    [allFeatures, roomId]
+    [allFeatures, roomId],
   );
 
   // Local state: IDs of features currently assigned (uncommitted)
@@ -126,9 +129,11 @@ export function AssignRoomFeaturesScreen() {
 
   // Has unsaved changes?
   const hasChanges = useMemo(() => {
-    if (localAssignedIds.size !== originalFeatureIds.size) return true;
+    if (localAssignedIds.size !== originalFeatureIds.size)
+      return true;
     for (const id of localAssignedIds) {
-      if (!originalFeatureIds.has(id)) return true;
+      if (!originalFeatureIds.has(id))
+        return true;
     }
     return false;
   }, [localAssignedIds, originalFeatureIds]);
@@ -149,7 +154,7 @@ export function AssignRoomFeaturesScreen() {
   }, []);
 
   const handleRemove = useCallback((featureId: string) => {
-    setLocalAssignedIds(prev => {
+    setLocalAssignedIds((prev) => {
       const next = new Set(prev);
       next.delete(featureId);
       return next;
@@ -157,14 +162,15 @@ export function AssignRoomFeaturesScreen() {
   }, []);
 
   const handleSave = useCallback(async () => {
-    if (!hasChanges || isSaving || !roomId) return;
+    if (!hasChanges || isSaving || !roomId)
+      return;
     setIsSaving(true);
 
     // Expand localAssignedIds to encompass Dependent Modifiers (e.g. Brightness)
     // guaranteeing the BE replaces all required sub-endpoints safely
     const payloadFeatureIds = new Set<string>();
 
-    Array.from(localAssignedIds).forEach(primaryId => {
+    Array.from(localAssignedIds).forEach((primaryId) => {
       payloadFeatureIds.add(primaryId);
 
       const parentDevice = devices.find(d => d.features?.some(feat => feat.id === primaryId));
@@ -183,14 +189,16 @@ export function AssignRoomFeaturesScreen() {
               featureIds: Array.from(payloadFeatureIds),
             },
           },
-          { onSuccess: resolve, onError: reject }
+          { onSuccess: resolve, onError: reject },
         );
       });
 
       navigation.goBack();
-    } catch {
+    }
+    catch {
       // Error handled by hook
-    } finally {
+    }
+    finally {
       setIsSaving(false);
     }
   }, [hasChanges, isSaving, localAssignedIds, roomId, assignFeatures, devices, navigation]);
@@ -213,13 +221,15 @@ export function AssignRoomFeaturesScreen() {
           activeOpacity={0.7}
           className="h-9 w-12 items-center justify-center"
         >
-          {isSaving ? (
-            <ActivityIndicator size="small" color="#6366F1" />
-          ) : (
-            <Text className={`text-[16px] font-semibold ${hasChanges ? 'text-indigo-500' : 'text-neutral-300 dark:text-neutral-600'}`}>
-              {translate('base.saveButton')}
-            </Text>
-          )}
+          {isSaving
+            ? (
+                <ActivityIndicator size="small" color="#6366F1" />
+              )
+            : (
+                <Text className={`text-[16px] font-semibold ${hasChanges ? 'text-indigo-500' : 'text-neutral-300 dark:text-neutral-600'}`}>
+                  {translate('base.saveButton')}
+                </Text>
+              )}
         </TouchableOpacity>
       ),
     });
@@ -248,7 +258,9 @@ export function AssignRoomFeaturesScreen() {
               color={isDark ? '#6EE7B7' : '#059669'}
             />
             <Text className="text-[13px] font-semibold tracking-wider text-emerald-600 uppercase dark:text-emerald-400">
-              Đã gán vào phòng ({assignedFeatures.length})
+              Đã gán vào phòng (
+              {assignedFeatures.length}
+              )
             </Text>
           </View>
 
@@ -256,32 +268,34 @@ export function AssignRoomFeaturesScreen() {
             className="overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-neutral-800"
             layout={LinearTransition}
           >
-            {assignedFeatures.length > 0 ? (
-              assignedFeatures.map((f, idx) => (
-                <Animated.View
-                  key={f.id}
-                  layout={LinearTransition}
-                  entering={FadeIn}
-                  exiting={FadeOut}
-                >
-                  <FeatureRow
-                    feature={f}
-                    deviceName={f.deviceName}
-                    isOnline={f.isOnline}
-                    action="remove"
-                    onPress={() => handleRemove(f.id)}
-                  />
-                  {idx < assignedFeatures.length - 1 && (
-                    <View className="ml-[64px] h-px bg-neutral-100 dark:bg-neutral-700" />
-                  )}
-                </Animated.View>
-              ))
-            ) : (
-              <View className="items-center py-6">
-                <MaterialCommunityIcons name="power-socket" size={32} color={isDark ? '#525252' : '#D4D4D4'} />
-                <Text className="mt-2 text-sm text-neutral-400">Chưa có thiết bị nào</Text>
-              </View>
-            )}
+            {assignedFeatures.length > 0
+              ? (
+                  assignedFeatures.map((f, idx) => (
+                    <Animated.View
+                      key={f.id}
+                      layout={LinearTransition}
+                      entering={FadeIn}
+                      exiting={FadeOut}
+                    >
+                      <FeatureRow
+                        feature={f}
+                        deviceName={f.deviceName}
+                        isOnline={f.isOnline}
+                        action="remove"
+                        onPress={() => handleRemove(f.id)}
+                      />
+                      {idx < assignedFeatures.length - 1 && (
+                        <View className="ml-[64px] h-px bg-neutral-100 dark:bg-neutral-700" />
+                      )}
+                    </Animated.View>
+                  ))
+                )
+              : (
+                  <View className="items-center py-6">
+                    <MaterialCommunityIcons name="power-socket" size={32} color={isDark ? '#525252' : '#D4D4D4'} />
+                    <Text className="mt-2 text-sm text-neutral-400">Chưa có thiết bị nào</Text>
+                  </View>
+                )}
           </Animated.View>
         </View>
 
@@ -294,7 +308,9 @@ export function AssignRoomFeaturesScreen() {
               color={isDark ? '#A5B4FC' : '#6366F1'}
             />
             <Text className="text-[13px] font-semibold tracking-wider text-indigo-600 uppercase dark:text-indigo-400">
-              Có thể gán ({availableFeatures.length})
+              Có thể gán (
+              {availableFeatures.length}
+              )
             </Text>
           </View>
 
@@ -302,32 +318,34 @@ export function AssignRoomFeaturesScreen() {
             className="overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-neutral-800"
             layout={LinearTransition}
           >
-            {availableFeatures.length > 0 ? (
-              availableFeatures.map((f, idx) => (
-                <Animated.View
-                  key={f.id}
-                  layout={LinearTransition}
-                  entering={FadeIn}
-                  exiting={FadeOut}
-                >
-                  <FeatureRow
-                    feature={f}
-                    deviceName={f.deviceName}
-                    isOnline={f.isOnline}
-                    action="add"
-                    onPress={() => handleAdd(f.id)}
-                  />
-                  {idx < availableFeatures.length - 1 && (
-                    <View className="ml-[64px] h-px bg-neutral-100 dark:bg-neutral-700" />
-                  )}
-                </Animated.View>
-              ))
-            ) : (
-              <View className="items-center py-6">
-                <MaterialCommunityIcons name="check-all" size={32} color={isDark ? '#525252' : '#D4D4D4'} />
-                <Text className="mt-2 text-sm text-neutral-400">Tất cả đều đã được gán</Text>
-              </View>
-            )}
+            {availableFeatures.length > 0
+              ? (
+                  availableFeatures.map((f, idx) => (
+                    <Animated.View
+                      key={f.id}
+                      layout={LinearTransition}
+                      entering={FadeIn}
+                      exiting={FadeOut}
+                    >
+                      <FeatureRow
+                        feature={f}
+                        deviceName={f.deviceName}
+                        isOnline={f.isOnline}
+                        action="add"
+                        onPress={() => handleAdd(f.id)}
+                      />
+                      {idx < availableFeatures.length - 1 && (
+                        <View className="ml-[64px] h-px bg-neutral-100 dark:bg-neutral-700" />
+                      )}
+                    </Animated.View>
+                  ))
+                )
+              : (
+                  <View className="items-center py-6">
+                    <MaterialCommunityIcons name="check-all" size={32} color={isDark ? '#525252' : '#D4D4D4'} />
+                    <Text className="mt-2 text-sm text-neutral-400">Tất cả đều đã được gán</Text>
+                  </View>
+                )}
           </Animated.View>
         </View>
       </ScrollView>

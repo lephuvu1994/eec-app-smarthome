@@ -159,6 +159,7 @@
     "featuresAssigned": "Devices assigned successfully",
     "floorCreated": "Floor created successfully",
     "floorDeleted": "Floor deleted successfully",
+    "floorInfo": "Floor Info",
     "floorName": "Floor Name",
     "floorNamePlaceholder": "e.g. Floor 1",
     "floorUpdated": "Floor updated successfully",

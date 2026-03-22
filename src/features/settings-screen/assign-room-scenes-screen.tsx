@@ -76,7 +76,7 @@ export function AssignRoomScenesScreen() {
   // Original UI IDs belonging to this room
   const originalSceneIds = useMemo(
     () => new Set(scenes.filter(s => s.roomId === roomId).map(s => s.id)),
-    [scenes, roomId]
+    [scenes, roomId],
   );
 
   // Local state: IDs of scenes currently assigned (uncommitted)
@@ -91,9 +91,11 @@ export function AssignRoomScenesScreen() {
 
   // Has unsaved changes?
   const hasChanges = useMemo(() => {
-    if (localAssignedIds.size !== originalSceneIds.size) return true;
+    if (localAssignedIds.size !== originalSceneIds.size)
+      return true;
     for (const id of localAssignedIds) {
-      if (!originalSceneIds.has(id)) return true;
+      if (!originalSceneIds.has(id))
+        return true;
     }
     return false;
   }, [localAssignedIds, originalSceneIds]);
@@ -114,7 +116,7 @@ export function AssignRoomScenesScreen() {
   }, []);
 
   const handleRemove = useCallback((sceneId: string) => {
-    setLocalAssignedIds(prev => {
+    setLocalAssignedIds((prev) => {
       const next = new Set(prev);
       next.delete(sceneId);
       return next;
@@ -122,7 +124,8 @@ export function AssignRoomScenesScreen() {
   }, []);
 
   const handleSave = useCallback(async () => {
-    if (!hasChanges || isSaving || !roomId) return;
+    if (!hasChanges || isSaving || !roomId)
+      return;
     setIsSaving(true);
 
     try {
@@ -134,14 +137,16 @@ export function AssignRoomScenesScreen() {
               sceneIds: Array.from(localAssignedIds),
             },
           },
-          { onSuccess: resolve, onError: reject }
+          { onSuccess: resolve, onError: reject },
         );
       });
 
       navigation.goBack();
-    } catch {
+    }
+    catch {
       // Error handled by hook
-    } finally {
+    }
+    finally {
       setIsSaving(false);
     }
   }, [hasChanges, isSaving, localAssignedIds, roomId, assignScenes, navigation]);
@@ -164,13 +169,15 @@ export function AssignRoomScenesScreen() {
           activeOpacity={0.7}
           className="h-9 w-12 items-center justify-center"
         >
-          {isSaving ? (
-            <ActivityIndicator size="small" color="#6366F1" />
-          ) : (
-            <Text className={`text-[16px] font-semibold ${hasChanges ? 'text-indigo-500' : 'text-neutral-300 dark:text-neutral-600'}`}>
-              {translate('base.saveButton')}
-            </Text>
-          )}
+          {isSaving
+            ? (
+                <ActivityIndicator size="small" color="#6366F1" />
+              )
+            : (
+                <Text className={`text-[16px] font-semibold ${hasChanges ? 'text-indigo-500' : 'text-neutral-300 dark:text-neutral-600'}`}>
+                  {translate('base.saveButton')}
+                </Text>
+              )}
         </TouchableOpacity>
       ),
     });
@@ -199,7 +206,9 @@ export function AssignRoomScenesScreen() {
               color={isDark ? '#6EE7B7' : '#059669'}
             />
             <Text className="text-[13px] font-semibold tracking-wider text-emerald-600 uppercase dark:text-emerald-400">
-              Đã gán vào phòng ({assignedScenes.length})
+              Đã gán vào phòng (
+              {assignedScenes.length}
+              )
             </Text>
           </View>
 
@@ -207,26 +216,28 @@ export function AssignRoomScenesScreen() {
             className="overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-neutral-800"
             layout={LinearTransition}
           >
-            {assignedScenes.length > 0 ? (
-              assignedScenes.map((s, idx) => (
-                <Animated.View
-                  key={s.id}
-                  layout={LinearTransition}
-                  entering={FadeIn}
-                  exiting={FadeOut}
-                >
-                  <SceneRow scene={s} action="remove" onPress={() => handleRemove(s.id)} />
-                  {idx < assignedScenes.length - 1 && (
-                    <View className="ml-[64px] h-px bg-neutral-100 dark:bg-neutral-700" />
-                  )}
-                </Animated.View>
-              ))
-            ) : (
-              <View className="items-center py-6">
-                <MaterialCommunityIcons name="movie-open-play-outline" size={32} color={isDark ? '#525252' : '#D4D4D4'} />
-                <Text className="mt-2 text-sm text-neutral-400">Chưa có kịch bản nào</Text>
-              </View>
-            )}
+            {assignedScenes.length > 0
+              ? (
+                  assignedScenes.map((s, idx) => (
+                    <Animated.View
+                      key={s.id}
+                      layout={LinearTransition}
+                      entering={FadeIn}
+                      exiting={FadeOut}
+                    >
+                      <SceneRow scene={s} action="remove" onPress={() => handleRemove(s.id)} />
+                      {idx < assignedScenes.length - 1 && (
+                        <View className="ml-[64px] h-px bg-neutral-100 dark:bg-neutral-700" />
+                      )}
+                    </Animated.View>
+                  ))
+                )
+              : (
+                  <View className="items-center py-6">
+                    <MaterialCommunityIcons name="movie-open-play-outline" size={32} color={isDark ? '#525252' : '#D4D4D4'} />
+                    <Text className="mt-2 text-sm text-neutral-400">Chưa có kịch bản nào</Text>
+                  </View>
+                )}
           </Animated.View>
         </View>
 
@@ -239,7 +250,9 @@ export function AssignRoomScenesScreen() {
               color={isDark ? '#A5B4FC' : '#6366F1'}
             />
             <Text className="text-[13px] font-semibold tracking-wider text-indigo-600 uppercase dark:text-indigo-400">
-              Có thể gán ({availableScenes.length})
+              Có thể gán (
+              {availableScenes.length}
+              )
             </Text>
           </View>
 
@@ -247,26 +260,28 @@ export function AssignRoomScenesScreen() {
             className="overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-neutral-800"
             layout={LinearTransition}
           >
-            {availableScenes.length > 0 ? (
-              availableScenes.map((s, idx) => (
-                <Animated.View
-                  key={s.id}
-                  layout={LinearTransition}
-                  entering={FadeIn}
-                  exiting={FadeOut}
-                >
-                  <SceneRow scene={s} action="add" onPress={() => handleAdd(s.id)} />
-                  {idx < availableScenes.length - 1 && (
-                    <View className="ml-[64px] h-px bg-neutral-100 dark:bg-neutral-700" />
-                  )}
-                </Animated.View>
-              ))
-            ) : (
-              <View className="items-center py-6">
-                <MaterialCommunityIcons name="check-all" size={32} color={isDark ? '#525252' : '#D4D4D4'} />
-                <Text className="mt-2 text-sm text-neutral-400">Tất cả đều đã được gán</Text>
-              </View>
-            )}
+            {availableScenes.length > 0
+              ? (
+                  availableScenes.map((s, idx) => (
+                    <Animated.View
+                      key={s.id}
+                      layout={LinearTransition}
+                      entering={FadeIn}
+                      exiting={FadeOut}
+                    >
+                      <SceneRow scene={s} action="add" onPress={() => handleAdd(s.id)} />
+                      {idx < availableScenes.length - 1 && (
+                        <View className="ml-[64px] h-px bg-neutral-100 dark:bg-neutral-700" />
+                      )}
+                    </Animated.View>
+                  ))
+                )
+              : (
+                  <View className="items-center py-6">
+                    <MaterialCommunityIcons name="check-all" size={32} color={isDark ? '#525252' : '#D4D4D4'} />
+                    <Text className="mt-2 text-sm text-neutral-400">Tất cả đều đã được gán</Text>
+                  </View>
+                )}
           </Animated.View>
         </View>
       </ScrollView>
