@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { ActivityIndicator, TextInput } from 'react-native';
-import { ScrollView, Text, TouchableOpacity, View } from '@/components/ui';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
+import { Text, TouchableOpacity, View } from '@/components/ui';
 import { translate } from '@/lib/i18n';
 import { PRIMARY_GREEN_HEX } from '../constants';
 
@@ -24,9 +25,10 @@ export function SetupForm({
   onContinue: () => void;
 }) {
   return (
-    <ScrollView
+    <KeyboardAwareScrollView
+      bottomOffset={40}
       className="flex-1 px-5 pt-8"
-      contentContainerStyle={{ paddingBottom: 100 }}
+      contentContainerStyle={{ paddingBottom: 0 }}
     >
       <Text className="text-2xl font-bold text-[#1A1A1A] dark:text-white">
         {translate('base.configureDevice')}
@@ -85,6 +87,6 @@ export function SetupForm({
           ? <ActivityIndicator size="small" color="#1B1B1B" />
           : <Text className="text-[16px] font-bold text-[#1B1B1B]">{translate('base.continue')}</Text>}
       </TouchableOpacity>
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 }

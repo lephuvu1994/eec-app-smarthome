@@ -1,6 +1,7 @@
 import type { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { useCallback, useState } from 'react';
-import { TextInput, View } from 'react-native';
+import { View } from 'react-native';
 import { useUniwind } from 'uniwind';
 
 import { Text, TouchableOpacity } from '@/components/ui';
@@ -44,7 +45,7 @@ export function CreateFloorModal({ ref, homeId }: CreateFloorModalProps & { ref?
         <Text className="mb-2 text-sm font-medium text-neutral-500 dark:text-neutral-400">
           {translate('roomManagement.floorName')}
         </Text>
-        <TextInput
+        <BottomSheetTextInput
           value={name}
           onChangeText={setName}
           placeholder={translate('roomManagement.floorNamePlaceholder')}
