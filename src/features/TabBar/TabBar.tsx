@@ -1,4 +1,4 @@
-import { Icon, Label, NativeTabs } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { useUniwind } from 'uniwind';
 
 import { colors } from '@/components/ui';
@@ -14,8 +14,8 @@ export function TabBar() {
       backgroundColor={theme === ETheme.Dark ? colors.charcoal[950] : colors.white}
     >
       <NativeTabs.Trigger name="(room)">
-        <Label>{translate('app.roomTab')}</Label>
-        <Icon
+        <NativeTabs.Trigger.Label>{translate('app.roomTab')}</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon
           sf={{
             default: 'square.split.bottomrightquarter',
             selected: 'square.split.bottomrightquarter.fill',
@@ -24,12 +24,12 @@ export function TabBar() {
         />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="(home)">
-        <Label>{translate('app.favoriteTab')}</Label>
-        <Icon sf={{ default: 'house.badge.wifi', selected: 'house.badge.wifi.fill' }} drawable="custom_home_drawable" />
+        <NativeTabs.Trigger.Label>{translate('app.favoriteTab')}</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf={{ default: 'house.badge.wifi', selected: 'house.badge.wifi.fill' }} drawable="custom_home_drawable" />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="(smart)">
-        <Label>{translate('app.smartTab')}</Label>
-        <Icon
+        <NativeTabs.Trigger.Label>{translate('app.smartTab')}</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon
           sf={{
             default: 'square.split.bottomrightquarter',
             selected: 'square.split.bottomrightquarter.fill',
@@ -38,8 +38,8 @@ export function TabBar() {
         />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="(settings)">
-        <Label>{translate('app.settingTab')}</Label>
-        <Icon
+        <NativeTabs.Trigger.Label>{translate('app.settingTab')}</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon
           sf={{
             default: 'gear',
             selected: 'gear.badge.checkmark',
@@ -50,3 +50,4 @@ export function TabBar() {
     </NativeTabs>
   );
 };
+
