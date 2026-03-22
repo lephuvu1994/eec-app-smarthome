@@ -8,6 +8,7 @@ const initialConfigState: TConfig = {
   showCameraPreview: false,
   showRoomViewExpand: true,
   allowHaptics: true,
+  deviceViewMode: 'grouped',
 };
 
 const _useConfig = create<TConfigState>()(
@@ -22,6 +23,9 @@ const _useConfig = create<TConfigState>()(
       },
       setToggleAllowHaptics: (allowHaptics: boolean) => {
         set({ allowHaptics });
+      },
+      setDeviceViewMode: (deviceViewMode: 'grouped' | 'split') => {
+        set({ deviceViewMode });
       },
     }),
     {

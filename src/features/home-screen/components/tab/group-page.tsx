@@ -2,11 +2,11 @@ import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import type { ETheme } from '@/types/base';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView, Text, View, WIDTH } from '@/components/ui';
+import { ListDevice } from '@/features/devices/components/ListDevice';
 import { useSmartTabBarHeight } from '@/hooks/use-smart-tabbar-height';
 import { translate } from '@/lib/i18n';
 import { useConfigManager } from '@/stores/config/config';
 import { calculateCenterOffset } from '../../utils/utils';
-import { ListDevice } from '../device/ListDevice';
 import { RoomTabItem } from './room-tab';
 
 type TGroupPageProps = {

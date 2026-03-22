@@ -1,3 +1,6 @@
+import type { TDeviceFeature } from '../devices/device.service';
+import type { TScene } from '../scenes/scene.service';
+
 import { client } from '../common';
 
 // ============================================================
@@ -26,6 +29,8 @@ export type TRoom = {
   sortOrder: number;
   homeId: string;
   floorId?: string;
+  features?: TDeviceFeature[];
+  scenes?: TScene[];
 };
 
 /** GET /homes trả về home kèm floors + rooms */
@@ -63,6 +68,14 @@ export type TUpdateFloorBody = {
 
 export type TAssignRoomsBody = {
   roomIds: string[];
+};
+
+export type TAssignFeaturesBody = {
+  featureIds: string[];
+};
+
+export type TAssignScenesBody = {
+  sceneIds: string[];
 };
 
 // ============================================================
@@ -134,6 +147,16 @@ export const homeService = {
 
   reorderRooms: async (homeId: string, ids: string[]): Promise<TRoom[]> => {
     const { data } = await client.patch(`/homes/${homeId}/rooms/reorder`, { ids });
+    return data.data || data;
+  },
+
+  assignFeaturesToRoom: async (roomId: string, body: { featureIds: string[] }): Promise<TRoom> => {
+    const { data } = await client.patch(`/homes/rooms/${roomId}/features`, body);
+    return data.data || data;
+  },
+
+  assignScenesToRoom: async (roomId: string, body: { sceneIds: string[] }): Promise<TRoom> => {
+    const { data } = await client.patch(`/homes/rooms/${roomId}/scenes`, body);
     return data.data || data;
   },
 };

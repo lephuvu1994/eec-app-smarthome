@@ -17,8 +17,13 @@ import { useThemeConfig } from '@/components/ui/use-theme-config';
 import { EAuthStatus } from '@/features/auth/types/enum';
 import { hydrateAuth, useUserManager } from '@/features/auth/user-store';
 import CustomSplashScreen from '@/features/splash-screen';
+import { useVoiceControl } from '@/hooks/use-voice-control';
 import { APIProvider } from '@/lib/api';
+import { deviceService } from '@/lib/api/devices/device.service';
 import { loadSelectedTheme } from '@/lib/hooks/use-selected-theme';
+import { useDeviceStore } from '@/stores/device/device-store';
+import { useHomeDataStore } from '@/stores/home/home-data-store';
+import { useHomeStore } from '@/stores/home/home-store';
 // Import  global CSS file
 import '../global.css';
 
@@ -46,24 +51,68 @@ function RootRender() {
   const { theme } = useUniwind();
   const { status } = useUserManager();
 
-  // useVoiceControl();
+  useVoiceControl();
 
   const hideSplash = useCallback(async () => {
     setIsLoading(false);
   }, []);
 
   useEffect(() => {
-    let timer: ReturnType<typeof setTimeout> | undefined;
-    if (status !== EAuthStatus.idle) {
-      timer = setTimeout(async () => {
+    let isMounted = true;
+    let fallbackTimer: any;
+
+    const performBootHydration = async () => {
+      if (status === EAuthStatus.signIn) {
+        try {
+          const homeId = useHomeStore.getState().selectedHomeId;
+          if (homeId) {
+            // Khởi chạy 2 API ngầm (Home Structure & Devices)
+            const syncPromise = Promise.allSettled([
+              useHomeDataStore.getState().syncFromAPI(homeId),
+              deviceService.getDevices({ homeId, limit: 50 }).then((res: any) =>
+                useDeviceStore.getState().setDevices(res.data),
+              ),
+            ]);
+
+            // Race Condition: Tối đa cho cục API fetch là 2000ms. Dù xong hay không cũng thả qua màn hình Home.
+            const timeoutPromise = new Promise((resolve) => {
+              fallbackTimer = setTimeout(resolve, 2000);
+            });
+            await Promise.race([syncPromise, timeoutPromise]);
+            clearTimeout(fallbackTimer);
+          }
+          else {
+            // Đăng nhập nhưng chưa có Nhà nào được lưu cache -> Chờ 500ms cho mượt
+            await new Promise((resolve) => {
+              fallbackTimer = setTimeout(resolve, 500);
+            });
+          }
+        }
+        catch {
+          // Bỏ qua lỗi mạng hỏng, nhả Splash Screen cho MMKV Render offline
+        }
+      }
+      else {
+        // Sign Out hoặc Auth fail -> Chờ 500ms cho mượt hoạt ảnh
+        await new Promise((resolve) => {
+          fallbackTimer = setTimeout(resolve, 500);
+        });
+      }
+
+      if (isMounted) {
         await hideSplash();
-      }, 1500);
+      }
+    };
+
+    if (status !== EAuthStatus.idle) {
+      void performBootHydration();
     }
+
     return () => {
-      clearTimeout(timer);
-      // Chỉ ẩn splash khi đã từng set timer (đã vào màn hình chính), tránh ẩn sớm khi redirect login/onboarding (idle → signOut)
-      if (timer !== undefined)
-        void hideSplash();
+      isMounted = false;
+      clearTimeout(fallbackTimer);
+      // Dọn dẹp phòng hờ khi unmount đột ngột
+      void hideSplash();
     };
   }, [status, hideSplash]);
 

@@ -156,8 +156,10 @@
     "deviceCount": "{{count}} thiết bị",
     "devices": "Thiết bị",
     "edit": "Chỉnh sửa",
+    "featuresAssigned": "Gán thiết bị thành công",
     "floorCreated": "Tạo tầng thành công",
     "floorDeleted": "Xóa tầng thành công",
+    "floorInfo": "Thông tin tầng",
     "floorName": "Tên tầng",
     "floorNamePlaceholder": "VD: Tầng 1",
     "floorUpdated": "Cập nhật tầng thành công",
@@ -175,6 +177,7 @@
     "roomsCount": "{{count}} phòng",
     "sceneCount": "{{count}} kịch bản",
     "scenes": "Kịch bản",
+    "scenesAssigned": "Gán kịch bản thành công",
     "showVideoComponent": "Hiển thị Video",
     "viewMode": "Chế độ xem thiết bị"
   },
@@ -195,6 +198,9 @@
     },
     "general": {
       "cameraView": "Hiển thị Camera",
+      "deviceViewMode": "Chế độ hiển thị thiết bị",
+      "deviceViewModeGrouped": "Gộp chung (Mặc định)",
+      "deviceViewModeSplit": "Tách lẻ tính năng",
       "haptics": "Rung khi bấm",
       "introduction": "Giới thiệu",
       "privacyPolicy": "Chính sách bảo mật",

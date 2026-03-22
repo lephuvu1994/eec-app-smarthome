@@ -1,9 +1,9 @@
 import type { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { useCallback, useState } from 'react';
-import { TextInput, View } from 'react-native';
 import { useUniwind } from 'uniwind';
 
-import { Text, TouchableOpacity } from '@/components/ui';
+import { Text, TouchableOpacity, View } from '@/components/ui';
 import { Modal } from '@/components/ui/modal';
 import { useCreateRoom } from '@/hooks/use-homes';
 import { translate } from '@/lib/i18n';
@@ -50,7 +50,7 @@ export function CreateRoomModal({ ref, homeId, floorId }: CreateRoomModalProps &
         <Text className="mb-2 text-sm font-medium text-neutral-500 dark:text-neutral-400">
           {translate('roomManagement.roomName')}
         </Text>
-        <TextInput
+        <BottomSheetTextInput
           value={name}
           onChangeText={setName}
           placeholder={translate('roomManagement.roomNamePlaceholder')}
@@ -62,7 +62,7 @@ export function CreateRoomModal({ ref, homeId, floorId }: CreateRoomModalProps &
         <Text className="mb-2 text-sm font-medium text-neutral-500 dark:text-neutral-400">
           {translate('roomManagement.cameraLink')}
         </Text>
-        <TextInput
+        <BottomSheetTextInput
           value={cameraLink}
           onChangeText={setCameraLink}
           placeholder="rtsp://..."
