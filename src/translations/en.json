@@ -135,7 +135,7 @@
   },
   "onboarding": {
     "slide1Desc": "Connect and control your home easily",
-    "slide1Title": "Welcome to\nSensaSpace",
+    "slide1Title": "Welcome to\nSensa Smart",
     "slide2Desc": "Connect all devices in just seconds.\nSimple, fast, convenient.",
     "slide2Title": "Easy Connection",
     "slide3Desc": "Control and monitor your home\nanytime, anywhere",
@@ -187,7 +187,7 @@
   },
   "settings": {
     "about": "About",
-    "account": "SensaSpace Account",
+    "account": "Sensa Smart Account",
     "defaultUser": "User",
     "energyCard": {
       "currentUsage": "Current consumption",
@@ -211,6 +211,16 @@
     },
     "generale": "General",
     "homeManagement": "Home Management",
+    "introduction": {
+      "contactTitle": "CONTACT",
+      "description": "Sensa Smart is a smart home management application by Euro Smart. Connect, control, and monitor your IoT devices from anywhere. Designed for simplicity, security, and seamless home automation.",
+      "feature1": "Control lights, switches, and devices remotely",
+      "feature2": "Create smart automation and scenes",
+      "feature3": "End-to-end encrypted communication",
+      "feature4": "Real-time energy monitoring",
+      "featuresTitle": "KEY FEATURES",
+      "tagline": "Smart Home, Simplified"
+    },
     "language": {
       "english": "English",
       "title": "Language",
@@ -224,6 +234,55 @@
       "messageCenter": "Message Center",
       "notification": "Notifications",
       "support": "Help & Support"
+    },
+    "messageCenter": {
+      "emptyDescription": "You don't have any messages yet. Messages from the system will appear here.",
+      "emptyTitle": "No messages"
+    },
+    "notification": {
+      "emptyDescription": "You're all caught up! We'll notify you when something important happens.",
+      "emptyTitle": "No notifications"
+    },
+    "privacy": {
+      "bluetooth": "Bluetooth",
+      "bluetoothDesc": "Used to discover and connect to Smart Home devices via BLE.",
+      "camera": "Camera",
+      "cameraDesc": "Used to scan QR codes for quick device pairing.",
+      "headerDesc": "Sensa Smart requests access to certain device features to provide core smart home functionality. You can manage these permissions at any time in your device settings.",
+      "microphone": "Microphone",
+      "microphoneDesc": "Used for voice control of your smart home devices.",
+      "openSettings": "Open Device Settings",
+      "permissionsTitle": "APP PERMISSIONS",
+      "photos": "Photo Library",
+      "photosDesc": "Used for profile pictures and home/room customization.",
+      "siri": "Siri & Shortcuts",
+      "siriDesc": "Used to control devices with voice commands via Siri.",
+      "speechRecognition": "Speech Recognition",
+      "speechRecognitionDesc": "Used to process voice commands for device control."
+    },
+    "privacyPolicy": {
+      "contactContent": "If you have questions about this Privacy Policy, please contact us at:\n\nEmail: support@sensaspace.com\nCompany: Euro Smart\nWebsite: www.sensaspace.com",
+      "contactTitle": "Contact Us",
+      "intro": "Euro Smart (\"we\", \"us\", \"our\") operates the Sensa Smart mobile application. This Privacy Policy explains how we collect, use, and protect your personal information when you use our app.",
+      "lastUpdated": "Last Updated: March 2025",
+      "section1Content": "We collect the following types of information:\n\n• Account information (email, name, phone number)\n• Device data (device status, configuration, usage patterns)\n• Usage data (app interactions, feature usage, crash reports)\n• Sensor data (temperature, energy consumption from connected devices)",
+      "section1Title": "1. Information We Collect",
+      "section2Content": "Your information is used to:\n\n• Provide and maintain smart home control functionality\n• Improve app performance and user experience\n• Send important notifications about your devices\n• Provide customer support\n• Ensure security and prevent unauthorized access",
+      "section2Title": "2. How We Use Your Information",
+      "section3Content": "We implement industry-standard security measures to protect your data:\n\n• End-to-end encryption for device communication\n• Secure HTTPS connections for all API calls\n• Encrypted data storage on our servers\n• Regular security audits and updates",
+      "section3Title": "3. Data Security",
+      "section4Content": "We do not sell your personal information. We may share data with:\n\n• Cloud service providers (for data storage and processing)\n• Analytics services (anonymized usage data only)\n• Law enforcement (when required by law)",
+      "section4Title": "4. Third-Party Services",
+      "section5Content": "Sensa Smart is not intended for children under 13. We do not knowingly collect personal information from children. If you believe a child has provided us with personal data, please contact us.",
+      "section5Title": "5. Children's Privacy",
+      "section6Content": "You have the right to:\n\n• Access your personal data\n• Request correction of inaccurate data\n• Request deletion of your account and data\n• Export your data in a portable format\n• Withdraw consent for data processing\n\nTo exercise these rights, contact us at support@sensaspace.com.",
+      "section6Title": "6. Your Rights"
+    },
+    "support": {
+      "contactUs": "Contact Us",
+      "faq": "Frequently Asked Questions",
+      "feedback": "Send Feedback",
+      "userGuide": "User Guide"
     },
     "tapToSetName": "Tap to set your name",
     "theme": {

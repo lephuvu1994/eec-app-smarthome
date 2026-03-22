@@ -1,3 +1,4 @@
+import type { Href } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { Image } from 'expo-image';
@@ -56,7 +57,7 @@ export function SettingsScreen() {
           <MaterialCommunityIcons name="bell-outline" size={20} color="#3B82F6" />
         </View>
       ),
-      onPress: () => {},
+      onPress: () => router.push('/(app)/(mobile)/(settings)/notification' as Href),
     },
     {
       key: 'message',
@@ -66,7 +67,7 @@ export function SettingsScreen() {
           <MaterialCommunityIcons name="message-outline" size={20} color="#F59E0B" />
         </View>
       ),
-      onPress: () => {},
+      onPress: () => router.push('/(app)/(mobile)/(settings)/message-center' as any),
     },
     {
       key: 'support',
@@ -76,7 +77,7 @@ export function SettingsScreen() {
           <MaterialCommunityIcons name="help-circle-outline" size={20} color="#059669" />
         </View>
       ),
-      onPress: () => {},
+      onPress: () => router.push('/(app)/(mobile)/(settings)/support' as any),
     },
   ];
 

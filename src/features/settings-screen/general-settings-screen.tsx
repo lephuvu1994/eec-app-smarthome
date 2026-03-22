@@ -3,6 +3,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useHeaderHeight } from '@react-navigation/elements';
 import * as Haptics from 'expo-haptics';
 import { Image } from 'expo-image';
+import { router } from 'expo-router';
 import * as React from 'react';
 import { Switch } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -230,7 +231,7 @@ export function GeneralSettingsScreen() {
             </View>
           ),
           right: <MaterialCommunityIcons name="chevron-right" size={18} color="#A3A3A3" />,
-          onPress: () => {},
+          onPress: () => router.push('/(app)/(mobile)/(settings)/introduction' as any),
         },
         {
           key: 'privacy',
@@ -241,7 +242,7 @@ export function GeneralSettingsScreen() {
             </View>
           ),
           right: <MaterialCommunityIcons name="chevron-right" size={18} color="#A3A3A3" />,
-          onPress: () => {},
+          onPress: () => router.push('/(app)/(mobile)/(settings)/privacy-settings' as any),
         },
         {
           key: 'privacyPolicy',
@@ -252,7 +253,7 @@ export function GeneralSettingsScreen() {
             </View>
           ),
           right: <MaterialCommunityIcons name="chevron-right" size={18} color="#A3A3A3" />,
-          onPress: () => {},
+          onPress: () => router.push('/(app)/(mobile)/(settings)/privacy-policy' as any),
         },
       ],
     },
