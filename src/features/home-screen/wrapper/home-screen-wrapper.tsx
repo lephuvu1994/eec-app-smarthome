@@ -18,7 +18,6 @@ import { LiveCameraWrapper } from '@/components/base/LiveCameraWrapper';
 import { Pressable, Text, View, WIDTH } from '@/components/ui';
 import { ZeegoNativeMenu } from '@/components/ui/zeego-native-menu';
 import { ANIMATION_DURATION, ASPECT_RATIO_VIDEO, BASE_SPACE_HORIZONTAL } from '@/constants';
-import { DeviceControlModal } from '@/features/devices/components/DeviceControlModal';
 import { GroupPage } from '@/features/home-screen/components/tab/group-page';
 import { useHomeMenu } from '@/features/home-screen/hooks/use-home-menu';
 import { deviceService } from '@/lib/api/devices/device.service';
@@ -304,8 +303,6 @@ export const HomeScreenWrapper = memo(({ className }: { className?: string }) =>
           })}
         </ScrollView>
       </View>
-
-      <DeviceControlModal />
     </View>
   );
 });

@@ -9,7 +9,7 @@ import { useConfigManager } from '@/stores/config/config';
 import { useDeviceStore } from '@/stores/device/device-store';
 import { useFavoriteStore } from '@/stores/device/favorite-store';
 import { ETypeViewDevice } from '@/types/device';
-import { DeviceItem } from './DeviceItem';
+import { DeviceItem } from './device-item';
 import { MOCK_DEVICES } from './mockData';
 
 type TListDeviceProps = {

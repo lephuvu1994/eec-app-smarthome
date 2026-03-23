@@ -2,6 +2,9 @@ import type { TTokenType, TUser } from './types/response';
 
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
+
+import Env from '@/../env';
+import SocketManager from '@/lib/socket/socket-manager';
 import { mmkvStorage } from '@/lib/storage';
 import { createSelectors } from '@/lib/utils';
 import { useHomeStore } from '@/stores/home/home-store';
@@ -36,9 +39,16 @@ const _useGetUser = create<UserState>()(
       status: EAuthStatus.idle,
       signIn: (user) => {
         set({ ...user, status: EAuthStatus.signIn });
+        // Connect socket with auth token
+        if (user.accessToken) {
+          const socketUrl = Env.EXPO_PUBLIC_WEBSOCKET_URL || Env.EXPO_PUBLIC_API_URL;
+          SocketManager.getInstance().connect(socketUrl, user.accessToken);
+        }
       },
       signOut: () => {
         const currentState = get();
+        // Disconnect socket
+        SocketManager.getInstance().disconnect();
         // Clear home data khi logout để tránh stale homeId
         useHomeStore.getState().clearSelectedHome();
         useHomeStore.getState().setHomes([]);

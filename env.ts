@@ -11,6 +11,7 @@ const envSchema = z.object({
   EXPO_PUBLIC_PACKAGE: z.string(),
   EXPO_PUBLIC_VERSION: z.string(),
   EXPO_PUBLIC_API_URL: z.string().url(),
+  EXPO_PUBLIC_WEBSOCKET_URL: z.string().url().optional(),
   EXPO_PUBLIC_BLE_AES_KEY: z.string().length(16).default('1234567890123456'),
   EXPO_PUBLIC_BLE_SERVICE_UUID: z.string().uuid().default('55535343-fe7d-4ae5-8fa9-9fafd205e455'),
   EXPO_PUBLIC_BLE_TX_UUID: z.string().uuid().default('49535343-8841-43f4-a8d4-ecbe34729bb3'),
@@ -24,24 +25,24 @@ const envSchema = z.object({
 const EXPO_PUBLIC_APP_ENV = (process.env.EXPO_PUBLIC_APP_ENV ?? 'development') as z.infer<typeof envSchema>['EXPO_PUBLIC_APP_ENV'];
 
 const BUNDLE_IDS = {
-  development: 'sensaspace.development',
-  preview: 'sensaspace.preview',
-  production: 'sensaspace',
+  development: 'sensasmart.development',
+  preview: 'sensasmart.preview',
+  production: 'sensasmart',
 } as const;
 
 const PACKAGES = {
-  development: 'sensaspace.development',
-  preview: 'sensaspace.preview',
-  production: 'sensaspace',
+  development: 'sensasmart.development',
+  preview: 'sensasmart.preview',
+  production: 'sensasmart',
 } as const;
 
 const SCHEMES = {
-  development: 'sensaspace',
-  preview: 'sensaspace.preview',
-  production: 'sensaspace',
+  development: 'sensasmart',
+  preview: 'sensasmart.preview',
+  production: 'sensasmart',
 } as const;
 
-const NAME = 'SensaSpace';
+const NAME = 'Sensa Smart';
 
 // Check if strict validation is required (before prebuild)
 const STRICT_ENV_VALIDATION = process.env.STRICT_ENV_VALIDATION === '1';
@@ -55,6 +56,7 @@ const _env: z.infer<typeof envSchema> = {
   EXPO_PUBLIC_PACKAGE: PACKAGES[EXPO_PUBLIC_APP_ENV],
   EXPO_PUBLIC_VERSION: packageJSON.version,
   EXPO_PUBLIC_API_URL: process.env.EXPO_PUBLIC_API_URL ?? '',
+  EXPO_PUBLIC_WEBSOCKET_URL: process.env.EXPO_PUBLIC_WEBSOCKET_URL,
   EXPO_PUBLIC_BLE_AES_KEY: process.env.EXPO_PUBLIC_BLE_AES_KEY ?? '1234567890123456',
   EXPO_PUBLIC_BLE_SERVICE_UUID: process.env.EXPO_PUBLIC_BLE_SERVICE_UUID ?? '55535343-fe7d-4ae5-8fa9-9fafd205e455',
   EXPO_PUBLIC_BLE_TX_UUID: process.env.EXPO_PUBLIC_BLE_TX_UUID ?? '49535343-8841-43f4-a8d4-ecbe34729bb3',
