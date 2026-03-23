@@ -52,7 +52,10 @@ export const DeviceItem: React.FC<TProps> = ({ device, typeViewDevice, activeFea
 
   const displayName = activeFeature ? `${device.name} - ${activeFeature.name || activeFeature.code}` : device.name;
 
+  const isMock = device.id.startsWith('mock-');
+
   const handlePressCard = () => {
+    if (isMock) return; // Mock devices are display-only
     if (!activeFeature) {
       // Group Mode: Bấm thẻ -> Mở Modal full tính năng của thiết bị
       openModal(device, undefined);

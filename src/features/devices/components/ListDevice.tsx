@@ -2,15 +2,15 @@ import type { TDevice, TDeviceFeature } from '@/lib/api/devices/device.service';
 
 import { useMemo } from 'react';
 
-import { Skeleton, Text, View } from '@/components/ui';
+import { Skeleton, View } from '@/components/ui';
 import { GAP_DEVICE_VIEW_MOBILE } from '@/constants';
-import { translate } from '@/lib/i18n';
 import { getPrimaryFeatures } from '@/lib/utils/device-feature-helper';
 import { useConfigManager } from '@/stores/config/config';
 import { useDeviceStore } from '@/stores/device/device-store';
 import { useFavoriteStore } from '@/stores/device/favorite-store';
 import { ETypeViewDevice } from '@/types/device';
 import { DeviceItem } from './DeviceItem';
+import { MOCK_DEVICES } from './mockData';
 
 type TListDeviceProps = {
   roomId?: string;
@@ -26,9 +26,13 @@ export function ListDevice({ roomId, isFavorite }: TListDeviceProps) {
   const deviceViewMode = useConfigManager(s => s.deviceViewMode);
 
   // Filter devices from store
-  const devices = isFavorite
+  const realDevices = isFavorite
     ? allDevices.filter(d => favoriteIds.includes(d.id))
     : allDevices.filter(d => d.room?.id === roomId);
+
+  // TODO: Remove mock devices after App Store approval
+  // Merge mock devices when no real devices exist
+  const devices = realDevices.length > 0 ? realDevices : MOCK_DEVICES;
 
   // Unpack or group them according to preferences
   const displayItems = useMemo<{ device: TDevice; feature?: TDeviceFeature }[]>(() => {
@@ -52,16 +56,6 @@ export function ListDevice({ roomId, isFavorite }: TListDeviceProps) {
         <Skeleton width="48%" height={80} borderRadius={16} />
         <Skeleton width="48%" height={80} borderRadius={16} />
         <Skeleton width="100%" height={80} borderRadius={16} />
-      </View>
-    );
-  }
-
-  else if (devices.length === 0 && !isLoading) {
-    return (
-      <View className="items-center justify-center py-8">
-        <Text className="text-neutral-400 dark:text-neutral-500">
-          {translate('base.noDevice')}
-        </Text>
       </View>
     );
   }
