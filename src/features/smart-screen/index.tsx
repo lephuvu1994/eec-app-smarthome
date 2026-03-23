@@ -13,7 +13,7 @@ export function SmartScreen() {
     <BaseLayout>
       <View className="relative w-full flex-1">
         <Image
-          source={theme === ETheme.Dark ? require('@@/assets/base/background-dark.png') : require('@@/assets/base/background-light.png')}
+          source={theme === ETheme.Dark ? require('@@/assets/base/background-dark.webp') : require('@@/assets/base/background-light.webp')}
           style={{
             width: '100%',
             height: '100%',

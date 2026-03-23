@@ -17,7 +17,7 @@ export function SignUp() {
     <BaseLayout>
       <View className="relative w-full flex-1">
         <Image
-          source={require('@@/assets/sign-in/background-signIn.png')}
+          source={require('@@/assets/sign-in/background-signIn.webp')}
           style={{
             width: '100%',
             height: '100%',

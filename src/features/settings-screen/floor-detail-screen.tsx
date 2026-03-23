@@ -112,8 +112,8 @@ export function FloorDetailScreen() {
         <Image
           source={
             isDark
-              ? require('@@/assets/base/background-dark.png')
-              : require('@@/assets/base/background-light.png')
+              ? require('@@/assets/base/background-dark.webp')
+              : require('@@/assets/base/background-light.webp')
           }
           style={{
             width: '100%',

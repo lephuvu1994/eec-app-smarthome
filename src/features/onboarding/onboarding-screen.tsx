@@ -30,19 +30,19 @@ const DATA = [
     id: '1',
     title: translate('onboarding.slide1Title'),
     description: translate('onboarding.slide1Desc'),
-    image: require('@@/assets/onboarding/onboarding-step1.png'),
+    image: require('@@/assets/onboarding/onboarding-step1.webp'),
   },
   {
     id: '2',
     title: translate('onboarding.slide2Title'),
     description: translate('onboarding.slide2Desc'),
-    image: require('@@/assets/onboarding/onboarding-step2.png'),
+    image: require('@@/assets/onboarding/onboarding-step2.webp'),
   },
   {
     id: '3',
     title: translate('onboarding.slide3Title'),
     description: translate('onboarding.slide3Desc'),
-    image: require('@@/assets/onboarding/onboarding-step3.png'),
+    image: require('@@/assets/onboarding/onboarding-step3.webp'),
   },
 ];
 

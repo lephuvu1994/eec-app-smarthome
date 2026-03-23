@@ -111,7 +111,7 @@ export const RoomTabItem = memo(({ room, focused, theme, onPress, isExpanded }: 
         >
           {/* 1. Ảnh nền */}
           <Image
-            source={require('@@/assets/room/default_image.png')}
+            source={require('@@/assets/room/default_image.webp')}
             style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]}
             resizeMode="cover"
           />
