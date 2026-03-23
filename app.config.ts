@@ -11,22 +11,6 @@ import Env from './env';
 const EXPO_ACCOUNT_OWNER = 'vule94';
 const EAS_PROJECT_ID = '75ae721d-f4db-4468-ad91-e5e77831ec57';
 
-const appIconBadgeConfig: AppIconBadgeConfig = {
-  enabled: Env.EXPO_PUBLIC_APP_ENV !== 'production',
-  badges: [
-    {
-      text: Env.EXPO_PUBLIC_APP_ENV,
-      type: 'banner',
-      color: 'white',
-    },
-    {
-      text: Env.EXPO_PUBLIC_VERSION.toString(),
-      type: 'ribbon',
-      color: 'white',
-    },
-  ],
-};
-
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: Env.EXPO_PUBLIC_NAME,
@@ -144,7 +128,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     'expo-localization',
     './plugins/withLocalizedPermissions',
     'expo-router',
-    ['app-icon-badge', appIconBadgeConfig],
     [
       'expo-screen-orientation',
       {
