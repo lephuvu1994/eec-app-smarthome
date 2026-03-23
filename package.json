@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "main": "expo-router/entry",
-  "packageManager": "yarn@4.9.2",
+  "packageManager": "yarn@1.22.22",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/lephuvu1994/"
@@ -54,6 +54,7 @@
     "@expo/vector-icons": "^15.0.3",
     "@gorhom/bottom-sheet": "^5.2.8",
     "@react-native-community/datetimepicker": "8.6.0",
+    "@react-native-menu/menu": "^2.0.0",
     "@react-navigation/drawer": "7.9.4",
     "@react-navigation/native": "^7.1.33",
     "@shopify/flash-list": "2.0.2",
@@ -109,8 +110,8 @@
     "react-native-ios-context-menu": "^3.2.1",
     "react-native-ios-utilities": "^5.2.0",
     "react-native-keyboard-controller": "1.20.7",
-    "react-native-mmkv": "~4.1.1",
-    "react-native-nitro-modules": "^0.33.2",
+    "react-native-mmkv": "^4.3.0",
+    "react-native-nitro-modules": "^0.35.2",
     "react-native-pager-view": "8.0.0",
     "react-native-qrcode-svg": "6.3.20",
     "react-native-quick-base64": "^2.2.2",

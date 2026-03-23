@@ -46,6 +46,8 @@ const IOS_STRINGS: Record<string, Record<string, string>> = {
       'Allow Sensa Smart to use speech recognition for voice commands.',
     NSLocalNetworkUsageDescription:
       'Allow Sensa Smart to discover devices on your local network.',
+    NSLocationWhenInUseUsageDescription:
+      'Allow Sensa Smart to access your location to discover and connect to nearby Smart Home devices via Bluetooth/WiFi.',
     NSPhotoLibraryUsageDescription:
       'Allow Sensa Smart to access your photos for profile and home customization.',
   },
@@ -63,6 +65,8 @@ const IOS_STRINGS: Record<string, Record<string, string>> = {
       'Cho phép Sensa Smart nhận dạng giọng nói để điều khiển thiết bị.',
     NSLocalNetworkUsageDescription:
       'Cho phép Sensa Smart tìm kiếm thiết bị trong mạng nội bộ.',
+    NSLocationWhenInUseUsageDescription:
+      'Cho phép Sensa Smart truy cập vị trí để tìm kiếm và kết nối thiết bị Smart Home qua Bluetooth/WiFi.',
     NSPhotoLibraryUsageDescription:
       'Cho phép Sensa Smart truy cập ảnh để tuỳ chỉnh hồ sơ và nhà.',
   },

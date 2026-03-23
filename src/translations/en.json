@@ -183,6 +183,18 @@
     "showVideoComponent": "Show Video Component",
     "viewMode": "Device View Mode"
   },
+  "scanQr": {
+    "allowCamera": "Allow Camera",
+    "close": "Close",
+    "instruction": "Point QR code inside the frame to scan",
+    "needCameraPermission": "Camera access is required to scan QR codes",
+    "parsedJson": "JSON Data",
+    "rawData": "Raw Data",
+    "rescan": "Rescan",
+    "resultTitle": "Scan Result",
+    "scanSuccess": "Scan successful!",
+    "title": "Scan QR"
+  },
   "scene": {
     "automation": "Automation",
     "tapToRun": "Tap To Run"

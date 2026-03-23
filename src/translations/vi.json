@@ -183,6 +183,18 @@
     "showVideoComponent": "Hiển thị Video",
     "viewMode": "Chế độ xem thiết bị"
   },
+  "scanQr": {
+    "allowCamera": "Cho phép Camera",
+    "close": "Đóng",
+    "instruction": "Đưa mã QR vào khung hình để quét",
+    "needCameraPermission": "Cần quyền truy cập camera để quét mã QR",
+    "parsedJson": "Dữ liệu JSON",
+    "rawData": "Dữ liệu thô",
+    "rescan": "Quét lại",
+    "resultTitle": "Kết quả quét",
+    "scanSuccess": "Quét thành công!",
+    "title": "Quét QR"
+  },
   "scene": {
     "automation": "Tự động hoá",
     "tapToRun": "Chạm để chạy"
