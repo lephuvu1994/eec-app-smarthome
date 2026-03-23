@@ -105,7 +105,7 @@ export function SettingsScreen() {
 
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingTop: headerHeight, paddingBottom: insets.bottom + BASE_TAB_HEIGHT + EXTRA_GLASS_SPACE }}
+          contentContainerStyle={{ paddingTop: headerHeight || (insets.top + 44), paddingBottom: insets.bottom + BASE_TAB_HEIGHT + EXTRA_GLASS_SPACE }}
         >
           {/* ─── Profile Section ─── */}
           <TouchableOpacity
