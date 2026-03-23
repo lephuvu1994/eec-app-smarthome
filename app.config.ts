@@ -44,6 +44,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         NSAllowsArbitraryLoads: true,
       },
       NSSiriUsageDescription: 'App cần quyền Siri để điều khiển thiết bị bằng giọng nói.',
+      NSLocationWhenInUseUsageDescription: 'App cần quyền vị trí để tìm kiếm và kết nối với các thiết bị Smart Home qua Bluetooth/WiFi.',
     },
     entitlements: {
       'com.apple.developer.siri': true,

@@ -59,13 +59,13 @@ export const HomeScreenWrapper = memo(({ className }: { className?: string }) =>
   const allRooms = useHomeDataStore(s => s.rooms);
   const syncFromAPI = useHomeDataStore(s => s.syncFromAPI);
 
-  // Sync store khi người dùng chủ động đổi Home qua Dropdown (Bỏ qua lần render đầu do Splash Screen đã làm)
-  const isFirstMountRef = useRef(true);
+  // Sync store khi người dùng chủ động đổi Home qua Dropdown (skip nếu homeId không đổi — boot hydration đã fetch rồi)
+  const prevSelectedHomeIdRef = useRef(selectedHomeId);
   useEffect(() => {
-    if (isFirstMountRef.current) {
-      isFirstMountRef.current = false;
+    if (prevSelectedHomeIdRef.current === selectedHomeId) {
       return;
     }
+    prevSelectedHomeIdRef.current = selectedHomeId;
     if (selectedHomeId) {
       void syncFromAPI(selectedHomeId);
       // Fetch devices thủ công thay vì dùng useHomeDevices để không đụng độ React Query Lifecycle

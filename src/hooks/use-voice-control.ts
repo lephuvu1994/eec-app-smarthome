@@ -8,6 +8,8 @@ import { useUserManager } from '@/features/auth/user-store';
 import { client } from '@/lib/api';
 import { deviceService } from '@/lib/api/devices/device.service';
 
+let hasSyncedSiri = false;
+
 export function useVoiceControl() {
   const { status } = useUserManager();
   const url = Linking.useLinkingURL();
@@ -23,9 +25,10 @@ export function useVoiceControl() {
     }
   };
 
-  // 1. Sync Entities (iOS & Android Cloud)
+  // 1. Sync Entities (iOS & Android Cloud) — chỉ sync 1 lần mỗi session
   useEffect(() => {
-    if (status === EAuthStatus.signIn) {
+    if (status === EAuthStatus.signIn && !hasSyncedSiri) {
+      hasSyncedSiri = true;
       const sync = async () => {
         if (Platform.OS === 'ios') {
           const siriData = await deviceService.getSiriSync();
@@ -37,6 +40,9 @@ export function useVoiceControl() {
         }
       };
       sync();
+    }
+    if (status !== EAuthStatus.signIn) {
+      hasSyncedSiri = false; // Reset khi sign out để re-login sẽ sync lại
     }
   }, [status]);
 
