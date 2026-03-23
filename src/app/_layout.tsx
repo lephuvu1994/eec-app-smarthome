@@ -5,7 +5,7 @@ import { ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import FlashMessage from 'react-native-flash-message';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -57,43 +57,50 @@ function RootRender() {
     setIsLoading(false);
   }, []);
 
+  // Boot hydration: chỉ chạy 1 lần duy nhất mỗi session (tránh StrictMode double-invoke)
+  const hasBootHydratedRef = useRef(false);
+
   useEffect(() => {
     let isMounted = true;
     let fallbackTimer: any;
 
     const performBootHydration = async () => {
       if (status === EAuthStatus.signIn) {
-        try {
-          const homeId = useHomeStore.getState().selectedHomeId;
-          if (homeId) {
-            // Khởi chạy 2 API ngầm (Home Structure & Devices)
-            const syncPromise = Promise.allSettled([
-              useHomeDataStore.getState().syncFromAPI(homeId),
-              deviceService.getDevices({ homeId, limit: 50 }).then((res: any) =>
-                useDeviceStore.getState().setDevices(res.data),
-              ),
-            ]);
+        if (!hasBootHydratedRef.current) {
+          hasBootHydratedRef.current = true;
+          try {
+            const homeId = useHomeStore.getState().selectedHomeId;
+            if (homeId) {
+              // Khởi chạy 2 API ngầm (Home Structure & Devices)
+              const syncPromise = Promise.allSettled([
+                useHomeDataStore.getState().syncFromAPI(homeId),
+                deviceService.getDevices({ homeId, limit: 50 }).then((res: any) =>
+                  useDeviceStore.getState().setDevices(res.data),
+                ),
+              ]);
 
-            // Race Condition: Tối đa cho cục API fetch là 2000ms. Dù xong hay không cũng thả qua màn hình Home.
-            const timeoutPromise = new Promise((resolve) => {
-              fallbackTimer = setTimeout(resolve, 2000);
-            });
-            await Promise.race([syncPromise, timeoutPromise]);
-            clearTimeout(fallbackTimer);
+              // Race Condition: Tối đa cho cục API fetch là 2000ms. Dù xong hay không cũng thả qua màn hình Home.
+              const timeoutPromise = new Promise((resolve) => {
+                fallbackTimer = setTimeout(resolve, 2000);
+              });
+              await Promise.race([syncPromise, timeoutPromise]);
+              clearTimeout(fallbackTimer);
+            }
+            else {
+              // Đăng nhập nhưng chưa có Nhà nào được lưu cache -> Chờ 500ms cho mượt
+              await new Promise((resolve) => {
+                fallbackTimer = setTimeout(resolve, 500);
+              });
+            }
           }
-          else {
-            // Đăng nhập nhưng chưa có Nhà nào được lưu cache -> Chờ 500ms cho mượt
-            await new Promise((resolve) => {
-              fallbackTimer = setTimeout(resolve, 500);
-            });
+          catch {
+            // Bỏ qua lỗi mạng hỏng, nhả Splash Screen cho MMKV Render offline
           }
-        }
-        catch {
-          // Bỏ qua lỗi mạng hỏng, nhả Splash Screen cho MMKV Render offline
         }
       }
       else {
         // Sign Out hoặc Auth fail -> Chờ 500ms cho mượt hoạt ảnh
+        hasBootHydratedRef.current = false; // Reset để re-login sẽ hydrate lại
         await new Promise((resolve) => {
           fallbackTimer = setTimeout(resolve, 500);
         });

@@ -25,7 +25,7 @@ function SettingScreen() {
               {/* Button 1: Notifications */}
               <TouchableOpacity
                 activeOpacity={0.7}
-                onPress={() => {}}
+                onPress={() => router.push('/(app)/(mobile)/(settings)/scan-qr' as any)}
                 className="size-9 items-center justify-center rounded-full bg-white/40 shadow-sm dark:bg-black/40"
               >
                 <MaterialCommunityIcons name="line-scan" size={20} color={theme === ETheme.Dark ? '#fff' : '#1B1B1B'} />
@@ -158,6 +158,16 @@ function SettingScreen() {
             color: theme === 'dark' ? '#ffffff' : '#1B1B1B',
             fontWeight: '600',
           },
+          headerBackTitle: '',
+        }}
+      />
+      <Stack.Screen
+        name="scan-qr"
+        options={{
+          headerShown: true,
+          headerTransparent: true,
+          title: '',
+          headerTintColor: '#fff',
           headerBackTitle: '',
         }}
       />
