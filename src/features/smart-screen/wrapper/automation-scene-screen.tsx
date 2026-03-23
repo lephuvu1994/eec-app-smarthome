@@ -203,12 +203,12 @@ export const AutomationListSceneWrapper: React.FC<TProps> = ({ className }) => {
         <RecommendationCard
           title="Bật tất cả công tắc"
           usageCount="498.7K"
-          bgImage={require('@@/assets/scene/recommendation-bg.png')}
+          bgImage={require('@@/assets/scene/recommendation-bg.webp')}
         />
         <RecommendationCard
           title="Tắt toàn bộ thiết bị"
           usageCount="498.7K"
-          bgImage={require('@@/assets/scene/recommendation-bg-off.png')}
+          bgImage={require('@@/assets/scene/recommendation-bg-off.webp')}
         />
       </View>
     </ScrollView>
