@@ -27,6 +27,7 @@ import Reanimated from 'react-native-reanimated';
 
 const AnimatedScrollView
   = Reanimated.createAnimatedComponent<KeyboardAwareScrollViewProps>(
+    // @ts-expect-error -- KeyboardAwareScrollView is a forwardRef component; reanimated types only accept class components
     KeyboardAwareScrollView,
   );
 const BottomSheetScrollViewComponent = createBottomSheetScrollableComponent<
