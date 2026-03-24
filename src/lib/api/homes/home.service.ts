@@ -1,4 +1,4 @@
-import type { TDeviceFeature } from '../devices/device.service';
+import type { TDeviceEntity } from '../devices/device.service';
 import type { TScene } from '../scenes/scene.service';
 
 import { client } from '../common';
@@ -29,7 +29,7 @@ export type TRoom = {
   sortOrder: number;
   homeId: string;
   floorId?: string;
-  features?: TDeviceFeature[];
+  entities?: TDeviceEntity[];
   scenes?: TScene[];
 };
 

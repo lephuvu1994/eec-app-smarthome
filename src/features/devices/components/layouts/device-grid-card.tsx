@@ -15,7 +15,7 @@ export function DeviceGridCard({
   displayName,
   deviceImage,
   isOnline,
-  isSingleFeature,
+  isSingleEntity,
   statusLabel,
   showExpandIcon,
   config,
@@ -45,7 +45,7 @@ export function DeviceGridCard({
 
       <View className="w-full flex-row items-start justify-between" pointerEvents="box-none">
         <Image source={deviceImage} style={{ width: 52, height: 52 }} contentFit="cover" />
-        {isSingleFeature && config.hasToggle && (
+        {isSingleEntity && config.hasToggle && (
           <TouchableOpacity onPress={onToggle} activeOpacity={0.7}>
             <Animated.View style={[{ width: 32, height: 32, borderRadius: 17, padding: 7 }, powerButtonStyle]}>
               <PowerIcon color="#1B1B1B" size={18} />

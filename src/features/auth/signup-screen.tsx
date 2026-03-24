@@ -31,7 +31,7 @@ export function SignUp() {
         />
         <View className="gap-6 px-4" style={{ paddingTop: top + headerHeight - 32 }}>
           <Image
-            source={require('@@/assets/base/short_logo.webp')}
+            source={require('@@/assets/short_logo.webp')}
             style={{
               width: 60,
               height: 60,

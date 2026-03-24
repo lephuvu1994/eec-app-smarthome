@@ -1,4 +1,4 @@
-import type { TDeviceFeature } from '@/lib/api/devices/device.service';
+import type { TDeviceEntity } from '@/lib/api/devices/device.service';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useHeaderHeight } from '@react-navigation/elements';
@@ -13,7 +13,7 @@ import { ScrollView, Text, TouchableOpacity, View } from '@/components/ui';
 import { useHomeDevices } from '@/hooks/use-devices';
 import { useAssignFeaturesToRoom } from '@/hooks/use-homes';
 import { translate } from '@/lib/i18n';
-import { getDependentFeatures, getPrimaryFeatures } from '@/lib/utils/device-feature-helper';
+import { getPrimaryEntities } from '@/lib/utils/device-feature-helper';
 import { useHomeStore } from '@/stores/home/home-store';
 import { ETheme } from '@/types/base';
 
@@ -25,7 +25,7 @@ function FeatureRow({
   action,
   onPress,
 }: {
-  feature: TDeviceFeature;
+  feature: TDeviceEntity;
   deviceName: string;
   isOnline: boolean;
   action: 'add' | 'remove';
@@ -99,21 +99,22 @@ export function AssignRoomFeaturesScreen() {
 
   const assignFeatures = useAssignFeaturesToRoom();
 
-  // Flatten ONLY the Primary logical features across all devices for clean UI
+  // Flatten ONLY the Primary logical entities across all devices for clean UI
   const allFeatures = useMemo(() => {
     return devices.flatMap(d =>
-      getPrimaryFeatures(d).map(f => ({
+      getPrimaryEntities(d).map(f => ({
         ...f,
         deviceId: d.id,
         deviceName: d.name,
         isOnline: d.status === 'online',
+        deviceRoomId: d.room?.id ?? null,
       })),
     );
   }, [devices]);
 
   // Original UI IDs belonging to this room
   const originalFeatureIds = useMemo(
-    () => new Set(allFeatures.filter(f => f.roomId === roomId).map(f => f.id)),
+    () => new Set(allFeatures.filter(f => f.deviceRoomId === roomId).map(f => f.id)),
     [allFeatures, roomId],
   );
 
@@ -173,10 +174,9 @@ export function AssignRoomFeaturesScreen() {
     Array.from(localAssignedIds).forEach((primaryId) => {
       payloadFeatureIds.add(primaryId);
 
-      const parentDevice = devices.find(d => d.features?.some(feat => feat.id === primaryId));
+      const parentDevice = devices.find(d => d.entities?.some(e => e.id === primaryId));
       if (parentDevice) {
-        const dependents = getDependentFeatures(parentDevice, primaryId);
-        dependents.forEach(dep => payloadFeatureIds.add(dep.id));
+        // Entity attributes are handled together — no separate dependent expansion needed
       }
     });
 

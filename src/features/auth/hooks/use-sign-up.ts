@@ -1,8 +1,11 @@
+import type { EHomeRole } from '@/features/auth/types/response';
+
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { showErrorMessage } from '@/components/ui';
 import { authService } from '@/lib/api/auth/auth.service';
 import { translate } from '@/lib/i18n';
+import { useHomeStore } from '@/stores/home/home-store';
 import { useUserManager } from '../user-store';
 
 export function useSignUp() {
@@ -29,6 +32,16 @@ export function useSignUp() {
         accessToken: response.accessToken,
         refreshToken: response.refreshToken,
       });
+
+      // Set homes from auth response — server creates default home on signup
+      const homes = response.homes ?? [];
+      const { clearSelectedHome, setHomes, setSelectedHome } = useHomeStore.getState();
+      clearSelectedHome();
+      setHomes(homes as any);
+      if (homes.length > 0) {
+        setSelectedHome(homes[0] as any, homes[0].role as EHomeRole);
+      }
+
       router.replace('/(app)');
     },
     onError: (error: any) => {
