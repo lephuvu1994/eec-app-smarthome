@@ -1,10 +1,10 @@
-import type { TDevice, TDeviceFeature } from '@/lib/api/devices/device.service';
+import type { TDevice, TDeviceEntity } from '@/lib/api/devices/device.service';
 
 import { useMemo } from 'react';
 
 import { Skeleton, View } from '@/components/ui';
 import { GAP_DEVICE_VIEW_MOBILE } from '@/constants';
-import { getPrimaryFeatures } from '@/lib/utils/device-feature-helper';
+import { getPrimaryEntities } from '@/lib/utils/device-feature-helper';
 import { useConfigManager } from '@/stores/config/config';
 import { useDeviceStore } from '@/stores/device/device-store';
 import { useFavoriteStore } from '@/stores/device/favorite-store';
@@ -35,17 +35,17 @@ export function ListDevice({ roomId, isFavorite }: TListDeviceProps) {
   const devices = realDevices.length > 0 ? realDevices : MOCK_DEVICES;
 
   // Unpack or group them according to preferences
-  const displayItems = useMemo<{ device: TDevice; feature?: TDeviceFeature }[]>(() => {
+  const displayItems = useMemo<{ device: TDevice; entity?: TDeviceEntity }[]>(() => {
     if (deviceViewMode === 'grouped') {
-      return devices.map(d => ({ device: d, feature: undefined }));
+      return devices.map(d => ({ device: d, entity: undefined }));
     }
 
     return devices.flatMap((device) => {
-      const primaries = getPrimaryFeatures(device);
+      const primaries = getPrimaryEntities(device);
       if (primaries.length <= 1) {
-        return [{ device, feature: undefined }] as { device: TDevice; feature?: TDeviceFeature }[];
+        return [{ device, entity: undefined }] as { device: TDevice; entity?: TDeviceEntity }[];
       }
-      return primaries.map(feat => ({ device, feature: feat })) as { device: TDevice; feature?: TDeviceFeature }[];
+      return primaries.map(entity => ({ device, entity })) as { device: TDevice; entity?: TDeviceEntity }[];
     });
   }, [devices, deviceViewMode]);
 
@@ -62,11 +62,11 @@ export function ListDevice({ roomId, isFavorite }: TListDeviceProps) {
 
   return (
     <View className="flex-row flex-wrap" style={{ gap: GAP_DEVICE_VIEW_MOBILE }}>
-      {displayItems.map(({ device, feature }, idx) => (
+      {displayItems.map(({ device, entity }, idx) => (
         <DeviceItem
-          key={feature ? `${device.id}-${feature.id}` : device.id}
+          key={entity ? `${device.id}-${entity.id}` : device.id}
           device={device}
-          activeFeature={feature}
+          activeEntity={entity}
           typeViewDevice={idx % 3 === 0 ? ETypeViewDevice.FullWidth : ETypeViewDevice.Grid}
         />
       ))}

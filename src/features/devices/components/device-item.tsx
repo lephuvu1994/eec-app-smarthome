@@ -13,10 +13,10 @@ import { DeviceControlModal } from './modals/device-control-modal';
  * Entry component for device rendering.
  * Resolves device config → delegates to layout + modal.
  */
-export function DeviceItem({ device, typeViewDevice, activeFeature }: TDeviceItemProps) {
+export function DeviceItem({ device, typeViewDevice, activeEntity }: TDeviceItemProps) {
   const config = useDeviceConfig(device.type);
   const modal = useModal();
-  const control = useDeviceControl(device, activeFeature, { modal, config });
+  const control = useDeviceControl(device, activeEntity, { modal, config });
 
   const Card = typeViewDevice === ETypeViewDevice.FullWidth
     ? DeviceFullCard
@@ -28,9 +28,10 @@ export function DeviceItem({ device, typeViewDevice, activeFeature }: TDeviceIte
       <DeviceControlModal
         modalRef={modal.ref}
         device={device}
-        activeFeature={activeFeature}
+        activeEntity={activeEntity}
         config={config}
       />
     </>
   );
 }
+
