@@ -8,11 +8,11 @@ import { useUniwind } from 'uniwind';
 import { Text, TouchableOpacity, View } from '@/components/ui';
 import { BellIcon, SnownyIcon } from '@/components/ui/icons';
 import { ZeegoNativeMenu } from '@/components/ui/zeego-native-menu';
+import { EHomeRole } from '@/features/auth/types/response';
 import { useUserManager } from '@/features/auth/user-store';
 import { useHomes } from '@/hooks/use-homes';
 import { translate } from '@/lib/i18n';
 import { useHomeStore } from '@/stores/home/home-store';
-import { EHomeRole } from '@/stores/home/types';
 import { ETheme } from '@/types/base';
 import { PulseDot } from '../PulseDot';
 

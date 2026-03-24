@@ -1,3 +1,8 @@
+export enum EHomeRole {
+  OWNER = 'OWNER',
+  MEMBER = 'MEMBER',
+}
+
 export type TTokenType = {
   accessToken: string | null;
   refreshToken: string | null;
@@ -23,5 +28,6 @@ export type UserResponse = {
     user: TUser;
     accessToken: string;
     refreshToken: string;
+    homes: { id: string; name: string; role: EHomeRole }[];
   };
 };
