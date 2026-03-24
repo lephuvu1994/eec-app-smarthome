@@ -1,16 +1,31 @@
-import type { TDevice, TDeviceFeature } from '../api/devices/device.service';
+import type { TDevice, TDeviceEntity } from '../api/devices/device.service';
 
 /**
- * Determines if a given Device Feature acts as a primary control point
- * (e.g., a physical button, a power toggle, a lock toggle)
- * rather than a secondary modifier (e.g., brightness, color, voltage tracking).
+ * Determines if a given entity acts as a primary control point
+ * (e.g., a power toggle, a switch, a lock)
+ * rather than a secondary modifier (e.g., brightness, color).
+ *
+ * Primary domains: switch_, light (on/off), lock, button, curtain
  */
-export function isPrimaryFeature(feature: TDeviceFeature): boolean {
-  if (feature.category === 'switch')
+export function isPrimaryEntity(entity: TDeviceEntity): boolean {
+  const { domain } = entity;
+
+  if (domain === 'switch_' || domain === 'button' || domain === 'lock' || domain === 'curtain') {
     return true;
+  }
 
-  const code = feature.code.toLowerCase();
+  // light with on/off capability is primary
+  if (domain === 'light') {
+    return true;
+  }
 
+  // climate main entity is primary
+  if (domain === 'climate') {
+    return true;
+  }
+
+  // Fallback: check code patterns
+  const code = entity.code.toLowerCase();
   if (
     code.includes('switch')
     || code.includes('power')
@@ -25,40 +40,46 @@ export function isPrimaryFeature(feature: TDeviceFeature): boolean {
 }
 
 /**
- * Iterates over a Device's features and isolates only the Primary logic paths for granular UI display.
- * If no recognizable primary features exist, defaults to returning the first available feature.
+ * Returns primary entities from a device for granular UI display.
+ * Falls back to first entity if none recognized.
  */
-export function getPrimaryFeatures(device: TDevice): TDeviceFeature[] {
-  if (!device.features || device.features.length === 0)
-    return [];
+export function getPrimaryEntities(device: TDevice): TDeviceEntity[] {
+  const entities = device.entities ?? [];
+  if (entities.length === 0) return [];
 
-  const primaries = device.features.filter(isPrimaryFeature);
+  const primaries = entities.filter(isPrimaryEntity);
 
   if (primaries.length === 0) {
-    return [device.features[0]]; // Fallback safe-catch
+    return [entities[0]]; // Fallback safe-catch
   }
 
   return primaries;
 }
 
 /**
- * Locates the implicit secondary feature modifiers that belong logically to a specific primary feature.
- * Used during assignment payloads to assure modifiers (like brightness) travel to the same room as the physical switch.
+ * Returns attributes (secondary modifiers) for a specific entity.
+ * For single-entity devices with attributes, returns those attributes as "dependent" entities.
  */
-export function getDependentFeatures(device: TDevice, _primaryFeatureId: string): TDeviceFeature[] {
-  if (!device.features)
+export function getDependentAttributes(device: TDevice, entityId: string): TDeviceEntity[] {
+  const entities = device.entities ?? [];
+  if (entities.length === 0) return [];
+
+  const entity = entities.find(e => e.id === entityId);
+  if (!entity) return [];
+
+  // Entity has attributes (brightness, color_temp...) → treat as dependent
+  if (entity.attributes && entity.attributes.length > 0) {
+    // Return the entity itself — its attributes will be rendered in the modal
     return [];
-
-  const allPrimaries = device.features.filter(isPrimaryFeature);
-
-  // If the device only has 1 primary feature (e.g., a standard Dimmer Bulb with ON/OFF switch and Brightness array)
-  // Then ALL secondary attributes logically belong to that lone primary feature.
-  if (allPrimaries.length <= 1) {
-    return device.features.filter(f => !isPrimaryFeature(f));
   }
 
-  // If this is a Multi-gang scenario (e.g., 3 separate switches), they rarely share unified modifiers.
-  // Advanced mapping here would check for identical prefixes (e.g., `switch_1` pairs with `brightness_1`),
-  // but safely returning empty arrays handles 95% of standard Smart Home switch blocks.
   return [];
 }
+
+// ─── Backward compat aliases ─────────────────────────────────
+/** @deprecated Use isPrimaryEntity */
+export const isPrimaryFeature = isPrimaryEntity;
+/** @deprecated Use getPrimaryEntities */
+export const getPrimaryFeatures = getPrimaryEntities;
+/** @deprecated Use getDependentAttributes */
+export const getDependentFeatures = getDependentAttributes;

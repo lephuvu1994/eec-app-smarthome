@@ -25,16 +25,37 @@ export enum EOwnership {
 // ============================================================
 // TYPES
 // ============================================================
-export type TDeviceFeature = {
+export type TEntityAttribute = {
+  id: string;
+  key: string;
+  name: string;
+  valueType: string;
+  numValue?: number | null;
+  strValue?: string | null;
+  currentValue?: any;
+  min?: number | null;
+  max?: number | null;
+  unit?: string | null;
+  readOnly: boolean;
+  enumValues?: string[];
+};
+
+export type TDeviceEntity = {
   id: string;
   code: string;
   name: string;
-  type: string;
-  category: string;
+  domain: string; // EntityDomain: light, switch_, sensor, climate...
+  state?: number | null;
+  stateText?: string | null;
+  currentState?: any;
+  commandKey?: string | null;
   readOnly: boolean;
-  currentValue?: any;
-  roomId?: string | null;
+  sortOrder: number;
+  attributes: TEntityAttribute[];
 };
+
+/** @deprecated Use TDeviceEntity instead */
+export type TDeviceFeature = TDeviceEntity;
 
 export type TDevice = {
   id: string;
@@ -48,7 +69,9 @@ export type TDevice = {
   ownership: EOwnership;
   sortOrder: number;
   room?: { id: string; name: string } | null;
-  features: TDeviceFeature[];
+  entities: TDeviceEntity[];
+  /** @deprecated Use entities instead */
+  features?: TDeviceEntity[];
 };
 
 export type TDeviceListResponse = {
@@ -67,7 +90,7 @@ export type TSiriSyncDevice = {
   room: string | null;
   roomId: string | null;
   status: string;
-  features: { code: string; name: string; type: string; category: string }[];
+  entities: { code: string; name: string; domain: string }[];
 };
 
 export type TSiriSyncScene = {

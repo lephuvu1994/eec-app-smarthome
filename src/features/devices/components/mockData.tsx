@@ -5,14 +5,11 @@ import { EDeviceProtocol, EDeviceStatus, EOwnership } from '@/lib/api/devices/de
 // MOCK DEVICES — Comprehensive cases for useDeviceConfig + useDeviceControl
 // ============================================================
 // Covers: all config deviceTypes, toggle/no-toggle, modal/expand/trigger,
-//         multi-feature, single-feature, online/offline, readOnly, dependent features,
+//         multi-entity, single-entity, online/offline, readOnly, dependent attributes,
 //         Grid vs FullWidth layout (determined by ListDevice idx % 3 === 0)
 
 export const MOCK_DEVICES: TDevice[] = [
-  // ─────────────────────────────────────────────
-  // 1. LIGHT — hasToggle:true, ON, online, multi-feature → showExpandIcon
-  //    idx=0 → FullWidth layout
-  // ─────────────────────────────────────────────
+  // 1. LIGHT — hasToggle:true, ON, online, multi-entity → showExpandIcon
   {
     id: 'mock-light-living',
     name: 'Đèn phòng khách',
@@ -25,17 +22,15 @@ export const MOCK_DEVICES: TDevice[] = [
     ownership: EOwnership.OWNER,
     sortOrder: 1,
     room: { id: 'room-1', name: 'Phòng khách' },
-    features: [
-      { id: 'f-light-sw', code: 'switch_led', name: 'Bật/Tắt', type: 'Boolean', category: 'light', readOnly: false, currentValue: 1 },
-      { id: 'f-light-br', code: 'bright_value', name: 'Độ sáng', type: 'Integer', category: 'light', readOnly: false, currentValue: 80 },
-      { id: 'f-light-ct', code: 'temp_value', name: 'Nhiệt độ màu', type: 'Integer', category: 'light', readOnly: false, currentValue: 4000 },
+    entities: [
+      { id: 'e-light-main', code: 'main', name: 'Bật/Tắt', domain: 'light', state: 1, currentState: 1, readOnly: false, sortOrder: 0, attributes: [
+        { id: 'a-light-br', key: 'brightness', name: 'Độ sáng', valueType: 'INTEGER', currentValue: 80, readOnly: false, min: 0, max: 100, unit: '%' },
+        { id: 'a-light-ct', key: 'color_temp', name: 'Nhiệt độ màu', valueType: 'INTEGER', currentValue: 4000, readOnly: false, min: 2700, max: 6500, unit: 'K' },
+      ] },
     ],
   },
 
-  // ─────────────────────────────────────────────
-  // 2. SWITCH — hasToggle:true, OFF, online, single feature → no expand icon
-  //    idx=1 → Grid layout
-  // ─────────────────────────────────────────────
+  // 2. SWITCH — single entity → no expand icon
   {
     id: 'mock-switch-1',
     name: 'Công tắc cửa',
@@ -48,15 +43,12 @@ export const MOCK_DEVICES: TDevice[] = [
     ownership: EOwnership.OWNER,
     sortOrder: 2,
     room: { id: 'room-1', name: 'Phòng khách' },
-    features: [
-      { id: 'f-sw-1', code: 'switch_1', name: 'Công tắc', type: 'Boolean', category: 'switch', readOnly: false, currentValue: 0 },
+    entities: [
+      { id: 'e-sw-1', code: 'channel_1', name: 'Công tắc', domain: 'switch_', state: 0, currentState: 0, readOnly: false, sortOrder: 0, attributes: [] },
     ],
   },
 
-  // ─────────────────────────────────────────────
-  // 3. SENSOR — hasToggle:false, online, readOnly features → no toggle, card press → modal
-  //    idx=2 → Grid layout
-  // ─────────────────────────────────────────────
+  // 3. SENSOR — hasToggle:false, readOnly
   {
     id: 'mock-sensor-temp',
     name: 'Cảm biến nhiệt độ',
@@ -69,16 +61,13 @@ export const MOCK_DEVICES: TDevice[] = [
     ownership: EOwnership.OWNER,
     sortOrder: 3,
     room: { id: 'room-2', name: 'Phòng ngủ' },
-    features: [
-      { id: 'f-temp', code: 'va_temperature', name: 'Nhiệt độ', type: 'Integer', category: 'sensor', readOnly: true, currentValue: 26 },
-      { id: 'f-hum', code: 'va_humidity', name: 'Độ ẩm', type: 'Integer', category: 'sensor', readOnly: true, currentValue: 65 },
+    entities: [
+      { id: 'e-temp', code: 'temperature', name: 'Nhiệt độ', domain: 'sensor', state: 26, currentState: 26, readOnly: true, sortOrder: 0, attributes: [] },
+      { id: 'e-hum', code: 'humidity', name: 'Độ ẩm', domain: 'sensor', state: 65, currentState: 65, readOnly: true, sortOrder: 1, attributes: [] },
     ],
   },
 
-  // ─────────────────────────────────────────────
-  // 4. CAMERA — hasToggle:false, online, card press → modal (70% snap)
-  //    idx=3 → FullWidth layout
-  // ─────────────────────────────────────────────
+  // 4. CAMERA — hasToggle:false, snap 70%
   {
     id: 'mock-camera-door',
     name: 'Camera cửa trước',
@@ -91,16 +80,13 @@ export const MOCK_DEVICES: TDevice[] = [
     ownership: EOwnership.OWNER,
     sortOrder: 4,
     room: { id: 'room-1', name: 'Phòng khách' },
-    features: [
-      { id: 'f-cam-ptz', code: 'ptz_control', name: 'Xoay camera', type: 'Enum', category: 'camera', readOnly: false },
-      { id: 'f-cam-motion', code: 'motion_detect', name: 'Phát hiện', type: 'Boolean', category: 'camera', readOnly: true, currentValue: 1 },
+    entities: [
+      { id: 'e-cam-ptz', code: 'ptz_control', name: 'Xoay camera', domain: 'camera', readOnly: false, sortOrder: 0, attributes: [] },
+      { id: 'e-cam-motion', code: 'motion_detect', name: 'Phát hiện', domain: 'sensor', state: 1, currentState: 1, readOnly: true, sortOrder: 1, attributes: [] },
     ],
   },
 
-  // ─────────────────────────────────────────────
-  // 5. LOCK — hasToggle:true, OFF (locked), online
-  //    idx=4 → Grid layout
-  // ─────────────────────────────────────────────
+  // 5. LOCK
   {
     id: 'mock-lock-front',
     name: 'Khoá cửa chính',
@@ -113,15 +99,12 @@ export const MOCK_DEVICES: TDevice[] = [
     ownership: EOwnership.OWNER,
     sortOrder: 5,
     room: null,
-    features: [
-      { id: 'f-lock', code: 'switch_lock', name: 'Mở khoá', type: 'Boolean', category: 'lock', readOnly: false, currentValue: 0 },
+    entities: [
+      { id: 'e-lock', code: 'lock', name: 'Mở khoá', domain: 'lock', state: 0, currentState: 0, readOnly: false, sortOrder: 0, attributes: [] },
     ],
   },
 
-  // ─────────────────────────────────────────────
-  // 6. CURTAIN — hasToggle:true, ON (open), online, multi-feature → expand
-  //    idx=5 → Grid layout
-  // ─────────────────────────────────────────────
+  // 6. CURTAIN — multi-entity
   {
     id: 'mock-curtain-1',
     name: 'Rèm phòng khách',
@@ -134,16 +117,14 @@ export const MOCK_DEVICES: TDevice[] = [
     ownership: EOwnership.OWNER,
     sortOrder: 6,
     room: { id: 'room-1', name: 'Phòng khách' },
-    features: [
-      { id: 'f-curtain-sw', code: 'control', name: 'Đóng/Mở', type: 'Boolean', category: 'curtain', readOnly: false, currentValue: 1 },
-      { id: 'f-curtain-pos', code: 'percent_control', name: 'Vị trí', type: 'Integer', category: 'curtain', readOnly: false, currentValue: 75 },
+    entities: [
+      { id: 'e-curtain-main', code: 'main', name: 'Đóng/Mở', domain: 'curtain', state: 1, currentState: 1, readOnly: false, sortOrder: 0, attributes: [
+        { id: 'a-curtain-pos', key: 'position', name: 'Vị trí', valueType: 'INTEGER', currentValue: 75, readOnly: false, min: 0, max: 100, unit: '%' },
+      ] },
     ],
   },
 
-  // ─────────────────────────────────────────────
-  // 7. CLIMATE — hasToggle:true, ON, online, multi-feature (temp, mode, fan)
-  //    idx=6 → FullWidth layout, snap 60%
-  // ─────────────────────────────────────────────
+  // 7. CLIMATE — multi-attribute entity
   {
     id: 'mock-ac-1',
     name: 'Điều hoà phòng ngủ',
@@ -156,18 +137,16 @@ export const MOCK_DEVICES: TDevice[] = [
     ownership: EOwnership.OWNER,
     sortOrder: 7,
     room: { id: 'room-2', name: 'Phòng ngủ' },
-    features: [
-      { id: 'f-ac-sw', code: 'switch', name: 'Bật/Tắt', type: 'Boolean', category: 'climate', readOnly: false, currentValue: 1 },
-      { id: 'f-ac-temp', code: 'temp_set', name: 'Nhiệt độ', type: 'Integer', category: 'climate', readOnly: false, currentValue: 24 },
-      { id: 'f-ac-mode', code: 'mode', name: 'Chế độ', type: 'Enum', category: 'climate', readOnly: false, currentValue: 'cool' },
-      { id: 'f-ac-fan', code: 'fan_speed', name: 'Tốc độ quạt', type: 'Enum', category: 'climate', readOnly: false, currentValue: 'auto' },
+    entities: [
+      { id: 'e-ac-main', code: 'main', name: 'Điều hoà', domain: 'climate', state: 1, currentState: 1, readOnly: false, sortOrder: 0, attributes: [
+        { id: 'a-ac-temp', key: 'temperature', name: 'Nhiệt độ', valueType: 'INTEGER', currentValue: 24, readOnly: false, min: 16, max: 30, unit: '°C' },
+        { id: 'a-ac-mode', key: 'mode', name: 'Chế độ', valueType: 'ENUM', currentValue: 'cool', readOnly: false, enumValues: ['cool', 'heat', 'auto', 'dry', 'fan'] },
+        { id: 'a-ac-fan', key: 'fan_speed', name: 'Tốc độ quạt', valueType: 'ENUM', currentValue: 'auto', readOnly: false, enumValues: ['low', 'medium', 'high', 'auto'] },
+      ] },
     ],
   },
 
-  // ─────────────────────────────────────────────
-  // 8. WIFI_SWITCH_4 — specific DeviceModel.code, 4 features (unpacked in split mode)
-  //    idx=7 → Grid layout, hasToggle:true
-  // ─────────────────────────────────────────────
+  // 8. WIFI_SWITCH_4 — 4 entities (unpacked in split mode)
   {
     id: 'mock-wifi-sw4',
     name: 'Công tắc 4 kênh',
@@ -180,18 +159,15 @@ export const MOCK_DEVICES: TDevice[] = [
     ownership: EOwnership.OWNER,
     sortOrder: 8,
     room: { id: 'room-1', name: 'Phòng khách' },
-    features: [
-      { id: 'f-ws4-1', code: 'switch_1', name: 'Kênh 1', type: 'Boolean', category: 'switch', readOnly: false, currentValue: 1 },
-      { id: 'f-ws4-2', code: 'switch_2', name: 'Kênh 2', type: 'Boolean', category: 'switch', readOnly: false, currentValue: 0 },
-      { id: 'f-ws4-3', code: 'switch_3', name: 'Kênh 3', type: 'Boolean', category: 'switch', readOnly: false, currentValue: 1 },
-      { id: 'f-ws4-4', code: 'switch_4', name: 'Kênh 4', type: 'Boolean', category: 'switch', readOnly: false, currentValue: 0 },
+    entities: [
+      { id: 'e-ws4-1', code: 'channel_1', name: 'Kênh 1', domain: 'switch_', state: 1, currentState: 1, readOnly: false, sortOrder: 0, attributes: [] },
+      { id: 'e-ws4-2', code: 'channel_2', name: 'Kênh 2', domain: 'switch_', state: 0, currentState: 0, readOnly: false, sortOrder: 1, attributes: [] },
+      { id: 'e-ws4-3', code: 'channel_3', name: 'Kênh 3', domain: 'switch_', state: 1, currentState: 1, readOnly: false, sortOrder: 2, attributes: [] },
+      { id: 'e-ws4-4', code: 'channel_4', name: 'Kênh 4', domain: 'switch_', state: 0, currentState: 0, readOnly: false, sortOrder: 3, attributes: [] },
     ],
   },
 
-  // ─────────────────────────────────────────────
-  // 9. SHUTTER_DOOR — specific DeviceModel.code, hasToggle:true
-  //    idx=8 → FullWidth layout
-  // ─────────────────────────────────────────────
+  // 9. SHUTTER_DOOR
   {
     id: 'mock-shutter-1',
     name: 'Cửa cuốn garage',
@@ -204,16 +180,14 @@ export const MOCK_DEVICES: TDevice[] = [
     ownership: EOwnership.OWNER,
     sortOrder: 9,
     room: null,
-    features: [
-      { id: 'f-shutter-sw', code: 'control', name: 'Mở/Đóng', type: 'Boolean', category: 'curtain', readOnly: false, currentValue: 0 },
-      { id: 'f-shutter-pos', code: 'percent_state', name: 'Vị trí', type: 'Integer', category: 'curtain', readOnly: true, currentValue: 0 },
+    entities: [
+      { id: 'e-shutter-main', code: 'main', name: 'Mở/Đóng', domain: 'curtain', state: 0, currentState: 0, readOnly: false, sortOrder: 0, attributes: [
+        { id: 'a-shutter-pos', key: 'position', name: 'Vị trí', valueType: 'INTEGER', currentValue: 0, readOnly: true, min: 0, max: 100, unit: '%' },
+      ] },
     ],
   },
 
-  // ─────────────────────────────────────────────
-  // 10. ALEXA — hasToggle:false, card press → modal
-  //     idx=9 → FullWidth layout
-  // ─────────────────────────────────────────────
+  // 10. ALEXA — hasToggle:false
   {
     id: 'mock-speaker',
     name: 'Loa thông minh',
@@ -226,15 +200,12 @@ export const MOCK_DEVICES: TDevice[] = [
     ownership: EOwnership.OWNER,
     sortOrder: 10,
     room: { id: 'room-1', name: 'Phòng khách' },
-    features: [
-      { id: 'f-speaker-play', code: 'play_control', name: 'Phát nhạc', type: 'Enum', category: 'alexa', readOnly: false },
+    entities: [
+      { id: 'e-speaker-play', code: 'play_control', name: 'Phát nhạc', domain: 'media_player', readOnly: false, sortOrder: 0, attributes: [] },
     ],
   },
 
-  // ─────────────────────────────────────────────
-  // 11. LIGHT — OFFLINE + ON → tests offline styling with isOn=true
-  //     idx=10 → Grid layout
-  // ─────────────────────────────────────────────
+  // 11. LIGHT — OFFLINE + ON → tests offline styling
   {
     id: 'mock-light-offline',
     name: 'Đèn phòng ngủ (offline)',
@@ -247,15 +218,12 @@ export const MOCK_DEVICES: TDevice[] = [
     ownership: EOwnership.OWNER,
     sortOrder: 11,
     room: { id: 'room-2', name: 'Phòng ngủ' },
-    features: [
-      { id: 'f-light-off', code: 'switch_led', name: 'Bật/Tắt', type: 'Boolean', category: 'light', readOnly: false, currentValue: 1 },
+    entities: [
+      { id: 'e-light-off', code: 'main', name: 'Bật/Tắt', domain: 'light', state: 1, currentState: 1, readOnly: false, sortOrder: 0, attributes: [] },
     ],
   },
 
-  // ─────────────────────────────────────────────
-  // 12. SENSOR — OFFLINE + readOnly → no toggle, offline badge
-  //     idx=11 → Grid layout
-  // ─────────────────────────────────────────────
+  // 12. SENSOR — OFFLINE + readOnly
   {
     id: 'mock-sensor-offline',
     name: 'Cảm biến cửa (offline)',
@@ -268,8 +236,9 @@ export const MOCK_DEVICES: TDevice[] = [
     ownership: EOwnership.SHARED,
     sortOrder: 12,
     room: null,
-    features: [
-      { id: 'f-door', code: 'doorcontact_state', name: 'Trạng thái cửa', type: 'Boolean', category: 'sensor', readOnly: true, currentValue: 0 },
+    entities: [
+      { id: 'e-door', code: 'contact', name: 'Trạng thái cửa', domain: 'sensor', state: 0, currentState: 0, readOnly: true, sortOrder: 0, attributes: [] },
     ],
   },
 ];
+
