@@ -135,7 +135,7 @@ export function RoomDetailScreen() {
             <SettingRow
               label={translate('roomManagement.devices')}
               value={translate('roomManagement.deviceCount', {
-                count: currentFloor?.rooms?.find(r => r.id === roomId)?.features?.length ?? 0,
+                count: currentFloor?.rooms?.find(r => r.id === roomId)?.entities?.length ?? 0,
               })}
               onPress={() => router.push({ pathname: '/assign-room-features', params: { roomId } })}
             />
