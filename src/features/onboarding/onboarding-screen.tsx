@@ -145,7 +145,7 @@ export function OnboardingScreen() {
       <FocusAwareStatusBar />
       <View className="px-4" style={{ paddingTop: insets.top + 32 }}>
         <Image
-          source={require('@@/assets/base/icon-wrapper-full.png')}
+          source={require('@@/assets/base/short_logo.webp')}
           style={{
             width: 140,
             height: 40,
