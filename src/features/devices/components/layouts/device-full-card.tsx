@@ -15,9 +15,9 @@ export function DeviceFullCard({
   displayName,
   deviceImage,
   isOnline,
-  isSingleFeature,
+  isSingleEntity,
   statusLabel,
-  featureCount,
+  entityCount,
   showExpandIcon,
   config,
   animatedGradientStyle,
@@ -58,7 +58,7 @@ export function DeviceFullCard({
           </View>
         </View>
 
-        {isSingleFeature && config.hasToggle && (
+        {isSingleEntity && config.hasToggle && (
           <TouchableOpacity onPress={onToggle} activeOpacity={0.7}>
             <Animated.View style={[{ width: 32, height: 32, borderRadius: 17, padding: 7 }, powerButtonStyle]}>
               <PowerIcon color="#1B1B1B" size={18} />
@@ -70,7 +70,7 @@ export function DeviceFullCard({
       {/* Feature count */}
       <View className="flex-row items-center justify-between" pointerEvents="none">
         <Text className="text-[11px] text-neutral-400">
-          {featureCount}
+          {entityCount}
           {' '}
           {translate('base.feature')}
         </Text>

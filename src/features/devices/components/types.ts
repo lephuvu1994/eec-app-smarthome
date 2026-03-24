@@ -1,7 +1,7 @@
 import type { ImageSource } from 'expo-image';
 import type { StyleProp, ViewStyle } from 'react-native';
 
-import type { TDevice, TDeviceFeature } from '@/lib/api/devices/device.service';
+import type { TDevice, TDeviceEntity } from '@/lib/api/devices/device.service';
 import type { ETypeViewDevice } from '@/types/device';
 
 // ============================================================
@@ -31,9 +31,9 @@ export type TDeviceCardProps = {
   deviceImage: ImageSource;
   isOnline: boolean;
   isOn: boolean;
-  isSingleFeature: boolean;
+  isSingleEntity: boolean;
   statusLabel: string;
-  featureCount: number;
+  entityCount: number;
   showExpandIcon: boolean;
   config: TDeviceConfig;
   // Animated styles
@@ -51,5 +51,5 @@ export type TDeviceCardProps = {
 export type TDeviceItemProps = {
   device: TDevice;
   typeViewDevice: ETypeViewDevice;
-  activeFeature?: TDeviceFeature;
+  activeEntity?: TDeviceEntity;
 };

@@ -25,7 +25,7 @@ function RoomRow({ room, isLast }: { room: TRoom; isLast: boolean }) {
     });
   }, [room.id, room.name]);
 
-  const deviceCount = room.features?.length || 0;
+  const deviceCount = room.entities?.length || 0;
 
   return (
     <>

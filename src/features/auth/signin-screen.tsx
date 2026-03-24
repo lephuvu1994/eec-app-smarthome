@@ -1,5 +1,5 @@
 import type { TLoginFormProps } from '@/features/auth/components/login-form';
-import type { UserResponse } from '@/features/auth/types/response';
+import type { EHomeRole, UserResponse } from '@/features/auth/types/response';
 
 import { useHeaderHeight } from '@react-navigation/elements';
 import { Image } from 'expo-image';
@@ -11,6 +11,7 @@ import { LoginForm } from '@/features/auth/components/login-form';
 import { useUserManager } from '@/features/auth/user-store';
 import { useLogin } from '@/lib/api';
 import { translate } from '@/lib/i18n';
+import { useHomeStore } from '@/stores/home/home-store';
 
 export function SignIn() {
   const router = useRouter();
@@ -30,6 +31,16 @@ export function SignIn() {
           }
           else if (data) {
             signIn({ ...data.data.user, accessToken: data.data.accessToken, refreshToken: data.data.refreshToken });
+
+            // Set homes from auth response — eliminates stale homeId race condition
+            const homes = data.data.homes ?? [];
+            const { clearSelectedHome, setHomes, setSelectedHome } = useHomeStore.getState();
+            clearSelectedHome();
+            setHomes(homes as any);
+            if (homes.length > 0) {
+              setSelectedHome(homes[0] as any, homes[0].role as EHomeRole);
+            }
+
             router.push('/(app)');
           }
         },
@@ -58,7 +69,7 @@ export function SignIn() {
         />
         <View className="gap-6 px-4" style={{ paddingTop: top + headerHeight - 32 }}>
           <Image
-            source={require('@@/assets/base/short_logo.webp')}
+            source={require('@@/assets/short_logo.webp')}
             style={{
               width: 60,
               height: 60,

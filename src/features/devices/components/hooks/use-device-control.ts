@@ -1,6 +1,6 @@
 import type { TDeviceCardProps, TDeviceConfig } from '../types';
 import type { useModal } from '@/components/ui/modal';
-import type { TDevice, TDeviceFeature } from '@/lib/api/devices/device.service';
+import type { TDevice, TDeviceEntity } from '@/lib/api/devices/device.service';
 
 import * as Haptics from 'expo-haptics';
 import { useCallback, useRef, useState } from 'react';
@@ -18,7 +18,6 @@ import { getDeviceImage } from '@/features/home-screen/utils/device-image';
 import { useDeviceEvent } from '@/hooks/use-device-event';
 import { EDeviceStatus } from '@/lib/api/devices/device.service';
 import { translate } from '@/lib/i18n';
-import { getDependentFeatures } from '@/lib/utils/device-feature-helper';
 import { useConfigManager } from '@/stores/config/config';
 
 type TDeviceControlOptions = {
@@ -32,7 +31,7 @@ type TDeviceControlOptions = {
  */
 export function useDeviceControl(
   device: TDevice,
-  activeFeature: TDeviceFeature | undefined,
+  activeEntity: TDeviceEntity | undefined,
   options: TDeviceControlOptions,
 ): TDeviceCardProps {
   const { modal, config } = options;
@@ -42,17 +41,20 @@ export function useDeviceControl(
   const isOnline = device.status === EDeviceStatus.ONLINE;
 
   // ─── Power state (optimistic) ──────────────────────
-  const primaryFeature = activeFeature || device.features?.[0];
-  const serverIsOn = primaryFeature?.currentValue === 1 || primaryFeature?.currentValue === '1';
+  const entities = device.entities ?? [];
+  const primaryEntity = activeEntity || entities[0];
+  const serverIsOn = primaryEntity?.currentState === 1 || primaryEntity?.currentState === '1'
+    || primaryEntity?.state === 1;
   const [isOn, setIsOn] = useState(serverIsOn);
   const lastClickRef = useRef(0);
 
   // ─── WebSocket sync ────────────────────────────────
-  useDeviceEvent(device.id, useCallback((data: { featureId?: string; value: any }) => {
-    if (data.featureId === primaryFeature?.id || !data.featureId) {
-      setIsOn(data.value === 1 || data.value === '1');
+  useDeviceEvent(device.id, useCallback((data: { entityCode?: string; state?: any; value?: any }) => {
+    if (data.entityCode === primaryEntity?.code || !data.entityCode) {
+      const val = data.state ?? data.value;
+      setIsOn(val === 1 || val === '1');
     }
-  }, [primaryFeature?.id]));
+  }, [primaryEntity?.code]));
 
   // ─── Animations ────────────────────────────────────
   const powerProgress = useDerivedValue(() => {
@@ -73,19 +75,17 @@ export function useDeviceControl(
   }));
 
   // ─── Derived data ──────────────────────────────────
-  const featureCount = device.features?.length ?? 0;
-  const isSingleFeature = featureCount <= 1;
-  const hasMultipleFeatures = featureCount > 1;
-  const hasDependentFeatures = activeFeature
-    ? getDependentFeatures(device, activeFeature.id).length > 0
-    : false;
-  const showExpandIcon = (!activeFeature && hasMultipleFeatures) || hasDependentFeatures;
+  const entityCount = entities.length;
+  const isSingleEntity = entityCount <= 1;
+  const hasMultipleEntities = entityCount > 1;
+  const hasAttributes = !!activeEntity?.attributes?.length;
+  const showExpandIcon = (!activeEntity && hasMultipleEntities) || hasAttributes;
 
   const deviceImage = getDeviceImage(
-    activeFeature?.category || device.type || device.features?.[0]?.category || 'camera',
+    activeEntity?.domain || device.type || entities[0]?.domain || 'camera',
   );
-  const displayName = activeFeature
-    ? `${device.name} - ${activeFeature.name || activeFeature.code}`
+  const displayName = activeEntity
+    ? `${device.name} - ${activeEntity.name || activeEntity.code}`
     : device.name;
   const statusLabel = isOnline ? translate('base.online') : translate('base.offline');
 
@@ -114,7 +114,7 @@ export function useDeviceControl(
   };
 
   const onPressCard = () => {
-    if (!activeFeature) {
+    if (!activeEntity) {
       modal.present();
     } else {
       onToggle();
@@ -131,9 +131,9 @@ export function useDeviceControl(
     deviceImage,
     isOnline,
     isOn,
-    isSingleFeature,
+    isSingleEntity,
     statusLabel,
-    featureCount,
+    entityCount,
     showExpandIcon,
     config,
     animatedGradientStyle,

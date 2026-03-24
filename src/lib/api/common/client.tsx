@@ -5,7 +5,7 @@ import get from 'lodash/get';
 import { useUserManager } from '@/features/auth/user-store';
 
 export const TIMEOUT = 10000;
-const API_VERSION = '/v1';
+const API_VERSION = '/api/v1';
 
 function createBaseConfig(baseURL?: string, headers?: object): AxiosRequestConfig {
   return {

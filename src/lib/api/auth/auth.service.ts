@@ -3,6 +3,12 @@ import { client } from '../common';
 // ============================================================
 // TYPES
 // ============================================================
+export type TAuthHome = {
+  id: string;
+  name: string;
+  role: string;
+};
+
 export type TAuthResponse = {
   accessToken: string;
   refreshToken: string;
@@ -17,6 +23,7 @@ export type TAuthResponse = {
     createdAt: string;
     updatedAt: string;
   };
+  homes: TAuthHome[];
 };
 
 export type TCheckExistsResponse = {

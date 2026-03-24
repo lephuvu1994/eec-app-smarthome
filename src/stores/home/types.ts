@@ -1,9 +1,5 @@
+import type { EHomeRole } from '@/features/auth/types/response';
 import type { THome } from '@/lib/api/homes/home.service';
-
-export enum EHomeRole {
-  OWNER = 'OWNER',
-  MEMBER = 'MEMBER',
-}
 
 export type THomeManagerStore = {
   /** Danh sách tất cả nhà của user */
