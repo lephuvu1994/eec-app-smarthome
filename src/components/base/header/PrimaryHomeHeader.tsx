@@ -2,7 +2,7 @@ import type { Href } from 'expo-router';
 import type { TMenuElement } from '@/components/ui/zeego-native-menu';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { router } from 'expo-router';
-import { memo, useEffect, useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 import { Text, TouchableOpacity, View } from '@/components/ui';
@@ -10,7 +10,6 @@ import { BellIcon, SnownyIcon } from '@/components/ui/icons';
 import { ZeegoNativeMenu } from '@/components/ui/zeego-native-menu';
 import { EHomeRole } from '@/features/auth/types/response';
 import { useUserManager } from '@/features/auth/user-store';
-import { useHomes } from '@/hooks/use-homes';
 import { translate } from '@/lib/i18n';
 import { useHomeStore } from '@/stores/home/home-store';
 import { ETheme } from '@/types/base';
@@ -20,37 +19,15 @@ export const PrimaryHeaderHome: React.FC = memo(() => {
   const { theme } = useUniwind();
   const insets = useSafeAreaInsets();
 
-  // ─── Home data ─────────────────────────────
-  const { data: homes } = useHomes();
+// ─── Home data ─────────────────────────────
+  const homes = useHomeStore(s => s.homes);
   const { id: currentUserId } = useUserManager();
   const selectedHome = useHomeStore(s => s.selectedHome);
   const selectedHomeId = useHomeStore(s => s.selectedHomeId);
   const setSelectedHome = useHomeStore(s => s.setSelectedHome);
-  const setHomes = useHomeStore(s => s.setHomes);
-  const clearSelectedHome = useHomeStore(s => s.clearSelectedHome);
 
-  // Sync homes list vào store khi fetch xong + xử lý stale selectedHome
-  useEffect(() => {
-    if (homes?.length) {
-      setHomes(homes);
-
-      // Nếu selectedHomeId không còn tồn tại trong danh sách homes mới → clear và chọn home đầu tiên
-      if (selectedHomeId && !homes.some(h => h.id === selectedHomeId)) {
-        const first = homes[0];
-        const role = first.ownerId === currentUserId ? EHomeRole.OWNER : EHomeRole.MEMBER;
-        setSelectedHome(first, role);
-      }
-    }
-  }, [homes, setHomes, selectedHomeId, currentUserId, setSelectedHome, clearSelectedHome]);
-
-  // Auto-select first home khi chưa có selection
-  useEffect(() => {
-    if (homes?.length && !selectedHomeId) {
-      const first = homes[0];
-      const role = first.ownerId === currentUserId ? EHomeRole.OWNER : EHomeRole.MEMBER;
-      setSelectedHome(first, role);
-    }
-  }, [homes, selectedHomeId, currentUserId, setSelectedHome]);
+  // Removed old useEffect block that synced homes fetched from redundant API,
+  // because _layout.tsx Hydration now fetches from /auth/me and writes into useHomeStore(s => s.homes).
 
   // ─── Home selection menu ───────────────────
   const homeMenuItems: TMenuElement[] = useMemo(() => {

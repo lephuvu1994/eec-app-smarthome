@@ -5,7 +5,6 @@ import type {
   TCreateFloorBody,
   TCreateRoomBody,
   TFloor,
-  THomeWithFloors,
   TRoom,
   TUpdateFloorBody,
   TUpdateRoomBody,
@@ -22,7 +21,6 @@ import { useHomeDataStore } from '@/stores/home/home-data-store';
 // QUERY KEYS
 // ============================================================
 export const homeKeys = {
-  all: ['homes'] as const,
   floors: (homeId: string) => ['homes', homeId, 'floors'] as const,
   rooms: (homeId: string) => ['homes', homeId, 'rooms'] as const,
 };
@@ -30,14 +28,6 @@ export const homeKeys = {
 // ============================================================
 // QUERY HOOKS
 // ============================================================
-
-/** Get all homes for current user (kèm floors + rooms) */
-export function useHomes() {
-  return useQuery<THomeWithFloors[]>({
-    queryKey: homeKeys.all,
-    queryFn: homeService.getHomes,
-  });
-}
 
 /** Get floors for a specific home (includes nested rooms) */
 export function useFloors(homeId: string) {
