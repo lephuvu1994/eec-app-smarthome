@@ -8,6 +8,11 @@
     "type": "git",
     "url": "git+https://github.com/lephuvu1994/"
   },
+  "reanimated": {
+    "staticFeatureFlags": {
+      "ENABLE_SHARED_ELEMENT_TRANSITIONS": true
+    }
+  },
   "scripts": {
     "start": "expo start",
     "prebuild": "node scripts/patch-vlc-for-prebuild.js && yarn expo prebuild",

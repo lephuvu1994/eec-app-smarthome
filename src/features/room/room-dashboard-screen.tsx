@@ -1,8 +1,7 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ScrollView, StyleSheet } from 'react-native';
-import Animated, { FadeIn, FadeInDown, FadeInUp, ZoomIn } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { LiveCameraWrapper } from '@/components/base/LiveCameraWrapper';
@@ -34,25 +33,20 @@ export function RoomDashboardScreen() {
 
   return (
     <View className="flex-1 bg-white dark:bg-black">
-      {/* HEADER HERO AREA with custom hero animation */}
+      {/* HEADER HERO AREA */}
       <View style={{ width: WIDTH, height: WIDTH * 0.75 }} className="relative z-0">
-        {/* Hero image with scale-up animation to simulate shared element feel */}
-        <Animated.View
-          entering={ZoomIn.duration(350).springify().damping(18)}
-          style={StyleSheet.absoluteFillObject}
-        >
-          <Image
-            source={imageUrl}
-            style={StyleSheet.absoluteFillObject}
-            contentFit="cover"
-            transition={200}
-          />
-        </Animated.View>
+        {/* Hero image with shared element transition */}
+        <Animated.Image
+          sharedTransitionTag={`room-img-${roomId}`}
+          source={{ uri: imageUrl }}
+          style={{ width: WIDTH, height: WIDTH * 0.75, position: 'absolute', top: 0, left: 0 }}
+          resizeMode="cover"
+        />
 
-        {/* Live Camera Overlay - fades in AFTER the hero animation */}
+        {/* Live Camera Overlay - fades in AFTER the shared element transition */}
         {videoUrl && (
           <Animated.View
-            entering={FadeIn.duration(400).delay(400)}
+            entering={FadeIn.duration(400).delay(300)}
             style={StyleSheet.absoluteFillObject}
           >
             <LiveCameraWrapper
@@ -63,7 +57,7 @@ export function RoomDashboardScreen() {
           </Animated.View>
         )}
 
-        {/* Dark gradient overlay for top-bar */}
+        {/* Dark overlay for top-bar readiness */}
         <Animated.View
           entering={FadeInUp.duration(300).delay(200)}
           className="absolute inset-x-0 top-0 h-40 bg-black/40"
@@ -87,19 +81,14 @@ export function RoomDashboardScreen() {
       </View>
 
       {/* CONTENT AREA */}
-      <Animated.View
-        entering={FadeInDown.duration(400).delay(250)}
-        className="-mt-6 flex-1"
-      >
-        <ScrollView className="flex-1 rounded-t-3xl border-t border-white/10 bg-neutral-100 p-6 shadow-2xl dark:border-white/5 dark:bg-neutral-900">
-          <Text className="text-2xl font-bold text-neutral-800 dark:text-neutral-100">
-            Devices
-          </Text>
-          <Text className="mt-2 text-base text-neutral-500">
-            Room control dashboard placeholder
-          </Text>
-        </ScrollView>
-      </Animated.View>
+      <ScrollView className="-mt-6 flex-1 rounded-t-3xl border-t border-white/10 bg-neutral-100 p-6 shadow-2xl dark:border-white/5 dark:bg-neutral-900">
+        <Text className="text-2xl font-bold text-neutral-800 dark:text-neutral-100">
+          Devices
+        </Text>
+        <Text className="mt-2 text-base text-neutral-500">
+          Room control dashboard placeholder
+        </Text>
+      </ScrollView>
     </View>
   );
 }

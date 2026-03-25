@@ -15,7 +15,7 @@ export const RoomListPage = memo(({ rooms, isGrid }: TRoomListPageProps) => {
     <View style={{ width: WIDTH }} className="flex-1">
       <FlashList
         data={rooms}
-        key={isGrid ? 'grid' : 'list'} // Force re-render when switching layouts
+        key={isGrid ? 'grid' : 'list'}
         numColumns={isGrid ? 2 : 1}
         // @ts-expect-error - The local type definitions for FlashList are missing this
         estimatedItemSize={isGrid ? WIDTH / 2 : 140}
