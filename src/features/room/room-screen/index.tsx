@@ -5,6 +5,8 @@ import { BaseLayout } from '@/components/layout/BaseLayout';
 import { View } from '@/components/ui';
 import { ETheme } from '@/types/base';
 
+import { RoomScreenWrapper } from '../wrapper/room-screen-wrapper';
+
 export function RoomScreen() {
   const { theme } = useUniwind();
 
@@ -25,6 +27,7 @@ export function RoomScreen() {
           contentFit="contain"
         />
         <PrimaryHeaderHome />
+        <RoomScreenWrapper className="flex-1 pt-2" />
       </View>
     </BaseLayout>
   );
