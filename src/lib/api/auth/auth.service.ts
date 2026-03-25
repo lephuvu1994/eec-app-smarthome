@@ -26,6 +26,11 @@ export type TAuthResponse = {
   homes: TAuthHome[];
 };
 
+export type TAuthMeResponse = {
+  user: TAuthResponse['user'];
+  homes: TAuthHome[];
+};
+
 export type TCheckExistsResponse = {
   exists: boolean;
 };
@@ -41,9 +46,14 @@ export type TSignupVariables = {
 // API SERVICE
 // ============================================================
 export const authService = {
-  /** Check if an account (email or phone) already exists */
   checkExists: async (identifier: string): Promise<TCheckExistsResponse> => {
     const { data } = await client.post('/auth/check-exists', { identifier });
+    return data.data || data;
+  },
+
+  /** Get current user profile and list of joined homes */
+  getMe: async (): Promise<TAuthMeResponse> => {
+    const { data } = await client.get('/auth/me');
     return data.data || data;
   },
 

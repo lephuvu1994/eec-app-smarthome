@@ -4,7 +4,6 @@ import type { EHomeRole, UserResponse } from '@/features/auth/types/response';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BaseLayout } from '@/components/layout/BaseLayout';
 import { showErrorMessage, Text, View } from '@/components/ui';
 import { LoginForm } from '@/features/auth/components/login-form';
@@ -16,7 +15,6 @@ import { useHomeStore } from '@/stores/home/home-store';
 export function SignIn() {
   const router = useRouter();
   const { signIn } = useUserManager();
-  const { top } = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
 
   const { mutateAsync: login } = useLogin();
@@ -67,14 +65,15 @@ export function SignIn() {
           }}
           contentFit="cover"
         />
-        <View className="gap-6 px-4" style={{ paddingTop: top + headerHeight - 32 }}>
+        <View className="gap-6 px-4" style={{ paddingTop: headerHeight }}>
+
           <Image
             source={require('@@/assets/short_logo.webp')}
             style={{
-              width: 60,
-              height: 60,
+              width: 120,
+              height: 120,
             }}
-            contentFit="cover"
+            contentFit="contain"
           />
           <Text className="text-4xl font-bold text-[#1B1B1B]" tx="formAuth.titleSignIn" />
         </View>
