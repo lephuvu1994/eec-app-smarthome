@@ -1,4 +1,3 @@
-import { useSegments } from 'expo-router';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { useUniwind } from 'uniwind';
 
@@ -8,19 +7,11 @@ import { ETheme } from '@/types/base';
 
 export function TabBar() {
   const { theme } = useUniwind();
-  const segments = useSegments();
-
-  // Hide tab bar when navigating deeper into a nested stack inside a tab
-  // e.g. (room)/[id] should hide the tab bar
-  // segments looks like: ['(app)', '(mobile)', '(tabs)', '(room)', '[id]']
-  const roomTabSegmentIdx = segments.indexOf('(room)');
-  const isInRoomDetail = roomTabSegmentIdx !== -1 && segments.length > roomTabSegmentIdx + 2;
 
   return (
     <NativeTabs
       tintColor={colors.neon}
       backgroundColor={theme === ETheme.Dark ? colors.charcoal[950] : colors.white}
-      hidden={isInRoomDetail}
     >
       <NativeTabs.Trigger name="(room)">
         <NativeTabs.Trigger.Label>{translate('app.roomTab')}</NativeTabs.Trigger.Label>
