@@ -1,29 +1,29 @@
 import { useEffect } from 'react';
 
-import SocketManager from '@/lib/socket/socket-manager';
+import { MqttManager } from '@/lib/mqtt/mqtt-manager';
 
 /**
- * Subscribe to device-specific events from WebSocket.
+ * Subscribe to device-specific events from MQTT.
  * Each DeviceItem subscribes only to its own deviceId → zero cross-device re-render.
  *
  * @example
  * useDeviceEvent(device.id, (data) => {
- *   if (data.featureId === feature.id) {
- *     setIsOn(data.value === 1);
+ *   if (data.entityCode === entity.code) {
+ *     setIsOn(data.state === 1);
  *   }
  * });
  */
 export function useDeviceEvent(
   deviceId: string,
-  handler: (data: { featureId?: string; value: any }) => void,
+  handler: (data: { entityCode?: string; state?: any; value?: any }) => void,
 ) {
   useEffect(() => {
-    const sm = SocketManager.getInstance();
+    const mqtt = MqttManager.getInstance();
     const key = `device:${deviceId}`;
 
-    sm.subscribeDeviceState(key, handler);
+    mqtt.subscribeDeviceState(key, handler);
     return () => {
-      sm.unsubscribeDeviceState(key, handler);
+      mqtt.unsubscribeDeviceState(key, handler);
     };
   }, [deviceId, handler]);
 }
