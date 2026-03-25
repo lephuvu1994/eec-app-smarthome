@@ -165,7 +165,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       'expo-build-properties',
       {
         android: {
-          minSdkVersion: 24,
+          minSdkVersion: 26,
           usesCleartextTraffic: true,
           reactNativeReleaseLevel: 'experimental',
           hermesVersion: '1',
