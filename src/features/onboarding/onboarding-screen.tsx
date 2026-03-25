@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/immutability */
 import type { FlashListRef } from '@shopify/flash-list';
 import { AntDesign } from '@expo/vector-icons';
-import { useHeaderHeight } from '@react-navigation/elements';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
@@ -53,7 +52,6 @@ export function OnboardingScreen() {
   const [index, setIndex] = useState(0);
   const scale = useSharedValue(1);
   const listRef = useRef<FlashListRef<typeof DATA[number]>>(null);
-  const headerHeight = useHeaderHeight();
 
   const onViewableItemsChanged = useRef(({ viewableItems }: any) => {
     if (viewableItems.length > 0)
@@ -145,7 +143,7 @@ export function OnboardingScreen() {
   return (
     <View style={{ flex: 1, backgroundColor: COLORS.background }}>
       <FocusAwareStatusBar />
-      <View className="px-4" style={{ paddingTop: headerHeight }}>
+      <View className="px-4" style={{ paddingTop: insets.top + 16 }}>
         <Image
           source={require('@@/assets/short_logo.webp')}
           style={{
@@ -156,7 +154,7 @@ export function OnboardingScreen() {
         />
       </View>
       {/* LIST */}
-      <View className="flex-1 pt-8">
+      <View className="flex-1 pt-4">
         <List
           ref={listRef}
           data={DATA}

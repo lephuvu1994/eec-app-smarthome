@@ -24,7 +24,6 @@ function RadarDeviceIcon({
   const ICON_CONTAINER_SIZE = 64;
 
   // 1. Calculate boolean state first.
-  // This runs 60fps but only forces updates when the boolean result flips.
   const isScanning = useDerivedValue(() => {
     'worklet';
     const currentRot = rotation.value % 360;
@@ -34,14 +33,19 @@ function RadarDeviceIcon({
     return diff > 0 && diff < 133;
   });
 
-  // 2. Animate based on the boolean state.
-  // This only runs when `isScanning.value` flips (twice per rotation).
+  // 2. Animate progress as a shared value (NOT inside useAnimatedStyle).
+  const progress = useDerivedValue(() => {
+    'worklet';
+    return withTiming(isScanning.value ? 1 : 0, { duration: 150 });
+  });
+
+  // 3. Read progress value safely in useAnimatedStyle.
   const outerStyle = useAnimatedStyle(() => {
     'worklet';
-    const p = withTiming(isScanning.value ? 1 : 0, { duration: 150 });
+    const p = progress.value;
     return {
       transform: [{ scale: interpolate(p, [0, 1], [1, 1.1]) }],
-      borderColor: interpolateColor(p, [0, 1], ['rgba(230, 230, 230, 0.35)', HIGHLIGHT_COLOR]),
+      borderColor: interpolateColor(p, [0, 1], ['#E6E6E659', HIGHLIGHT_COLOR]),
       borderWidth: interpolate(p, [0, 1], [0.5, 2.5]),
       shadowOpacity: interpolate(p, [0, 1], [0.06, 0.35]),
       opacity: interpolate(p, [0, 1], [0.8, 1]),
