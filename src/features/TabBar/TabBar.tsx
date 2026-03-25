@@ -7,7 +7,7 @@ import { BlurView } from 'expo-blur';
 import { GlassView, isLiquidGlassAvailable } from 'expo-glass-effect';
 import { useSegments } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import Animated, {
   Easing,
@@ -112,7 +112,10 @@ function ActiveIndicator({
   const targetX = containerWidth > 0 ? activeIndex * tabWidth : 0;
 
   const translateX = useSharedValue(targetX);
-  translateX.value = withTiming(targetX, { duration: 250 });
+
+  useEffect(() => {
+    translateX.value = withTiming(targetX, { duration: 250 });
+  }, [targetX, translateX]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }],
@@ -172,14 +175,19 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
   const roomIdx = segments.indexOf('(room)');
   const isInRoomDetail = roomIdx !== -1 && segments.length > roomIdx + 1;
 
+  const targetTranslateY = isInRoomDetail ? TAB_BAR_HEIGHT + insets.bottom : 0;
+  const slideTranslateY = useSharedValue(targetTranslateY);
+
+  useEffect(() => {
+    slideTranslateY.value = withTiming(targetTranslateY, {
+      duration: SLIDE_DURATION,
+      easing: Easing.out(Easing.cubic),
+    });
+  }, [targetTranslateY, slideTranslateY]);
+
   const slideStyle = useAnimatedStyle(() => ({
-    transform: [{
-      translateY: withTiming(isInRoomDetail ? TAB_BAR_HEIGHT + insets.bottom : 0, {
-        duration: SLIDE_DURATION,
-        easing: Easing.out(Easing.cubic),
-      }),
-    }],
-  }), [isInRoomDetail, insets.bottom]);
+    transform: [{ translateY: slideTranslateY.value }],
+  }));
 
   const onTabRowLayout = useCallback((e: LayoutChangeEvent) => {
     setTabRowWidth(e.nativeEvent.layout.width);
@@ -230,7 +238,6 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
         style={{ paddingBottom: pb }}
         intensity={60}
         tint={isDark ? 'dark' : 'light'}
-        experimentalBlurMethod="dimezisBlurView"
       >
         <View
           className="absolute inset-0"
