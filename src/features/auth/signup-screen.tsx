@@ -1,6 +1,5 @@
 import { useHeaderHeight } from '@react-navigation/elements';
 
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BaseLayout } from '@/components/layout/BaseLayout';
 import {
   Image,
@@ -10,7 +9,6 @@ import {
 import { SignUpForm } from '@/features/auth/components/signup-form';
 
 export function SignUp() {
-  const { top } = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
 
   return (
@@ -29,14 +27,14 @@ export function SignUp() {
           }}
           contentFit="cover"
         />
-        <View className="gap-6 px-4" style={{ paddingTop: top + headerHeight - 32 }}>
+        <View className="gap-6 px-4" style={{ paddingTop: headerHeight }}>
           <Image
             source={require('@@/assets/short_logo.webp')}
             style={{
-              width: 60,
-              height: 60,
+              width: 120,
+              height: 120,
             }}
-            contentFit="cover"
+            contentFit="contain"
           />
           <Text className="text-4xl font-bold text-[#1B1B1B]" tx="formAuth.titleSignUp" />
         </View>

@@ -69,20 +69,16 @@ const _useGetUser = create<UserState>()(
         const currentState = get();
         try {
           if (!currentState.accessToken) {
-            currentState.signOut();
+            get().signOut();
             return;
           }
-          // Call API to call profile
-          // const profileUpdate = await client.get('/me');
           set({
             ...currentState,
-            // ...profileUpdate,
             status: EAuthStatus.signIn,
           });
         }
-        // eslint-disable-next-line unused-imports/no-unused-vars
-        catch (e) {
-          currentState.signOut();
+        catch {
+          set({ status: EAuthStatus.signIn });
         }
       },
     }),
