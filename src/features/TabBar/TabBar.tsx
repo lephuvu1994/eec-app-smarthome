@@ -206,10 +206,10 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
   const renderBackground = (children: React.ReactNode) => {
     if (HAS_LIQUID_GLASS) {
       return (
-        <View style={{ paddingBottom: pb }}>
+        <View style={{ paddingBottom: pb, paddingHorizontal: 16 }}>
           <GlassView
-            className="self-center overflow-hidden rounded-[48px] p-1"
-            style={{ width: glassWidth }}
+            className="self-center overflow-hidden"
+            style={{ width: glassWidth, borderRadius: 48, padding: 4, overflow: 'hidden' }}
             glassEffectStyle="regular"
             colorScheme={isDark ? 'dark' : 'light'}
           >
