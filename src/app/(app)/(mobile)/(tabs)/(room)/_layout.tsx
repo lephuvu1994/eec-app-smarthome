@@ -10,7 +10,6 @@ function RoomScreen() {
   return (
     <Stack
       screenOptions={{
-        animation: 'slide_from_right',
         contentStyle: { backgroundColor: colors.screenBackground[theme as ETheme] },
       }}
     >
@@ -18,15 +17,15 @@ function RoomScreen() {
         name="index"
         options={{
           headerShown: false,
+          animation: 'slide_from_right',
         }}
       />
       <Stack.Screen
         name="[id]"
         options={{
           headerShown: false,
-          // Hide the native tab bar when viewing room detail
-          // @ts-expect-error - tabBarHidden is supported by react-native-screens but not typed in expo-router
-          tabBarHidden: true,
+          // Use 'fade' animation to allow Reanimated shared element to control the visual transition
+          animation: 'fade',
         }}
       />
     </Stack>
