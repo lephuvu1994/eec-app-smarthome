@@ -127,6 +127,13 @@ export type TRegisterDeviceResponse = {
   };
 };
 
+export type TMqttCredentials = {
+  url: string;
+  username: string;
+  password: string;
+  clientId: string;
+};
+
 // ============================================================
 // API SERVICE
 // ============================================================
@@ -151,6 +158,11 @@ export const deviceService = {
 
   getSiriSync: async (): Promise<TSiriSyncData> => {
     const { data } = await client.get('/devices/siri-sync');
+    return data.data || data;
+  },
+
+  getMqttCredentials: async (): Promise<TMqttCredentials> => {
+    const { data } = await client.get('/devices/mqtt-credentials');
     return data.data || data;
   },
 };
