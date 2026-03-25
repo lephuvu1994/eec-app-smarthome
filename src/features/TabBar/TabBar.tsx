@@ -2,6 +2,7 @@ import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import type { SFSymbol } from 'expo-symbols';
 import type { LayoutChangeEvent } from 'react-native';
 
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { GlassView, isLiquidGlassAvailable } from 'expo-glass-effect';
 import { useSegments } from 'expo-router';
@@ -38,6 +39,8 @@ const DROPLET_BORDER_RADIUS = 48;
 type TTabConfig = {
   sfSymbol: SFSymbol;
   sfSymbolFocused: SFSymbol;
+  mdIcon: keyof typeof MaterialCommunityIcons.glyphMap;
+  mdIconFocused: keyof typeof MaterialCommunityIcons.glyphMap;
   title: string;
 };
 
@@ -49,21 +52,29 @@ const TAB_CONFIG: Record<string, TTabConfig> = {
   '(room)': {
     sfSymbol: 'door.left.hand.open',
     sfSymbolFocused: 'door.left.hand.open',
+    mdIcon: 'door-open',
+    mdIconFocused: 'door-open',
     title: translate('app.roomTab', { defaultValue: 'Rooms' }),
   },
   '(home)': {
     sfSymbol: 'house',
     sfSymbolFocused: 'house.fill',
+    mdIcon: 'home-outline',
+    mdIconFocused: 'home',
     title: translate('app.favoriteTab', { defaultValue: 'Favorite' }),
   },
   '(smart)': {
     sfSymbol: 'square.split.bottomrightquarter',
     sfSymbolFocused: 'square.split.bottomrightquarter.fill',
+    mdIcon: 'view-grid-outline',
+    mdIconFocused: 'view-grid',
     title: translate('app.smartTab', { defaultValue: 'Smart' }),
   },
   '(settings)': {
     sfSymbol: 'gearshape',
     sfSymbolFocused: 'gearshape.fill',
+    mdIcon: 'cog-outline',
+    mdIconFocused: 'cog',
     title: translate('app.settingTab', { defaultValue: 'Settings' }),
   },
 };
@@ -182,18 +193,21 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
   });
 
   const glassWidth = WIDTH - 16 * 2;
+  const pb = Math.max(insets.bottom - 8, Platform.OS === 'android' ? 12 : 4);
 
   const renderBackground = (children: React.ReactNode) => {
     if (HAS_LIQUID_GLASS) {
       return (
-        <GlassView
-          className="self-center overflow-hidden rounded-[48px] p-1"
-          style={{ width: glassWidth }}
-          glassEffectStyle="regular"
-          colorScheme={isDark ? 'dark' : 'light'}
-        >
-          {children}
-        </GlassView>
+        <View style={{ paddingBottom: pb }}>
+          <GlassView
+            className="self-center overflow-hidden rounded-[48px] p-1"
+            style={{ width: glassWidth }}
+            glassEffectStyle="regular"
+            colorScheme={isDark ? 'dark' : 'light'}
+          >
+            {children}
+          </GlassView>
+        </View>
       );
     }
 
@@ -201,6 +215,7 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
       return (
         <BlurView
           className="overflow-hidden border-t border-gray-500/15 pt-1.5"
+          style={{ paddingBottom: pb }}
           intensity={80}
           tint={isDark ? 'systemChromeMaterialDark' : 'systemChromeMaterial'}
         >
@@ -212,6 +227,7 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
     return (
       <BlurView
         className="overflow-hidden border-t border-gray-500/15 pt-1.5"
+        style={{ paddingBottom: pb }}
         intensity={60}
         tint={isDark ? 'dark' : 'light'}
         experimentalBlurMethod="dimezisBlurView"
@@ -228,7 +244,7 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
   return (
     <Animated.View
       className="absolute inset-x-0 bottom-0"
-      style={[{ paddingBottom: Math.max(insets.bottom - 8, 4) }, slideStyle]}
+      style={[slideStyle]}
     >
       {renderBackground(
         <View className="relative flex-row items-center" onLayout={onTabRowLayout}>
@@ -251,6 +267,10 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
 
             const sfName = config
               ? (isFocused ? config.sfSymbolFocused : config.sfSymbol)
+              : undefined;
+
+            const mdName = config
+              ? (isFocused ? config.mdIconFocused : config.mdIcon)
               : undefined;
 
             const title = typeof options.title === 'string'
@@ -282,6 +302,7 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
                   name={sfName ?? 'house'}
                   size={ICON_SIZE}
                   tintColor={color}
+                  fallback={<MaterialCommunityIcons name={mdName ?? 'home'} size={ICON_SIZE} color={color} />}
                   style={{ width: ICON_SIZE, height: ICON_SIZE }}
                 />
                 <Text
