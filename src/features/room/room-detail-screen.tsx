@@ -5,7 +5,7 @@ import { ScrollView } from 'react-native';
 import Animated, { Easing, FadeInDown, FadeInLeft, FadeInRight, SharedTransition, SlideInRight } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Pressable, Text, View, WIDTH } from '@/components/ui';
+import { FocusAwareStatusBar, Pressable, Text, View, WIDTH } from '@/components/ui';
 import { translate } from '@/lib/i18n';
 import { useHomeDataStore } from '@/stores/home/home-data-store';
 
@@ -33,6 +33,7 @@ export function RoomDetailScreen() {
 
   return (
     <View className="flex-1 bg-white dark:bg-black">
+      <FocusAwareStatusBar />
       {/* Hero image — DIRECT child for correct shared element position */}
       <AnimatedExpoImage
         sharedTransitionTag={`room-img-${roomId}`}

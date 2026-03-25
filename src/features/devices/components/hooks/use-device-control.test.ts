@@ -78,7 +78,7 @@ describe('useDeviceControl', () => {
       useDeviceControl(mockDevice, mockEntity, { modal: mockModal, config: mockConfig })
     );
 
-    expect(result.current.displayName).toBe('Living Room Light - Light 1');
+    expect(result.current.displayName).toBe('Living Room Light - Switch 1');
   });
 
   it('should toggle state optimistically when onToggle is called', async () => {
@@ -112,7 +112,7 @@ describe('useDeviceControl', () => {
 
     // WS Event mapping from device-event structure
     act(() => {
-      wsCallback({ entityCode: 'light_1', state: 0 }); // Turn off
+      wsCallback({ entityCode: 'switch_1', state: 0 }); // Turn off
     });
 
     expect(result.current.isOn).toBe(false);
