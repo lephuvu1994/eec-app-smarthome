@@ -151,7 +151,7 @@ export function RoomScreen() {
   const currentRooms = groups[currentFloorIdx]?.rooms ?? [];
 
   return (
-    <View className="flex-1 bg-neutral-50 dark:bg-neutral-950">
+    <View className="flex-1">
       {/* Header */}
       <Animated.View
         entering={FadeIn.duration(400)}
