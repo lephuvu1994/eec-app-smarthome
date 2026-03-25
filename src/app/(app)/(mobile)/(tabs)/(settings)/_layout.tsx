@@ -1,7 +1,8 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { router, Stack } from 'expo-router';
-import { TouchableOpacity, View } from 'react-native';
+import { Platform, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 
 import { colors } from '@/components/ui';
@@ -10,6 +11,7 @@ import { ETheme } from '@/types/base';
 
 function SettingScreen() {
   const { theme } = useUniwind();
+  const insets = useSafeAreaInsets();
 
   return (
     <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.screenBackground[theme as ETheme] } }}>
@@ -21,7 +23,10 @@ function SettingScreen() {
           title: '',
           headerTitleAlign: 'center',
           headerRight: () => (
-            <View className="flex-row items-center gap-5 px-1">
+            <View 
+              className="flex-row items-center gap-5 px-1"
+              style={{ marginTop: Platform.OS === 'android' ? insets.top : 0 }}
+            >
               {/* Button 1: Notifications */}
               <TouchableOpacity
                 activeOpacity={0.7}

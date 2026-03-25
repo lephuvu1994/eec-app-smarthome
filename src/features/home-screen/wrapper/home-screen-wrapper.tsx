@@ -31,6 +31,27 @@ import { useHomeStore } from '@/stores/home/home-store';
 // --- Cấu hình dữ liệu ---
 const heightVideoOnScreen = ((WIDTH - BASE_SPACE_HORIZONTAL * 2) / ASPECT_RATIO_VIDEO);
 
+const MOCK_CAMERAS = [
+  {
+    id: 'cam-1',
+    name: 'Phòng khách',
+    videoUrl: 'rtsp://admin:EEVN1234%40@vanphongeec.ddns.net:1024/Streaming/channels/201',
+    imageUrl: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=600',
+  },
+  {
+    id: 'cam-2',
+    name: 'Sân vườn',
+    videoUrl: 'rtsp://admin:EEVN1234%40@vanphongeec.ddns.net:1024/Streaming/channels/201',
+    imageUrl: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=600',
+  },
+  {
+    id: 'cam-3',
+    name: 'Ngoài cổng',
+    videoUrl: 'rtsp://admin:EEVN1234%40@vanphongeec.ddns.net:1024/Streaming/channels/201',
+    imageUrl: 'https://images.unsplash.com/photo-1600121848594-d8644e57abab?auto=format&fit=crop&q=80&w=600',
+  },
+];
+
 type TGroup = {
   key: string;
   title: string;
@@ -209,15 +230,35 @@ export const HomeScreenWrapper = memo(({ className }: { className?: string }) =>
 
   return (
     <View className={cn('flex-1', className)}>
-      {/* Vùng xem Camera */}
-      <Animated.View style={[animatedStyle]} className="mb-2 w-full items-center justify-center overflow-hidden px-4">
+      {/* Vùng xem Camera Carousel */}
+      <Animated.View style={[animatedStyle]} className="mb-2 w-full overflow-hidden">
         {showCameraPreview && (
-          <View className="size-full flex-row justify-between overflow-hidden rounded-2xl">
-            <LiveCameraWrapper
-              videoUrl="rtsp://admin:EEVN1234%40@vanphongeec.ddns.net:1024/Streaming/channels/201"
-              handleError={handleError}
-            />
-          </View>
+          <ScrollView
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            bounces={false}
+            snapToInterval={WIDTH}
+            decelerationRate="fast"
+            className="w-full flex-row"
+          >
+            {MOCK_CAMERAS.map((cam) => (
+              <View key={cam.id} style={{ width: WIDTH }} className="px-4">
+                <View className="size-full overflow-hidden rounded-2xl relative bg-black">
+                  <LiveCameraWrapper
+                    videoUrl={cam.videoUrl}
+                    imageUrl={cam.imageUrl}
+                    handleError={handleError}
+                  />
+                  <View className="absolute top-2 left-2 rounded-full bg-black/40 px-3 py-1 backdrop-blur-md">
+                    <Text className="text-xs font-semibold text-white shadow-sm">
+                      {cam.name}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            ))}
+          </ScrollView>
         )}
       </Animated.View>
 
