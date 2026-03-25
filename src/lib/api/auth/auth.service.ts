@@ -1,3 +1,4 @@
+import type { EHomeRole } from '@/features/auth/types/response';
 import { client } from '../common';
 
 // ============================================================
@@ -6,7 +7,7 @@ import { client } from '../common';
 export type TAuthHome = {
   id: string;
   name: string;
-  role: string;
+  role: EHomeRole;
 };
 
 export type TAuthResponse = {

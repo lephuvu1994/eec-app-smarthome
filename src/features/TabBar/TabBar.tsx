@@ -50,4 +50,3 @@ export function TabBar() {
     </NativeTabs>
   );
 };
-

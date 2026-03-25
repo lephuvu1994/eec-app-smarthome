@@ -78,7 +78,8 @@ export function PrivacySettingsScreen() {
   const openAppSettings = () => {
     if (Platform.OS === 'ios') {
       Linking.openURL('app-settings:');
-    } else {
+    }
+    else {
       Linking.openSettings();
     }
   };
@@ -123,7 +124,7 @@ export function PrivacySettingsScreen() {
                         {translate(perm.labelKey as any)}
                       </Text>
                     </View>
-                    <Text className="ml-12 mt-1 text-xs/5 text-neutral-400 dark:text-neutral-500">
+                    <Text className="mt-1 ml-12 text-xs/5 text-neutral-400 dark:text-neutral-500">
                       {translate(perm.descKey as any)}
                     </Text>
                   </View>

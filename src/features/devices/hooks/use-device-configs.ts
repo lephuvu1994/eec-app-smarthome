@@ -25,6 +25,7 @@ export function useDeviceConfigs() {
  */
 export function useDeviceConfig(deviceType: string): TDeviceConfig {
   const { data: configs } = useDeviceConfigs();
-  if (!Array.isArray(configs)) return DEFAULT_DEVICE_CONFIG;
+  if (!Array.isArray(configs))
+    return DEFAULT_DEVICE_CONFIG;
   return configs.find(c => c.deviceType === deviceType) ?? DEFAULT_DEVICE_CONFIG;
 }

@@ -34,4 +34,3 @@ export function DeviceItem({ device, typeViewDevice, activeEntity }: TDeviceItem
     </>
   );
 }
-

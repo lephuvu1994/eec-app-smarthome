@@ -80,14 +80,16 @@ export function AssignRoomScenesScreen() {
   );
 
   // Local state: IDs of scenes currently assigned (uncommitted)
-  const [localAssignedIds, setLocalAssignedIds] = useState<Set<string>>(new Set());
+  const [localAssignedIds, setLocalAssignedIds] = useState<Set<string>>(() => new Set());
 
   // Sync initially when fetched
   useEffect(() => {
     if (originalSceneIds.size > 0 && localAssignedIds.size === 0) {
-      setLocalAssignedIds(new Set(originalSceneIds));
+      queueMicrotask(() => {
+        setLocalAssignedIds(() => new Set(originalSceneIds));
+      });
     }
-  }, [originalSceneIds]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [originalSceneIds, localAssignedIds.size]);
 
   // Has unsaved changes?
   const hasChanges = useMemo(() => {

@@ -91,10 +91,12 @@ export function useDeviceControl(
 
   // ─── Handlers ──────────────────────────────────────
   const onToggle = async () => {
-    if (!config.hasToggle) return;
+    if (!config.hasToggle)
+      return;
 
     const now = Date.now();
-    if (now - lastClickRef.current < 500) return;
+    if (now - lastClickRef.current < 500)
+      return;
     lastClickRef.current = now;
 
     const nextState = !isOn;
@@ -105,7 +107,8 @@ export function useDeviceControl(
 
     try {
       // TODO: Send toggle command via SocketManager
-    } catch {
+    }
+    catch {
       setIsOn(!nextState);
       if (allowHaptics) {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
@@ -116,7 +119,8 @@ export function useDeviceControl(
   const onPressCard = () => {
     if (!activeEntity) {
       modal.present();
-    } else {
+    }
+    else {
       onToggle();
     }
   };

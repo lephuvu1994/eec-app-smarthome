@@ -86,7 +86,9 @@ export function AssignRoomsScreen() {
 
   // Sync when original data changes (e.g. after coming back)
   useEffect(() => {
-    setLocalAssignedIds(new Set(originalRoomIds));
+    queueMicrotask(() => {
+      setLocalAssignedIds(() => new Set(originalRoomIds));
+    });
   }, [originalRoomIds]);
 
   // Has unsaved changes?

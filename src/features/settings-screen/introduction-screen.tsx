@@ -97,7 +97,8 @@ export function IntroductionScreen() {
           {/* Version */}
           <View className="items-center">
             <Text className="text-xs text-neutral-400 dark:text-neutral-500">
-              Sensa Smart v{appVersion}
+              Sensa Smart v
+              {appVersion}
             </Text>
             <Text className="mt-1 text-xs text-neutral-400 dark:text-neutral-500">
               © 2025 vincent.le. All rights reserved.
