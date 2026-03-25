@@ -1,10 +1,10 @@
 import type { TRoom } from '@/lib/api/homes/home.service';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useCallback } from 'react';
 import { StyleSheet } from 'react-native';
-import Animated from 'react-native-reanimated';
 
 import { Pressable, Text, View } from '@/components/ui';
 import { useRoomActions } from '../hooks/use-room-actions';
@@ -33,7 +33,7 @@ export function RoomCard({ room, isGrid }: TRoomCardProps) {
   const { toggleRoomPower, triggerFavoriteScene } = useRoomActions();
 
   const handleNavigate = useCallback(() => {
-    router.push(`./${room.id}`);
+    router.push(`/room/${room.id}`);
   }, [router, room.id]);
 
   const handleTogglePower = useCallback(() => {
@@ -55,12 +55,11 @@ export function RoomCard({ room, isGrid }: TRoomCardProps) {
   return (
     <View className={wrapperClass}>
       <Pressable onPress={handleNavigate} className="size-full">
-        {/* Background Image with Shared Transition */}
-        <Animated.Image
-          sharedTransitionTag={`room-img-${room.id}`}
-          source={{ uri: imageUrl }}
+        {/* Background Image */}
+        <Image
+          source={imageUrl}
           style={StyleSheet.absoluteFillObject}
-          resizeMode="cover"
+          contentFit="cover"
         />
 
         {/* Dark Overlay for Text Visibility */}
