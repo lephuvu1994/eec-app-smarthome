@@ -1,6 +1,5 @@
-import type { EHomeRole } from '@/features/auth/types/response';
-
 import type { THome } from '@/lib/api/homes/home.service';
+
 import type { ETheme } from '@/types/base';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { ThemeProvider } from '@react-navigation/native';
@@ -9,14 +8,15 @@ import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
-
 import FlashMessage from 'react-native-flash-message';
+
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { useUniwind } from 'uniwind';
 import { colors } from '@/components/ui';
 import { useThemeConfig } from '@/components/ui/use-theme-config';
 import { EAuthStatus } from '@/features/auth/types/enum';
+import { EHomeRole } from '@/features/auth/types/response';
 import { hydrateAuth, useUserManager } from '@/features/auth/user-store';
 import CustomSplashScreen from '@/features/splash-screen';
 import { useVoiceControl } from '@/hooks/use-voice-control';
@@ -78,7 +78,7 @@ function RootRender() {
 
               const mappedHomes = meData.homes.map(h => ({
                 ...h,
-                ownerId: h.role === 'OWNER' ? meData.user.id : '',
+                ownerId: h.role === EHomeRole.OWNER ? meData.user.id : '',
               })) as THome[];
               useHomeStore.getState().setHomes(mappedHomes);
 

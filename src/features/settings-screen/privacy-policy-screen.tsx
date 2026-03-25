@@ -52,7 +52,7 @@ export function PrivacyPolicyScreen() {
           </View>
 
           {/* Policy Sections */}
-          {sections.map((section) => (
+          {sections.map(section => (
             <View key={section.titleKey} className="mx-4 mb-4 rounded-2xl bg-white p-4 shadow-sm dark:bg-neutral-800">
               <Text className="mb-2 text-[15px] font-semibold text-[#1B1B1B] dark:text-white">
                 {translate(section.titleKey as any)}

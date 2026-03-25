@@ -95,13 +95,12 @@ export function AssignRoomFeaturesScreen() {
 
   const selectedHomeId = useHomeStore(s => s.selectedHomeId);
   const { data: devicesRes, isLoading: isDevicesLoading } = useHomeDevices(selectedHomeId ?? '');
-  const devices = devicesRes?.data ?? [];
-
   const assignFeatures = useAssignFeaturesToRoom();
+  const devicesMemo = useMemo(() => devicesRes?.data ?? [], [devicesRes?.data]);
 
   // Flatten ONLY the Primary logical entities across all devices for clean UI
   const allFeatures = useMemo(() => {
-    return devices.flatMap(d =>
+    return devicesMemo.flatMap(d =>
       getPrimaryEntities(d).map(f => ({
         ...f,
         deviceId: d.id,
@@ -110,7 +109,7 @@ export function AssignRoomFeaturesScreen() {
         deviceRoomId: d.room?.id ?? null,
       })),
     );
-  }, [devices]);
+  }, [devicesMemo]);
 
   // Original UI IDs belonging to this room
   const originalFeatureIds = useMemo(
@@ -119,14 +118,16 @@ export function AssignRoomFeaturesScreen() {
   );
 
   // Local state: IDs of features currently assigned (uncommitted)
-  const [localAssignedIds, setLocalAssignedIds] = useState<Set<string>>(new Set());
+  const [localAssignedIds, setLocalAssignedIds] = useState<Set<string>>(() => new Set());
 
   // Sync initially when fetched
   useEffect(() => {
     if (originalFeatureIds.size > 0 && localAssignedIds.size === 0) {
-      setLocalAssignedIds(new Set(originalFeatureIds));
+      queueMicrotask(() => {
+        setLocalAssignedIds(() => new Set(originalFeatureIds));
+      });
     }
-  }, [originalFeatureIds]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [originalFeatureIds, localAssignedIds.size]);
 
   // Has unsaved changes?
   const hasChanges = useMemo(() => {
@@ -174,7 +175,7 @@ export function AssignRoomFeaturesScreen() {
     Array.from(localAssignedIds).forEach((primaryId) => {
       payloadFeatureIds.add(primaryId);
 
-      const parentDevice = devices.find(d => d.entities?.some(e => e.id === primaryId));
+      const parentDevice = devicesMemo.find(d => d.entities?.some(e => e.id === primaryId));
       if (parentDevice) {
         // Entity attributes are handled together — no separate dependent expansion needed
       }
@@ -201,7 +202,7 @@ export function AssignRoomFeaturesScreen() {
     finally {
       setIsSaving(false);
     }
-  }, [hasChanges, isSaving, localAssignedIds, roomId, assignFeatures, devices, navigation]);
+  }, [hasChanges, isSaving, localAssignedIds, roomId, assignFeatures, devicesMemo, navigation]);
 
   useLayoutEffect(() => {
     navigation.setOptions({

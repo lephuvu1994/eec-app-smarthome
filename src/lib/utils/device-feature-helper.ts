@@ -45,7 +45,8 @@ export function isPrimaryEntity(entity: TDeviceEntity): boolean {
  */
 export function getPrimaryEntities(device: TDevice): TDeviceEntity[] {
   const entities = device.entities ?? [];
-  if (entities.length === 0) return [];
+  if (entities.length === 0)
+    return [];
 
   const primaries = entities.filter(isPrimaryEntity);
 
@@ -62,10 +63,12 @@ export function getPrimaryEntities(device: TDevice): TDeviceEntity[] {
  */
 export function getDependentAttributes(device: TDevice, entityId: string): TDeviceEntity[] {
   const entities = device.entities ?? [];
-  if (entities.length === 0) return [];
+  if (entities.length === 0)
+    return [];
 
   const entity = entities.find(e => e.id === entityId);
-  if (!entity) return [];
+  if (!entity)
+    return [];
 
   // Entity has attributes (brightness, color_temp...) → treat as dependent
   if (entity.attributes && entity.attributes.length > 0) {

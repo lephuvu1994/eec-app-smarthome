@@ -19,7 +19,7 @@ export const PrimaryHeaderHome: React.FC = memo(() => {
   const { theme } = useUniwind();
   const insets = useSafeAreaInsets();
 
-// ─── Home data ─────────────────────────────
+  // ─── Home data ─────────────────────────────
   const homes = useHomeStore(s => s.homes);
   const { id: currentUserId } = useUserManager();
   const selectedHome = useHomeStore(s => s.selectedHome);

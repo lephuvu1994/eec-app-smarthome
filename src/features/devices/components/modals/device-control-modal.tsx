@@ -32,7 +32,9 @@ export function DeviceControlModal({
         </Text>
         {activeEntity && (
           <Text className="mb-4 text-sm font-medium text-neutral-500">
-            {translate('base.module')}: {activeEntity.name || activeEntity.code}
+            {translate('base.module')}
+            :
+            {activeEntity.name || activeEntity.code}
           </Text>
         )}
         {primaryEntities.length > 0
