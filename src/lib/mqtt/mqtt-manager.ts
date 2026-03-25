@@ -4,8 +4,6 @@ import type { AppStateStatus } from 'react-native';
 import { connect } from 'mqtt';
 import { AppState } from 'react-native';
 
-import { deviceService } from '@/lib/api/devices/device.service';
-
 // ============================================================
 // TYPES
 // ============================================================
@@ -100,6 +98,9 @@ export class MqttManager {
     this.status = 'connecting';
 
     try {
+      // Lazy import to break require cycle:
+      // user-store → mqtt-manager → device.service → client → user-store
+      const { deviceService } = require('@/lib/api/devices/device.service');
       const credentials = await deviceService.getMqttCredentials();
 
       this.client = connect(credentials.url, {
