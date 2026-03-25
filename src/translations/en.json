@@ -143,6 +143,15 @@
     "slide3Desc": "Control and monitor your home\nanytime, anywhere",
     "slide3Title": "Complete Control"
   },
+  "room": {
+    "defaultName": "Room",
+    "device": "{{count}} Device",
+    "deviceOnline": "Online",
+    "device_plural": "{{count}} Devices",
+    "devices": "Devices",
+    "noDevices": "No devices in this room yet",
+    "scenes": "Scenes"
+  },
   "roomManagement": {
     "addFloor": "Add Floor",
     "addRoom": "Add Room",

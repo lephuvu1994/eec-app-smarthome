@@ -143,6 +143,15 @@
     "slide3Desc": "Điều khiển và giám sát ngôi nhà của\nbạn mọi lúc, mọi nơi",
     "slide3Title": "Kiểm soát toàn diện"
   },
+  "room": {
+    "defaultName": "Phòng",
+    "device": "{{count}} Thiết bị",
+    "deviceOnline": "Trực tuyến",
+    "device_plural": "{{count}} Thiết bị",
+    "devices": "Thiết bị",
+    "noDevices": "Chưa có thiết bị nào trong phòng này",
+    "scenes": "Kịch bản"
+  },
   "roomManagement": {
     "addFloor": "Thêm tầng",
     "addRoom": "Thêm phòng",
