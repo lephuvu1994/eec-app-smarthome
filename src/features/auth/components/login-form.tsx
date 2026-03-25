@@ -21,13 +21,18 @@ import {
 } from '@/components/ui';
 import { getFieldError } from '@/components/ui/form-utils';
 import { translate } from '@/lib/i18n';
+import { emailRegex, phoneRegex } from '../utils/constants';
 
 const schema = z.object({
   identifier: z
     .string()
     .trim()
     .min(1, translate('formAuth.error.identifierRequired'))
-    .pipe(z.email({ message: translate('formAuth.error.invalidFormatIdentifier') })),
+  // Thay đổi: Dùng refine để check 1 trong 2 điều kiện
+    .refine(
+      val => emailRegex.test(val) || phoneRegex.test(val),
+      { message: translate('formAuth.error.invalidFormatIdentifier') },
+    ),
   password: z
     .string()
     .trim()
