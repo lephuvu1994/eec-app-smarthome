@@ -15,6 +15,10 @@ jest.mock('@/hooks/use-device-event', () => ({
   useDeviceEvent: jest.fn(),
 }));
 
+jest.mock('mqtt', () => ({
+  connect: jest.fn(),
+}));
+
 jest.mock('@dev-plugins/react-query', () => ({
   useReactQueryDevTools: jest.fn(),
 }));

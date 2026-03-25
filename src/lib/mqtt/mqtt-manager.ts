@@ -1,0 +1,255 @@
+import type { MqttClient } from 'mqtt';
+import type { AppStateStatus } from 'react-native';
+
+import { connect } from 'mqtt';
+import { AppState } from 'react-native';
+
+import { deviceService } from '@/lib/api/devices/device.service';
+
+// ============================================================
+// TYPES
+// ============================================================
+type MqttStatus = 'connecting' | 'connected' | 'disconnected' | 'reconnecting';
+
+type DeviceMapping = {
+  token: string;
+  id: string;
+};
+
+// Lightweight event emitter (no external dep)
+type Listener = (...args: any[]) => void;
+
+class DeviceEventEmitter {
+  private listeners = new Map<string, Set<Listener>>();
+
+  on(event: string, fn: Listener): void {
+    if (!this.listeners.has(event)) {
+      this.listeners.set(event, new Set());
+    }
+    this.listeners.get(event)!.add(fn);
+  }
+
+  off(event: string, fn: Listener): void {
+    this.listeners.get(event)?.delete(fn);
+  }
+
+  emit(event: string, ...args: any[]): void {
+    this.listeners.get(event)?.forEach(fn => fn(...args));
+  }
+}
+
+// ============================================================
+// MQTT MANAGER (Singleton)
+// ============================================================
+export class MqttManager {
+  private static instance: MqttManager;
+  private client: MqttClient | null = null;
+
+  // Per-device state events: `device:${deviceId}`
+  private deviceEmitter = new DeviceEventEmitter();
+
+  private status: MqttStatus = 'disconnected';
+  private isAppActive = true;
+  private lastAccessToken = '';
+
+  // token → deviceId mapping for incoming messages
+  private tokenToDeviceId = new Map<string, string>();
+
+  private constructor() {
+    this.handleAppStateChange = this.handleAppStateChange.bind(this);
+    AppState.addEventListener('change', this.handleAppStateChange);
+  }
+
+  static getInstance(): MqttManager {
+    if (!MqttManager.instance) {
+      MqttManager.instance = new MqttManager();
+    }
+    return MqttManager.instance;
+  }
+
+  /**
+   * @internal
+   */
+  static resetInstance(): void {
+    if (MqttManager.instance) {
+      MqttManager.instance.disconnect();
+    }
+    MqttManager.instance = undefined as any;
+  }
+
+  // ─── App State ─────────────────────────────────────
+  private handleAppStateChange(nextAppState: AppStateStatus) {
+    const wasActive = this.isAppActive;
+    this.isAppActive = nextAppState === 'active';
+
+    if (this.isAppActive && !wasActive) {
+      // Returning from background
+      if (!this.isConnected() && this.lastAccessToken) {
+        this.connect(this.lastAccessToken);
+      }
+    }
+  }
+
+  // ─── Connect ───────────────────────────────────────
+  async connect(accessToken: string): Promise<void> {
+    if (this.client?.connected) {
+      return;
+    }
+
+    this.lastAccessToken = accessToken;
+    this.status = 'connecting';
+
+    try {
+      const credentials = await deviceService.getMqttCredentials();
+
+      this.client = connect(credentials.url, {
+        username: credentials.username,
+        password: credentials.password,
+        clientId: credentials.clientId,
+        reconnectPeriod: 5000,
+        connectTimeout: 10000,
+        clean: true,
+      });
+
+      this.client.on('connect', () => {
+        this.status = 'connected';
+        console.log('📡 MQTT connected:', credentials.clientId);
+
+        // Re-subscribe to all tracked devices
+        if (this.tokenToDeviceId.size > 0) {
+          const topics = Array.from(this.tokenToDeviceId.keys()).map(
+            token => `+/+/${token}/state`,
+          );
+          this.client?.subscribe(topics, () => {});
+        }
+      });
+
+      this.client.on('disconnect', () => {
+        this.status = 'disconnected';
+        console.log('📡 MQTT disconnected');
+      });
+
+      this.client.on('reconnect', () => {
+        this.status = 'reconnecting';
+        console.log('📡 MQTT reconnecting...');
+      });
+
+      this.client.on('error', (err) => {
+        console.warn('📡 MQTT error:', err.message);
+      });
+
+      this.client.on('message', (topic: string, payload: Uint8Array) => {
+        this.handleMessage(topic, payload);
+      });
+    }
+    catch (error: any) {
+      this.status = 'disconnected';
+      console.error('📡 MQTT connect failed:', error?.message);
+    }
+  }
+
+  // ─── Disconnect ────────────────────────────────────
+  disconnect(): void {
+    if (this.client) {
+      this.client.removeAllListeners();
+      this.client.end(true);
+      this.client = null;
+    }
+    this.status = 'disconnected';
+    this.tokenToDeviceId.clear();
+  }
+
+  // ─── Subscribe Devices ─────────────────────────────
+  subscribeDevices(devices: DeviceMapping[]): void {
+    if (!this.client) {
+      return;
+    }
+
+    const topics: string[] = [];
+    for (const device of devices) {
+      this.tokenToDeviceId.set(device.token, device.id);
+      topics.push(`+/+/${device.token}/state`);
+    }
+
+    if (topics.length > 0) {
+      this.client.subscribe(topics, () => {});
+    }
+  }
+
+  // ─── Unsubscribe Devices ───────────────────────────
+  unsubscribeDevices(devices: DeviceMapping[]): void {
+    if (!this.client) {
+      return;
+    }
+
+    const topics: string[] = [];
+    for (const device of devices) {
+      this.tokenToDeviceId.delete(device.token);
+      topics.push(`+/+/${device.token}/state`);
+    }
+
+    if (topics.length > 0) {
+      this.client.unsubscribe(topics, () => {});
+    }
+  }
+
+  // ─── Message Handling ──────────────────────────────
+  private handleMessage(topic: string, payload: Uint8Array): void {
+    // Extract device token from topic: "COMPANY/MODEL/{token}/state"
+    const parts = topic.split('/');
+    if (parts.length < 4) {
+      return;
+    }
+
+    const token = parts[2];
+    const deviceId = this.tokenToDeviceId.get(token);
+    if (!deviceId) {
+      return;
+    }
+
+    try {
+      const data = JSON.parse(payload.toString());
+
+      // Format 1: Batch updates from iot-gateway handleStateMessage
+      // { deviceId, token, updates: [{ entityCode, state, attributes }], timestamp }
+      if (Array.isArray(data.updates)) {
+        for (const update of data.updates) {
+          this.deviceEmitter.emit(`device:${deviceId}`, update);
+        }
+        return;
+      }
+
+      // Format 2: Single entity update
+      // { entityCode, state, attributes }
+      if (data.entityCode) {
+        this.deviceEmitter.emit(`device:${deviceId}`, data);
+        return;
+      }
+
+      // Format 3: Raw flat state (fallback) — emit as-is
+      this.deviceEmitter.emit(`device:${deviceId}`, data);
+    }
+    catch {
+      // Malformed JSON — skip silently
+      console.warn('📡 MQTT: malformed payload on topic', topic);
+    }
+  }
+
+  // ─── Device State Events (per-device dispatch) ─────
+  subscribeDeviceState(event: string, callback: (data: any) => void): void {
+    this.deviceEmitter.on(event, callback);
+  }
+
+  unsubscribeDeviceState(event: string, callback: (data: any) => void): void {
+    this.deviceEmitter.off(event, callback);
+  }
+
+  // ─── Status ────────────────────────────────────────
+  isConnected(): boolean {
+    return this.client?.connected ?? false;
+  }
+
+  getStatus(): MqttStatus {
+    return this.status;
+  }
+}
