@@ -6,7 +6,7 @@ import * as React from 'react';
 import { Text, TouchableOpacity, View } from '@/components/ui';
 import { Modal } from '@/components/ui/modal';
 import { translate } from '@/lib/i18n';
-import { isPrimaryEntity } from '@/lib/utils/device-feature-helper';
+import { isPrimaryEntity } from '@/lib/utils/device-entity-helper';
 
 type TDeviceControlModalProps = {
   modalRef: React.RefObject<any>;
@@ -62,7 +62,7 @@ export function DeviceControlModal({
             )
           : (
               <Text className="mt-10 text-center text-neutral-500">
-                {translate('base.noFeatureControl')}
+                {translate('base.noEntityControl')}
               </Text>
             )}
       </View>

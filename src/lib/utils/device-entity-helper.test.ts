@@ -3,7 +3,7 @@ import {
   getDependentAttributes,
   getPrimaryEntities,
   isPrimaryEntity,
-} from './device-feature-helper';
+} from './device-entity-helper';
 import type { TDevice, TDeviceEntity } from '../api/devices/device.service';
 
 const mockEntity = (domain: string, code: string, attributes: any[] = []): TDeviceEntity => ({
@@ -16,7 +16,7 @@ const mockEntity = (domain: string, code: string, attributes: any[] = []): TDevi
   attributes,
 } as TDeviceEntity);
 
-describe('device-feature-helper', () => {
+describe('device-entity-helper', () => {
   describe('isPrimaryEntity', () => {
     it('should identify switch_ as primary', () => {
       expect(isPrimaryEntity(mockEntity('switch_', 'ch1'))).toBe(true);

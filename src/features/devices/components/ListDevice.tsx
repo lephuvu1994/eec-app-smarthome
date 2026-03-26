@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 
 import { Skeleton, View } from '@/components/ui';
 import { GAP_DEVICE_VIEW_MOBILE } from '@/constants';
-import { getPrimaryEntities } from '@/lib/utils/device-feature-helper';
+import { getPrimaryEntities } from '@/lib/utils/device-entity-helper';
 import { useConfigManager } from '@/stores/config/config';
 import { useDeviceStore } from '@/stores/device/device-store';
 import { useFavoriteStore } from '@/stores/device/favorite-store';

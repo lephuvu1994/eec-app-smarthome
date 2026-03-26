@@ -54,8 +54,6 @@ export type TDeviceEntity = {
   attributes: TEntityAttribute[];
 };
 
-/** @deprecated Use TDeviceEntity instead */
-export type TDeviceFeature = TDeviceEntity;
 
 export type TDevice = {
   id: string;
@@ -70,8 +68,6 @@ export type TDevice = {
   sortOrder: number;
   room?: { id: string; name: string } | null;
   entities: TDeviceEntity[];
-  /** @deprecated Use entities instead */
-  features?: TDeviceEntity[];
 };
 
 export type TDeviceListResponse = {
@@ -164,5 +160,9 @@ export const deviceService = {
   getMqttCredentials: async (): Promise<TMqttCredentials> => {
     const { data } = await client.get('/devices/mqtt-credentials');
     return data.data || data;
+  },
+
+  setEntityValue: async (deviceToken: string, entityCode: string, value: any): Promise<void> => {
+    await client.post(`/devices/${deviceToken}/entities/${entityCode}/setValue`, { value });
   },
 };
