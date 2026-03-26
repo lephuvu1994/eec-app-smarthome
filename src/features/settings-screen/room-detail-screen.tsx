@@ -137,7 +137,7 @@ export function RoomDetailScreen() {
               value={translate('roomManagement.deviceCount', {
                 count: currentFloor?.rooms?.find(r => r.id === roomId)?.entities?.length ?? 0,
               })}
-              onPress={() => router.push({ pathname: '/assign-room-features', params: { roomId } })}
+              onPress={() => router.push({ pathname: '/assign-room-entities', params: { roomId } })}
             />
             <Divider />
             <SettingRow

@@ -83,7 +83,7 @@ export default function MobileLayout() {
         }}
       />
       <Stack.Screen
-        name="assign-room-features"
+        name="assign-room-entities"
         options={{
           headerShown: true,
           headerTransparent: true,

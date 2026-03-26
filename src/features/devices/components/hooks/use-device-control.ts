@@ -16,7 +16,7 @@ import {
 
 import { getDeviceImage } from '@/features/home-screen/utils/device-image';
 import { useDeviceEvent } from '@/hooks/use-device-event';
-import { EDeviceStatus } from '@/lib/api/devices/device.service';
+import { deviceService, EDeviceStatus } from '@/lib/api/devices/device.service';
 import { translate } from '@/lib/i18n';
 import { useConfigManager } from '@/stores/config/config';
 
@@ -106,9 +106,12 @@ export function useDeviceControl(
     setIsOn(nextState);
 
     try {
-      // TODO: Send toggle command via SocketManager
+      if (primaryEntity?.code) {
+        await deviceService.setEntityValue(device.token, primaryEntity.code, nextState ? 1 : 0);
+      }
     }
-    catch {
+    catch (e) {
+      console.log('Failed to toggle entity:', e);
       setIsOn(!nextState);
       if (allowHaptics) {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);

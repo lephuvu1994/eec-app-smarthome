@@ -67,7 +67,7 @@
     "noDataOptionSelect": "Không có lựa chọn",
     "noDevice": "Không có thiết bị",
     "noDeviceSelected": "Chưa chọn thiết bị. Vui lòng quay lại và chọn thiết bị từ danh sách.",
-    "noFeatureControl": "Thiết bị chưa có tính năng điều khiển",
+    "noEntityControl": "Thiết bị chưa có tính năng điều khiển",
     "noRoom": "Chưa có phòng",
     "noSessionError": "Chưa thiết lập phiên kết nối. Vui lòng kết nối lại thiết bị.",
     "off": "Tắt",

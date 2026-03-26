@@ -70,8 +70,8 @@ export type TAssignRoomsBody = {
   roomIds: string[];
 };
 
-export type TAssignFeaturesBody = {
-  featureIds: string[];
+export type TAssignEntitiesBody = {
+  entityIds: string[];
 };
 
 export type TAssignScenesBody = {
@@ -150,8 +150,8 @@ export const homeService = {
     return data.data || data;
   },
 
-  assignFeaturesToRoom: async (roomId: string, body: { featureIds: string[] }): Promise<TRoom> => {
-    const { data } = await client.patch(`/homes/rooms/${roomId}/features`, body);
+  assignEntitiesToRoom: async (roomId: string, body: { entityIds: string[] }): Promise<TRoom> => {
+    const { data } = await client.patch(`/homes/rooms/${roomId}/entities`, body);
     return data.data || data;
   },
 

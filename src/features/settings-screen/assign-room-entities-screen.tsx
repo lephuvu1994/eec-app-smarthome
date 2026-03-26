@@ -13,7 +13,7 @@ import { ScrollView, Text, TouchableOpacity, View } from '@/components/ui';
 import { useHomeDevices } from '@/hooks/use-devices';
 import { useAssignFeaturesToRoom } from '@/hooks/use-homes';
 import { translate } from '@/lib/i18n';
-import { getPrimaryEntities } from '@/lib/utils/device-feature-helper';
+import { getPrimaryEntities } from '@/lib/utils/device-entity-helper';
 import { useHomeStore } from '@/stores/home/home-store';
 import { ETheme } from '@/types/base';
 
@@ -85,7 +85,7 @@ function FeatureRow({
 }
 
 // ─── Main Screen ──────────────────────────
-export function AssignRoomFeaturesScreen() {
+export function AssignRoomEntitiesScreen() {
   const { roomId } = useLocalSearchParams<{ roomId: string }>();
   const { theme } = useUniwind();
   const isDark = theme === ETheme.Dark;

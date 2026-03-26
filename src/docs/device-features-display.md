@@ -15,10 +15,10 @@ Trong Data Model từ Backend truyền xuống, chúng ta có 2 tầng rõ rệt
    - *Ví dụ:* Cụm Công tắc cảm ứng âm tường loại 4 nút.
    - User quản lý TDevice để: Xem phiên bản Firmware, Xóa thiết bị khỏi nhà, Đổi tên tóm tắt cả cụm.
 
-2. **`TDeviceFeature` (Điểm điều khiển Logic):**
+2. **`TDeviceEntity` (Điểm điều khiển Logic):**
    - Đại diện cho **các công năng cụ thể** nằm trên Thiết bị Vật lý đó.
    - *Ví dụ:* Nút bấm số 1 (Đèn trần), Nút bấm số 2 (Đèn hắt), Nút bấm số 3 (Quạt hút).
-   - User tương tác với TDeviceFeature để: Bật/Tắt, Kéo thanh sáng mờ (Dimmer), Đọc nhiệt độ.
+   - User tương tác với TDeviceEntity để: Bật/Tắt, Kéo thanh sáng mờ (Dimmer), Đọc nhiệt độ.
 
 ---
 
@@ -29,7 +29,7 @@ Khác với các App sơ sài chỉ render 1 khối cho 1 thiết bị, App củ
 **Mọi màn hình điều khiển (Home Screen / Room Screen / Favorite) KHÔNG render thẻ `Device`, mà render các thẻ `Feature`.**
 
 ### Luồng Xử Lý (Flow):
-1. **Fetch Data:** App tải về mảng `TDevice[]`. Mỗi `TDevice` chứa một mảng con `features: TDeviceFeature[]`.
+1. **Fetch Data:** App tải về mảng `TDevice[]`. Mỗi `TDevice` chứa một mảng con `features: TDeviceEntity[]`.
 2. **Unpack (Dàn phẳng):** Component `ListDevice` (hoặc các Section) sẽ loop qua từng `TDevice`, moi mảng `features` ra và **duỗi phẳng (flat)** tất cả thành một list chung.
 3. **Render Card:** Mỗi `Feature` được vẽ thành một `DeviceCard` độc lập.
    - Nút 1 thành một ô vuông. Bấm vào thì `switch_1` sáng.
@@ -40,7 +40,7 @@ Khác với các App sơ sài chỉ render 1 khối cho 1 thiết bị, App củ
 
 ## 3. Quản Lý Không Gian Chuyên Sâu (Feature-Level Room Assignment)
 
-Hệ thống Database của chúng ta (Prisma) hỗ trợ cấu hình cực kỳ linh hoạt: Cả `Device` và `DeviceFeature` đều có cột `roomId`.
+Hệ thống Database của chúng ta (Prisma) hỗ trợ cấu hình cực kỳ linh hoạt: Cả `Device` và `DeviceEntity` đều có cột `roomId`.
 
 **Tại sao lại cần thế này?**
 - Thực tế lắp đặt: Một cái công tắc 4 nút được khoan và gắn vật lý ở bức tường **Phòng Khách** (`Device.roomId = id_phong_khach`).
@@ -52,7 +52,7 @@ Hệ thống Database của chúng ta (Prisma) hỗ trợ cấu hình cực kỳ
 
 **Flow Gán Phòng (Tránh rác UI):**
 - Khi lập trình Màn hình **Assign Room (Gán phòng cho thiết bị)**, App tuyệt đối **không** gán cả cục `TDevice` vào Phòng.
-- App phải cho phép User chọn TỪNG DÒNG `TDeviceFeature` và bấm Lưu vào phòng mong muốn.
+- App phải cho phép User chọn TỪNG DÒNG `TDeviceEntity` và bấm Lưu vào phòng mong muốn.
 - Nhờ vậy, khi User mở Tab "Phòng Bếp", họ chỉ thấy cục "Quạt hút mùi lõi 4" hiện lên chứ không bị bắt ép phải xem cả 3 cái nút phòng khách bị dính kèm.
 
 ---
@@ -64,7 +64,7 @@ Vì App đã **Unpack** UI xuống mức Feature, việc nhận tín hiệu Real
 - Khi Chip phần cứng gửi gói tin MQTT báo Nút 2 được bấm thủ công bằng tay.
 - Gói tin sẽ là: `{ device_id: "xxx", feature_code: "switch_2", value: 1 }`.
 - Thay vì `device-store.ts` phải chật vật update lại cả cục `TDevice`, Zustand Store nên cung cấp một hàm:
-  `updateFeatureValue(deviceId, featureCode, newValue)`
+  `updateFeatureValue(deviceId, entityCode, newValue)`
 - Hàm này sẽ quét mảng Devices, tìm đúng vòng lặp `features`, và vá (patch) `lastValue = 1` vào đúng nút đó. React sẽ tự động re-render cái Thẻ Card tương ứng màu vàng lên chỉ trong 1 milisecond!
 
 ---

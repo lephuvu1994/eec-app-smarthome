@@ -5,6 +5,13 @@ import { EDeviceStatus, type TDevice, type TDeviceEntity } from '@/lib/api/devic
 import { useDeviceEvent } from '@/hooks/use-device-event';
 import * as Haptics from 'expo-haptics';
 
+jest.mock('@/lib/api/devices/device.service', () => ({
+  deviceService: {
+    setEntityValue: jest.fn().mockResolvedValue({}),
+  },
+  EDeviceStatus: { ONLINE: 'online', OFFLINE: 'offline' }
+}));
+
 // Mock dependencies
 jest.mock('expo-haptics', () => ({
   notificationAsync: jest.fn(),
@@ -17,7 +24,7 @@ jest.mock('@/hooks/use-device-event', () => ({
 
 jest.mock('mqtt', () => ({
   connect: jest.fn(),
-}));
+}), { virtual: true });
 
 jest.mock('@dev-plugins/react-query', () => ({
   useReactQueryDevTools: jest.fn(),
@@ -92,10 +99,11 @@ describe('useDeviceControl', () => {
 
     expect(result.current.isOn).toBe(true);
     
-    act(() => {
+    await act(async () => {
       // Must await to avoid hitting the 500ms debounce immediately if tests run too fast, but we mock Date.now() or wait
       jest.spyOn(Date, 'now').mockReturnValueOnce(1000).mockReturnValueOnce(2000);
-      result.current.onToggle();
+      
+      await result.current.onToggle();
     });
 
     expect(result.current.isOn).toBe(false);

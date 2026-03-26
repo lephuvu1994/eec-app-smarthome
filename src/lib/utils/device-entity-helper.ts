@@ -81,8 +81,8 @@ export function getDependentAttributes(device: TDevice, entityId: string): TDevi
 
 // ─── Backward compat aliases ─────────────────────────────────
 /** @deprecated Use isPrimaryEntity */
-export const isPrimaryFeature = isPrimaryEntity;
+export const isPrimaryEntity = isPrimaryEntity;
 /** @deprecated Use getPrimaryEntities */
-export const getPrimaryFeatures = getPrimaryEntities;
+export const getPrimaryEntities = getPrimaryEntities;
 /** @deprecated Use getDependentAttributes */
 export const getDependentFeatures = getDependentAttributes;
