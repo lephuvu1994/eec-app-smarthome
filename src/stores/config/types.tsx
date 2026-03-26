@@ -3,6 +3,7 @@ export type TConfig = {
   showRoomViewExpand: boolean;
   allowHaptics: boolean;
   deviceViewMode: 'grouped' | 'split';
+  shutterBackgrounds: Record<string, string>;
 };
 
 export type TConfigState = TConfig & {
@@ -10,4 +11,5 @@ export type TConfigState = TConfig & {
   setShowRoomViewExpand: (showRoomViewExpand: boolean) => void;
   setToggleAllowHaptics: (allowHaptics: boolean) => void;
   setDeviceViewMode: (mode: 'grouped' | 'split') => void;
+  setShutterBackground: (deviceId: string, backgroundId: string) => void;
 };

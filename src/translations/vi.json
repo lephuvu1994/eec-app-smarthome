@@ -102,6 +102,15 @@
     "wifiPasswordPlaceholder": "Nhập mật khẩu",
     "wifiSsidPlaceholder": "Nhập tên Wi-Fi (SSID)"
   },
+  "deviceDetail": {
+    "shutter": {
+      "changeBackground": "Đổi hình nền",
+      "close": "Đóng",
+      "open": "Mở",
+      "position": "Vị trí",
+      "stop": "Dừng"
+    }
+  },
   "formAuth": {
     "accountAlreadyExists": "Tài khoản này đã được đăng ký. Vui lòng đăng nhập!",
     "accountNotFound": "Tài khoản không tồn tại trong hệ thống!",

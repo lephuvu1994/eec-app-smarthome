@@ -102,6 +102,15 @@
     "wifiPasswordPlaceholder": "Enter password",
     "wifiSsidPlaceholder": "Enter Wi-Fi SSID"
   },
+  "deviceDetail": {
+    "shutter": {
+      "changeBackground": "Change Background",
+      "close": "Close",
+      "open": "Open",
+      "position": "Position",
+      "stop": "Stop"
+    }
+  },
   "formAuth": {
     "accountAlreadyExists": "This account is already registered. Please sign in!",
     "accountNotFound": "Account does not exist in the system!",
