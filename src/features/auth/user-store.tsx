@@ -3,6 +3,7 @@ import type { TTokenType, TUser } from './types/response';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
+import { deviceService } from '@/lib/api/devices/device.service';
 import { MqttManager } from '@/lib/mqtt/mqtt-manager';
 import { mmkvStorage } from '@/lib/storage';
 import { createSelectors } from '@/lib/utils';
@@ -38,9 +39,9 @@ const _useGetUser = create<UserState>()(
       status: EAuthStatus.idle,
       signIn: (user) => {
         set({ ...user, status: EAuthStatus.signIn });
-        // Connect MQTT with auth token
+        // Connect MQTT — pass credentials fetcher to avoid require cycle
         if (user.accessToken) {
-          MqttManager.getInstance().connect(user.accessToken);
+          MqttManager.getInstance().connect(deviceService.getMqttCredentials);
         }
       },
       signOut: () => {
