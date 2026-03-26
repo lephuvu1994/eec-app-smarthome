@@ -22,27 +22,30 @@ export function useSwitchControl(device: TDevice, entity: TDeviceEntity) {
   }, [entity?.code]));
 
   const handleToggle = async () => {
-    if (isLoading) return;
+    if (isLoading)
+      return;
     const nextState = !isOn;
-    
+
     if (allowHaptics) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
-    
+
     setIsOn(nextState);
     setIsLoading(true);
-    
+
     try {
       if (entity.code) {
         await deviceService.setEntityValue(device.token, entity.code, nextState ? 1 : 0);
       }
-    } catch (e) {
+    }
+    catch (e) {
       console.log('Failed to toggle switch entity:', e);
       setIsOn(!nextState);
       if (allowHaptics) {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       }
-    } finally {
+    }
+    finally {
       setIsLoading(false);
     }
   };

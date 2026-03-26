@@ -30,7 +30,8 @@ const VideoStreamComponent = memo(({
   }, [imageUrl, handleError, setIsFailedRTS]);
 
   const playerElement = useMemo(() => {
-    if (!isFocused) return null;
+    if (!isFocused)
+      return null;
 
     return (
       <VLCPlayer

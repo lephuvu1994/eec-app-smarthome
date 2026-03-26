@@ -28,7 +28,7 @@ export function DeviceGridCard({
   viewType,
 }: TDeviceCardProps) {
   const layout = useWindowDimensions();
-  
+
   const columns = viewType === ETypeViewDevice.OneThirdWidth ? 3 : 2;
   const cardWidth = (layout.width - BASE_SPACE_HORIZONTAL * 2 - GAP_DEVICE_VIEW_MOBILE * (columns - 1)) / columns;
 

@@ -125,10 +125,10 @@ export function useDeviceControl(
   const onPressCard = () => {
     const domain = primaryEntity?.domain;
     if (
-      domain === EEntityDomain.CURTAIN ||
-      domain === EEntityDomain.LIGHT ||
-      domain === EEntityDomain.SWITCH ||
-      domain === EEntityDomain.CLIMATE
+      domain === EEntityDomain.CURTAIN
+      || domain === EEntityDomain.LIGHT
+      || domain === EEntityDomain.SWITCH
+      || domain === EEntityDomain.CLIMATE
     ) {
       const targetEntityId = activeEntity?.id || primaryEntity?.id;
       router.push(`/device/${device.id}?entityId=${targetEntityId}`);

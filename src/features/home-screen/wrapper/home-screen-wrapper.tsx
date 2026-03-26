@@ -242,9 +242,9 @@ export const HomeScreenWrapper = memo(({ className }: { className?: string }) =>
             decelerationRate="fast"
             className="w-full flex-row"
           >
-            {MOCK_CAMERAS.map((cam) => (
+            {MOCK_CAMERAS.map(cam => (
               <View key={cam.id} style={{ width: WIDTH }} className="px-4">
-                <View className="size-full overflow-hidden rounded-2xl relative bg-black">
+                <View className="relative size-full overflow-hidden rounded-2xl bg-black">
                   <LiveCameraWrapper
                     videoUrl={cam.videoUrl}
                     imageUrl={cam.imageUrl}

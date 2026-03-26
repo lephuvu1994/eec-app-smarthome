@@ -24,4 +24,3 @@ export function SwitchModalItem({ device, entity }: { device: TDevice; entity: T
     </TouchableOpacity>
   );
 }
-

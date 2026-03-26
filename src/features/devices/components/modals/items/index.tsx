@@ -16,13 +16,13 @@ export function ModalItemFactory({ device, entity }: { device: TDevice; entity: 
   switch (entity.domain) {
     case EEntityDomain.CURTAIN:
       return <CurtainModalItem device={device} entity={entity} />;
-    
+
     case EEntityDomain.LIGHT:
       return <LightModalItem device={device} entity={entity} />;
-      
+
     case EEntityDomain.CLIMATE:
       return <ClimateModalItem device={device} entity={entity} />;
-      
+
     case EEntityDomain.SWITCH:
     case EEntityDomain.BUTTON:
     default:

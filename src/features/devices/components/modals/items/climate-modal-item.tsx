@@ -17,17 +17,19 @@ export function ClimateModalItem({ device, entity }: { device: TDevice; entity: 
   return (
     <RNView className={`h-24 w-full flex-row items-center justify-between rounded-xl p-4 ${containerBg}`}>
       {/* Power Toggle Area */}
-      <TouchableOpacity 
-        className="flex-1 flex-row items-center space-x-3" 
+      <TouchableOpacity
+        className="flex-1 flex-row items-center space-x-3"
         onPress={handleToggle}
         activeOpacity={0.8}
       >
-        <View className={`items-center justify-center size-10 rounded-full ${isOn ? 'bg-white' : 'bg-neutral-300 dark:bg-neutral-600'}`}>
-          {isLoading ? (
-            <ActivityIndicator size="small" color={isOn ? '#3B82F6' : '#999'} />
-          ) : (
-            <FontAwesome5 name="power-off" size={16} color={isOn ? '#3B82F6' : '#fff'} />
-          )}
+        <View className={`size-10 items-center justify-center rounded-full ${isOn ? 'bg-white' : 'bg-neutral-300 dark:bg-neutral-600'}`}>
+          {isLoading
+            ? (
+                <ActivityIndicator size="small" color={isOn ? '#3B82F6' : '#999'} />
+              )
+            : (
+                <FontAwesome5 name="power-off" size={16} color={isOn ? '#3B82F6' : '#fff'} />
+              )}
         </View>
         <View>
           <Text className={`text-lg font-bold ${textColor}`}>
@@ -41,20 +43,21 @@ export function ClimateModalItem({ device, entity }: { device: TDevice; entity: 
 
       {/* Temp Controls */}
       <View className="flex-row items-center space-x-2">
-        <TouchableOpacity 
-          className={`items-center justify-center size-10 rounded-full ${controlBtnBg}`}
+        <TouchableOpacity
+          className={`size-10 items-center justify-center rounded-full ${controlBtnBg}`}
           onPress={handleDecreaseTemp}
           activeOpacity={0.7}
         >
           <FontAwesome5 name="minus" size={14} color={isOn ? '#fff' : '#888'} />
         </TouchableOpacity>
-        
+
         <Text className={`w-10 text-center text-xl font-bold ${textColor}`}>
-          {targetTemp}°
+          {targetTemp}
+          °
         </Text>
-        
-        <TouchableOpacity 
-          className={`items-center justify-center size-10 rounded-full ${controlBtnBg}`}
+
+        <TouchableOpacity
+          className={`size-10 items-center justify-center rounded-full ${controlBtnBg}`}
           onPress={handleIncreaseTemp}
           activeOpacity={0.7}
         >
