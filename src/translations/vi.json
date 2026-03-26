@@ -102,6 +102,41 @@
     "wifiPasswordPlaceholder": "Nhập mật khẩu",
     "wifiSsidPlaceholder": "Nhập tên Wi-Fi (SSID)"
   },
+  "deviceDetail": {
+    "climate": {
+      "currentTemp": "Nhiệt độ phòng",
+      "fanSpeed": "Tốc độ gió",
+      "fanSpeeds": {
+        "auto": "Tự động",
+        "high": "Cao",
+        "low": "Thấp",
+        "medium": "Trung bình"
+      },
+      "mode": "Chế độ",
+      "modes": {
+        "auto": "Tự động",
+        "cool": "Làm mát",
+        "dry": "Hút ẩm",
+        "fan": "Quạt",
+        "heat": "Sưởi ấm"
+      },
+      "targetTemp": "Nhiệt độ"
+    },
+    "light": {
+      "brightness": "Độ sáng"
+    },
+    "shutter": {
+      "changeBackground": "Đổi hình nền",
+      "close": "Đóng",
+      "open": "Mở",
+      "position": "Vị trí",
+      "stop": "Dừng"
+    },
+    "switch": {
+      "turnOffAll": "Tắt tất cả",
+      "turnOnAll": "Bật tất cả"
+    }
+  },
   "formAuth": {
     "accountAlreadyExists": "Tài khoản này đã được đăng ký. Vui lòng đăng nhập!",
     "accountNotFound": "Tài khoản không tồn tại trong hệ thống!",

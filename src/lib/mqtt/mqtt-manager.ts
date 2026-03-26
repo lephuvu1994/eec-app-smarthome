@@ -1,7 +1,9 @@
 import type { MqttClient } from 'mqtt';
 import type { AppStateStatus } from 'react-native';
 
-import { connect } from 'mqtt';
+// eslint-disable-next-line ts/ban-ts-comment
+// @ts-expect-error
+import mqtt from 'mqtt/dist/mqtt';
 import { AppState } from 'react-native';
 
 import { deviceService } from '@/lib/api/devices/device.service';
@@ -9,7 +11,12 @@ import { deviceService } from '@/lib/api/devices/device.service';
 // ============================================================
 // TYPES
 // ============================================================
-type MqttStatus = 'connecting' | 'connected' | 'disconnected' | 'reconnecting';
+export enum EMqttStatus {
+  CONNECTING = 'connecting',
+  CONNECTED = 'connected',
+  DISCONNECTED = 'disconnected',
+  RECONNECTING = 'reconnecting',
+}
 
 type DeviceMapping = {
   token: string;
@@ -48,7 +55,7 @@ export class MqttManager {
   // Per-device state events: `device:${deviceId}`
   private deviceEmitter = new DeviceEventEmitter();
 
-  private status: MqttStatus = 'disconnected';
+  private status: EMqttStatus = EMqttStatus.DISCONNECTED;
   private isAppActive = true;
   private lastAccessToken = '';
 
@@ -97,12 +104,12 @@ export class MqttManager {
     }
 
     this.lastAccessToken = accessToken;
-    this.status = 'connecting';
+    this.status = EMqttStatus.CONNECTING;
 
     try {
       const credentials = await deviceService.getMqttCredentials();
 
-      this.client = connect(credentials.url, {
+      this.client = mqtt.connect(credentials.url, {
         username: credentials.username,
         password: credentials.password,
         clientId: credentials.clientId,
@@ -111,8 +118,8 @@ export class MqttManager {
         clean: true,
       });
 
-      this.client.on('connect', () => {
-        this.status = 'connected';
+      this.client?.on('connect', () => {
+        this.status = EMqttStatus.CONNECTED;
         console.log('📡 MQTT connected:', credentials.clientId);
 
         // Re-subscribe to all tracked devices
@@ -124,26 +131,26 @@ export class MqttManager {
         }
       });
 
-      this.client.on('disconnect', () => {
-        this.status = 'disconnected';
+      this.client!.on('disconnect', () => {
+        this.status = EMqttStatus.DISCONNECTED;
         console.log('📡 MQTT disconnected');
       });
 
-      this.client.on('reconnect', () => {
-        this.status = 'reconnecting';
+      this.client!.on('reconnect', () => {
+        this.status = EMqttStatus.RECONNECTING;
         console.log('📡 MQTT reconnecting...');
       });
 
-      this.client.on('error', (err) => {
+      this.client!.on('error', (err: any) => {
         console.warn('📡 MQTT error:', err.message);
       });
 
-      this.client.on('message', (topic: string, payload: Uint8Array) => {
+      this.client!.on('message', (topic: string, payload: Uint8Array) => {
         this.handleMessage(topic, payload);
       });
     }
     catch (error: any) {
-      this.status = 'disconnected';
+      this.status = EMqttStatus.DISCONNECTED;
       console.error('📡 MQTT connect failed:', error?.message);
     }
   }
@@ -155,7 +162,7 @@ export class MqttManager {
       this.client.end(true);
       this.client = null;
     }
-    this.status = 'disconnected';
+    this.status = EMqttStatus.DISCONNECTED;
     this.tokenToDeviceId.clear();
   }
 
@@ -249,7 +256,7 @@ export class MqttManager {
     return this.client?.connected ?? false;
   }
 
-  getStatus(): MqttStatus {
+  getStatus(): EMqttStatus {
     return this.status;
   }
 }

@@ -3,6 +3,8 @@ import type { useModal } from '@/components/ui/modal';
 import type { TDevice, TDeviceEntity } from '@/lib/api/devices/device.service';
 
 import * as Haptics from 'expo-haptics';
+import { useRouter } from 'expo-router';
+
 import { useCallback, useRef, useState } from 'react';
 import {
   Extrapolation,
@@ -13,10 +15,10 @@ import {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-
 import { getDeviceImage } from '@/features/home-screen/utils/device-image';
+
 import { useDeviceEvent } from '@/hooks/use-device-event';
-import { deviceService, EDeviceStatus } from '@/lib/api/devices/device.service';
+import { deviceService, EDeviceStatus, EEntityDomain } from '@/lib/api/devices/device.service';
 import { translate } from '@/lib/i18n';
 import { useConfigManager } from '@/stores/config/config';
 
@@ -33,9 +35,10 @@ export function useDeviceControl(
   device: TDevice,
   activeEntity: TDeviceEntity | undefined,
   options: TDeviceControlOptions,
-): TDeviceCardProps {
+): Omit<TDeviceCardProps, 'viewType'> {
   const { modal, config } = options;
   const allowHaptics = useConfigManager(state => state.allowHaptics);
+  const router = useRouter();
 
   // ─── Online status ─────────────────────────────────
   const isOnline = device.status === EDeviceStatus.ONLINE;
@@ -48,7 +51,7 @@ export function useDeviceControl(
   const [isOn, setIsOn] = useState(serverIsOn);
   const lastClickRef = useRef(0);
 
-  // ─── WebSocket sync ────────────────────────────────
+  // ─── MQTT sync ────────────────────────────────
   useDeviceEvent(device.id, useCallback((data: { entityCode?: string; state?: any; value?: any }) => {
     if (data.entityCode === primaryEntity?.code || !data.entityCode) {
       const val = data.state ?? data.value;
@@ -69,7 +72,7 @@ export function useDeviceControl(
     backgroundColor: interpolateColor(
       powerProgress.value,
       [0, 1],
-      ['#E9ECF4', config.accentColor],
+      ['#E9ECF4', '#A3EC3E'],
     ),
     transform: [{ scale: withSpring(powerProgress.value === 1 ? 1.05 : 1) }],
   }));
@@ -120,6 +123,18 @@ export function useDeviceControl(
   };
 
   const onPressCard = () => {
+    const domain = primaryEntity?.domain;
+    if (
+      domain === EEntityDomain.CURTAIN ||
+      domain === EEntityDomain.LIGHT ||
+      domain === EEntityDomain.SWITCH ||
+      domain === EEntityDomain.CLIMATE
+    ) {
+      const targetEntityId = activeEntity?.id || primaryEntity?.id;
+      router.push(`/device/${device.id}?entityId=${targetEntityId}`);
+      return;
+    }
+
     if (!activeEntity) {
       modal.present();
     }

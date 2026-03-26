@@ -2,7 +2,8 @@ import type { ImageSource } from 'expo-image';
 import type { StyleProp, ViewStyle } from 'react-native';
 
 import type { TDevice, TDeviceEntity } from '@/lib/api/devices/device.service';
-import type { ETypeViewDevice } from '@/types/device';
+import { colors } from '@/components/ui';
+import { ETypeViewDevice } from '@/types/device';
 
 // ============================================================
 // Device Config (from API)
@@ -13,13 +14,15 @@ export type TDeviceConfig = {
   accentColor: string;
   modalSnapPoints: string[];
   icon?: string;
+  viewType?: ETypeViewDevice;
 };
 
 export const DEFAULT_DEVICE_CONFIG: TDeviceConfig = {
   deviceType: 'default',
   hasToggle: true,
-  accentColor: '#A3EC3E',
+  accentColor: colors.neon,
   modalSnapPoints: ['50%'],
+  viewType: ETypeViewDevice.HalfWidth,
 };
 
 // ============================================================
@@ -36,6 +39,7 @@ export type TDeviceCardProps = {
   entityCount: number;
   showExpandIcon: boolean;
   config: TDeviceConfig;
+  viewType: ETypeViewDevice;
   // Animated styles
   animatedGradientStyle: StyleProp<ViewStyle>;
   powerButtonStyle: StyleProp<ViewStyle>;
@@ -50,6 +54,6 @@ export type TDeviceCardProps = {
 // ============================================================
 export type TDeviceItemProps = {
   device: TDevice;
-  typeViewDevice: ETypeViewDevice;
+  typeViewDevice?: ETypeViewDevice;
   activeEntity?: TDeviceEntity;
 };
