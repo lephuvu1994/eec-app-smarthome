@@ -68,6 +68,7 @@
     "noDevice": "No devices",
     "noDeviceSelected": "No device selected. Please go back and select a device from the list.",
     "noEntityControl": "No control features available",
+    "noHomeSelected": "No home selected. Please select a home before adding a device.",
     "noRoom": "No rooms",
     "noSessionError": "No session established. Please reconnect the device.",
     "off": "Off",

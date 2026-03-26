@@ -7,7 +7,6 @@ import { GAP_DEVICE_VIEW_MOBILE } from '@/constants';
 import { getPrimaryEntities } from '@/lib/utils/device-entity-helper';
 import { useConfigManager } from '@/stores/config/config';
 import { useDeviceStore } from '@/stores/device/device-store';
-import { useFavoriteStore } from '@/stores/device/favorite-store';
 import { ETypeViewDevice } from '@/types/device';
 import { DeviceItem } from './device-item';
 import { MOCK_DEVICES } from './mockData';
@@ -22,12 +21,12 @@ export function ListDevice({ roomId, isFavorite }: TListDeviceProps) {
   const storeDevices = useDeviceStore.use.devices();
   const allDevices = Array.isArray(storeDevices) ? storeDevices : [];
   const isLoading = useDeviceStore.use.isLoading();
-  const favoriteIds = useFavoriteStore(s => s.favoriteIds) ?? [];
+  // const favoriteIds = useFavoriteStore(s => s.favoriteIds) ?? [];
   const deviceViewMode = useConfigManager(s => s.deviceViewMode);
 
   // Filter devices from store
   const realDevices = isFavorite
-    ? allDevices.filter(d => favoriteIds.includes(d.id))
+    ? allDevices
     : allDevices.filter(d => d.room?.id === roomId);
 
   // TODO: Remove mock devices after App Store approval
