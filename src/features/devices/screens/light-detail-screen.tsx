@@ -1,11 +1,11 @@
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
+import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { TouchableOpacity } from 'react-native';
+import { useEffect } from 'react';
+import { StyleSheet } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
-  Extrapolation,
-  interpolate,
   interpolateColor,
   runOnJS,
   useAnimatedStyle,
@@ -16,8 +16,11 @@ import Animated, {
 } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Text, View } from '@/components/ui';
+import { Text, TouchableOpacity, View, WIDTH } from '@/components/ui';
+import { PowerIcon } from '@/components/ui/icons/power-icon';
 import { useLightControl } from '@/features/devices/hooks/use-light-control';
+import { getDeviceImage } from '@/features/home-screen/utils/device-image';
+import { EDeviceStatus } from '@/lib/api/devices/device.service';
 import { translate } from '@/lib/i18n';
 import { getPrimaryEntities } from '@/lib/utils/device-entity-helper';
 import { useDeviceStore } from '@/stores/device/device-store';
@@ -27,8 +30,21 @@ type Props = {
   entityId?: string;
 };
 
-const SLIDER_HEIGHT = 280;
-const SLIDER_WIDTH = 100;
+const SLIDER_WIDTH = WIDTH - 64; // 32px padding left + right
+const SLIDER_HEIGHT = 8;
+const KNOB_SIZE = 28;
+const MAX_TRANSLATE_X = SLIDER_WIDTH - KNOB_SIZE;
+
+// Rainbow gradient for color temperature
+const GRADIENT_COLORS = [
+  '#FF8A00',
+  '#FFD21E',
+  '#7BFF00',
+  '#00E5FF',
+  '#006BFF',
+  '#8B00FF',
+  '#FF006B',
+] as const;
 
 export function LightDetailScreen({ deviceId, entityId }: Props) {
   const router = useRouter();
@@ -41,133 +57,280 @@ export function LightDetailScreen({ deviceId, entityId }: Props) {
 
   const { isOn, isLoading, brightness, handleToggle, handleChangeBrightness } = useLightControl(device as any, primaryEntity as any);
 
-  // Background and slider animations
+  const isOnline = device?.status === EDeviceStatus.ONLINE;
+  const statusText = isOnline ? 'Connected' : 'Offline';
+
+  // Power Button Animation
   const powerProgress = useDerivedValue(() => {
-    return withTiming(isOn ? 1 : 0, { duration: 500 });
+    return withTiming(isOn ? 1 : 0, { duration: 300 });
   });
 
-  const animatedBgStyle = useAnimatedStyle(() => ({
-    backgroundColor: interpolateColor(
-      powerProgress.value,
-      [0, 1],
-      ['#121212', '#FEF08A'], // from neutral-900 to yellow-200
-    ),
+  const powerButtonStyle = useAnimatedStyle(() => ({
+    backgroundColor: interpolateColor(powerProgress.value, [0, 1], ['#E9ECF4', '#1A1A1A']),
   }));
 
-  const animatedTextStyle = useAnimatedStyle(() => ({
-    color: interpolateColor(
-      powerProgress.value,
-      [0, 1],
-      ['#FFFFFF', '#1F2937'], // white when dark, gray-800 when light
-    ),
+  const powerIconAnimStyle = useAnimatedStyle(() => ({
+    opacity: withTiming(isOn ? 1 : 0.5, { duration: 300 }),
+  }));
+
+  // Glow effect animation
+  const glowStyle = useAnimatedStyle(() => ({
+    opacity: withTiming(isOn ? 0.65 : 0, { duration: 500 }),
+    transform: [{ scale: withTiming(isOn ? 1 : 0.8, { duration: 500 }) }],
   }));
 
   // Slider State
   const sliderProgress = useSharedValue(brightness / 100);
 
   useEffect(() => {
-    // Sync slider when external brightness changes
     sliderProgress.value = withSpring(brightness / 100);
   }, [brightness, sliderProgress]);
-
-  const [tempBright, setTempBright] = useState(brightness);
-
-  const updateUI = (val: number) => {
-    setTempBright(Math.round(val * 100));
-  };
 
   const commitChange = (val: number) => {
     handleChangeBrightness(Math.round(val * 100));
   };
 
+  const sliderOffset = useSharedValue(0);
+
   const panGesture = Gesture.Pan()
+    .onBegin(() => {
+      sliderOffset.value = sliderProgress.value * MAX_TRANSLATE_X;
+    })
     .onUpdate((e) => {
-      // e.y is from top to bottom (0 to SLIDER_HEIGHT)
-      let nextPos = 1 - (e.y / SLIDER_HEIGHT);
-      nextPos = Math.max(0, Math.min(1, nextPos));
-      sliderProgress.value = nextPos;
-      runOnJS(updateUI)(nextPos);
+      let nextX = sliderOffset.value + e.translationX;
+      nextX = Math.max(0, Math.min(MAX_TRANSLATE_X, nextX));
+      sliderProgress.value = nextX / MAX_TRANSLATE_X;
     })
     .onEnd(() => {
       runOnJS(commitChange)(sliderProgress.value);
     });
 
-  const animatedSliderFillStyle = useAnimatedStyle(() => {
-    return {
-      height: interpolate(sliderProgress.value, [0, 1], [0, SLIDER_HEIGHT], Extrapolation.CLAMP),
-    };
-  });
+  const animatedKnobStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: sliderProgress.value * MAX_TRANSLATE_X }],
+  }));
 
   if (!device || !primaryEntity) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-black">
-        <Text className="text-white">{translate('base.somethingWentWrong')}</Text>
+      <SafeAreaView className="flex-1 items-center justify-center bg-[#F5F5F7] dark:bg-black">
+        <Text className="text-neutral-900 dark:text-white">{translate('base.somethingWentWrong')}</Text>
       </SafeAreaView>
     );
   }
 
+  const deviceImg = getDeviceImage(device.type || 'light');
+
   return (
-    <Animated.View style={[animatedBgStyle]} className="flex-1">
+    <View className="flex-1 bg-[#F5F5F7] dark:bg-[#0A0A0A]">
       <SafeAreaView className="flex-1">
 
-        {/* Header */}
+        {/* ── Header ── */}
         <View className="flex-row items-center justify-between px-5 py-3">
           <TouchableOpacity
             onPress={() => router.back()}
-            className="h-11 w-11 items-center justify-center rounded-full bg-white/20"
+            className="size-11 items-center justify-center rounded-full bg-white shadow-sm dark:bg-neutral-800"
           >
-            <Animated.Text style={animatedTextStyle}>
-              <FontAwesome name="chevron-left" size={18} color="inherit" />
-            </Animated.Text>
+            <FontAwesome name="chevron-left" size={16} color="#1A1A1A" />
           </TouchableOpacity>
-          <Animated.Text style={animatedTextStyle} className="text-xl font-bold tracking-wide">
-            {device.name}
-          </Animated.Text>
-          <View className="h-11 w-11" />
-          {' '}
-          {/* Placeholder for balance */}
+
+          <Text className="text-lg font-bold text-neutral-900 dark:text-white">
+            Đèn
+          </Text>
+
+          <TouchableOpacity className="size-11 items-center justify-center rounded-full bg-white shadow-sm dark:bg-neutral-800">
+            <FontAwesome name="cog" size={16} color="#1A1A1A" />
+          </TouchableOpacity>
         </View>
 
-        {/* Content */}
-        <View className="flex-1 items-center justify-center pt-8">
+        {/* ── Main Content ── */}
+        <View className="flex-1 px-5 pt-2 pb-4">
 
-          <Animated.Text style={animatedTextStyle} className="mb-2 text-6xl font-bold tracking-tighter">
-            {isOn ? `${tempBright}%` : translate('base.off')}
-          </Animated.Text>
-          <Animated.Text style={animatedTextStyle} className="mb-12 text-lg font-medium opacity-70">
-            {translate('deviceDetail.light.brightness' as any, { defaultValue: 'Brightness' })}
-          </Animated.Text>
-
-          {/* Vertical Slider */}
-          <GestureDetector gesture={panGesture}>
-            <View
-              className="justify-end overflow-hidden rounded-[50px] bg-white/20"
-              style={{ width: SLIDER_WIDTH, height: SLIDER_HEIGHT }}
-            >
-              <Animated.View
-                className="w-full items-center bg-white pt-4 shadow-lg"
-                style={animatedSliderFillStyle}
-              >
-                <View className="h-1.5 w-12 rounded-full bg-black/20" />
-              </Animated.View>
+          {/* Device Status Card */}
+          <View
+            className="flex-row items-center rounded-2xl bg-white p-4 dark:bg-neutral-900"
+            style={styles.cardShadow}
+          >
+            <View className="mr-3 size-11 items-center justify-center rounded-full bg-[#F5F5F7] dark:bg-neutral-800">
+              <FontAwesome5 name="lightbulb" size={18} color={isOn ? '#FFD21E' : '#B0B0B0'} />
             </View>
-          </GestureDetector>
+            <View className="flex-1">
+              <Text className="text-[15px] font-semibold text-neutral-900 dark:text-white" numberOfLines={1}>
+                {device.name}
+              </Text>
+              <View className="mt-0.5 flex-row items-center">
+                <View
+                  className="mr-1.5 size-2 rounded-full"
+                  style={{ backgroundColor: isOnline ? '#34C759' : '#B0B0B0' }}
+                />
+                <Text className="text-xs text-neutral-500">{statusText}</Text>
+              </View>
+            </View>
+          </View>
 
+          {/* Device Image with Glow */}
+          <View className="flex-1 items-center justify-center">
+            {/* Warm yellow glow behind the image */}
+            <Animated.View style={[styles.glowContainer, glowStyle]}>
+              <View style={styles.glowOuter} />
+              <View style={styles.glowInner} />
+            </Animated.View>
+            <Image source={deviceImg} style={{ width: 200, height: 200 }} contentFit="contain" />
+          </View>
+
+          {/* ── Controls ── */}
+          <View className="items-center gap-8">
+
+            {/* Power Button */}
+            <TouchableOpacity
+              onPress={handleToggle}
+              activeOpacity={0.8}
+              disabled={isLoading}
+            >
+              <View className="items-center justify-center rounded-full bg-white p-1.5 shadow-sm dark:bg-neutral-800">
+                <Animated.View
+                  style={[styles.powerButton, powerButtonStyle]}
+                >
+                  <Animated.View style={powerIconAnimStyle}>
+                    <PowerIcon color="#FFFFFF" size={26} />
+                  </Animated.View>
+                </Animated.View>
+              </View>
+            </TouchableOpacity>
+
+            {/* Color Temperature Slider */}
+            <View className="w-full gap-3 px-3">
+              <View style={{ height: KNOB_SIZE + 8, justifyContent: 'center' }}>
+                <GestureDetector gesture={panGesture}>
+                  <View style={{ width: '100%', height: KNOB_SIZE + 8, justifyContent: 'center' }}>
+                    {/* Gradient Track */}
+                    <View style={styles.trackContainer}>
+                      <LinearGradient
+                        colors={[...GRADIENT_COLORS]}
+                        start={{ x: 0, y: 0.5 }}
+                        end={{ x: 1, y: 0.5 }}
+                        style={styles.gradientTrack}
+                      />
+                    </View>
+
+                    {/* Knob */}
+                    <Animated.View style={[styles.knob, animatedKnobStyle]}>
+                      <View style={styles.knobInner} />
+                    </Animated.View>
+                  </View>
+                </GestureDetector>
+              </View>
+
+              <View className="flex-row justify-between px-1">
+                <Text className="text-xs font-medium text-neutral-400">Warm</Text>
+                <Text className="text-xs font-medium text-neutral-400">Cool</Text>
+              </View>
+            </View>
+          </View>
         </View>
 
-        {/* Bottom Controls */}
-        <View className="mt-auto mb-12 items-center">
-          <TouchableOpacity
-            className={`flex h-20 w-20 items-center justify-center rounded-full shadow-lg ${isOn ? 'bg-white' : 'bg-neutral-800'}`}
-            onPress={handleToggle}
-            activeOpacity={0.8}
-            disabled={isLoading}
+        {/* ── Bottom Status Widgets ── */}
+        <View className="flex-row gap-3 px-5 pb-5">
+          <View
+            className="flex-1 flex-row items-center rounded-2xl bg-white p-3.5 dark:bg-neutral-900"
+            style={styles.cardShadow}
           >
-            <FontAwesome5 name="power-off" size={28} color={isOn ? '#FBBF24' : '#fff'} />
-          </TouchableOpacity>
+            <View className="mr-3 size-10 items-center justify-center rounded-full bg-[#F5F5F7] dark:bg-neutral-800">
+              <FontAwesome5 name="clock" size={14} color="#1A1A1A" />
+            </View>
+            <View>
+              <Text className="text-[15px] font-bold text-neutral-900 dark:text-white">04 HR</Text>
+              <Text className="mt-0.5 text-[11px] text-neutral-400">Đã chạy</Text>
+            </View>
+          </View>
+
+          <View
+            className="flex-1 flex-row items-center rounded-2xl bg-white p-3.5 dark:bg-neutral-900"
+            style={styles.cardShadow}
+          >
+            <View className="mr-3 size-10 items-center justify-center rounded-full bg-[#F0FAF0] dark:bg-neutral-800">
+              <FontAwesome5 name="leaf" size={14} color="#34C759" />
+            </View>
+            <View>
+              <Text className="text-[15px] font-bold text-neutral-900 dark:text-white">72 AQI</Text>
+              <Text className="mt-0.5 text-[11px] text-neutral-400">Trung bình</Text>
+            </View>
+          </View>
         </View>
 
       </SafeAreaView>
-    </Animated.View>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  cardShadow: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  glowContainer: {
+    position: 'absolute',
+    width: 260,
+    height: 260,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  glowOuter: {
+    position: 'absolute',
+    width: 260,
+    height: 260,
+    borderRadius: 130,
+    backgroundColor: '#FFD21E',
+    opacity: 0.25,
+  },
+  glowInner: {
+    position: 'absolute',
+    width: 160,
+    height: 160,
+    borderRadius: 80,
+    backgroundColor: '#FFD21E',
+    opacity: 0.4,
+  },
+  powerButton: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  trackContainer: {
+    position: 'absolute',
+    left: KNOB_SIZE / 2,
+    right: KNOB_SIZE / 2,
+    height: SLIDER_HEIGHT,
+    borderRadius: SLIDER_HEIGHT / 2,
+    overflow: 'hidden',
+  },
+  gradientTrack: {
+    flex: 1,
+    borderRadius: SLIDER_HEIGHT / 2,
+  },
+  knob: {
+    position: 'absolute',
+    width: KNOB_SIZE,
+    height: KNOB_SIZE,
+    borderRadius: KNOB_SIZE / 2,
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 4,
+    borderWidth: 3,
+    borderColor: '#FF8A00',
+  },
+  knobInner: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#FF8A00',
+  },
+});

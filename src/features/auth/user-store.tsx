@@ -3,7 +3,6 @@ import type { TTokenType, TUser } from './types/response';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
-import { MqttManager } from '@/lib/mqtt/mqtt-manager';
 import { mmkvStorage } from '@/lib/storage';
 import { createSelectors } from '@/lib/utils';
 import { useHomeStore } from '@/stores/home/home-store';
@@ -38,15 +37,9 @@ const _useGetUser = create<UserState>()(
       status: EAuthStatus.idle,
       signIn: (user) => {
         set({ ...user, status: EAuthStatus.signIn });
-        // Connect MQTT with auth token
-        if (user.accessToken) {
-          MqttManager.getInstance().connect(user.accessToken);
-        }
       },
       signOut: () => {
         const currentState = get();
-        // Disconnect MQTT
-        MqttManager.getInstance().disconnect();
         // Clear home data khi logout để tránh stale homeId
         useHomeStore.getState().clearSelectedHome();
         useHomeStore.getState().setHomes([]);

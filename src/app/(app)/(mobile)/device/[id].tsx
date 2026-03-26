@@ -11,11 +11,17 @@ import { useDeviceStore } from '@/stores/device/device-store';
 
 export default function DeviceDetailRoute() {
   const { id, entityId } = useLocalSearchParams();
+
+  // Safe flattening of URL params (Expo Router occasionally passes Arrays instead of Strings)
+  const safeId = Array.isArray(id) ? id[0] : id;
+  const safeEntityId = Array.isArray(entityId) ? entityId[0] : entityId;
+
   const devices = useDeviceStore(s => s.devices);
-  const device = Array.isArray(devices) ? devices.find(d => d.id === id) : undefined;
+
+  const device = Array.isArray(devices) ? devices.find(d => String(d.id) === String(safeId)) : undefined;
 
   if (!device) {
-    return <FallbackDeviceScreen message="Device not found" />;
+    return <FallbackDeviceScreen message={`Device not found (ID: ${safeId})`} />;
   }
 
   const primaryEntity = getPrimaryEntities(device)[0];
@@ -24,17 +30,17 @@ export default function DeviceDetailRoute() {
   // Phân luồng UI dựa trên Loại thiết bị (Domain của Entity chính)
   switch (domain) {
     case EEntityDomain.CURTAIN:
-      return <CurtainDetailScreen deviceId={id as string} entityId={entityId as string | undefined} />;
+      return <CurtainDetailScreen deviceId={safeId as string} entityId={safeEntityId as string | undefined} />;
 
     case EEntityDomain.SWITCH:
     case EEntityDomain.BUTTON:
-      return <SwitchDetailScreen deviceId={id as string} entityId={entityId as string | undefined} />;
+      return <SwitchDetailScreen deviceId={safeId as string} entityId={safeEntityId as string | undefined} />;
 
     case EEntityDomain.LIGHT:
-      return <LightDetailScreen deviceId={id as string} entityId={entityId as string | undefined} />;
+      return <LightDetailScreen deviceId={safeId as string} entityId={safeEntityId as string | undefined} />;
 
     case EEntityDomain.CLIMATE:
-      return <ClimateDetailScreen deviceId={id as string} entityId={entityId as string | undefined} />;
+      return <ClimateDetailScreen deviceId={safeId as string} entityId={safeEntityId as string | undefined} />;
 
     default:
       return (

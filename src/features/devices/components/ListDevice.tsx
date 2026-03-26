@@ -10,7 +10,6 @@ import { useDeviceStore } from '@/stores/device/device-store';
 import { useFavoriteStore } from '@/stores/device/favorite-store';
 import { ETypeViewDevice } from '@/types/device';
 import { DeviceItem } from './device-item';
-import { MOCK_DEVICES } from './mockData';
 
 type TListDeviceProps = {
   roomId?: string;
@@ -30,9 +29,7 @@ export function ListDevice({ roomId, isFavorite }: TListDeviceProps) {
     ? allDevices.filter(d => favoriteIds.includes(d.id))
     : allDevices.filter(d => d.room?.id === roomId);
 
-  // TODO: Remove mock devices after App Store approval
-  // Merge mock devices when no real devices exist
-  const devices = realDevices.length > 0 ? realDevices : MOCK_DEVICES;
+  const devices = realDevices;
 
   // Unpack or group them according to preferences
   const displayItems = useMemo<{ device: TDevice; entity?: TDeviceEntity }[]>(() => {

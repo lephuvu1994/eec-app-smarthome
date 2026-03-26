@@ -24,6 +24,7 @@ import { APIProvider } from '@/lib/api';
 import { authService } from '@/lib/api/auth/auth.service';
 import { deviceService } from '@/lib/api/devices/device.service';
 import { loadSelectedTheme } from '@/lib/hooks/use-selected-theme';
+import { MqttManager } from '@/lib/mqtt/mqtt-manager';
 import { useDeviceStore } from '@/stores/device/device-store';
 import { useHomeDataStore } from '@/stores/home/home-data-store';
 import { useHomeStore } from '@/stores/home/home-store';
@@ -55,6 +56,19 @@ function RootRender() {
   const { status } = useUserManager();
 
   useVoiceControl();
+
+  // Watch auth status to manage MQTT lifecycle
+  useEffect(() => {
+    if (status === EAuthStatus.signIn) {
+      const token = useUserManager.getState().accessToken;
+      if (token) {
+        MqttManager.getInstance().connect(token);
+      }
+    }
+    else if (status === EAuthStatus.signOut) {
+      MqttManager.getInstance().disconnect();
+    }
+  }, [status]);
 
   const hideSplash = useCallback(async () => {
     setIsLoading(false);

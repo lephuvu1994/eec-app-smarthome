@@ -1,9 +1,7 @@
 import type { MqttClient } from 'mqtt';
-import type { AppStateStatus } from 'react-native';
+import type { AppStateStatus, NativeEventSubscription } from 'react-native';
 
-// eslint-disable-next-line ts/ban-ts-comment
-// @ts-expect-error
-import mqtt from 'mqtt/dist/mqtt';
+import * as mqtt from 'mqtt';
 import { AppState } from 'react-native';
 
 import { deviceService } from '@/lib/api/devices/device.service';
@@ -51,6 +49,7 @@ class DeviceEventEmitter {
 export class MqttManager {
   private static instance: MqttManager;
   private client: MqttClient | null = null;
+  private appStateSubscription: NativeEventSubscription | null = null;
 
   // Per-device state events: `device:${deviceId}`
   private deviceEmitter = new DeviceEventEmitter();
@@ -64,7 +63,7 @@ export class MqttManager {
 
   private constructor() {
     this.handleAppStateChange = this.handleAppStateChange.bind(this);
-    AppState.addEventListener('change', this.handleAppStateChange);
+    this.appStateSubscription = AppState.addEventListener('change', this.handleAppStateChange);
   }
 
   static getInstance(): MqttManager {
@@ -108,8 +107,14 @@ export class MqttManager {
 
     try {
       const credentials = await deviceService.getMqttCredentials();
+      console.log('📡 MQTT attempting to connect to:', credentials.url);
 
-      this.client = mqtt.connect(credentials.url, {
+      const mqttConnect = mqtt.connect || (mqtt as any).default?.connect || (mqtt as any).default;
+      if (typeof mqttConnect !== 'function') {
+        throw new TypeError('MQTT library failed to load connect function');
+      }
+
+      this.client = mqttConnect(credentials.url, {
         username: credentials.username,
         password: credentials.password,
         clientId: credentials.clientId,
@@ -157,6 +162,11 @@ export class MqttManager {
 
   // ─── Disconnect ────────────────────────────────────
   disconnect(): void {
+    if (this.appStateSubscription) {
+      this.appStateSubscription.remove();
+      this.appStateSubscription = null;
+    }
+
     if (this.client) {
       this.client.removeAllListeners();
       this.client.end(true);
