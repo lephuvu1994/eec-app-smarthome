@@ -1,14 +1,21 @@
+/* eslint-disable react-compiler/react-compiler */
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import type { SFSymbol } from 'expo-symbols';
 import type { LayoutChangeEvent } from 'react-native';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import {
+  Canvas,
+  LinearGradient,
+  RoundedRect,
+  vec,
+} from '@shopify/react-native-skia';
 import { BlurView } from 'expo-blur';
 import { GlassView, isLiquidGlassAvailable } from 'expo-glass-effect';
 import { useSegments } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
 import { useCallback, useEffect, useState } from 'react';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform } from 'react-native';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -16,8 +23,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useUniwind } from 'uniwind';
 
+import { useUniwind } from 'uniwind';
 import { colors, Pressable, Text, View, WIDTH } from '@/components/ui';
 import { translate } from '@/lib/i18n';
 import { ETheme } from '@/types/base';
@@ -30,7 +37,13 @@ const HAS_LIQUID_GLASS = isLiquidGlassAvailable();
 const SLIDE_DURATION = 280;
 const TAB_BAR_HEIGHT = 76;
 const ICON_SIZE = 32;
-const DROPLET_BORDER_RADIUS = 48;
+
+// Indicator geometry — derived from TAB_BAR_HEIGHT
+const PILL_MARGIN_X = 2;
+const PILL_PADDING_Y = 2;
+const PILL_HEIGHT = TAB_BAR_HEIGHT - PILL_PADDING_Y * 2 - 16; // subtract padding + label space
+const PILL_RADIUS = PILL_HEIGHT / 2;
+const SHADOW_OFFSET_Y = 0;
 
 // ──────────────────────────────────────────────
 // Types
@@ -97,68 +110,104 @@ function getOrderedRoutes(routes: BottomTabBarProps['state']['routes']) {
 // Animated Indicator (glass droplet)
 // ──────────────────────────────────────────────
 
-function ActiveIndicator({
+function SkiaActiveIndicator({
   tabCount,
   activeIndex,
-  isDark,
   containerWidth,
+  isDark,
 }: {
   tabCount: number;
   activeIndex: number;
-  isDark: boolean;
   containerWidth: number;
+  isDark: boolean;
 }) {
   const tabWidth = containerWidth / Math.max(tabCount, 1);
-  const targetX = containerWidth > 0 ? activeIndex * tabWidth : 0;
+  const targetX = activeIndex * tabWidth;
 
   const translateX = useSharedValue(targetX);
 
   useEffect(() => {
-    translateX.value = withTiming(targetX, { duration: 250 });
-  }, [targetX, translateX]);
+    if (containerWidth === 0) {
+      return;
+    }
+    translateX.value = withTiming(targetX, {
+      duration: 280,
+      easing: Easing.out(Easing.cubic),
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [targetX]);
 
-  const animatedStyle = useAnimatedStyle(() => ({
+  const slideStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }],
-    width: tabWidth,
-    opacity: containerWidth > 0 ? 1 : 0,
   }));
 
-  const dropletStyle = {
-    position: 'absolute' as const,
-    top: 2,
-    bottom: 2,
-    borderRadius: DROPLET_BORDER_RADIUS,
-    overflow: 'hidden' as const,
-    zIndex: 0,
-  };
-
-  if (HAS_LIQUID_GLASS) {
-    return (
-      <Animated.View style={[dropletStyle, animatedStyle]}>
-        <GlassView
-          style={StyleSheet.absoluteFill}
-          glassEffectStyle="clear"
-          colorScheme={isDark ? 'dark' : 'light'}
-        />
-      </Animated.View>
-    );
+  if (containerWidth === 0) {
+    return null;
   }
+
+  const pw = tabWidth - PILL_MARGIN_X * 2;
 
   return (
     <Animated.View
       style={[
-        dropletStyle,
-        animatedStyle,
         {
-          backgroundColor: isDark
-            ? 'rgba(255,255,255,0.08)'
-            : 'rgba(0,0,0,0.05)',
+          position: 'absolute',
+          top: 0,
+          width: tabWidth,
+          height: TAB_BAR_HEIGHT,
         },
+        slideStyle,
       ]}
-    />
+    >
+      <Canvas style={{ flex: 1 }}>
+        {/* Shadow — slightly offset down for floating depth */}
+        <RoundedRect
+          x={PILL_MARGIN_X}
+          y={PILL_PADDING_Y + SHADOW_OFFSET_Y}
+          width={pw}
+          height={PILL_HEIGHT}
+          r={PILL_RADIUS}
+          color={isDark ? 'rgba(0,0,0,0.30)' : 'rgba(0,0,0,0.06)'}
+        />
+
+        {/* Body — vertical gradient, brighter on top for curvature */}
+        <RoundedRect x={PILL_MARGIN_X} y={PILL_PADDING_Y} width={pw} height={PILL_HEIGHT} r={PILL_RADIUS}>
+          <LinearGradient
+            start={vec(0, PILL_PADDING_Y)}
+            end={vec(0, PILL_PADDING_Y + PILL_HEIGHT)}
+            colors={
+              isDark
+                ? ['rgba(255,255,255,0.20)', 'rgba(255,255,255,0.08)']
+                : ['rgba(255,255,255,0.2)', 'rgba(255,255,255,0.1)']
+            }
+          />
+        </RoundedRect>
+
+        {/* Border ring — gradient stroke for glass edge */}
+        <RoundedRect
+          x={PILL_MARGIN_X + 0.5}
+          y={PILL_PADDING_Y + 0.5}
+          width={pw - 1}
+          height={PILL_HEIGHT - 1}
+          r={PILL_RADIUS - 0.5}
+          color="transparent"
+          style="stroke"
+          strokeWidth={0.75}
+        >
+          <LinearGradient
+            start={vec(0, PILL_PADDING_Y)}
+            end={vec(0, PILL_PADDING_Y + PILL_HEIGHT)}
+            colors={
+              isDark
+                ? ['rgba(255,255,255,0.22)', 'rgba(255,255,255,0.04)']
+                : ['rgba(255,255,255,0.85)', 'rgba(255,255,255,0.5)']
+            }
+          />
+        </RoundedRect>
+      </Canvas>
+    </Animated.View>
   );
 }
-
 // ──────────────────────────────────────────────
 // Main CustomTabBar
 // ──────────────────────────────────────────────
@@ -201,7 +250,7 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
   });
 
   const glassWidth = WIDTH - 16 * 2;
-  const pb = Math.max(insets.bottom - 8, Platform.OS === 'android' ? 12 : 4);
+  const pb = Math.max(insets.bottom - 16, Platform.OS === 'android' ? 12 : 4);
 
   const renderBackground = (children: React.ReactNode) => {
     if (HAS_LIQUID_GLASS) {
@@ -255,11 +304,11 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
     >
       {renderBackground(
         <View className="relative flex-row items-center" onLayout={onTabRowLayout}>
-          <ActiveIndicator
+          <SkiaActiveIndicator
             tabCount={orderedRoutes.length}
             activeIndex={activeOrderedIndex}
-            isDark={isDark}
             containerWidth={tabRowWidth}
+            isDark={isDark}
           />
 
           {orderedRoutes.map((route) => {
