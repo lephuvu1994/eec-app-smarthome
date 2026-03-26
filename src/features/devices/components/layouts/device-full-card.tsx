@@ -6,10 +6,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
 
+import { useUniwind } from 'uniwind';
+
 import { PulseDot } from '@/components/base/PulseDot';
 import { Text, TouchableOpacity, View } from '@/components/ui';
 import { PowerIcon } from '@/components/ui/icons/power-icon';
 import { translate } from '@/lib/i18n';
+import { ETheme } from '@/types/base';
 
 export function DeviceFullCard({
   displayName,
@@ -26,10 +29,18 @@ export function DeviceFullCard({
   onPressCard,
   onPressExpand,
 }: TDeviceCardProps) {
+  const { theme } = useUniwind();
+  const isDark = theme === ETheme.Dark;
+
   return (
     <TouchableOpacity
-      onPress={onPressCard}
-      className="h-36 w-full justify-between overflow-hidden rounded-xl border border-white bg-white p-3 shadow-sm dark:border-[#292929] dark:bg-[#FFFFFF0D]"
+      onPress={isOnline ? onPressCard : undefined}
+      disabled={!isOnline}
+      className={`h-36 w-full justify-between overflow-hidden rounded-xl border p-3 ${
+        isOnline
+          ? 'border-white bg-white shadow-sm dark:border-[#292929] dark:bg-[#FFFFFF0D]'
+          : 'border-dashed border-neutral-300 bg-neutral-100/60 dark:border-neutral-600 dark:bg-[#1a1a1a]'
+      }`}
     >
       <Animated.View style={[StyleSheet.absoluteFill, animatedGradientStyle]} pointerEvents="none">
         <LinearGradient
@@ -42,7 +53,11 @@ export function DeviceFullCard({
 
       <View className="w-full flex-row justify-between" pointerEvents="box-none">
         <View className="flex-1 flex-row gap-3">
-          <Image source={deviceImage} style={{ width: 48, height: 48, borderRadius: 12 }} contentFit="cover" />
+          <Image
+            source={deviceImage}
+            style={{ width: 48, height: 48, borderRadius: 12, opacity: isOnline ? 1 : 0.35 }}
+            contentFit="cover"
+          />
           <View className="justify-center">
             <Text className="text-base font-bold text-neutral-800 dark:text-white" numberOfLines={1}>
               {displayName}
@@ -59,9 +74,20 @@ export function DeviceFullCard({
         </View>
 
         {isSingleEntity && config.hasToggle && (
-          <TouchableOpacity onPress={onToggle} activeOpacity={0.7}>
-            <Animated.View style={[{ width: 32, height: 32, borderRadius: 17, padding: 7 }, powerButtonStyle]}>
-              <PowerIcon color="#1B1B1B" size={18} />
+          <TouchableOpacity onPress={isOnline ? onToggle : undefined} disabled={!isOnline} activeOpacity={0.7}>
+            <Animated.View
+              style={[
+                { width: 32, height: 32, borderRadius: 17, padding: 7 },
+                isOnline
+                  ? powerButtonStyle
+                  : {
+                      backgroundColor: isDark ? 'rgba(255,255,255,0.02)' : '#F5F5F5',
+                      borderWidth: 1,
+                      borderColor: isDark ? 'rgba(255,255,255,0.05)' : '#E0E0E0',
+                    },
+              ]}
+            >
+              <PowerIcon color={isOnline ? '#1B1B1B' : (isDark ? '#3a3a3a' : '#C8C8C8')} size={18} />
             </Animated.View>
           </TouchableOpacity>
         )}
@@ -78,7 +104,8 @@ export function DeviceFullCard({
 
       {showExpandIcon && (
         <TouchableOpacity
-          onPress={onPressExpand}
+          onPress={isOnline ? onPressExpand : undefined}
+          disabled={!isOnline}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           className="absolute right-2 bottom-2 size-7 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800"
         >
