@@ -49,7 +49,7 @@ export function DeviceFullCard({
             </Text>
             <View className="flex-row items-center gap-1.5">
               {isOnline
-                ? <PulseDot color={config.accentColor} size={6} />
+                ? <PulseDot color="#A3EC3E" size={6} />
                 : <View className="size-1.5 rounded-full bg-neutral-300 dark:bg-neutral-600" />}
               <Text className={isOnline ? 'text-xs font-medium text-[#A3EC3E]' : 'text-xs text-neutral-400'}>
                 {statusLabel}

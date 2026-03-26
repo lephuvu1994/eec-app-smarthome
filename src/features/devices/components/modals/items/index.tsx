@@ -4,7 +4,9 @@ import * as React from 'react';
 
 import { EEntityDomain } from '@/lib/api/devices/device.service';
 
+import { ClimateModalItem } from './climate-modal-item';
 import { CurtainModalItem } from './curtain-modal-item';
+import { LightModalItem } from './light-modal-item';
 import { SwitchModalItem } from './switch-modal-item';
 
 /**
@@ -15,13 +17,14 @@ export function ModalItemFactory({ device, entity }: { device: TDevice; entity: 
     case EEntityDomain.CURTAIN:
       return <CurtainModalItem device={device} entity={entity} />;
     
-    // For many domains, a simple toggle is enough initially
-    case EEntityDomain.SWITCH:
     case EEntityDomain.LIGHT:
-    case EEntityDomain.BUTTON:
-      return <SwitchModalItem device={device} entity={entity} />;
+      return <LightModalItem device={device} entity={entity} />;
       
-    // Default fallback is the generic switch layout
+    case EEntityDomain.CLIMATE:
+      return <ClimateModalItem device={device} entity={entity} />;
+      
+    case EEntityDomain.SWITCH:
+    case EEntityDomain.BUTTON:
     default:
       return <SwitchModalItem device={device} entity={entity} />;
   }

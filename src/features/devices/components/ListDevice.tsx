@@ -67,7 +67,7 @@ export function ListDevice({ roomId, isFavorite }: TListDeviceProps) {
           key={entity ? `${device.id}-${entity.id}` : device.id}
           device={device}
           activeEntity={entity}
-          typeViewDevice={idx % 3 === 0 ? ETypeViewDevice.FullWidth : ETypeViewDevice.Grid}
+          typeViewDevice={idx % 3 === 0 ? ETypeViewDevice.FullWidth : ETypeViewDevice.HalfWidth}
         />
       ))}
     </View>

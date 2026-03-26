@@ -35,7 +35,7 @@ export function useDeviceControl(
   device: TDevice,
   activeEntity: TDeviceEntity | undefined,
   options: TDeviceControlOptions,
-): TDeviceCardProps {
+): Omit<TDeviceCardProps, 'viewType'> {
   const { modal, config } = options;
   const allowHaptics = useConfigManager(state => state.allowHaptics);
   const router = useRouter();
@@ -72,7 +72,7 @@ export function useDeviceControl(
     backgroundColor: interpolateColor(
       powerProgress.value,
       [0, 1],
-      ['#E9ECF4', config.accentColor],
+      ['#E9ECF4', '#A3EC3E'],
     ),
     transform: [{ scale: withSpring(powerProgress.value === 1 ? 1.05 : 1) }],
   }));
@@ -123,7 +123,13 @@ export function useDeviceControl(
   };
 
   const onPressCard = () => {
-    if (primaryEntity?.domain === EEntityDomain.CURTAIN) {
+    const domain = primaryEntity?.domain;
+    if (
+      domain === EEntityDomain.CURTAIN ||
+      domain === EEntityDomain.LIGHT ||
+      domain === EEntityDomain.SWITCH ||
+      domain === EEntityDomain.CLIMATE
+    ) {
       const targetEntityId = activeEntity?.id || primaryEntity?.id;
       router.push(`/device/${device.id}?entityId=${targetEntityId}`);
       return;
