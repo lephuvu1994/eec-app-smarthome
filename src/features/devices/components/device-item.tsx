@@ -17,14 +17,15 @@ export function DeviceItem({ device, typeViewDevice, activeEntity }: TDeviceItem
   const config = useDeviceConfig(device.type);
   const modal = useModal();
   const control = useDeviceControl(device, activeEntity, { modal, config });
+  const resolvedCardType = config.viewType ?? typeViewDevice ?? ETypeViewDevice.HalfWidth;
 
-  const Card = typeViewDevice === ETypeViewDevice.FullWidth
+  const Card = resolvedCardType === ETypeViewDevice.FullWidth
     ? DeviceFullCard
     : DeviceGridCard;
 
   return (
     <>
-      <Card {...control} />
+      <Card {...control} viewType={resolvedCardType} />
       <DeviceControlModal
         modalRef={modal.ref}
         device={device}

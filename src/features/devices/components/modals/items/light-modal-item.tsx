@@ -3,14 +3,18 @@ import type { TDevice, TDeviceEntity } from '@/lib/api/devices/device.service';
 import { ActivityIndicator, TouchableOpacity } from 'react-native';
 
 import { Text, View } from '@/components/ui';
-import { useSwitchControl } from '@/features/devices/hooks/use-switch-control';
+import { useLightControl } from '@/features/devices/hooks/use-light-control';
 
-export function SwitchModalItem({ device, entity }: { device: TDevice; entity: TDeviceEntity }) {
-  const { isOn, isLoading, handleToggle } = useSwitchControl(device, entity);
+export function LightModalItem({ device, entity }: { device: TDevice; entity: TDeviceEntity }) {
+  const { isOn, isLoading, handleToggle } = useLightControl(device, entity);
 
+  // Todo: Implement mini Slider for brightness inside this modal block if needed.
+  // For the V1 of the expand modal, we typically show a standard toggle that matches the switch block,
+  // letting the detail screen handle complex brightness.
+  
   return (
     <TouchableOpacity
-      className={`h-24 w-[48%] justify-between rounded-xl p-3 ${isOn ? 'bg-[#A3E635]' : 'bg-neutral-100 dark:bg-neutral-800'}`}
+      className={`h-24 w-[48%] justify-between rounded-xl p-3 ${isOn ? 'bg-[#FDE047]' : 'bg-neutral-100 dark:bg-neutral-800'}`}
       onPress={handleToggle}
       activeOpacity={0.8}
     >
@@ -24,4 +28,3 @@ export function SwitchModalItem({ device, entity }: { device: TDevice; entity: T
     </TouchableOpacity>
   );
 }
-
