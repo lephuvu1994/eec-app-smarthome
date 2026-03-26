@@ -102,6 +102,41 @@
     "wifiPasswordPlaceholder": "Enter password",
     "wifiSsidPlaceholder": "Enter Wi-Fi SSID"
   },
+  "deviceDetail": {
+    "climate": {
+      "currentTemp": "Room temp",
+      "fanSpeed": "Fan Speed",
+      "fanSpeeds": {
+        "auto": "Auto",
+        "high": "High",
+        "low": "Low",
+        "medium": "Medium"
+      },
+      "mode": "Mode",
+      "modes": {
+        "auto": "Auto",
+        "cool": "Cool",
+        "dry": "Dry",
+        "fan": "Fan",
+        "heat": "Heat"
+      },
+      "targetTemp": "Target"
+    },
+    "light": {
+      "brightness": "Brightness"
+    },
+    "shutter": {
+      "changeBackground": "Change Background",
+      "close": "Close",
+      "open": "Open",
+      "position": "Position",
+      "stop": "Stop"
+    },
+    "switch": {
+      "turnOffAll": "Turn off all",
+      "turnOnAll": "Turn on all"
+    }
+  },
   "formAuth": {
     "accountAlreadyExists": "This account is already registered. Please sign in!",
     "accountNotFound": "Account does not exist in the system!",

@@ -9,7 +9,8 @@ import Animated from 'react-native-reanimated';
 import { PulseDot } from '@/components/base/PulseDot';
 import { Text, TouchableOpacity, View } from '@/components/ui';
 import { PowerIcon } from '@/components/ui/icons/power-icon';
-import { BASE_SPACE_HORIZONTAL, GAP_DEVICE_VIEW_MOBILE, GRID_VIEW_DEVICE_MOBILE } from '@/constants';
+import { BASE_SPACE_HORIZONTAL, GAP_DEVICE_VIEW_MOBILE } from '@/constants';
+import { ETypeViewDevice } from '@/types/device';
 
 export function DeviceGridCard({
   displayName,
@@ -24,9 +25,12 @@ export function DeviceGridCard({
   onToggle,
   onPressCard,
   onPressExpand,
+  viewType,
 }: TDeviceCardProps) {
   const layout = useWindowDimensions();
-  const cardWidth = (layout.width - BASE_SPACE_HORIZONTAL * 2 - GAP_DEVICE_VIEW_MOBILE) / GRID_VIEW_DEVICE_MOBILE;
+  
+  const columns = viewType === ETypeViewDevice.OneThirdWidth ? 3 : 2;
+  const cardWidth = (layout.width - BASE_SPACE_HORIZONTAL * 2 - GAP_DEVICE_VIEW_MOBILE * (columns - 1)) / columns;
 
   return (
     <TouchableOpacity
@@ -60,7 +64,7 @@ export function DeviceGridCard({
         </Text>
         <View className="flex-row items-center gap-1">
           {isOnline
-            ? <PulseDot color={config.accentColor} size={5} />
+            ? <PulseDot color="#A3EC3E" size={5} />
             : <View className="size-1.5 rounded-full bg-neutral-300 dark:bg-neutral-600" />}
           <Text className={isOnline ? 'text-xs font-medium text-[#A3EC3E]' : 'text-xs text-neutral-400'}>
             {statusLabel}

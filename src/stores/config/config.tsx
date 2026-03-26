@@ -9,11 +9,12 @@ const initialConfigState: TConfig = {
   showRoomViewExpand: true,
   allowHaptics: true,
   deviceViewMode: 'grouped',
+  shutterBackgrounds: {},
 };
 
 const _useConfig = create<TConfigState>()(
   persist(
-    set => ({
+    (set, get) => ({
       ...initialConfigState,
       setShowCameraPreview: (showCameraPreview: boolean) => {
         set({ showCameraPreview });
@@ -26,6 +27,14 @@ const _useConfig = create<TConfigState>()(
       },
       setDeviceViewMode: (deviceViewMode: 'grouped' | 'split') => {
         set({ deviceViewMode });
+      },
+      setShutterBackground: (deviceId: string, backgroundId: string) => {
+        set({
+          shutterBackgrounds: {
+            ...get().shutterBackgrounds,
+            [deviceId]: backgroundId,
+          },
+        });
       },
     }),
     {
