@@ -65,7 +65,6 @@ export type TDeviceEntity = {
   attributes: TEntityAttribute[];
 };
 
-
 export type TDevice = {
   id: string;
   name: string;
@@ -155,7 +154,7 @@ export const deviceService = {
 
   getDevices: async (params?: { homeId?: string; roomId?: string; page?: number; limit?: number }): Promise<TDeviceListResponse> => {
     const { data } = await client.get('/devices', { params });
-    return data.data;
+    return data;
   },
 
   getDeviceDetail: async (id: string): Promise<TDevice> => {

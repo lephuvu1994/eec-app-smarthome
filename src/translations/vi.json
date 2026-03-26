@@ -68,6 +68,7 @@
     "noDevice": "Không có thiết bị",
     "noDeviceSelected": "Chưa chọn thiết bị. Vui lòng quay lại và chọn thiết bị từ danh sách.",
     "noEntityControl": "Thiết bị chưa có tính năng điều khiển",
+    "noHomeSelected": "Chưa chọn nhà. Vui lòng chọn nhà trước khi thêm thiết bị.",
     "noRoom": "Chưa có phòng",
     "noSessionError": "Chưa thiết lập phiên kết nối. Vui lòng kết nối lại thiết bị.",
     "off": "Tắt",

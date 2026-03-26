@@ -10,6 +10,7 @@ import { EDeviceProtocol } from '@/lib/api/devices/device.service';
 import { bleService, CHIP_TX_CHAR_UUID } from '@/lib/ble';
 import { cryptoService } from '@/lib/crypto';
 import { translate } from '@/lib/i18n';
+import { useHomeStore } from '@/stores/home/home-store';
 import { BLE_ACK_TIMEOUT } from '../constants';
 import { tcpClient } from '../lib/tcp-client';
 import { EAddDeviceStep, EPairingMode } from '../types';
@@ -28,6 +29,7 @@ export function useAddDevice() {
 
   const rotation = useSharedValue(0);
   const { mutateAsync: registerDevice, isPending: isRegistering } = useRegisterDevice();
+  const selectedHomeId = useHomeStore.use.selectedHomeId();
 
   // Track connected device ID for cleanup
   const connectedDeviceIdRef = useRef<string | null>(null);
@@ -288,13 +290,20 @@ export function useAddDevice() {
         return;
       }
 
-      // Step 1: Register device on server
+      if (!selectedHomeId) {
+        showErrorMessage(translate('base.noHomeSelected'));
+        setStep(EAddDeviceStep.SETUP);
+        return;
+      }
+
+      // Step 1: Register device on server (auto-assign active home)
       const response = await registerDevice({
         protocol: EDeviceProtocol.MQTT,
         identifier: macAddress,
         deviceCode,
         partnerCode,
         name: deviceName || device?.name || 'Device',
+        homeId: selectedHomeId,
       });
 
       const serverResponse = response.data;

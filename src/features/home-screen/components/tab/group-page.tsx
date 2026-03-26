@@ -2,7 +2,7 @@ import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import type { ETheme } from '@/types/base';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView, Text, View, WIDTH } from '@/components/ui';
-import { ListDevice } from '@/features/devices/components/ListDevice';
+import { ListDevice } from '@/features/devices/components/device-list';
 import { useSmartTabBarHeight } from '@/hooks/use-smart-tabbar-height';
 import { translate } from '@/lib/i18n';
 import { useConfigManager } from '@/stores/config/config';

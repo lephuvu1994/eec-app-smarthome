@@ -100,9 +100,9 @@ function RootRender() {
               const syncPromise = Promise.allSettled([
                 authPromise,
                 useHomeDataStore.getState().syncFromAPI(homeId),
-                deviceService.getDevices({ homeId, limit: 50 }).then((res: any) =>
-                  useDeviceStore.getState().setDevices(res.data),
-                ),
+                deviceService.getDevices({ homeId, limit: 50 }).then((res: any) => {
+                  useDeviceStore.getState().setDevices(res.data);
+                }),
               ]);
 
               // Race Condition: Tối đa cho cục API fetch là 2000ms. Dù xong hay không cũng thả qua màn hình Home.
