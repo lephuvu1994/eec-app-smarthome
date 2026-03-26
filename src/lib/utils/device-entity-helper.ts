@@ -1,5 +1,7 @@
 import type { TDevice, TDeviceEntity } from '../api/devices/device.service';
 
+import { EEntityDomain } from '../api/devices/device.service';
+
 /**
  * Determines if a given entity acts as a primary control point
  * (e.g., a power toggle, a switch, a lock)
@@ -10,17 +12,17 @@ import type { TDevice, TDeviceEntity } from '../api/devices/device.service';
 export function isPrimaryEntity(entity: TDeviceEntity): boolean {
   const { domain } = entity;
 
-  if (domain === 'switch_' || domain === 'button' || domain === 'lock' || domain === 'curtain') {
+  if (domain === EEntityDomain.SWITCH || domain === EEntityDomain.BUTTON || domain === EEntityDomain.LOCK || domain === EEntityDomain.CURTAIN) {
     return true;
   }
 
   // light with on/off capability is primary
-  if (domain === 'light') {
+  if (domain === EEntityDomain.LIGHT) {
     return true;
   }
 
   // climate main entity is primary
-  if (domain === 'climate') {
+  if (domain === EEntityDomain.CLIMATE) {
     return true;
   }
 
@@ -80,9 +82,5 @@ export function getDependentAttributes(device: TDevice, entityId: string): TDevi
 }
 
 // ─── Backward compat aliases ─────────────────────────────────
-/** @deprecated Use isPrimaryEntity */
-export const isPrimaryEntity = isPrimaryEntity;
-/** @deprecated Use getPrimaryEntities */
-export const getPrimaryEntities = getPrimaryEntities;
 /** @deprecated Use getDependentAttributes */
 export const getDependentFeatures = getDependentAttributes;

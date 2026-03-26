@@ -22,6 +22,17 @@ export enum EOwnership {
   SHARED = 'SHARED',
 }
 
+export enum EEntityDomain {
+  LIGHT = 'light',
+  SWITCH = 'switch_',
+  SENSOR = 'sensor',
+  CAMERA = 'camera',
+  LOCK = 'lock',
+  CURTAIN = 'curtain',
+  CLIMATE = 'climate',
+  BUTTON = 'button',
+}
+
 // ============================================================
 // TYPES
 // ============================================================
@@ -44,7 +55,7 @@ export type TDeviceEntity = {
   id: string;
   code: string;
   name: string;
-  domain: string; // EntityDomain: light, switch_, sensor, climate...
+  domain: EEntityDomain | string; // EntityDomain enum or custom string
   state?: number | null;
   stateText?: string | null;
   currentState?: any;
