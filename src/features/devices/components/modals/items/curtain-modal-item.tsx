@@ -14,7 +14,8 @@ export function CurtainModalItem({ device, entity }: { device: TDevice; entity: 
         <Text className="text-lg font-semibold text-neutral-900 dark:text-white">
           {entity.name || entity.code}
         </Text>
-        <Text className="text-sm font-bold text-[#A3E635]">{position}%</Text>
+        <Text className="text-sm font-bold text-[#A3E635]">
+{position}%</Text>
       </View>
       <View className="flex-row items-center justify-between px-4">
         <TouchableOpacity 
