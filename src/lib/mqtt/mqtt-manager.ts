@@ -6,7 +6,13 @@ import type { AppStateStatus } from 'react-native';
 import mqtt from 'mqtt/dist/mqtt';
 import { AppState } from 'react-native';
 
-import { deviceService } from '@/lib/api/devices/device.service';
+// ── Inline type so we don't import deviceService (avoids require cycle) ──
+export type TMqttCredentials = {
+  url: string;
+  username: string;
+  password: string;
+  clientId: string;
+};
 
 // ============================================================
 // TYPES
@@ -57,7 +63,9 @@ export class MqttManager {
 
   private status: EMqttStatus = EMqttStatus.DISCONNECTED;
   private isAppActive = true;
-  private lastAccessToken = '';
+
+  // Stored fetcher so reconnect from background can re-use it
+  private credentialsFetcher: (() => Promise<TMqttCredentials>) | null = null;
 
   // token → deviceId mapping for incoming messages
   private tokenToDeviceId = new Map<string, string>();
@@ -90,24 +98,31 @@ export class MqttManager {
     this.isAppActive = nextAppState === 'active';
 
     if (this.isAppActive && !wasActive) {
-      // Returning from background
-      if (!this.isConnected() && this.lastAccessToken) {
-        this.connect(this.lastAccessToken);
+      // Returning from background — reconnect with stored fetcher
+      if (!this.isConnected() && this.credentialsFetcher) {
+        this.connect(this.credentialsFetcher);
       }
     }
   }
 
   // ─── Connect ───────────────────────────────────────
-  async connect(accessToken: string): Promise<void> {
+  /**
+   * Connect to MQTT broker.
+   * @param credentialsFetcher - Async function that returns MQTT credentials.
+   *   Passed from outside so mqtt-manager doesn't import deviceService directly
+   *   (avoids the user-store → mqtt-manager → deviceService → client → user-store cycle).
+   */
+  async connect(credentialsFetcher: () => Promise<TMqttCredentials>): Promise<void> {
     if (this.client?.connected) {
       return;
     }
 
-    this.lastAccessToken = accessToken;
+    // Store fetcher for background reconnect
+    this.credentialsFetcher = credentialsFetcher;
     this.status = EMqttStatus.CONNECTING;
 
     try {
-      const credentials = await deviceService.getMqttCredentials();
+      const credentials = await credentialsFetcher();
 
       this.client = mqtt.connect(credentials.url, {
         username: credentials.username,
