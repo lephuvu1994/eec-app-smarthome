@@ -46,7 +46,7 @@ export function ShutterBackgroundModal({ modalRef, deviceId }: ShutterBackground
                   contentFit="cover"
                 />
                 {isSelected && (
-                  <View className="absolute bottom-2 right-2 h-6 w-6 items-center justify-center rounded-full bg-[#A3E635]">
+                  <View className="absolute right-2 bottom-2 h-6 w-6 items-center justify-center rounded-full bg-[#A3E635]">
                     <Text className="text-sm font-bold text-[#1B1B1B]">✓</Text>
                   </View>
                 )}

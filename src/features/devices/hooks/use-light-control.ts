@@ -11,7 +11,7 @@ export function useLightControl(device: TDevice, entity: TDeviceEntity) {
   const allowHaptics = useConfigManager(state => state.allowHaptics);
   const serverIsOn = entity?.currentState === 1 || entity?.state === 1;
   const serverBrightness = entity?.attributes?.find(attr => attr.key === 'brightness')?.currentValue || 100;
-  
+
   const [isOn, setIsOn] = useState(serverIsOn);
   const [brightness, setBrightness] = useState<number>(Number(serverBrightness));
   const [isLoading, setIsLoading] = useState(false);
@@ -27,27 +27,30 @@ export function useLightControl(device: TDevice, entity: TDeviceEntity) {
   }, [entity?.code]));
 
   const handleToggle = async () => {
-    if (isLoading) return;
+    if (isLoading)
+      return;
     const nextState = !isOn;
-    
+
     if (allowHaptics) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
-    
+
     setIsOn(nextState);
     setIsLoading(true);
-    
+
     try {
       if (entity.code) {
         await deviceService.setEntityValue(device.token, entity.code, nextState ? 1 : 0);
       }
-    } catch (e) {
+    }
+    catch (e) {
       console.log('Failed to toggle light entity:', e);
       setIsOn(!nextState);
       if (allowHaptics) {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       }
-    } finally {
+    }
+    finally {
       setIsLoading(false);
     }
   };
@@ -60,14 +63,14 @@ export function useLightControl(device: TDevice, entity: TDeviceEntity) {
       if (!isOn && value > 0) {
         setIsOn(true);
       }
-      
-      // We would need a specific API for brightness or send it as attribute. 
+
+      // We would need a specific API for brightness or send it as attribute.
       // For Tuya/HomeAssistant it's usually setting the value of a brightness entity or passing attributes to the main entity.
       // E.g: deviceService.setEntityValue(device.token, entity.code, value, { brightness: value });
       // Stub for now based on standard implementation:
       console.log(`Setting brightness to ${value} for ${entity.code}`);
-      
-    } catch (e) {
+    }
+    catch (e) {
       console.log('Failed to set brightness:', e);
     }
   };

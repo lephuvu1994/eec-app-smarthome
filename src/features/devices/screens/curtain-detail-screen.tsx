@@ -26,10 +26,10 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
   const device = Array.isArray(devices) ? devices.find(d => d.id === deviceId) : undefined;
 
   // Custom Hook Logic
-  const primaryEntity = entityId 
+  const primaryEntity = entityId
     ? device?.entities.find(e => e.id === entityId)
     : device ? getPrimaryEntities(device)[0] : undefined;
-    
+
   const { position, isControlling, handleOpen, handleClose, handleStop } = useShutterControl(device, primaryEntity);
 
   // Background State

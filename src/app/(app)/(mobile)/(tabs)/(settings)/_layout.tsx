@@ -23,7 +23,7 @@ function SettingScreen() {
           title: '',
           headerTitleAlign: 'center',
           headerRight: () => (
-            <View 
+            <View
               className="flex-row items-center gap-5 px-1"
               style={{ marginTop: Platform.OS === 'android' ? insets.top : 0 }}
             >

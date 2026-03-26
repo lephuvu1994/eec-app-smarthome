@@ -11,7 +11,7 @@ export function LightModalItem({ device, entity }: { device: TDevice; entity: TD
   // Todo: Implement mini Slider for brightness inside this modal block if needed.
   // For the V1 of the expand modal, we typically show a standard toggle that matches the switch block,
   // letting the detail screen handle complex brightness.
-  
+
   return (
     <TouchableOpacity
       className={`h-24 w-[48%] justify-between rounded-xl p-3 ${isOn ? 'bg-[#FDE047]' : 'bg-neutral-100 dark:bg-neutral-800'}`}

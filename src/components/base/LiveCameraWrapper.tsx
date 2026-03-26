@@ -34,37 +34,42 @@ export const LiveCameraWrapper = React.memo(({ videoUrl, imageUrl, defaultImage,
       {!isReadyToPlay && (
         <TouchableOpacity
           activeOpacity={0.8}
-          className="relative size-full items-center justify-center aspect-video"
+          className="relative aspect-video size-full items-center justify-center"
           onPress={() => {
-            if (videoUrl) setIsReadyToPlay(true);
+            if (videoUrl)
+              setIsReadyToPlay(true);
           }}
         >
-          {imageUrl ? (
-            <Image
-              className="absolute inset-0 size-full rounded-t-xl"
-              style={{ width: '100%', aspectRatio: 16 / 9 }}
-              contentFit="cover"
-              source={{ uri: imageUrl }}
-            />
-          ) : defaultImage ? (
-            <Image
-              className="absolute inset-0 size-full rounded-t-xl"
-              style={{ width: '100%', aspectRatio: 16 / 9 }}
-              contentFit="cover"
-              source={{ uri: defaultImage }}
-              cachePolicy="memory-disk"
-              transition={500}
-            />
-          ) : (
-            <Image
-              className="absolute inset-0 size-full rounded-t-xl"
-              style={{ width: '100%', aspectRatio: 16 / 9 }}
-              contentFit="cover"
-              source={require('@@/assets/room/default_camera.webp')}
-              cachePolicy="memory-disk"
-              transition={500}
-            />
-          )}
+          {imageUrl
+            ? (
+                <Image
+                  className="absolute inset-0 size-full rounded-t-xl"
+                  style={{ width: '100%', aspectRatio: 16 / 9 }}
+                  contentFit="cover"
+                  source={{ uri: imageUrl }}
+                />
+              )
+            : defaultImage
+              ? (
+                  <Image
+                    className="absolute inset-0 size-full rounded-t-xl"
+                    style={{ width: '100%', aspectRatio: 16 / 9 }}
+                    contentFit="cover"
+                    source={{ uri: defaultImage }}
+                    cachePolicy="memory-disk"
+                    transition={500}
+                  />
+                )
+              : (
+                  <Image
+                    className="absolute inset-0 size-full rounded-t-xl"
+                    style={{ width: '100%', aspectRatio: 16 / 9 }}
+                    contentFit="cover"
+                    source={require('@@/assets/room/default_camera.webp')}
+                    cachePolicy="memory-disk"
+                    transition={500}
+                  />
+                )}
 
           {/* Semi-transparent overlay and Play Button */}
           <View className="absolute inset-0 bg-black/30" />
@@ -96,15 +101,15 @@ export const LiveCameraWrapper = React.memo(({ videoUrl, imageUrl, defaultImage,
             setIsFailedRTS={setIsFailedRTS}
             handleError={handleError}
           />
-          
+
           <View className="absolute top-2 right-2 flex-row items-center rounded-full bg-white/10 px-2 py-1 dark:bg-black/10">
             <PulseDot color="red" size={8} duration={600} maxScale={2} style={{ marginRight: 4 }} />
             <Text className="text-xs font-bold text-white">LIVE</Text>
           </View>
 
           {/* Timeline Placeholder Button */}
-          <TouchableOpacity 
-            className="absolute bottom-2 right-2 items-center justify-center rounded-full bg-black/50 p-2"
+          <TouchableOpacity
+            className="absolute right-2 bottom-2 items-center justify-center rounded-full bg-black/50 p-2"
             onPress={() => console.log('Timeline slider opened')}
           >
             <MaterialCommunityIcons name="history" size={20} color="white" />

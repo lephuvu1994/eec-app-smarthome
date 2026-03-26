@@ -18,7 +18,9 @@
       "env": {
         "EXPO_PUBLIC_APP_ENV": "production",
         "EXPO_PUBLIC_API_URL": "https://aurathink.ddns.net",
-        "EXPO_PUBLIC_WEBSOCKET_URL": "wss://aurathink.ddns.net"
+        "EXPO_PUBLIC_WEBSOCKET_URL": "wss://aurathink.ddns.net",
+        "COREPACK_ENABLE_STRICT": "0",
+        "YARN_ENABLE_GLOBAL_CACHE": "false"
       }
     },
     "preview": {
@@ -36,7 +38,9 @@
       "env": {
         "EXPO_PUBLIC_APP_ENV": "preview",
         "EXPO_PUBLIC_API_URL": "https://aurathink.ddns.net",
-        "EXPO_PUBLIC_WEBSOCKET_URL": "wss://aurathink.ddns.net"
+        "EXPO_PUBLIC_WEBSOCKET_URL": "wss://aurathink.ddns.net",
+        "COREPACK_ENABLE_STRICT": "0",
+        "YARN_ENABLE_GLOBAL_CACHE": "false"
       }
     },
     "development": {

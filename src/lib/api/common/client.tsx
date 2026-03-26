@@ -36,6 +36,34 @@ function setupAuthInterceptor(instance: AxiosInstance) {
     error => Promise.reject(error),
   );
 
+  // DEV-only: log all requests/responses (Network tab disabled in RN DevTools 0.83)
+  if (__DEV__) {
+    instance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+      console.log(
+        `➡️  [API] ${config.method?.toUpperCase()} ${config.url}`,
+        config.data ? config.data : '',
+      );
+      return config;
+    });
+
+    instance.interceptors.response.use(
+      (response) => {
+        console.log(
+          `✅ [API] ${response.config.method?.toUpperCase()} ${response.config.url} → ${response.status}`,
+          response.data,
+        );
+        return response;
+      },
+      (error) => {
+        console.warn(
+          `❌ [API] ${error?.config?.method?.toUpperCase()} ${error?.config?.url} → ${error?.response?.status}`,
+          error?.response?.data ?? error?.message,
+        );
+        return Promise.reject(error);
+      },
+    );
+  }
+
   instance.interceptors.response.use(
     response => response,
     async (error) => {

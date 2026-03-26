@@ -15,28 +15,30 @@ export function CurtainModalItem({ device, entity }: { device: TDevice; entity: 
           {entity.name || entity.code}
         </Text>
         <Text className="text-sm font-bold text-[#A3E635]">
-{position}%</Text>
+          {position}
+          %
+        </Text>
       </View>
       <View className="flex-row items-center justify-between px-4">
-        <TouchableOpacity 
-          onPress={handleClose} 
-          disabled={isControlling} 
+        <TouchableOpacity
+          onPress={handleClose}
+          disabled={isControlling}
           className="flex h-14 w-14 items-center justify-center rounded-full bg-white shadow-sm dark:bg-neutral-700"
         >
           <FontAwesome6 name="chevron-down" size={20} color={isControlling ? 'gray' : '#1B1B1B'} />
         </TouchableOpacity>
-        
-        <TouchableOpacity 
-          onPress={handleStop} 
-          disabled={isControlling} 
+
+        <TouchableOpacity
+          onPress={handleStop}
+          disabled={isControlling}
           className="flex h-16 w-16 items-center justify-center rounded-full bg-[#A3E635] shadow-md"
         >
           <FontAwesome6 name="pause" size={20} color="#1B1B1B" />
         </TouchableOpacity>
-        
-        <TouchableOpacity 
-          onPress={handleOpen} 
-          disabled={isControlling} 
+
+        <TouchableOpacity
+          onPress={handleOpen}
+          disabled={isControlling}
           className="flex h-14 w-14 items-center justify-center rounded-full bg-white shadow-sm dark:bg-neutral-700"
         >
           <FontAwesome6 name="chevron-up" size={20} color={isControlling ? 'gray' : '#1B1B1B'} />

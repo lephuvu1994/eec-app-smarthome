@@ -36,7 +36,7 @@ export function useShutterControl(device: TDevice | undefined, primaryEntity: TD
     if (allowHaptics) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
-    
+
     setIsControlling(true);
 
     try {
