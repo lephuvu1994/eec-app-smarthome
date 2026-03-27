@@ -34,8 +34,7 @@ export function DeviceFullCard({
 
   return (
     <TouchableOpacity
-      onPress={isOnline ? onPressCard : undefined}
-      disabled={!isOnline}
+      onPress={onPressCard}
       className={`h-36 w-full justify-between overflow-hidden rounded-xl border p-3 ${
         isOnline
           ? 'border-white bg-white shadow-sm dark:border-[#292929] dark:bg-[#FFFFFF0D]'
@@ -104,8 +103,7 @@ export function DeviceFullCard({
 
       {showExpandIcon && (
         <TouchableOpacity
-          onPress={isOnline ? onPressExpand : undefined}
-          disabled={!isOnline}
+          onPress={onPressExpand}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           className="absolute right-2 bottom-2 size-7 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800"
         >
