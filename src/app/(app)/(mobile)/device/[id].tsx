@@ -1,5 +1,4 @@
 import { useLocalSearchParams } from 'expo-router';
-import { BaseLayout } from '@/components/layout/BaseLayout';
 import { ClimateDetailScreen } from '@/features/devices/screens/climate-detail-screen';
 import { CurtainDetailScreen } from '@/features/devices/screens/curtain-detail-screen';
 
