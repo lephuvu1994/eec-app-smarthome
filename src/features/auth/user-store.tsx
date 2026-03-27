@@ -78,6 +78,12 @@ const _useGetUser = create<UserState>()(
             ...currentState,
             status: EAuthStatus.signIn,
           });
+
+          // Connect MQTT on app load for already authenticated users
+          MqttManager.getInstance().connect(
+            () => import('@/lib/api/devices/device.service')
+              .then(m => m.deviceService.getMqttCredentials()),
+          );
         }
         catch {
           set({ status: EAuthStatus.signIn });

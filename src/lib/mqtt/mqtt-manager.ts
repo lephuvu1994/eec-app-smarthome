@@ -1,9 +1,7 @@
 import type { MqttClient } from 'mqtt';
 import type { AppStateStatus } from 'react-native';
 
-// eslint-disable-next-line ts/ban-ts-comment
-// @ts-expect-error
-import mqtt from 'mqtt/dist/mqtt';
+import * as mqtt from 'mqtt';
 import { AppState } from 'react-native';
 
 // ── Inline type so we don't import deviceService (avoids require cycle) ──
@@ -124,7 +122,13 @@ export class MqttManager {
     try {
       const credentials = await credentialsFetcher();
 
-      this.client = mqtt.connect(credentials.url, {
+      // Metro/Babel CommonJS/ESM Interop Fallback
+      const mqttConnect = mqtt.connect || (mqtt as any).default?.connect || (mqtt as any).default;
+      if (typeof mqttConnect !== 'function') {
+        throw new TypeError('MQTT library failed to load connect function');
+      }
+
+      this.client = mqttConnect(credentials.url, {
         username: credentials.username,
         password: credentials.password,
         clientId: credentials.clientId,

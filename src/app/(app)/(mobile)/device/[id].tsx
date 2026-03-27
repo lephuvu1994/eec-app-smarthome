@@ -1,10 +1,11 @@
 import { useLocalSearchParams } from 'expo-router';
+import { BaseLayout } from '@/components/layout/BaseLayout';
 import { ClimateDetailScreen } from '@/features/devices/screens/climate-detail-screen';
 import { CurtainDetailScreen } from '@/features/devices/screens/curtain-detail-screen';
+
 import { FallbackDeviceScreen } from '@/features/devices/screens/fallback-device-screen';
 import { LightDetailScreen } from '@/features/devices/screens/light-detail-screen';
 import { SwitchDetailScreen } from '@/features/devices/screens/switch-detail-screen';
-
 import { EEntityDomain } from '@/lib/api/devices/device.service';
 import { getPrimaryEntities } from '@/lib/utils/device-entity-helper';
 import { useDeviceStore } from '@/stores/device/device-store';
@@ -43,5 +44,5 @@ export default function DeviceDetailRoute() {
           message={`Giao diện chi tiết cho thiết bị loại "${domain}" chưa được hỗ trợ.`}
         />
       );
-  }
+  };
 }
