@@ -11,21 +11,21 @@ import { useUniwind } from 'uniwind';
 
 import { ScrollView, Text, TouchableOpacity, View } from '@/components/ui';
 import { useHomeDevices } from '@/hooks/use-devices';
-import { useAssignFeaturesToRoom } from '@/hooks/use-homes';
+import { useAssignEntitiesToRoom } from '@/hooks/use-homes';
 import { translate } from '@/lib/i18n';
 import { getPrimaryEntities } from '@/lib/utils/device-entity-helper';
 import { useHomeStore } from '@/stores/home/home-store';
 import { ETheme } from '@/types/base';
 
-// ─── Feature Row ─────────────────────────────
-function FeatureRow({
-  feature,
+// ─── Entity Row ─────────────────────────────
+function EntityRow({
+  entity,
   deviceName,
   isOnline,
   action,
   onPress,
 }: {
-  feature: TDeviceEntity;
+  entity: TDeviceEntity;
   deviceName: string;
   isOnline: boolean;
   action: 'add' | 'remove';
@@ -54,7 +54,7 @@ function FeatureRow({
             {deviceName}
             {' '}
             -
-            {feature.name || feature.code}
+            {entity.name || entity.code}
           </Text>
           <Text
             className={`mt-0.5 text-xs ${
@@ -95,11 +95,11 @@ export function AssignRoomEntitiesScreen() {
 
   const selectedHomeId = useHomeStore(s => s.selectedHomeId);
   const { data: devicesRes, isLoading: isDevicesLoading } = useHomeDevices(selectedHomeId ?? '');
-  const assignFeatures = useAssignFeaturesToRoom();
+  const assignEntities = useAssignEntitiesToRoom();
   const devicesMemo = useMemo(() => devicesRes?.data ?? [], [devicesRes?.data]);
 
   // Flatten ONLY the Primary logical entities across all devices for clean UI
-  const allFeatures = useMemo(() => {
+  const allEntities = useMemo(() => {
     return devicesMemo.flatMap(d =>
       getPrimaryEntities(d).map(f => ({
         ...f,
@@ -112,53 +112,53 @@ export function AssignRoomEntitiesScreen() {
   }, [devicesMemo]);
 
   // Original UI IDs belonging to this room
-  const originalFeatureIds = useMemo(
-    () => new Set(allFeatures.filter(f => f.deviceRoomId === roomId).map(f => f.id)),
-    [allFeatures, roomId],
+  const originalEntityIds = useMemo(
+    () => new Set(allEntities.filter(f => f.deviceRoomId === roomId).map(f => f.id)),
+    [allEntities, roomId],
   );
 
-  // Local state: IDs of features currently assigned (uncommitted)
+  // Local state: IDs of entities currently assigned (uncommitted)
   const [localAssignedIds, setLocalAssignedIds] = useState<Set<string>>(() => new Set());
 
   // Sync initially when fetched
   useEffect(() => {
-    if (originalFeatureIds.size > 0 && localAssignedIds.size === 0) {
+    if (originalEntityIds.size > 0 && localAssignedIds.size === 0) {
       queueMicrotask(() => {
-        setLocalAssignedIds(() => new Set(originalFeatureIds));
+        setLocalAssignedIds(() => new Set(originalEntityIds));
       });
     }
-  }, [originalFeatureIds, localAssignedIds.size]);
+  }, [originalEntityIds, localAssignedIds.size]);
 
   // Has unsaved changes?
   const hasChanges = useMemo(() => {
-    if (localAssignedIds.size !== originalFeatureIds.size)
+    if (localAssignedIds.size !== originalEntityIds.size)
       return true;
     for (const id of localAssignedIds) {
-      if (!originalFeatureIds.has(id))
+      if (!originalEntityIds.has(id))
         return true;
     }
     return false;
-  }, [localAssignedIds, originalFeatureIds]);
+  }, [localAssignedIds, originalEntityIds]);
 
   const [isSaving, setIsSaving] = useState(false);
 
   // Compute lists
-  const assignedFeatures = useMemo(() => {
-    return allFeatures.filter(f => localAssignedIds.has(f.id));
-  }, [allFeatures, localAssignedIds]);
+  const assignedEntities = useMemo(() => {
+    return allEntities.filter(f => localAssignedIds.has(f.id));
+  }, [allEntities, localAssignedIds]);
 
-  const availableFeatures = useMemo(() => {
-    return allFeatures.filter(f => !localAssignedIds.has(f.id));
-  }, [allFeatures, localAssignedIds]);
+  const availableEntities = useMemo(() => {
+    return allEntities.filter(f => !localAssignedIds.has(f.id));
+  }, [allEntities, localAssignedIds]);
 
-  const handleAdd = useCallback((featureId: string) => {
-    setLocalAssignedIds(prev => new Set([...prev, featureId]));
+  const handleAdd = useCallback((entityId: string) => {
+    setLocalAssignedIds(prev => new Set([...prev, entityId]));
   }, []);
 
-  const handleRemove = useCallback((featureId: string) => {
+  const handleRemove = useCallback((entityId: string) => {
     setLocalAssignedIds((prev) => {
       const next = new Set(prev);
-      next.delete(featureId);
+      next.delete(entityId);
       return next;
     });
   }, []);
@@ -170,10 +170,10 @@ export function AssignRoomEntitiesScreen() {
 
     // Expand localAssignedIds to encompass Dependent Modifiers (e.g. Brightness)
     // guaranteeing the BE replaces all required sub-endpoints safely
-    const payloadFeatureIds = new Set<string>();
+    const payloadEntityIds = new Set<string>();
 
     Array.from(localAssignedIds).forEach((primaryId) => {
-      payloadFeatureIds.add(primaryId);
+      payloadEntityIds.add(primaryId);
 
       const parentDevice = devicesMemo.find(d => d.entities?.some(e => e.id === primaryId));
       if (parentDevice) {
@@ -183,11 +183,11 @@ export function AssignRoomEntitiesScreen() {
 
     try {
       await new Promise((resolve, reject) => {
-        assignFeatures.mutate(
+        assignEntities.mutate(
           {
             roomId,
             body: {
-              featureIds: Array.from(payloadFeatureIds),
+              entityIds: Array.from(payloadEntityIds),
             },
           },
           { onSuccess: resolve, onError: reject },
@@ -202,7 +202,7 @@ export function AssignRoomEntitiesScreen() {
     finally {
       setIsSaving(false);
     }
-  }, [hasChanges, isSaving, localAssignedIds, roomId, assignFeatures, devicesMemo, navigation]);
+  }, [hasChanges, isSaving, localAssignedIds, roomId, assignEntities, devicesMemo, navigation]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -250,7 +250,7 @@ export function AssignRoomEntitiesScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: insets.bottom + 24, paddingTop: headerHeight + 16 }}
       >
-        {/* ─── Assigned Features ─── */}
+        {/* ─── Assigned Entities ─── */}
         <View className="mx-4 mb-5">
           <View className="mb-2 flex-row items-center gap-2 px-1">
             <MaterialCommunityIcons
@@ -260,7 +260,7 @@ export function AssignRoomEntitiesScreen() {
             />
             <Text className="text-[13px] font-semibold tracking-wider text-emerald-600 uppercase dark:text-emerald-400">
               Đã gán vào phòng (
-              {assignedFeatures.length}
+              {assignedEntities.length}
               )
             </Text>
           </View>
@@ -269,23 +269,23 @@ export function AssignRoomEntitiesScreen() {
             className="overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-neutral-800"
             layout={LinearTransition}
           >
-            {assignedFeatures.length > 0
+            {assignedEntities.length > 0
               ? (
-                  assignedFeatures.map((f, idx) => (
+                  assignedEntities.map((f, idx) => (
                     <Animated.View
                       key={f.id}
                       layout={LinearTransition}
                       entering={FadeIn}
                       exiting={FadeOut}
                     >
-                      <FeatureRow
-                        feature={f}
+                      <EntityRow
+                        entity={f}
                         deviceName={f.deviceName}
                         isOnline={f.isOnline}
                         action="remove"
                         onPress={() => handleRemove(f.id)}
                       />
-                      {idx < assignedFeatures.length - 1 && (
+                      {idx < assignedEntities.length - 1 && (
                         <View className="ml-[64px] h-px bg-neutral-100 dark:bg-neutral-700" />
                       )}
                     </Animated.View>
@@ -300,7 +300,7 @@ export function AssignRoomEntitiesScreen() {
           </Animated.View>
         </View>
 
-        {/* ─── Available Features ─── */}
+        {/* ─── Available Entities ─── */}
         <View className="mx-4">
           <View className="mb-2 flex-row items-center gap-2 px-1">
             <MaterialCommunityIcons
@@ -310,7 +310,7 @@ export function AssignRoomEntitiesScreen() {
             />
             <Text className="text-[13px] font-semibold tracking-wider text-indigo-600 uppercase dark:text-indigo-400">
               Có thể gán (
-              {availableFeatures.length}
+              {availableEntities.length}
               )
             </Text>
           </View>
@@ -319,23 +319,23 @@ export function AssignRoomEntitiesScreen() {
             className="overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-neutral-800"
             layout={LinearTransition}
           >
-            {availableFeatures.length > 0
+            {availableEntities.length > 0
               ? (
-                  availableFeatures.map((f, idx) => (
+                  availableEntities.map((f, idx) => (
                     <Animated.View
                       key={f.id}
                       layout={LinearTransition}
                       entering={FadeIn}
                       exiting={FadeOut}
                     >
-                      <FeatureRow
-                        feature={f}
+                      <EntityRow
+                        entity={f}
                         deviceName={f.deviceName}
                         isOnline={f.isOnline}
                         action="add"
                         onPress={() => handleAdd(f.id)}
                       />
-                      {idx < availableFeatures.length - 1 && (
+                      {idx < availableEntities.length - 1 && (
                         <View className="ml-[64px] h-px bg-neutral-100 dark:bg-neutral-700" />
                       )}
                     </Animated.View>
