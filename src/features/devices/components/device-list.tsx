@@ -9,7 +9,6 @@ import { useConfigManager } from '@/stores/config/config';
 import { useDeviceStore } from '@/stores/device/device-store';
 import { ETypeViewDevice } from '@/types/device';
 import { DeviceItem } from './device-item';
-import { MOCK_DEVICES } from './mockData';
 
 type TListDeviceProps = {
   roomId?: string;
@@ -29,24 +28,20 @@ export function ListDevice({ roomId, isFavorite }: TListDeviceProps) {
     ? allDevices
     : allDevices.filter(d => d.room?.id === roomId);
 
-  // TODO: Remove mock devices after App Store approval
-  // Merge mock devices when no real devices exist
-  const devices = realDevices.length > 0 ? realDevices : MOCK_DEVICES;
-
   // Unpack or group them according to preferences
   const displayItems = useMemo<{ device: TDevice; entity?: TDeviceEntity }[]>(() => {
     if (deviceViewMode === 'grouped') {
-      return devices.map(d => ({ device: d, entity: undefined }));
+      return realDevices.map(d => ({ device: d, entity: undefined }));
     }
 
-    return devices.flatMap((device) => {
+    return realDevices.flatMap((device) => {
       const primaries = getPrimaryEntities(device);
       if (primaries.length <= 1) {
         return [{ device, entity: undefined }] as { device: TDevice; entity?: TDeviceEntity }[];
       }
       return primaries.map(entity => ({ device, entity })) as { device: TDevice; entity?: TDeviceEntity }[];
     });
-  }, [devices, deviceViewMode]);
+  }, [realDevices, deviceViewMode]);
 
   if (isLoading) {
     return (
