@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { act } from '@testing-library/react-native';
 
 import { cleanup, screen, setup, waitFor } from '@/lib/test-utils';
 import { LoginForm, type TLoginFormProps } from './login-form';
@@ -88,7 +89,9 @@ describe('LoginForm', () => {
     const passwordInput = screen.getByTestId('password-input');
 
     await user.type(emailInput, 'yyyyy');
-    emailInput.props.onBlur(); // Manually trigger blur to set touched state
+    act(() => {
+      emailInput.props.onBlur(); // Manually trigger blur to set touched state
+    });
     await user.type(passwordInput, 'test123');
     await user.press(button);
 

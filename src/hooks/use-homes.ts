@@ -1,5 +1,5 @@
 import type {
-  TAssignFeaturesBody,
+  TAssignEntitiesBody,
   TAssignRoomsBody,
   TAssignScenesBody,
   TCreateFloorBody,
@@ -165,10 +165,10 @@ export function useDeleteRoom() {
   });
 }
 
-export function useAssignFeaturesToRoom() {
+export function useAssignEntitiesToRoom() {
   return useMutation({
-    mutationFn: ({ roomId, body }: { roomId: string; body: TAssignFeaturesBody }) =>
-      homeService.assignFeaturesToRoom(roomId, body),
+    mutationFn: ({ roomId, body }: { roomId: string; body: TAssignEntitiesBody }) =>
+      homeService.assignEntitiesToRoom(roomId, body),
     onSuccess: (room) => {
       useHomeDataStore.getState().updateRoom(room.id, room);
       showSuccessMessage(translate('roomManagement.featuresAssigned'));
