@@ -69,7 +69,7 @@ describe('MqttManager', () => {
   // ═══════════════════════════════════════════════════
   describe('connect', () => {
     it('should fetch credentials and connect via mqtt.connect', async () => {
-      await manager.connect('fake-access-token');
+      await manager.connect(mockGetMqttCredentials);
 
       expect(mockGetMqttCredentials).toHaveBeenCalledTimes(1);
       expect(mockConnect).toHaveBeenCalledWith(MOCK_CREDENTIALS.url, {
@@ -83,8 +83,8 @@ describe('MqttManager', () => {
     });
 
     it('should not connect if already connected', async () => {
-      await manager.connect('token-1');
-      await manager.connect('token-2');
+      await manager.connect(mockGetMqttCredentials);
+      await manager.connect(mockGetMqttCredentials);
 
       expect(mockGetMqttCredentials).toHaveBeenCalledTimes(1);
     });
@@ -92,7 +92,7 @@ describe('MqttManager', () => {
     it('should handle credential fetch failure gracefully', async () => {
       mockGetMqttCredentials.mockRejectedValue(new Error('Network error'));
 
-      await manager.connect('token');
+      await manager.connect(mockGetMqttCredentials);
 
       expect(mockConnect).not.toHaveBeenCalled();
     });
@@ -103,7 +103,7 @@ describe('MqttManager', () => {
   // ═══════════════════════════════════════════════════
   describe('disconnect', () => {
     it('should end the mqtt client', async () => {
-      await manager.connect('token');
+      await manager.connect(mockGetMqttCredentials);
       manager.disconnect();
 
       expect(mockMqttClient.end).toHaveBeenCalled();
@@ -119,7 +119,7 @@ describe('MqttManager', () => {
   // ═══════════════════════════════════════════════════
   describe('subscribeTopics', () => {
     it('should subscribe to device state topics', async () => {
-      await manager.connect('token');
+      await manager.connect(mockGetMqttCredentials);
 
       const devices = [
         { token: 'dev-aaa', id: 'id-1' },
@@ -141,7 +141,7 @@ describe('MqttManager', () => {
 
   describe('unsubscribeTopics', () => {
     it('should unsubscribe from device state topics', async () => {
-      await manager.connect('token');
+      await manager.connect(mockGetMqttCredentials);
 
       manager.unsubscribeDevices([{ token: 'dev-aaa', id: 'id-1' }]);
 
@@ -157,7 +157,7 @@ describe('MqttManager', () => {
   // ═══════════════════════════════════════════════════
   describe('message handling', () => {
     it('should parse topic and emit device event with entity data', async () => {
-      await manager.connect('token');
+      await manager.connect(mockGetMqttCredentials);
 
       // Register device mapping
       manager.subscribeDevices([{ token: 'device-token-xyz', id: 'device-id-123' }]);
@@ -189,7 +189,7 @@ describe('MqttManager', () => {
     });
 
     it('should handle malformed JSON payload gracefully', async () => {
-      await manager.connect('token');
+      await manager.connect(mockGetMqttCredentials);
       manager.subscribeDevices([{ token: 'dev-t', id: 'dev-id' }]);
 
       const messageHandler = mockMqttClient.on.mock.calls.find(
@@ -208,7 +208,7 @@ describe('MqttManager', () => {
     });
 
     it('should handle update messages with multiple entity updates', async () => {
-      await manager.connect('token');
+      await manager.connect(mockGetMqttCredentials);
       manager.subscribeDevices([{ token: 'dev-t', id: 'dev-id' }]);
 
       const messageHandler = mockMqttClient.on.mock.calls.find(
@@ -262,7 +262,7 @@ describe('MqttManager', () => {
   // ═══════════════════════════════════════════════════
   describe('status', () => {
     it('should report connected status', async () => {
-      await manager.connect('token');
+      await manager.connect(mockGetMqttCredentials);
       expect(manager.isConnected()).toBe(true);
     });
 
@@ -271,7 +271,7 @@ describe('MqttManager', () => {
     });
 
     it('should report disconnected after disconnect()', async () => {
-      await manager.connect('token');
+      await manager.connect(mockGetMqttCredentials);
       mockMqttClient.connected = false;
       manager.disconnect();
       expect(manager.isConnected()).toBe(false);
