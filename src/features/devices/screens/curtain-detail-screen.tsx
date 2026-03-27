@@ -1,17 +1,20 @@
-import { FontAwesome, FontAwesome6 } from '@expo/vector-icons';
+import { FontAwesome, FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import { Image } from 'expo-image';
-import { useRouter } from 'expo-router';
-import { TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useLayoutEffect } from 'react';
 
+import { TouchableOpacity } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useUniwind } from 'uniwind';
 import { Text, View } from '@/components/ui';
 import { useModal } from '@/components/ui/modal';
 import { useShutterControl } from '@/features/devices/hooks/use-shutter-control';
+
 import { translate } from '@/lib/i18n';
 import { getPrimaryEntities } from '@/lib/utils/device-entity-helper';
 import { useConfigManager } from '@/stores/config/config';
 import { useDeviceStore } from '@/stores/device/device-store';
-
+import { ETheme } from '@/types/base';
 import { ShutterBackgroundModal } from '../components/modals/shutter-background-modal';
 import { getShutterBackgroundSource } from '../utils/shutter-constants';
 
@@ -21,9 +24,11 @@ type Props = {
 };
 
 export function CurtainDetailScreen({ deviceId, entityId }: Props) {
-  const router = useRouter();
   const devices = useDeviceStore(s => s.devices);
-  const device = Array.isArray(devices) ? devices.find(d => d.id === deviceId) : undefined;
+  const device = devices.find(d => d.id === deviceId);
+  const insets = useSafeAreaInsets();
+  const navigation = useNavigation();
+  const { theme } = useUniwind();
 
   // Custom Hook Logic
   const primaryEntity = entityId
@@ -37,39 +42,37 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
   const bgSource = getShutterBackgroundSource(backgroundId);
   const modal = useModal();
 
-  if (!device) {
-    return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-black">
-        <Text className="mt-12 text-white">{translate('base.somethingWentWrong')}</Text>
-      </SafeAreaView>
-    );
-  }
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          activeOpacity={0.7}
+          className="size-9 items-center justify-center"
+        >
+          <MaterialCommunityIcons name="close" size={24} color={theme === ETheme.Dark ? '#FFF' : '#1B1B1B'} />
+        </TouchableOpacity>
+      ),
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={modal.present}
+          activeOpacity={0.7}
+          className="h-9 w-12 items-center justify-center"
+        >
+          <FontAwesome name="cog" size={18} color={theme === ETheme.Dark ? '#FFF' : '#1B1B1B'} />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation, modal.present, theme]);
 
   return (
-    <View className="flex-1 bg-black">
-      {/* Background Image */}
-      <Image
-        source={bgSource}
-        contentFit="cover"
-        className="absolute inset-0 h-full w-full"
-      />
-
-      {/* Overlay gradient/darken */}
-      <View className="absolute inset-0 bg-black/40" pointerEvents="none" />
-
-      <SafeAreaView className="flex-1">
-        {/* Header */}
-        <View className="flex-row items-center justify-between px-5 py-3">
-          <TouchableOpacity onPress={() => router.back()} className="h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/25">
-            <FontAwesome name="chevron-left" size={18} color="#fff" />
-          </TouchableOpacity>
-          <Text className="text-xl font-bold tracking-wide text-white">
-            {device.name}
-          </Text>
-          <TouchableOpacity onPress={modal.present} className="h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/25">
-            <FontAwesome name="cog" size={18} color="#fff" />
-          </TouchableOpacity>
-        </View>
+    <View className="flex-1" style={{ paddingTop: insets.top, paddingBottom: insets.bottom, paddingLeft: insets.left, paddingRight: insets.right }}>
+      <View className="relative flex-1">
+        <Image
+          source={bgSource}
+          style={{ width: '100%', height: '100%', inset: 0, position: 'absolute' }}
+          contentFit="contain"
+        />
 
         {/* Roller Shutter UI */}
         <View className="flex-1 items-center justify-center">
@@ -114,8 +117,7 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
             <FontAwesome6 name="chevron-up" size={24} color="#1B1B1B" />
           </TouchableOpacity>
         </View>
-      </SafeAreaView>
-
+      </View>
       <ShutterBackgroundModal modalRef={modal.ref} deviceId={deviceId} />
     </View>
   );
