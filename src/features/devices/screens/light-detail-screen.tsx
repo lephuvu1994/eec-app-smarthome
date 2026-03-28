@@ -7,7 +7,6 @@ import Animated, {
   Extrapolation,
   interpolate,
   interpolateColor,
-  runOnJS,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
@@ -15,6 +14,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { runOnJS } from 'react-native-worklets';
 
 import { Text, View } from '@/components/ui';
 import { useLightControl } from '@/features/devices/hooks/use-light-control';
@@ -135,7 +135,7 @@ export function LightDetailScreen({ deviceId, entityId }: Props) {
             {isOn ? `${tempBright}%` : translate('base.off')}
           </Animated.Text>
           <Animated.Text style={animatedTextStyle} className="mb-12 text-lg font-medium opacity-70">
-            {translate('deviceDetail.light.brightness' as any, { defaultValue: 'Brightness' })}
+            {translate('deviceDetail.light.brightness', { defaultValue: 'Brightness' })}
           </Animated.Text>
 
           {/* Vertical Slider */}

@@ -29,11 +29,8 @@ export function DeviceControlModal({
   return (
     <Modal ref={modalRef} snapPoints={config.modalSnapPoints} title={device.name}>
       <View className="mt-4 flex-1 px-1">
-        <Text className="mb-1 text-xl font-bold text-neutral-900 dark:text-white">
-          {device.name}
-        </Text>
         {activeEntity && (
-          <Text className="mb-4 text-sm font-medium text-neutral-500">
+          <Text className="mt-1 mb-4 text-sm font-medium text-neutral-500">
             {translate('base.module')}
             :
             {activeEntity.name || activeEntity.code}

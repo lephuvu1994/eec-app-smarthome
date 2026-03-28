@@ -1,5 +1,5 @@
 export const SHUTTER_BACKGROUNDS = [
-  { id: '1', source: require('@@/assets/device/cuacuon/webp/anh1.webp') },
+  { id: '1', source: require('@@/assets/device/cuacuon/anh2.png') },
   { id: '2', source: require('@@/assets/device/cuacuon/webp/anh2.webp') },
   { id: '3', source: require('@@/assets/device/cuacuon/webp/anh3.webp') },
   { id: '4', source: require('@@/assets/device/cuacuon/webp/anh4.webp') },

@@ -1,3 +1,4 @@
+import type { TxKeyPath } from '@/lib/i18n';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -55,10 +56,10 @@ export function PrivacyPolicyScreen() {
           {sections.map(section => (
             <View key={section.titleKey} className="mx-4 mb-4 rounded-2xl bg-white p-4 shadow-sm dark:bg-neutral-800">
               <Text className="mb-2 text-[15px] font-semibold text-[#1B1B1B] dark:text-white">
-                {translate(section.titleKey as any)}
+                {translate(section.titleKey as TxKeyPath)}
               </Text>
               <Text className="text-sm/6 text-neutral-600 dark:text-neutral-300">
-                {translate(section.contentKey as any)}
+                {translate(section.contentKey as TxKeyPath)}
               </Text>
             </View>
           ))}
