@@ -21,7 +21,7 @@ type Props = {
 export function CurtainSlider({ position, onSlidingComplete, disabled }: Props) {
   const [width, setWidth] = useState(0);
   const isInteracting = useSharedValue(false);
-  const sliderPosition = useSharedValue(position.value || 0);
+  const sliderPosition = useSharedValue(0);
 
   // Sync external position -> sliderPosition, ONLY if not interacting
   useAnimatedReaction(
