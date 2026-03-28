@@ -127,14 +127,37 @@
       "brightness": "Brightness"
     },
     "shutter": {
+      "advanced": {
+        "bleMode": "BLE Mode",
+        "bleModeDesc": "Enable Bluetooth visibility",
+        "clicks": "Clicks count",
+        "lock": "Lock",
+        "motorConfig": "Motor Configuration",
+        "otaUpdate": "Firmware Update (OTA)",
+        "otaUrl": "Firmware URL",
+        "rfLearning": "RF Learning",
+        "saveConfig": "Save Configuration",
+        "title": "Advanced Settings",
+        "travelMsPlaceholder": "Travel time (ms) ex: 22000",
+        "updateOta": "Update OTA",
+        "workingHours": "Working hours"
+      },
+      "advancedMode": "Advanced",
       "changeBackground": "Change Background",
       "childLock": "Child Lock",
       "childLockOff": "Child Lock: OFF",
       "childLockOn": "Child Lock: ON",
       "close": "Close",
+      "defaultName": "Roller Shutter",
+      "deviceType": "Device Type",
       "open": "Open",
+      "operations": "Operations",
       "position": "Position",
-      "stop": "Stop"
+      "rename": "Rename",
+      "settings": "Settings",
+      "stop": "Stop",
+      "travelTime": "Travel Time",
+      "workingHours": "Working Hours"
     },
     "switch": {
       "turnOffAll": "Turn off all",

@@ -141,18 +141,18 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
       items: [
         {
           key: 'settings',
-          title: 'Cài đặt',
+          title: translate('deviceDetail.shutter.settings'),
           icon: { ios: 'gearshape' },
           children: [
             {
               key: 'advanced',
-              title: 'Nâng cao',
+              title: translate('deviceDetail.shutter.advancedMode'),
               icon: { ios: 'slider.horizontal.3' },
               onPress: advancedModal.present,
             },
             {
               key: 'device_type',
-              title: 'Loại thiết bị',
+              title: translate('deviceDetail.shutter.deviceType'),
               icon: { ios: 'cube.box' },
               onPress: modal.present,
             },
@@ -170,7 +170,7 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
       items: [
         {
           key: 'rename',
-          title: 'Đổi tên',
+          title: translate('deviceDetail.shutter.rename'),
           icon: { ios: 'pencil' },
           onPress: () => {
             console.log('Rename Device');
@@ -205,7 +205,7 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
 
         <View className="flex-2 items-center">
           <Text className="text-lg font-semibold text-[#1B1B1B]" numberOfLines={1}>
-            {device?.name ?? 'Cửa cuốn'}
+            {device?.name ?? translate('deviceDetail.shutter.defaultName')}
           </Text>
         </View>
 
@@ -245,7 +245,7 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
         <View className="absolute top-4 right-4 flex-row items-center gap-1.5 rounded-full bg-black/60 px-2.5 py-1.5 shadow-sm">
           <View className={`size-2 rounded-full ${isOnline ? 'bg-[#10B981]' : 'bg-neutral-500'}`} />
           <Text className="text-xs font-semibold text-white uppercase shadow-sm">
-            {isOnline ? translate('device.status.online' as any) : translate('device.status.offline' as any)}
+            {isOnline ? translate('base.online') : translate('base.offline')}
           </Text>
         </View>
       </View>
@@ -263,20 +263,20 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
       <View className="mx-6 mt-6 flex-row items-end justify-between">
         <CtrlButton
           icon={<FontAwesome6 name="chevron-down" size={22} color="#1B1B1B" />}
-          label={translate('deviceDetail.shutter.close' as any)}
+          label={translate('deviceDetail.shutter.close')}
           onPress={handleClose}
           disabled={isControlling || !isOnline}
         />
         <CtrlButton
           icon={<FontAwesome6 name="pause" size={22} color="#fff" />}
-          label={translate('deviceDetail.shutter.stop' as any)}
+          label={translate('deviceDetail.shutter.stop')}
           onPress={handleStop}
           disabled={isControlling || !isOnline}
           primary
         />
         <CtrlButton
           icon={<FontAwesome6 name="chevron-up" size={22} color="#1B1B1B" />}
-          label={translate('deviceDetail.shutter.open' as any)}
+          label={translate('deviceDetail.shutter.open')}
           onPress={handleOpen}
           disabled={isControlling || !isOnline}
         />
@@ -297,8 +297,8 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
           />
           <Text className={`text-sm font-semibold ${childLock ? 'text-white' : 'text-[#1B1B1B]'}`}>
             {childLock
-              ? translate('deviceDetail.shutter.childLockOn' as any)
-              : translate('deviceDetail.shutter.childLockOff' as any)}
+              ? translate('deviceDetail.shutter.childLockOn')
+              : translate('deviceDetail.shutter.childLockOff')}
           </Text>
         </TouchableOpacity>
       </View>
@@ -308,17 +308,17 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
         <StatCard
           icon={<FontAwesome6 name="crosshairs" size={18} color="#9CA3AF" />}
           value="--"
-          label="Lượt thao tác"
+          label={translate('deviceDetail.shutter.operations')}
         />
         <StatCard
           icon={<FontAwesome6 name="clock" size={18} color="#9CA3AF" />}
           value="--"
-          label="Giờ làm việc"
+          label={translate('deviceDetail.shutter.workingHours')}
         />
         <StatCard
           icon={<MaterialCommunityIcons name="timer-outline" size={18} color="#9CA3AF" />}
           value={formatTravelTime(travelMs)}
-          label="Hành trình"
+          label={translate('deviceDetail.shutter.travelTime')}
         />
       </View>
 

@@ -1,3 +1,4 @@
+import type { TxKeyPath } from '@/lib/i18n';
 import type { TLanguage } from '@/lib/i18n/resources';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useHeaderHeight } from '@react-navigation/elements';
@@ -341,7 +342,7 @@ export function GeneralSettingsScreen() {
           {(['light', 'dark', 'system'] as const).map(v => (
             <OptionItem
               key={v}
-              label={translate(`settings.theme.${v}` as any)}
+              label={translate(`settings.theme.${v}` as TxKeyPath)}
               selected={selectedTheme === v}
               onPress={() => {
                 setSelectedTheme(v);
