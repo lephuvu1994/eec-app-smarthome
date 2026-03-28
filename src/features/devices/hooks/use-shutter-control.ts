@@ -1,6 +1,6 @@
 import type { TDevice, TDeviceEntity } from '@/lib/api/devices/device.service';
 import * as Haptics from 'expo-haptics';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { cancelAnimation, Easing, useSharedValue, withTiming } from 'react-native-reanimated';
 import { showErrorMessage } from '@/components/ui';
 import { useDeviceEvent } from '@/hooks/use-device-event';
@@ -59,6 +59,12 @@ export function useShutterControl(
   /** True while an API call is in flight */
   const [isControlling, setIsControlling] = useState(false);
 
+  /** Config Motor */
+  const [motorConfig, setMotorConfig] = useState<{ clicks?: number; start_time?: string; end_time?: string } | undefined>(undefined);
+
+  /** Device online/offline real-time status */
+  const [isOnline, setIsOnline] = useState<boolean>(device?.status === 'online');
+
   // ─── Sync state from MQTT shadow / real-time event ───────────────────────
   useDeviceEvent(
     device?.id || '',
@@ -68,9 +74,15 @@ export function useShutterControl(
         state?: string | number;
         value?: string | number;
         attributes?: Array<{ key: string; value: string | number }>;
+        [key: string]: any;
       }) => {
+        // Online status (from flat LWT or heartbeat)
+        if (data.online !== undefined) {
+          setIsOnline(data.online === true);
+        }
+
         const matchesEntity = data.entityCode === primaryEntity?.code || (!data.entityCode && primaryEntity);
-        if (!matchesEntity)
+        if (!matchesEntity && data.state === undefined)
           return;
 
         // Primary entity state (commandKey = 'state')
@@ -113,6 +125,26 @@ export function useShutterControl(
           }
         }
 
+        // --- Flat attributes from raw /status telemetry (bypassing backend DTO) ---
+        if (typeof data.position === 'number') {
+          incomingPosition = data.position;
+        }
+        if (data.child_lock !== undefined) {
+          setChildLock(data.child_lock === 'LOCKED');
+        }
+        if (typeof data.travel === 'number') {
+          setTravelMs(data.travel);
+          travelMsRef.current = data.travel;
+        }
+        if (data.config && typeof data.config === 'object') {
+          setMotorConfig(prev => ({
+            ...prev,
+            clicks: data.config.req_open_clicks ?? data.config.clicks ?? prev?.clicks,
+            start_time: data.config.start_time ?? prev?.start_time,
+            end_time: data.config.end_time ?? prev?.end_time,
+          }));
+        }
+
         // --- Fake Position Animation Logic ---
         // Vì C-code đang "hack" mqtt_position = 50 khi di chuyển,
         // ta bỏ qua incomingPosition nếu rèm đang chạy. Tự nội suy phần trăm theo thời gian!
@@ -142,30 +174,35 @@ export function useShutterControl(
   );
 
   // ─── Extract Initial Config from device entities ───────────────────────
-  const configEntity = device?.entities.find(e => e.code === 'config');
-  let motorConfig: { clicks?: number; start_hour?: number; end_hour?: number } | undefined;
-  if (configEntity) {
-    try {
-      let rawConfig: any = null;
-      if (typeof configEntity.currentState === 'object' && configEntity.currentState) {
-        rawConfig = configEntity.currentState;
-      }
-      else if (typeof configEntity.stateText === 'string' && configEntity.stateText) {
-        rawConfig = JSON.parse(configEntity.stateText);
-      }
+  useEffect(() => {
+    const configEntity = device?.entities.find(e => e.code === 'config');
+    if (configEntity) {
+      try {
+        let rawConfig: any = null;
+        if (typeof configEntity.currentState === 'object' && configEntity.currentState) {
+          rawConfig = configEntity.currentState;
+        }
+        else if (typeof configEntity.stateText === 'string' && configEntity.stateText) {
+          rawConfig = JSON.parse(configEntity.stateText);
+        }
 
-      if (rawConfig) {
-        motorConfig = {
-          clicks: rawConfig.req_open_clicks ?? rawConfig.clicks,
-          start_hour: rawConfig.start_hour,
-          end_hour: rawConfig.end_hour,
-        };
+        if (rawConfig) {
+          const timer = setTimeout(() => {
+            setMotorConfig(prev => ({
+              ...prev, // Allow real-time MQTT to have precedence if already arrived
+              clicks: prev?.clicks ?? rawConfig.req_open_clicks ?? rawConfig.clicks,
+              start_time: prev?.start_time ?? rawConfig.start_time,
+              end_time: prev?.end_time ?? rawConfig.end_time,
+            }));
+          }, 0);
+          return () => clearTimeout(timer);
+        }
+      }
+      catch {
+        // fail silently
       }
     }
-    catch {
-      // fail silently
-    }
-  }
+  }, [device?.entities]);
 
   // ─── Command sender ───────────────────────────────────────────────────────
   const sendCommand = async (entityCode: string, value: EShutterCmd | number | string | Record<string, any>) => {
@@ -214,7 +251,7 @@ export function useShutterControl(
     rfLearnStatus,
     setRfLearnStatus, // Expose to manually clear status in modal on close
     // Config motor — entity `config` (config domain)
-    handleConfig: (config: { clicks?: number; start_hour?: number; end_hour?: number }) => {
+    handleConfig: (config: { clicks?: number; start_time?: string; end_time?: string }) => {
       // Map App's simplified config to Chip Firmware expected C-struct
       const chipConfig = {
         req_open_clicks: config.clicks ?? 2,
@@ -222,8 +259,8 @@ export function useShutterControl(
         def_open_clicks: 1,
         def_close_clicks: 1,
         time_mode: 1, // Enable time restriction
-        start_hour: config.start_hour ?? 0,
-        end_hour: config.end_hour ?? 0,
+        start_time: config.start_time ?? '00:00',
+        end_time: config.end_time ?? '23:59',
       };
       return sendCommand('config', chipConfig);
     },
@@ -231,5 +268,6 @@ export function useShutterControl(
     handleOta: (url: string) => sendCommand('update', url),
     sendCommand,
     motorConfig,
+    isOnline,
   };
 }

@@ -96,8 +96,13 @@ export class MqttManager {
     this.isAppActive = nextAppState === 'active';
 
     if (this.isAppActive && !wasActive) {
-      // Returning from background — reconnect with stored fetcher
-      if (!this.isConnected() && this.credentialsFetcher) {
+      // Returning from background
+      if (this.client) {
+        // OS often kills background TCP sockets silently.
+        // Force reconnect regardless of this.client.connected to ensure responsiveness
+        (this.client as any).reconnect();
+      }
+      else if (this.credentialsFetcher) {
         this.connect(this.credentialsFetcher);
       }
     }
@@ -111,7 +116,7 @@ export class MqttManager {
    *   (avoids the user-store → mqtt-manager → deviceService → client → user-store cycle).
    */
   async connect(credentialsFetcher: () => Promise<TMqttCredentials>): Promise<void> {
-    if (this.client?.connected) {
+    if (this.client || this.status === EMqttStatus.CONNECTING) {
       return;
     }
 
@@ -141,10 +146,22 @@ export class MqttManager {
         this.status = EMqttStatus.CONNECTED;
         console.log('📡 MQTT connected:', credentials.clientId);
 
-        // Re-subscribe to all tracked devices
+        // Dynamically import Zustand store to hydrate all cached devices and subscribe instantly
+        try {
+          const { useDeviceStore } = require('@/stores/device/device-store');
+          const devices = useDeviceStore.getState().devices;
+          if (devices && devices.length > 0) {
+            this.subscribeDevices(devices.map((d: any) => ({ id: d.id, token: d.token })));
+          }
+        }
+        catch (err) {
+          console.warn('[MQTT] Failed to load local device store during connect callback', err);
+        }
+
+        // Re-subscribe to all globally tracked devices previously registered
         if (this.tokenToDeviceId.size > 0) {
-          const topics = Array.from(this.tokenToDeviceId.keys()).map(
-            token => `+/+/${token}/state`,
+          const topics = Array.from(this.tokenToDeviceId.keys()).flatMap(
+            token => [`+/+/${token}/state`, `+/+/${token}/status`],
           );
           this.client?.subscribe(topics, () => {});
         }
@@ -187,34 +204,28 @@ export class MqttManager {
 
   // ─── Subscribe Devices ─────────────────────────────
   subscribeDevices(devices: DeviceMapping[]): void {
-    if (!this.client) {
-      return;
-    }
-
     const topics: string[] = [];
     for (const device of devices) {
       this.tokenToDeviceId.set(device.token, device.id);
       topics.push(`+/+/${device.token}/state`);
+      topics.push(`+/+/${device.token}/status`);
     }
 
-    if (topics.length > 0) {
+    if (this.client && topics.length > 0) {
       this.client.subscribe(topics, () => {});
     }
   }
 
   // ─── Unsubscribe Devices ───────────────────────────
   unsubscribeDevices(devices: DeviceMapping[]): void {
-    if (!this.client) {
-      return;
-    }
-
     const topics: string[] = [];
     for (const device of devices) {
       this.tokenToDeviceId.delete(device.token);
       topics.push(`+/+/${device.token}/state`);
+      topics.push(`+/+/${device.token}/status`);
     }
 
-    if (topics.length > 0) {
+    if (this.client && topics.length > 0) {
       this.client.unsubscribe(topics, () => {});
     }
   }

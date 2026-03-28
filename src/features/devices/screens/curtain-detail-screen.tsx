@@ -13,7 +13,6 @@ import { Text, View } from '@/components/ui';
 import { useModal } from '@/components/ui/modal';
 import { ZeegoNativeMenu } from '@/components/ui/zeego-native-menu';
 import { EDoorState, useShutterControl } from '@/features/devices/hooks/use-shutter-control';
-import { EDeviceStatus } from '@/lib/api/devices/device.service';
 import { translate } from '@/lib/i18n';
 import { getPrimaryEntities } from '@/lib/utils/device-entity-helper';
 import { useConfigManager } from '@/stores/config/config';
@@ -129,6 +128,7 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
     handleConfig,
     handlePosition,
     motorConfig,
+    isOnline,
   } = useShutterControl(device, primaryEntity);
 
   // Note: Position is rendered by CurtainSlider directly.
@@ -140,8 +140,6 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
   const bleModal = useModal();
   const rfLearnModal = useModal();
   const motorConfigModal = useModal();
-
-  const isOnline = device?.status === EDeviceStatus.ONLINE;
 
   const menuElements: TMenuElement[] = [
     {
@@ -237,6 +235,12 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
           <Text className="text-lg font-semibold text-black dark:text-white" numberOfLines={1}>
             {device?.name ?? translate('deviceDetail.shutter.defaultName')}
           </Text>
+          <View className="mt-1 flex-row items-center gap-1.5">
+            <View className={`size-2 rounded-full ${isOnline ? 'bg-[#A3E635]' : 'bg-red-500'}`} />
+            <Text className="text-[11px] font-medium text-neutral-500 dark:text-neutral-400">
+              {isOnline ? 'Trực tuyến' : 'Ngoại tuyến'}
+            </Text>
+          </View>
         </Animated.View>
 
         <Animated.View entering={FadeInRight.duration(300)} className="flex-1 flex-row items-center justify-end gap-2">
@@ -342,12 +346,12 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
         <View className="mt-4 flex-row gap-2">
           <StatCard
             icon={<FontAwesome6 name="crosshairs" size={18} color="#9CA3AF" />}
-            value="--"
+            value={motorConfig?.clicks ? `${motorConfig.clicks} clicks` : '--'}
             label={translate('deviceDetail.shutter.operations')}
           />
           <StatCard
             icon={<FontAwesome6 name="clock" size={18} color="#9CA3AF" />}
-            value="--"
+            value={motorConfig?.start_time && motorConfig?.end_time ? `${motorConfig.start_time} - ${motorConfig.end_time}` : '--'}
             label={translate('deviceDetail.shutter.workingHours')}
           />
           <StatCard

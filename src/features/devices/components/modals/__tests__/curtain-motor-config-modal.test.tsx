@@ -48,8 +48,8 @@ describe('CurtainMotorConfigModal', () => {
     expect(onConfigMock).toHaveBeenCalledWith(
       expect.objectContaining({
         clicks: 2, // default 
-        start_hour: 0,
-        end_hour: 23,
+        start_time: '00:00',
+        end_time: '23:59',
       }),
     );
   });
