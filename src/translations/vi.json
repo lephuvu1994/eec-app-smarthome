@@ -128,6 +128,9 @@
     },
     "shutter": {
       "changeBackground": "Đổi hình nền",
+      "childLock": "Khoá trẻ em",
+      "childLockOff": "Khoá trẻ em: TẮT",
+      "childLockOn": "Khoá trẻ em: BẬT",
       "close": "Đóng",
       "open": "Mở",
       "position": "Vị trí",

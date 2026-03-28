@@ -98,6 +98,30 @@ class BleService {
     await BleManager.stopNotification(id, CHIP_SERVICE_UUID, CHIP_TX_CHAR_UUID);
   }
 
+  /**
+   * Write encrypted BLE data to chip with chunked transmission.
+   *
+   * The BL602 firmware detects end-of-message when it receives a chunk < 20 bytes.
+   * AES-128-ECB output is always a multiple of 16 bytes; if it also happens to be
+   * a multiple of 20 bytes (LCM = 80), every chunk is exactly 20 bytes and the
+   * firmware NEVER detects the end → JSON Parse FAIL.
+   *
+   * Fix: append a 0x00 sentinel byte after the encrypted payload. The chip
+   * strips any trailing \0 after decryption (JSON always ends with '}').
+   * This guarantees the last BLE write is always < 20 bytes.
+   */
+  async writeChunked(id: string, data: number[], chunkSize: number = 20): Promise<void> {
+    // Append sentinel byte so last chunk is always < chunkSize
+    const payload = [...data, 0x00];
+
+    for (let offset = 0; offset < payload.length; offset += chunkSize) {
+      const chunk = payload.slice(offset, offset + chunkSize);
+      await BleManager.write(id, CHIP_SERVICE_UUID, CHIP_RX_CHAR_UUID, chunk);
+      // Small delay to avoid overwhelming BL602 BLE stack
+      await new Promise(resolve => setTimeout(resolve, 20));
+    }
+  }
+
   async writeWithoutResponse(id: string, data: number[]): Promise<void> {
     // Note: The firmware is configured as `BT_GATT_CHRC_WRITE | BT_GATT_CHRC_WRITE_WITHOUT_RESP`
     // We use writeWithoutResponse for faster transmission usually, or standard write.
