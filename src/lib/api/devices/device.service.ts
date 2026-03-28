@@ -78,6 +78,7 @@ export type TDevice = {
   sortOrder: number;
   room?: { id: string; name: string } | null;
   entities: TDeviceEntity[];
+  modelConfig?: any;
 };
 
 export type TDeviceListResponse = {

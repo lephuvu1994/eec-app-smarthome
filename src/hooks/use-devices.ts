@@ -30,6 +30,16 @@ export function useHomeDevices(homeId: string) {
       // Execute silently in background—do NOT trigger loading state that blocks UI
       const result = await deviceService.getDevices({ homeId, limit: 50 });
       setDevices(result.data);
+
+      // Auto-subscribe to MQTT topics for real-time status/state updates
+      if (result.data.length > 0) {
+        import('@/lib/mqtt/mqtt-manager').then((m) => {
+          m.MqttManager.getInstance().subscribeDevices(
+            result.data.map(d => ({ id: d.id, token: d.token })),
+          );
+        });
+      }
+
       return result;
     },
     staleTime: 30_000,
@@ -41,7 +51,17 @@ export function useHomeDevices(homeId: string) {
 export function useDevices(params?: { homeId?: string; roomId?: string; page?: number; limit?: number }) {
   return useQuery<TDeviceListResponse>({
     queryKey: deviceKeys.list(params),
-    queryFn: () => deviceService.getDevices(params),
+    queryFn: async () => {
+      const result = await deviceService.getDevices(params);
+      if (result.data.length > 0) {
+        import('@/lib/mqtt/mqtt-manager').then((m) => {
+          m.MqttManager.getInstance().subscribeDevices(
+            result.data.map(d => ({ id: d.id, token: d.token })),
+          );
+        });
+      }
+      return result;
+    },
   });
 }
 
@@ -49,7 +69,15 @@ export function useDevices(params?: { homeId?: string; roomId?: string; page?: n
 export function useDeviceDetail(id: string) {
   return useQuery<TDevice>({
     queryKey: deviceKeys.detail(id),
-    queryFn: () => deviceService.getDeviceDetail(id),
+    queryFn: async () => {
+      const result = await deviceService.getDeviceDetail(id);
+      if (result) {
+        import('@/lib/mqtt/mqtt-manager').then((m) => {
+          m.MqttManager.getInstance().subscribeDevices([{ id: result.id, token: result.token }]);
+        });
+      }
+      return result;
+    },
     enabled: !!id,
   });
 }

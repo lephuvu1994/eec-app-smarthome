@@ -1,7 +1,7 @@
 import type { BottomSheetModal } from '@gorhom/bottom-sheet';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as React from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Platform, ScrollView, TouchableOpacity } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -14,8 +14,8 @@ import { ETheme } from '@/types/base';
 
 type TConfigPayload = {
   clicks?: number;
-  start_hour?: number;
-  end_hour?: number;
+  start_time?: string;
+  end_time?: string;
 };
 
 type Props = {
@@ -38,30 +38,64 @@ export function CurtainMotorConfigModal({
 }: Props) {
   const [clicks, setClicks] = useState<number | undefined>(initialConfig?.clicks ?? 2);
 
-  // Default bounds 00:00 - 23:00 unless passed from config
   const [startDate, setStartDate] = useState(() => {
-    if (initialConfig?.start_hour !== undefined) {
-      return new Date(0, 0, 0, initialConfig.start_hour, 0, 0);
+    const d = new Date();
+    d.setSeconds(0, 0);
+    if (initialConfig?.start_time) {
+      const [h, m] = initialConfig.start_time.split(':').map(Number);
+      d.setHours(h || 0, m || 0);
+      return d;
     }
-    return new Date(0, 0, 0, 0, 0, 0);
+    d.setHours(0, 0);
+    return d;
   });
 
   const [endDate, setEndDate] = useState(() => {
-    if (initialConfig?.end_hour !== undefined) {
-      return new Date(0, 0, 0, initialConfig.end_hour, 0, 0);
+    const d = new Date();
+    d.setSeconds(0, 0);
+    if (initialConfig?.end_time) {
+      const [h, m] = initialConfig.end_time.split(':').map(Number);
+      d.setHours(h ?? 23, m ?? 59);
+      return d;
     }
-    return new Date(0, 0, 0, 23, 0, 0);
+    d.setHours(23, 59);
+    d.setHours(23, 59);
+    return d;
   });
 
   const [showAndroidPicker, setShowAndroidPicker] = useState<'start' | 'end' | null>(null);
+
+  // Sync state if initialConfig updates asynchronously (e.g. from MQTT)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (initialConfig?.clicks !== undefined) {
+        setClicks(initialConfig.clicks);
+      }
+      if (initialConfig?.start_time) {
+        const d = new Date();
+        d.setSeconds(0, 0);
+        const [h, m] = initialConfig.start_time.split(':').map(Number);
+        d.setHours(h || 0, m || 0);
+        setStartDate(d);
+      }
+      if (initialConfig?.end_time) {
+        const d = new Date();
+        d.setSeconds(0, 0);
+        const [h, m] = initialConfig.end_time.split(':').map(Number);
+        d.setHours(h ?? 23, m ?? 59);
+        setEndDate(d);
+      }
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [initialConfig]);
 
   const insets = useSafeAreaInsets();
 
   const { theme } = useUniwind();
   const isDark = theme === ETheme.Dark;
 
-  const formatHour = (_date: Date) => {
-    return `${_date.getHours().toString().padStart(2, '0')}:00`;
+  const formatTime = (_date: Date) => {
+    return `${_date.getHours().toString().padStart(2, '0')}:${_date.getMinutes().toString().padStart(2, '0')}`;
   };
 
   const handleDateChange = (_event: unknown, selectedDate?: Date) => {
@@ -81,8 +115,8 @@ export function CurtainMotorConfigModal({
 
   const handleSave = () => {
     const payload: TConfigPayload = {
-      start_hour: startDate.getHours(),
-      end_hour: endDate.getHours(),
+      start_time: formatTime(startDate),
+      end_time: formatTime(endDate),
     };
     if (clicks) {
       payload.clicks = clicks;
@@ -121,7 +155,7 @@ export function CurtainMotorConfigModal({
                         value={startDate}
                         {...({ mode: 'time' } as any)}
                         display="spinner"
-                        minuteInterval={60}
+                        minuteInterval={1}
                         locale="vi-VN"
                         textColor={isDark ? '#FFFFFF' : '#000000'}
                         onChange={handleDateChange}
@@ -137,7 +171,7 @@ export function CurtainMotorConfigModal({
                         value={endDate}
                         {...({ mode: 'time' } as any)}
                         display="spinner"
-                        minuteInterval={60}
+                        minuteInterval={1}
                         locale="vi-VN"
                         textColor={isDark ? '#FFFFFF' : '#000000'}
                         onChange={(_e, d) => {
@@ -159,7 +193,7 @@ export function CurtainMotorConfigModal({
                     onPress={() => setShowAndroidPicker('start')}
                   >
                     <Text className="text-xs text-neutral-500 dark:text-neutral-400">Giờ Bắt Đầu</Text>
-                    <Text className="mt-1 text-xl font-bold text-[#1B1B1B] dark:text-white">{formatHour(startDate)}</Text>
+                    <Text className="mt-1 text-xl font-bold text-[#1B1B1B] dark:text-white">{formatTime(startDate)}</Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
@@ -167,7 +201,7 @@ export function CurtainMotorConfigModal({
                     onPress={() => setShowAndroidPicker('end')}
                   >
                     <Text className="text-xs text-neutral-500 dark:text-neutral-400">Giờ Kết Thúc</Text>
-                    <Text className="mt-1 text-xl font-bold text-[#1B1B1B] dark:text-white">{formatHour(endDate)}</Text>
+                    <Text className="mt-1 text-xl font-bold text-[#1B1B1B] dark:text-white">{formatTime(endDate)}</Text>
                   </TouchableOpacity>
                 </View>
               )}
@@ -178,7 +212,7 @@ export function CurtainMotorConfigModal({
                   value={showAndroidPicker === 'start' ? startDate : endDate}
                   {...({ mode: 'time' } as any)}
                   display="spinner"
-                  minuteInterval={60}
+                  minuteInterval={1}
                   is24Hour={true}
                   onChange={handleDateChange}
                 />

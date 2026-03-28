@@ -128,7 +128,7 @@ describe('MqttManager', () => {
       manager.subscribeDevices(devices);
 
       expect(mockMqttClient.subscribe).toHaveBeenCalledWith(
-        ['+/+/dev-aaa/state', '+/+/dev-bbb/state'],
+        ['+/+/dev-aaa/state', '+/+/dev-aaa/status', '+/+/dev-bbb/state', '+/+/dev-bbb/status'],
         expect.any(Function),
       );
     });
@@ -146,7 +146,7 @@ describe('MqttManager', () => {
       manager.unsubscribeDevices([{ token: 'dev-aaa', id: 'id-1' }]);
 
       expect(mockMqttClient.unsubscribe).toHaveBeenCalledWith(
-        ['+/+/dev-aaa/state'],
+        ['+/+/dev-aaa/state', '+/+/dev-aaa/status'],
         expect.any(Function),
       );
     });
