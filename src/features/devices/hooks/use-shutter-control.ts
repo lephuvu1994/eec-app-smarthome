@@ -53,6 +53,9 @@ export function useShutterControl(
   const [travelMs, setTravelMs] = useState<number>(0);
   const travelMsRef = useRef<number>(20000); // Mặc định 20s
 
+  /** RF Learning tracking string */
+  const [rfLearnStatus, setRfLearnStatus] = useState<string>('');
+
   /** True while an API call is in flight */
   const [isControlling, setIsControlling] = useState(false);
 
@@ -104,6 +107,9 @@ export function useShutterControl(
               setTravelMs(attr.value);
               travelMsRef.current = attr.value;
             }
+            else if (attr.key === 'rf_learn_status' && typeof attr.value === 'string') {
+              setRfLearnStatus(attr.value);
+            }
           }
         }
 
@@ -135,8 +141,34 @@ export function useShutterControl(
     ),
   );
 
+  // ─── Extract Initial Config from device entities ───────────────────────
+  const configEntity = device?.entities.find(e => e.code === 'config');
+  let motorConfig: { clicks?: number; start_hour?: number; end_hour?: number } | undefined;
+  if (configEntity) {
+    try {
+      let rawConfig: any = null;
+      if (typeof configEntity.currentState === 'object' && configEntity.currentState) {
+        rawConfig = configEntity.currentState;
+      }
+      else if (typeof configEntity.stateText === 'string' && configEntity.stateText) {
+        rawConfig = JSON.parse(configEntity.stateText);
+      }
+
+      if (rawConfig) {
+        motorConfig = {
+          clicks: rawConfig.req_open_clicks ?? rawConfig.clicks,
+          start_hour: rawConfig.start_hour,
+          end_hour: rawConfig.end_hour,
+        };
+      }
+    }
+    catch {
+      // fail silently
+    }
+  }
+
   // ─── Command sender ───────────────────────────────────────────────────────
-  const sendCommand = async (entityCode: string, value: EShutterCmd | number | string) => {
+  const sendCommand = async (entityCode: string, value: EShutterCmd | number | string | Record<string, any>) => {
     if (!device)
       return;
 
@@ -175,12 +207,29 @@ export function useShutterControl(
     handleChildLock: (lock: boolean) => sendCommand('child_lock', lock ? 1 : 0),
     // BLE mode — entity `ble_mode` (switch domain), value: "on" | "off"
     handleBleMode: (on: boolean) => sendCommand('ble_mode', on ? 'on' : 'off'),
-    // RF learning — entity `learn` (button domain)
-    handleLearn: (action: string) => sendCommand('learn', action),
+    // RF learning (Hardware-driven Flow)
+    handleRfLearnStart: () => sendCommand('learn', 'start'),
+    handleRfLearnCancel: () => sendCommand('learn', 'cancel'),
+    handleRfLearnSave: () => sendCommand('learn', 'save'),
+    rfLearnStatus,
+    setRfLearnStatus, // Expose to manually clear status in modal on close
     // Config motor — entity `config` (config domain)
-    handleConfig: (config: object) => sendCommand('config', typeof config === 'string' ? config : JSON.stringify(config)),
+    handleConfig: (config: { clicks?: number; start_hour?: number; end_hour?: number }) => {
+      // Map App's simplified config to Chip Firmware expected C-struct
+      const chipConfig = {
+        req_open_clicks: config.clicks ?? 2,
+        req_close_clicks: config.clicks ?? 2,
+        def_open_clicks: 1,
+        def_close_clicks: 1,
+        time_mode: 1, // Enable time restriction
+        start_hour: config.start_hour ?? 0,
+        end_hour: config.end_hour ?? 0,
+      };
+      return sendCommand('config', chipConfig);
+    },
     // OTA Update — entity `update` (update domain)
     handleOta: (url: string) => sendCommand('update', url),
     sendCommand,
+    motorConfig,
   };
 }
