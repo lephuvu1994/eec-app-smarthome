@@ -4,7 +4,8 @@ import { FontAwesome5, FontAwesome6, MaterialCommunityIcons } from '@expo/vector
 import { useNavigation } from '@react-navigation/native';
 import { Image } from 'expo-image';
 import * as React from 'react';
-import { TouchableOpacity } from 'react-native';
+import { ScrollView, TouchableOpacity } from 'react-native';
+import Animated, { FadeInDown, FadeInLeft, FadeInRight } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 
@@ -19,7 +20,9 @@ import { useConfigManager } from '@/stores/config/config';
 import { useDeviceStore } from '@/stores/device/device-store';
 import { ETheme } from '@/types/base';
 import { CurtainSlider } from '../components/curtain-slider';
-import { CurtainAdvancedModal } from '../components/modals/curtain-advanced-modal';
+import { CurtainBleModal } from '../components/modals/curtain-ble-modal';
+import { CurtainMotorConfigModal } from '../components/modals/curtain-motor-config-modal';
+import { CurtainRfLearnModal } from '../components/modals/curtain-rf-learn-modal';
 import { ShutterBackgroundModal } from '../components/modals/shutter-background-modal';
 import { getShutterBackgroundSource } from '../utils/shutter-constants';
 
@@ -51,10 +54,10 @@ type TStatCardProps = { icon: React.ReactNode; value: string; label: string };
 
 function StatCard({ icon, value, label }: TStatCardProps) {
   return (
-    <View className="flex-1 items-center justify-center gap-1 rounded-2xl bg-white px-2 py-3 shadow-sm">
+    <View className="flex-1 items-center justify-center gap-1 rounded-2xl bg-white px-2 py-3 shadow-sm dark:border dark:border-[#292929] dark:bg-[#FFFFFF0D]">
       {icon}
-      <Text className="text-base font-bold text-[#1B1B1B]">{value}</Text>
-      <Text className="text-center text-[10px] text-neutral-400" numberOfLines={1}>{label}</Text>
+      <Text className="text-base font-bold text-[#1B1B1B] dark:text-white">{value}</Text>
+      <Text className="text-center text-[10px] text-neutral-400 dark:text-neutral-500" numberOfLines={1}>{label}</Text>
     </View>
   );
 }
@@ -80,12 +83,12 @@ function CtrlButton({ icon, label, onPress, disabled, primary = false }: TCtrlBt
     >
       <View
         className={`items-center justify-center rounded-full shadow-md ${
-          primary ? 'h-[88px] w-[88px] bg-[#1B1B1B]' : 'h-[68px] w-[68px] bg-white'
+          primary ? 'h-[88px] w-[88px] bg-[#1B1B1B] dark:bg-white' : 'h-[68px] w-[68px] bg-white dark:border dark:border-[#292929] dark:bg-[#FFFFFF0D]'
         }`}
       >
         {icon}
       </View>
-      <Text className={`text-sm font-medium ${primary ? 'text-[#1B1B1B]' : 'text-neutral-500'}`}>
+      <Text className={`text-sm font-medium ${primary ? 'text-[#1B1B1B] dark:text-white' : 'text-neutral-500 dark:text-neutral-400'}`}>
         {label}
       </Text>
     </TouchableOpacity>
@@ -120,7 +123,6 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
     handleBleMode,
     handleLearn,
     handleConfig,
-    handleOta,
     handlePosition,
   } = useShutterControl(device, primaryEntity);
 
@@ -130,7 +132,9 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
   const backgroundId = useConfigManager(s => s.shutterBackgrounds[deviceId]) || '1';
   const bgSource = getShutterBackgroundSource(backgroundId);
   const modal = useModal();
-  const advancedModal = useModal();
+  const bleModal = useModal();
+  const rfLearnModal = useModal();
+  const motorConfigModal = useModal();
 
   const isOnline = device?.status === EDeviceStatus.ONLINE;
 
@@ -148,7 +152,26 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
               key: 'advanced',
               title: translate('deviceDetail.shutter.advancedMode'),
               icon: { ios: 'slider.horizontal.3' },
-              onPress: advancedModal.present,
+              children: [
+                {
+                  key: 'ble',
+                  title: translate('deviceDetail.shutter.advanced.bleMode'),
+                  icon: { ios: 'bluetooth' },
+                  onPress: bleModal.present,
+                },
+                {
+                  key: 'rf_learn',
+                  title: translate('deviceDetail.shutter.advanced.rfLearning'),
+                  icon: { ios: 'wave.3.left.circle' },
+                  onPress: rfLearnModal.present,
+                },
+                {
+                  key: 'motor_config',
+                  title: translate('deviceDetail.shutter.advanced.motorConfig'),
+                  icon: { ios: 'gear' },
+                  onPress: motorConfigModal.present,
+                },
+              ],
             },
             {
               key: 'device_type',
@@ -189,31 +212,33 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
         : '#F59E0B';
 
   return (
-    <View className="flex-1 bg-[#F5F7FA]" style={{ paddingBottom: insets.bottom, paddingTop: insets.top }}>
-
+    <View className="flex-1 bg-[#F5F7FA] dark:bg-black" style={{ paddingBottom: insets.bottom }}>
       {/* ── Custom Header (same pattern as RoomDetailScreen) ── */}
-      <View className="flex-row items-center justify-between px-3 pt-1 pb-2">
-        <View className="flex-1 items-start">
+      <View
+        className="flex-row items-center justify-between bg-white px-4 dark:bg-neutral-900"
+        style={{ paddingTop: insets.top, paddingBottom: 8 }}
+      >
+        <Animated.View entering={FadeInLeft.duration(300)} className="flex-1 items-start">
           <TouchableOpacity
             onPress={() => navigation.goBack()}
             activeOpacity={0.7}
-            className="size-10 items-center justify-center rounded-full bg-black/8"
+            className="size-10 items-center justify-center rounded-full bg-black/5 dark:bg-white/10"
           >
             <MaterialCommunityIcons name="chevron-left" size={28} color={isDark ? '#FFF' : '#1B1B1B'} />
           </TouchableOpacity>
-        </View>
+        </Animated.View>
 
-        <View className="flex-2 items-center">
-          <Text className="text-lg font-semibold text-[#1B1B1B]" numberOfLines={1}>
+        <Animated.View entering={FadeInDown.duration(300)} className="flex-2 items-center">
+          <Text className="text-lg font-semibold text-black dark:text-white" numberOfLines={1}>
             {device?.name ?? translate('deviceDetail.shutter.defaultName')}
           </Text>
-        </View>
+        </Animated.View>
 
-        <View className="flex-1 flex-row items-center justify-end gap-2">
+        <Animated.View entering={FadeInRight.duration(300)} className="flex-1 flex-row items-center justify-end gap-2">
           <TouchableOpacity
             onPress={() => console.log('History Log')}
             activeOpacity={0.7}
-            className="size-10 items-center justify-center rounded-full bg-black/8"
+            className="size-10 items-center justify-center rounded-full bg-black/5 dark:bg-white/10"
           >
             <MaterialCommunityIcons name="bell-outline" size={22} color={isDark ? '#FFF' : '#1B1B1B'} />
           </TouchableOpacity>
@@ -223,113 +248,126 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
             triggerComponent={(
               <TouchableOpacity
                 activeOpacity={0.7}
-                className="size-10 items-center justify-center rounded-full bg-black/8"
+                className="size-10 items-center justify-center rounded-full bg-black/5 dark:bg-white/10"
               >
                 <MaterialCommunityIcons name="cog-outline" size={22} color={isDark ? '#FFF' : '#1B1B1B'} />
               </TouchableOpacity>
             )}
           />
-        </View>
+        </Animated.View>
       </View>
       {/* ── Door Image ─────────────────────────────────────── */}
-      <View className="mt-2 aspect-square w-full overflow-hidden bg-[#F5F7FA]">
+      <View className="aspect-4/3 w-full overflow-hidden bg-[#F5F7FA] dark:bg-black">
         <Image source={bgSource} style={{ width: '100%', height: '100%' }} contentFit="cover" />
 
         {/* State overlay pill (Left) */}
-        <View className="absolute top-4 left-4 flex-row items-center gap-2 rounded-full bg-black/60 px-3 py-1.5 shadow-sm">
+        <View className="absolute bottom-4 left-4 flex-row items-center gap-2 rounded-full bg-black/60 px-3 py-1.5 shadow-sm">
           <View className="size-2 rounded-full" style={{ backgroundColor: stateColor }} />
           <Text className="text-xs font-semibold text-white uppercase shadow-sm">{doorState}</Text>
         </View>
 
         {/* Online/Offline pill (Right) */}
-        <View className="absolute top-4 right-4 flex-row items-center gap-1.5 rounded-full bg-black/60 px-2.5 py-1.5 shadow-sm">
+        <View className="absolute right-4 bottom-4 flex-row items-center gap-1.5 rounded-full bg-black/60 px-2.5 py-1.5 shadow-sm">
           <View className={`size-2 rounded-full ${isOnline ? 'bg-[#10B981]' : 'bg-neutral-500'}`} />
-          <Text className="text-xs font-semibold text-white uppercase shadow-sm">
+          <Text className="text-xs font-semibold text-white shadow-sm">
             {isOnline ? translate('base.online') : translate('base.offline')}
           </Text>
         </View>
       </View>
 
-      {/* ── Progress Slider ────────────────────────────────── */}
-      <View className="mt-6 w-full px-4">
-        <CurtainSlider
-          position={position}
-          onSlidingComplete={handlePosition}
-          disabled={true} // Tạm thời khóa tính năng điều khiển vị trí
-        />
-      </View>
-
-      {/* ── Control Buttons ────────────────────────────────── */}
-      <View className="mx-6 mt-6 flex-row items-end justify-between">
-        <CtrlButton
-          icon={<FontAwesome6 name="chevron-down" size={22} color="#1B1B1B" />}
-          label={translate('deviceDetail.shutter.close')}
-          onPress={handleClose}
-          disabled={isControlling || !isOnline}
-        />
-        <CtrlButton
-          icon={<FontAwesome6 name="pause" size={22} color="#fff" />}
-          label={translate('deviceDetail.shutter.stop')}
-          onPress={handleStop}
-          disabled={isControlling || !isOnline}
-          primary
-        />
-        <CtrlButton
-          icon={<FontAwesome6 name="chevron-up" size={22} color="#1B1B1B" />}
-          label={translate('deviceDetail.shutter.open')}
-          onPress={handleOpen}
-          disabled={isControlling || !isOnline}
-        />
-      </View>
-
-      {/* ── Child Lock Toggle ──────────────────────────────── */}
-      <View className="mx-4 mt-5">
-        <TouchableOpacity
-          className={`flex-row items-center justify-center gap-2 rounded-2xl py-3.5 shadow-sm ${childLock ? 'bg-red-500' : 'bg-white'}`}
-          onPress={() => handleChildLock(!childLock)}
-          disabled={isControlling || !isOnline}
-          activeOpacity={0.8}
-        >
-          <FontAwesome5
-            name={childLock ? 'lock' : 'lock-open'}
-            size={15}
-            color={childLock ? '#fff' : '#1B1B1B'}
+      <ScrollView
+        className="flex-1"
+        contentContainerClassName="px-4 pb-8 pt-6"
+        showsVerticalScrollIndicator={false}
+      >
+        {/* ── Progress Slider ────────────────────────────────── */}
+        <View className="w-full">
+          <CurtainSlider
+            position={position}
+            onSlidingComplete={handlePosition}
+            disabled={true} // Tạm thời khóa tính năng điều khiển vị trí
           />
-          <Text className={`text-sm font-semibold ${childLock ? 'text-white' : 'text-[#1B1B1B]'}`}>
-            {childLock
-              ? translate('deviceDetail.shutter.childLockOn')
-              : translate('deviceDetail.shutter.childLockOff')}
-          </Text>
-        </TouchableOpacity>
-      </View>
+        </View>
 
-      {/* ── Footer Stats ───────────────────────────────────── */}
-      <View className="mx-4 mt-4 flex-row gap-2">
-        <StatCard
-          icon={<FontAwesome6 name="crosshairs" size={18} color="#9CA3AF" />}
-          value="--"
-          label={translate('deviceDetail.shutter.operations')}
-        />
-        <StatCard
-          icon={<FontAwesome6 name="clock" size={18} color="#9CA3AF" />}
-          value="--"
-          label={translate('deviceDetail.shutter.workingHours')}
-        />
-        <StatCard
-          icon={<MaterialCommunityIcons name="timer-outline" size={18} color="#9CA3AF" />}
-          value={formatTravelTime(travelMs)}
-          label={translate('deviceDetail.shutter.travelTime')}
-        />
-      </View>
+        {/* ── Control Buttons ────────────────────────────────── */}
+        <View className="mt-8 flex-row items-end justify-between">
+          <CtrlButton
+            icon={<FontAwesome6 name="chevron-down" size={22} color={isDark ? '#fff' : '#1B1B1B'} />}
+            label={translate('deviceDetail.shutter.close')}
+            onPress={handleClose}
+            disabled={isControlling || !isOnline}
+          />
+          <CtrlButton
+            icon={<FontAwesome6 name="pause" size={22} color={isDark ? '#1B1B1B' : '#fff'} />}
+            label={translate('deviceDetail.shutter.stop')}
+            onPress={handleStop}
+            disabled={isControlling || !isOnline}
+            primary
+          />
+          <CtrlButton
+            icon={<FontAwesome6 name="chevron-up" size={22} color={isDark ? '#fff' : '#1B1B1B'} />}
+            label={translate('deviceDetail.shutter.open')}
+            onPress={handleOpen}
+            disabled={isControlling || !isOnline}
+          />
+        </View>
+
+        {/* ── Child Lock Toggle ──────────────────────────────── */}
+        <View className="mt-6">
+          <TouchableOpacity
+            className={`flex-row items-center justify-center gap-2 rounded-2xl py-3.5 shadow-sm ${childLock ? 'bg-red-500 dark:bg-red-500/80' : 'bg-white dark:border dark:border-[#292929] dark:bg-[#FFFFFF0D]'}`}
+            onPress={() => handleChildLock(!childLock)}
+            disabled={isControlling || !isOnline}
+            activeOpacity={0.8}
+          >
+            <FontAwesome5
+              name={childLock ? 'lock' : 'lock-open'}
+              size={15}
+              color={childLock ? '#fff' : (isDark ? '#FFF' : '#1B1B1B')}
+            />
+            <Text className={`text-sm font-semibold ${childLock ? 'text-white' : 'text-[#1B1B1B] dark:text-white'}`}>
+              {childLock
+                ? translate('deviceDetail.shutter.childLockOn')
+                : translate('deviceDetail.shutter.childLockOff')}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* ── Footer Stats ───────────────────────────────────── */}
+        <View className="mt-4 flex-row gap-2">
+          <StatCard
+            icon={<FontAwesome6 name="crosshairs" size={18} color="#9CA3AF" />}
+            value="--"
+            label={translate('deviceDetail.shutter.operations')}
+          />
+          <StatCard
+            icon={<FontAwesome6 name="clock" size={18} color="#9CA3AF" />}
+            value="--"
+            label={translate('deviceDetail.shutter.workingHours')}
+          />
+          <StatCard
+            icon={<MaterialCommunityIcons name="timer-outline" size={18} color="#9CA3AF" />}
+            value={formatTravelTime(travelMs)}
+            label={translate('deviceDetail.shutter.travelTime')}
+          />
+        </View>
+      </ScrollView>
 
       <ShutterBackgroundModal modalRef={modal.ref} deviceId={deviceId} />
-      <CurtainAdvancedModal
-        modalRef={advancedModal.ref}
+      <CurtainBleModal
+        modalRef={bleModal.ref}
         isControlling={isControlling}
         onBleMode={handleBleMode}
+      />
+      <CurtainRfLearnModal
+        modalRef={rfLearnModal.ref}
+        isControlling={isControlling}
         onLearn={handleLearn}
+      />
+      <CurtainMotorConfigModal
+        modalRef={motorConfigModal.ref}
+        isControlling={isControlling}
         onConfig={handleConfig}
-        onOta={handleOta}
       />
     </View>
   );
