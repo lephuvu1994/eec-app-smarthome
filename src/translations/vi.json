@@ -127,11 +127,37 @@
       "brightness": "Độ sáng"
     },
     "shutter": {
+      "advanced": {
+        "bleMode": "Chế độ BLE",
+        "bleModeDesc": "Bật hiển thị Bluetooth",
+        "clicks": "Số lần click",
+        "lock": "Khoá",
+        "motorConfig": "Cấu hình Motor",
+        "otaUpdate": "Cập nhật Firmware (OTA)",
+        "otaUrl": "URL Firmware",
+        "rfLearning": "Học lệnh RF",
+        "saveConfig": "Lưu cấu hình",
+        "title": "Cài đặt Nâng cao",
+        "travelMsPlaceholder": "Hành trình (ms) vd: 22000",
+        "updateOta": "Cập nhật OTA",
+        "workingHours": "Giờ hoạt động"
+      },
+      "advancedMode": "Nâng cao",
       "changeBackground": "Đổi hình nền",
+      "childLock": "Khoá trẻ em",
+      "childLockOff": "Khoá trẻ em: TẮT",
+      "childLockOn": "Khoá trẻ em: BẬT",
       "close": "Đóng",
+      "defaultName": "Cửa cuốn",
+      "deviceType": "Loại thiết bị",
       "open": "Mở",
+      "operations": "Lượt thao tác",
       "position": "Vị trí",
-      "stop": "Dừng"
+      "rename": "Đổi tên",
+      "settings": "Cài đặt",
+      "stop": "Dừng",
+      "travelTime": "Hành trình",
+      "workingHours": "Giờ làm việc"
     },
     "switch": {
       "turnOffAll": "Tắt tất cả",

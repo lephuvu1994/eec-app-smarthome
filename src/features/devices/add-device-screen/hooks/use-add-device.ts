@@ -329,7 +329,7 @@ export function useAddDevice() {
         // Chip xử lý config → ACK → save → reboot
         // Disconnect tại bất kỳ thời điểm nào = config đã nhận thành công
         try {
-          await bleService.writeWithoutResponse(device.id, encryptedBytes);
+          await bleService.writeChunked(device.id, encryptedBytes);
 
           setConfiguringStatus(translate('base.waitingForDeviceAck'));
           const ackBytes = await bleService.waitForNotification(device.id, BLE_ACK_TIMEOUT);
