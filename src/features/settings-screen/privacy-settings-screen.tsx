@@ -1,3 +1,4 @@
+import type { TxKeyPath } from '@/lib/i18n';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { Image } from 'expo-image';
@@ -121,11 +122,11 @@ export function PrivacySettingsScreen() {
                         <MaterialCommunityIcons name={perm.icon as any} size={20} color={perm.iconColor} />
                       </View>
                       <Text className="flex-1 text-[15px] font-medium text-[#1B1B1B] dark:text-white">
-                        {translate(perm.labelKey as any)}
+                        {translate(perm.labelKey as TxKeyPath)}
                       </Text>
                     </View>
                     <Text className="mt-1 ml-12 text-xs/5 text-neutral-400 dark:text-neutral-500">
-                      {translate(perm.descKey as any)}
+                      {translate(perm.descKey as TxKeyPath)}
                     </Text>
                   </View>
                   {idx < permissions.length - 1 && (

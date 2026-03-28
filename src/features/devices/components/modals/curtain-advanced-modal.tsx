@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { ScrollView, Switch } from 'react-native';
 
 import { Button, FloatInput, Modal, Text, View } from '@/components/ui';
+import { translate } from '@/lib/i18n';
 
 enum EActionButtonCurtanin {
   Open = 'OPEN',
@@ -41,26 +42,26 @@ export function CurtainAdvancedModal({
   };
 
   return (
-    <Modal ref={modalRef} snapPoints={['80%']} title="Cài đặt Nâng cao">
+    <Modal ref={modalRef} snapPoints={['80%']} title={translate('deviceDetail.shutter.advanced.title')}>
       <ScrollView contentContainerClassName="p-5 pb-10" showsVerticalScrollIndicator={false}>
         {/* BLE SECTION */}
         <View className="mb-6 flex-row items-center justify-between rounded-2xl bg-white p-4 shadow-sm">
           <View>
-            <Text className="text-base font-bold text-[#1B1B1B]">Chế độ BLE</Text>
-            <Text className="text-xs text-neutral-500">Bật hiển thị Bluetooth</Text>
+            <Text className="text-base font-bold text-[#1B1B1B]">{translate('deviceDetail.shutter.advanced.bleMode')}</Text>
+            <Text className="text-xs text-neutral-500">{translate('deviceDetail.shutter.advanced.bleModeDesc')}</Text>
           </View>
           <Switch value={bleEnabled} onValueChange={handleToggleBle} disabled={isControlling} />
         </View>
 
         {/* RF LEARN SECTION */}
         <View className="mb-6 rounded-2xl bg-white p-4 shadow-sm">
-          <Text className="mb-3 text-base font-bold text-[#1B1B1B]">Học lệnh RF</Text>
+          <Text className="mb-3 text-base font-bold text-[#1B1B1B]">{translate('deviceDetail.shutter.advanced.rfLearning')}</Text>
           <View className="flex-row flex-wrap justify-between gap-2">
             {[
-              { label: 'Mở', action: EActionButtonCurtanin.Open },
-              { label: 'Đóng', action: EActionButtonCurtanin.Close },
-              { label: 'Dừng', action: EActionButtonCurtanin.Stop },
-              { label: 'Khoá', action: EActionButtonCurtanin.Lock },
+              { label: translate('deviceDetail.shutter.open'), action: EActionButtonCurtanin.Open },
+              { label: translate('deviceDetail.shutter.close'), action: EActionButtonCurtanin.Close },
+              { label: translate('deviceDetail.shutter.stop'), action: EActionButtonCurtanin.Stop },
+              { label: translate('deviceDetail.shutter.advanced.lock'), action: EActionButtonCurtanin.Lock },
             ].map(item => (
               <Button
                 key={item.action}
@@ -76,10 +77,10 @@ export function CurtainAdvancedModal({
 
         {/* MOTOR CONFIG SECTION */}
         <View className="mb-6 rounded-2xl bg-white p-4 shadow-sm">
-          <Text className="mb-3 text-base font-bold text-[#1B1B1B]">Cấu hình Motor</Text>
+          <Text className="mb-3 text-base font-bold text-[#1B1B1B]">{translate('deviceDetail.shutter.advanced.motorConfig')}</Text>
           <View className="gap-3">
             <FloatInput
-              label="Số lần click"
+              label={translate('deviceDetail.shutter.advanced.clicks')}
               value={clicks}
               onChangeText={setClicks}
               keyboardType="number-pad"
@@ -89,7 +90,7 @@ export function CurtainAdvancedModal({
               borderColor={{ active: '#A3E635', inactive: '#E5E7EB' }}
             />
             <FloatInput
-              label="Giờ hoạt động"
+              label={translate('deviceDetail.shutter.advanced.workingHours')}
               value={workHours}
               onChangeText={setWorkHours}
               keyboardType="number-pad"
@@ -99,7 +100,7 @@ export function CurtainAdvancedModal({
               borderColor={{ active: '#A3E635', inactive: '#E5E7EB' }}
             />
             <FloatInput
-              label="Hành trình (ms) vd: 22000"
+              label={translate('deviceDetail.shutter.advanced.travelMsPlaceholder')}
               value={travelMs}
               onChangeText={setTravelMs}
               keyboardType="number-pad"
@@ -111,7 +112,7 @@ export function CurtainAdvancedModal({
             <Button
               className="mt-2 bg-[#A3E635]"
               textClassName="text-[#1B1B1B]"
-              label="Lưu Cấu Hình"
+              label={translate('deviceDetail.shutter.advanced.saveConfig')}
               disabled={isControlling}
               onPress={() => {
                 const payload: any = {};
@@ -132,10 +133,10 @@ export function CurtainAdvancedModal({
 
         {/* OTA SECTION */}
         <View className="rounded-2xl bg-white p-4 shadow-sm">
-          <Text className="mb-3 text-base font-bold text-[#1B1B1B]">Cập nhật Firmware (OTA)</Text>
+          <Text className="mb-3 text-base font-bold text-[#1B1B1B]">{translate('deviceDetail.shutter.advanced.otaUpdate')}</Text>
           <View className="gap-3">
             <FloatInput
-              label="URL Firmware"
+              label={translate('deviceDetail.shutter.advanced.otaUrl')}
               value={otaUrl}
               onChangeText={setOtaUrl}
               labelTextColor="#1B1B1B"
@@ -146,7 +147,7 @@ export function CurtainAdvancedModal({
             <Button
               className="mt-2 bg-[#1B1B1B]"
               textClassName="text-white"
-              label="Cập Nhật OTA"
+              label={translate('deviceDetail.shutter.advanced.updateOta')}
               disabled={isControlling || !otaUrl}
               onPress={() => onOta(otaUrl)}
             />

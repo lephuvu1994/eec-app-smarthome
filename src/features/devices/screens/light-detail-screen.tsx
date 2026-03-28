@@ -135,7 +135,7 @@ export function LightDetailScreen({ deviceId, entityId }: Props) {
             {isOn ? `${tempBright}%` : translate('base.off')}
           </Animated.Text>
           <Animated.Text style={animatedTextStyle} className="mb-12 text-lg font-medium opacity-70">
-            {translate('deviceDetail.light.brightness' as any, { defaultValue: 'Brightness' })}
+            {translate('deviceDetail.light.brightness', { defaultValue: 'Brightness' })}
           </Animated.Text>
 
           {/* Vertical Slider */}
