@@ -121,9 +121,14 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
     handleStop,
     handleChildLock,
     handleBleMode,
-    handleLearn,
+    handleRfLearnStart,
+    handleRfLearnCancel,
+    handleRfLearnSave,
+    rfLearnStatus,
+    setRfLearnStatus,
     handleConfig,
     handlePosition,
+    motorConfig,
   } = useShutterControl(device, primaryEntity);
 
   // Note: Position is rendered by CurtainSlider directly.
@@ -362,12 +367,17 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
       <CurtainRfLearnModal
         modalRef={rfLearnModal.ref}
         isControlling={isControlling}
-        onLearn={handleLearn}
+        rfLearnStatus={rfLearnStatus}
+        setRfLearnStatus={setRfLearnStatus}
+        onStartLearn={handleRfLearnStart}
+        onCancelLearn={handleRfLearnCancel}
+        onSaveLearn={handleRfLearnSave}
       />
       <CurtainMotorConfigModal
         modalRef={motorConfigModal.ref}
         isControlling={isControlling}
         onConfig={handleConfig}
+        initialConfig={motorConfig}
       />
     </View>
   );

@@ -1,85 +1,196 @@
 import type { BottomSheetModal } from '@gorhom/bottom-sheet';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import * as React from 'react';
 import { useState } from 'react';
-import { ScrollView } from 'react-native';
+import { Platform, ScrollView, TouchableOpacity } from 'react-native';
+
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useUniwind } from 'uniwind';
-
-import { Button, FloatInput, Modal, View } from '@/components/ui';
+import { Button, HEIGHT, IS_IOS, Modal, Text, View } from '@/components/ui';
+import { Select } from '@/components/ui/select';
 import { translate } from '@/lib/i18n';
 import { ETheme } from '@/types/base';
+
+type TConfigPayload = {
+  clicks?: number;
+  start_hour?: number;
+  end_hour?: number;
+};
 
 type Props = {
   modalRef: React.RefObject<BottomSheetModal | null>;
   isControlling: boolean;
-  onConfig: (config: { clicks?: number; workHours?: number; travel?: number }) => void;
+  onConfig: (config: TConfigPayload) => void;
+  initialConfig?: TConfigPayload;
 };
+
+const clickOptions = Array.from({ length: 5 }).map((_, i) => ({
+  label: `${i + 1} lần`,
+  value: i + 1,
+}));
 
 export function CurtainMotorConfigModal({
   modalRef,
   isControlling,
   onConfig,
+  initialConfig,
 }: Props) {
-  const [clicks, setClicks] = useState('');
-  const [workHours, setWorkHours] = useState('');
-  const [travelMs, setTravelMs] = useState('');
+  const [clicks, setClicks] = useState<number | undefined>(initialConfig?.clicks ?? 2);
+
+  // Default bounds 00:00 - 23:00 unless passed from config
+  const [startDate, setStartDate] = useState(() => {
+    if (initialConfig?.start_hour !== undefined) {
+      return new Date(0, 0, 0, initialConfig.start_hour, 0, 0);
+    }
+    return new Date(0, 0, 0, 0, 0, 0);
+  });
+
+  const [endDate, setEndDate] = useState(() => {
+    if (initialConfig?.end_hour !== undefined) {
+      return new Date(0, 0, 0, initialConfig.end_hour, 0, 0);
+    }
+    return new Date(0, 0, 0, 23, 0, 0);
+  });
+
+  const [showAndroidPicker, setShowAndroidPicker] = useState<'start' | 'end' | null>(null);
+
+  const insets = useSafeAreaInsets();
+
   const { theme } = useUniwind();
   const isDark = theme === ETheme.Dark;
 
+  const formatHour = (_date: Date) => {
+    return `${_date.getHours().toString().padStart(2, '0')}:00`;
+  };
+
+  const handleDateChange = (_event: unknown, selectedDate?: Date) => {
+    if (Platform.OS === 'android') {
+      setShowAndroidPicker(null);
+    }
+    if (selectedDate) {
+      if (showAndroidPicker === 'start' || (!showAndroidPicker && (_event as any).target)) {
+        // If inline or explicitly start
+        setStartDate(selectedDate);
+      }
+      else {
+        setEndDate(selectedDate);
+      }
+    }
+  };
+
+  const handleSave = () => {
+    const payload: TConfigPayload = {
+      start_hour: startDate.getHours(),
+      end_hour: endDate.getHours(),
+    };
+    if (clicks) {
+      payload.clicks = clicks;
+    }
+
+    onConfig(payload);
+    modalRef.current?.dismiss();
+  };
+
   return (
-    <Modal ref={modalRef} snapPoints={['65%']} title={translate('deviceDetail.shutter.advanced.motorConfig')}>
+    <Modal ref={modalRef} snapPoints={[insets.bottom + HEIGHT * 0.65]} title={translate('deviceDetail.shutter.advanced.motorConfig')}>
       <ScrollView contentContainerClassName="p-5 pb-10" showsVerticalScrollIndicator={false}>
         <View className="rounded-2xl bg-white p-5 shadow-sm dark:bg-neutral-800">
-          <View className="gap-4">
-            <FloatInput
-              label={translate('deviceDetail.shutter.advanced.clicks')}
-              value={clicks}
-              onChangeText={setClicks}
-              keyboardType="number-pad"
-              labelTextColor={isDark ? '#FFF' : '#1B1B1B'}
-              labelTextColorInactive={isDark ? '#9CA3AF' : '#6B7280'}
-              inputClassName="text-[#1B1B1B] dark:text-white"
-              borderColor={{ active: '#A3E635', inactive: isDark ? '#404040' : '#E5E7EB' }}
-            />
-            <FloatInput
-              label={translate('deviceDetail.shutter.advanced.workingHours')}
-              value={workHours}
-              onChangeText={setWorkHours}
-              keyboardType="number-pad"
-              labelTextColor={isDark ? '#FFF' : '#1B1B1B'}
-              labelTextColorInactive={isDark ? '#9CA3AF' : '#6B7280'}
-              inputClassName="text-[#1B1B1B] dark:text-white"
-              borderColor={{ active: '#A3E635', inactive: isDark ? '#404040' : '#E5E7EB' }}
-            />
-            <FloatInput
-              label={translate('deviceDetail.shutter.advanced.travelMsPlaceholder')}
-              value={travelMs}
-              onChangeText={setTravelMs}
-              keyboardType="number-pad"
-              labelTextColor={isDark ? '#FFF' : '#1B1B1B'}
-              labelTextColorInactive={isDark ? '#9CA3AF' : '#6B7280'}
-              inputClassName="text-[#1B1B1B] dark:text-white"
-              borderColor={{ active: '#A3E635', inactive: isDark ? '#404040' : '#E5E7EB' }}
-            />
+          <View className="gap-5">
+            <View className="z-10">
+              <Select
+                label={translate('deviceDetail.shutter.advanced.clicks')}
+                value={clicks}
+                onSelect={val => setClicks(Number(val))}
+                options={clickOptions}
+                placeholder="Chọn số lần click"
+              />
+            </View>
+
+            {/* Operating Hours Configuration */}
+            <View className="z-0">
+              <Text className="mb-3 text-sm font-semibold text-neutral-500 dark:text-neutral-400">
+                {translate('deviceDetail.shutter.advanced.workingHours')}
+              </Text>
+              {IS_IOS && (
+                <View className="flex-row justify-between gap-4">
+                  <View className="flex-1 items-center justify-center overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50 py-2 dark:border-neutral-700 dark:bg-[#FFFFFF0D]">
+                    <Text className="mb-1 text-xs font-semibold text-neutral-500 dark:text-neutral-400">Giờ Bắt Đầu</Text>
+                    <View style={{ width: '120%', height: 160, alignItems: 'center', transform: [{ scale: 0.85 }] }}>
+                      <DateTimePicker
+                        value={startDate}
+                        {...({ mode: 'time' } as any)}
+                        display="spinner"
+                        minuteInterval={60}
+                        locale="vi-VN"
+                        textColor={isDark ? '#FFFFFF' : '#000000'}
+                        onChange={handleDateChange}
+                        style={{ height: 110, width: '100%' }}
+                      />
+                    </View>
+                  </View>
+
+                  <View className="flex-1 items-center justify-center overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50 py-2 dark:border-neutral-700 dark:bg-[#FFFFFF0D]">
+                    <Text className="mb-1 text-xs font-semibold text-neutral-500 dark:text-neutral-400">Giờ Kết Thúc</Text>
+                    <View style={{ width: '120%', height: 160, alignItems: 'center', transform: [{ scale: 0.85 }] }}>
+                      <DateTimePicker
+                        value={endDate}
+                        {...({ mode: 'time' } as any)}
+                        display="spinner"
+                        minuteInterval={60}
+                        locale="vi-VN"
+                        textColor={isDark ? '#FFFFFF' : '#000000'}
+                        onChange={(_e, d) => {
+                          if (d) {
+                            setEndDate(d);
+                          }
+                        }}
+                        style={{ height: 110, width: '100%' }}
+                      />
+                    </View>
+                  </View>
+                </View>
+              )}
+
+              {!IS_IOS && (
+                <View className="flex-row justify-between gap-4">
+                  <TouchableOpacity
+                    className="flex-1 items-center justify-center rounded-xl border border-neutral-200 bg-neutral-50 py-5 dark:border-neutral-700 dark:bg-neutral-800"
+                    onPress={() => setShowAndroidPicker('start')}
+                  >
+                    <Text className="text-xs text-neutral-500 dark:text-neutral-400">Giờ Bắt Đầu</Text>
+                    <Text className="mt-1 text-xl font-bold text-[#1B1B1B] dark:text-white">{formatHour(startDate)}</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    className="flex-1 items-center justify-center rounded-xl border border-neutral-200 bg-neutral-50 py-5 dark:border-neutral-700 dark:bg-neutral-800"
+                    onPress={() => setShowAndroidPicker('end')}
+                  >
+                    <Text className="text-xs text-neutral-500 dark:text-neutral-400">Giờ Kết Thúc</Text>
+                    <Text className="mt-1 text-xl font-bold text-[#1B1B1B] dark:text-white">{formatHour(endDate)}</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+
+              {/* Android Overlay Picker */}
+              {!IS_IOS && showAndroidPicker !== null && (
+                <DateTimePicker
+                  value={showAndroidPicker === 'start' ? startDate : endDate}
+                  {...({ mode: 'time' } as any)}
+                  display="spinner"
+                  minuteInterval={60}
+                  is24Hour={true}
+                  onChange={handleDateChange}
+                />
+              )}
+            </View>
+
             <Button
-              className="mt-4 bg-[#A3E635] py-4"
-              textClassName="text-[#1B1B1B] text-[15px] font-bold"
+              className="mt-4 h-[52px] w-full bg-[#A3E635]"
+              textClassName="text-[15px] font-bold text-[#1B1B1B]"
               label={translate('deviceDetail.shutter.advanced.saveConfig')}
               disabled={isControlling}
-              onPress={() => {
-                const payload: any = {};
-                if (clicks) {
-                  payload.clicks = Number(clicks);
-                }
-                if (workHours) {
-                  payload.workHours = Number(workHours);
-                }
-                if (travelMs) {
-                  payload.travel = Number(travelMs);
-                }
-                onConfig(payload);
-                modalRef.current?.dismiss();
-              }}
+              onPress={handleSave}
             />
           </View>
         </View>
