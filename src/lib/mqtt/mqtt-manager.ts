@@ -181,8 +181,8 @@ export class MqttManager {
         console.warn('📡 MQTT error:', err.message);
       });
 
-      this.client!.on('message', (topic: string, payload: Uint8Array) => {
-        this.handleMessage(topic, payload);
+      this.client!.on('message', (topic: string, payload: Uint8Array, packet: any) => {
+        this.handleMessage(topic, payload, packet.retain);
       });
     }
     catch (error: any) {
@@ -231,7 +231,7 @@ export class MqttManager {
   }
 
   // ─── Message Handling ──────────────────────────────
-  private handleMessage(topic: string, payload: Uint8Array): void {
+  private handleMessage(topic: string, payload: Uint8Array, isRetained: boolean = false): void {
     // Extract device token from topic: "COMPANY/MODEL/{token}/state"
     const parts = topic.split('/');
     if (parts.length < 4) {
@@ -259,12 +259,12 @@ export class MqttManager {
       // Format 2: Single entity update
       // { entityCode, state, attributes }
       if (data.entityCode) {
-        this.deviceEmitter.emit(`device:${deviceId}`, data);
+        this.deviceEmitter.emit(`device:${deviceId}`, { ...data, isRetained });
         return;
       }
 
       // Format 3: Raw flat state (fallback) — emit as-is
-      this.deviceEmitter.emit(`device:${deviceId}`, data);
+      this.deviceEmitter.emit(`device:${deviceId}`, { ...data, isRetained });
     }
     catch {
       // Malformed JSON — skip silently
