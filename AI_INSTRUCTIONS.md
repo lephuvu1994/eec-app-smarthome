@@ -95,11 +95,14 @@ src/
 | Constant       | `camelCase` hoặc `UPPER_SNAKE`       | `emailRegex`, `API_VERSION`                           |
 | API service    | `camelCase` object                   | `authService.login()`, `deviceService.getDevices()`   |
 
-### 3.2 TypeScript
+### 3.2 TypeScript & Enums
 
-- Sử dụng TypeScript strict mode
-- Dùng `type` cho data shapes, `enum` cho fixed values
-- Import types với `import type { ... }` khi chỉ dùng type
+- **Sử dụng TypeScript strict mode**
+- **Dùng `type` cho data shapes.** Tuyệt đối KHÔNG dùng `interface`.
+- **Dùng `enum` (với prefix `E`) cho các nhóm giá trị cố định (fixed values) để loại bỏ Magic Strings.**
+  - *Ví dụ:* Các trường trạng thái từ API trả về (`status`, `type`, `event`, `source`) **BẮT BUỘC** phải được định nghĩa `enum` (vd: `EDeviceTimelineEvent.Online`).
+  - **TUYỆT ĐỐI KHÔNG** so sánh hardcode chuỗi chay như `if (event === 'online')` hay định nghĩa type `event: 'online' | 'offline'`.
+- Import types với `import type { ... }` khi chỉ dùng type.
 
 ### 3.3 Reanimated & Worklets
 
@@ -418,9 +421,13 @@ translate('formAuth.verifyIdentifier', { identifier: 'Email' });
 <Text tx="formAuth.or" />
 ```
 
-### Rules:
+### Rules & Tuân thủ Dịch thuật:
 
-- **KHÔNG hardcode text** — luôn dùng `translate(key)`
+- **BẮT BUỘC dùng `translate(key)`** cho TẤT CẢ văn bản hiển thị. **TUYỆT ĐỐI KHÔNG** để raw text / string chay lồng trực tiếp trong View/Component dưới mọi hình thức (vd: ❌ `<Text>Thiết bị</Text>` / ❌ `const status = "Đang chạy"`).
+- **Tuyệt đối tránh Nối chuỗi (String Concatenation):**
+  - Khi cần ghép giá trị động vào câu (vd: "Trạng thái: Bật (qua Ứng dụng)"), **BẮT BUỘC** phải dùng tính năng `Interpolation` (biến trong cặp `{{ }}`) của i18next thay vì nối chuỗi JavaScript (`+` hoặc template literals `${}`).
+  - *Ví dụ đúng:* `"statusVia": "{{name}}Trạng thái: {{event}} (qua {{source}})"`
+- Các giá trị sinh ra từ API (Source, Event, Error) thay vì map chữ cứng thì cũng phải chạy qua `translate(mappingEnum)`.
 - **KHÔNG dùng Alert.alert** — dùng `showErrorMessage()` / `showSuccessMessage()`
 - Key format: `{feature}.{context}.{name}` (e.g., `formAuth.error.passwordRequired`)
 
