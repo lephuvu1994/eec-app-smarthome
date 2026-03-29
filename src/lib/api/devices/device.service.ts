@@ -160,8 +160,10 @@ export enum EDeviceTimelineEvent {
 export enum EDeviceTimelineSource {
   App = 'app',
   Physical = 'physical',
+  RF = 'rf',
   Voice = 'voice',
   Automation = 'automation',
+  System = 'system',
 }
 
 export type TDeviceTimelineItem = {
@@ -169,6 +171,9 @@ export type TDeviceTimelineItem = {
   type: EDeviceTimelineType | string;
   event: EDeviceTimelineEvent | string;
   source: EDeviceTimelineSource | string | null;
+  deviceId?: string;
+  deviceName?: string;
+  roomName?: string | null;
   entityCode: string | null;
   entityName: string | null;
   createdAt: string; // ISO Date String

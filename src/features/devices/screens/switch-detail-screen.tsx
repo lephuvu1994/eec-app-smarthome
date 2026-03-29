@@ -4,6 +4,7 @@ import { ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Text, View } from '@/components/ui';
+import { BellIcon } from '@/components/ui/icons';
 import { translate } from '@/lib/i18n';
 import { isPrimaryEntity } from '@/lib/utils/device-entity-helper';
 import { useDeviceStore } from '@/stores/device/device-store';
@@ -51,9 +52,9 @@ export function SwitchDetailScreen({ deviceId }: Props) {
               <TouchableOpacity
                 ref={sourceRef}
                 onPress={openPopover}
-                className="h-11 w-11 items-center justify-center rounded-full bg-white/10"
+                className="size-10 items-center justify-center rounded-full bg-white/20 dark:bg-black/20"
               >
-                <FontAwesome name="bell-o" size={18} color="#fff" />
+                <BellIcon color="#fff" />
               </TouchableOpacity>
             )}
           />

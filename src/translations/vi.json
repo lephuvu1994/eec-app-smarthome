@@ -93,6 +93,7 @@
     "sendingConfig": "Đang gửi cấu hình...",
     "somethingWentWrong": "Đã có lỗi xảy ra",
     "success": "Thành công",
+    "timelineTitle": "Lịch sử hoạt động",
     "unableToConnect": "Không thể kết nối",
     "ungroupedRooms": "Chưa phân nhóm",
     "unsupportedDevice": "Không hỗ trợ thiết bị này.",
@@ -166,17 +167,25 @@
     "timeline": {
       "deviceOffline": "Thiết bị ngoại tuyến",
       "deviceOnline": "Thiết bị trực tuyến",
+      "errorLoadData": "Lỗi tải dữ liệu. Thử lại sau.",
       "events": {
+        "close": "Đóng",
         "off": "Tắt",
         "offline": "Ngoại tuyến",
         "on": "Bật",
         "online": "Trực tuyến",
-        "pause": "Dừng"
+        "open": "Mở",
+        "pause": "Dừng",
+        "stop": "Dừng"
       },
+      "noActivity": "Chưa có hoạt động",
       "sources": {
-        "app": "Ứng dụng",
+        "app": "Từ ứng dụng",
         "automation": "Tự động",
-        "physical": "Phần cứng",
+        "mqtt": "Từ ứng dụng",
+        "physical": "Từ nút vật lý",
+        "rf": "Từ remote (RF)",
+        "system": "Hệ thống",
         "voice": "Giọng nói"
       },
       "statusOnly": "{{name}}Trạng thái: {{event}}",

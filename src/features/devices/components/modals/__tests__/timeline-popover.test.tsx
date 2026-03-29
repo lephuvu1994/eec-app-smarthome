@@ -54,6 +54,6 @@ describe('TimelinePopover', () => {
     );
 
     // Initial title loaded
-    expect(getByText('deviceDetail.timeline.title')).toBeTruthy();
+    expect(getByText('base.timelineTitle')).toBeTruthy();
   });
 });

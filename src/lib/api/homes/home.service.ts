@@ -1,4 +1,4 @@
-import type { TDeviceEntity } from '../devices/device.service';
+import type { TDeviceEntity, TDeviceTimelineResponse } from '../devices/device.service';
 import type { TScene } from '../scenes/scene.service';
 
 import { client } from '../common';
@@ -93,6 +93,14 @@ export const homeService = {
   getHomeDetail: async (homeId: string): Promise<THomeDetail> => {
     const { data } = await client.get(`/homes/${homeId}/detail`);
     return data.data || data;
+  },
+
+  /** Lịch sử hoạt động toàn bộ thiết bị trong nhà */
+  getHomeActivity: async (homeId: string, page = 1, limit = 30): Promise<TDeviceTimelineResponse> => {
+    const { data } = await client.get(`/homes/${homeId}/activity`, {
+      params: { page, limit },
+    });
+    return data;
   },
 
   // ─── Floor ──────────────────────────

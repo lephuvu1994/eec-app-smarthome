@@ -10,6 +10,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 
 import { Text, View } from '@/components/ui';
+import { BellIcon } from '@/components/ui/icons';
 import { useModal } from '@/components/ui/modal';
 import { ZeegoNativeMenu } from '@/components/ui/zeego-native-menu';
 import { EDoorState, useShutterControl } from '@/features/devices/hooks/use-shutter-control';
@@ -254,7 +255,7 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
                 activeOpacity={0.7}
                 className="size-10 items-center justify-center rounded-full bg-black/5 dark:bg-white/10"
               >
-                <MaterialCommunityIcons name="bell-outline" size={22} color={isDark ? '#FFF' : '#1B1B1B'} />
+                <BellIcon color={isDark ? '#FFF' : '#1B1B1B'} />
               </TouchableOpacity>
             )}
           />
