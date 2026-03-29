@@ -1,13 +1,15 @@
+import type { TDeviceTimelineItem } from '@/lib/api/devices/device.service';
 import type { TxKeyPath } from '@/lib/i18n';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import dayjs from 'dayjs';
 import { useRouter } from 'expo-router';
 import * as React from 'react';
 import { ActivityIndicator, Dimensions, ScrollView, TouchableOpacity } from 'react-native';
-import Popover, { PopoverPlacement } from 'react-native-popover-view';
 
+import Popover, { PopoverPlacement } from 'react-native-popover-view';
 import { Text, View } from '@/components/ui';
 import { useDeviceTimelinePreview } from '@/features/devices/hooks/use-device-timeline';
+import { EDeviceTimelineEvent, EDeviceTimelineType } from '@/lib/api/devices/device.service';
 import { translate } from '@/lib/i18n';
 import { useConfigManager } from '@/stores/config/config';
 
@@ -41,31 +43,49 @@ export function TimelinePopover({ deviceId, renderTrigger }: Props) {
   };
 
   const renderIcon = (type: string, event: string) => {
-    if (type === 'connection') {
+    if (type === EDeviceTimelineType.Connection) {
+      const isOnline = event === EDeviceTimelineEvent.Online;
       return (
-        <View className={`size-8 items-center justify-center rounded-full ${event === 'online' ? 'bg-green-500/20' : 'bg-red-500/20'}`}>
+        <View className={`size-8 shrink-0 items-center justify-center rounded-full ${isOnline ? 'bg-green-500/20' : 'bg-red-500/20'}`}>
           <MaterialCommunityIcons
-            name={event === 'online' ? 'wifi' : 'wifi-off'}
+            name={isOnline ? 'wifi' : 'wifi-off'}
             size={16}
-            color={event === 'online' ? '#10B981' : '#EF4444'}
+            color={isOnline ? '#10B981' : '#EF4444'}
           />
         </View>
       );
     }
     return (
-      <View className="size-8 items-center justify-center rounded-full bg-blue-500/20">
+      <View className="size-8 shrink-0 items-center justify-center rounded-full bg-blue-500/20">
         <MaterialCommunityIcons name="history" size={16} color="#3B82F6" />
       </View>
     );
   };
 
-  const renderDescription = (item: any) => {
-    if (item.type === 'connection') {
-      return item.event === 'online' ? 'Thiết bị trực tuyến' : 'Thiết bị ngoại tuyến';
+  const renderDescription = (item: TDeviceTimelineItem) => {
+    if (item.type === EDeviceTimelineType.Connection) {
+      return item.event === EDeviceTimelineEvent.Online
+        ? (translate('deviceDetail.timeline.deviceOnline' as TxKeyPath) as string)
+        : (translate('deviceDetail.timeline.deviceOffline' as TxKeyPath) as string);
     }
-    const sourceStr = item.source ? ` (qua ${item.source === 'app' ? 'Ứng dụng' : item.source.toUpperCase()})` : '';
-    const nameStr = item.entityName ? `[${item.entityName}] ` : '';
-    return `${nameStr}Trạng thái: ${item.event}${sourceStr}`;
+
+    // Translation fallback mapping
+    const i18nEvent = translate(`deviceDetail.timeline.events.${item.event}` as TxKeyPath) || item.event;
+    const i18nSource = item.source ? (translate(`deviceDetail.timeline.sources.${item.source}` as TxKeyPath) || item.source) : null;
+    const namePrefix = item.entityName ? `[${item.entityName}] ` : '';
+
+    if (i18nSource) {
+      return (translate('deviceDetail.timeline.statusVia' as TxKeyPath, {
+        name: namePrefix,
+        event: i18nEvent,
+        source: i18nSource,
+      }) as string);
+    }
+
+    return (translate('deviceDetail.timeline.statusOnly' as TxKeyPath, {
+      name: namePrefix,
+      event: i18nEvent,
+    }) as string);
   };
 
   return (

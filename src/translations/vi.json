@@ -164,7 +164,28 @@
       "turnOnAll": "Bật tất cả"
     },
     "timeline": {
+      "deviceOffline": "Thiết bị ngoại tuyến",
+      "deviceOnline": "Thiết bị trực tuyến",
+      "events": {
+        "off": "Tắt",
+        "offline": "Ngoại tuyến",
+        "on": "Bật",
+        "online": "Trực tuyến",
+        "pause": "Dừng"
+      },
+      "sources": {
+        "app": "Ứng dụng",
+        "automation": "Tự động",
+        "physical": "Phần cứng",
+        "voice": "Giọng nói"
+      },
+      "statusOnly": "{{name}}Trạng thái: {{event}}",
+      "statusVia": "{{name}}Trạng thái: {{event}} (qua {{source}})",
       "title": "Lịch sử hoạt động",
+      "types": {
+        "connection": "Kết nối",
+        "state": "Trạng thái"
+      },
       "viewAll": "Xem tất cả lịch sử"
     }
   },

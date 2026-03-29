@@ -144,11 +144,31 @@ export type TMqttCredentials = {
 // ============================================================
 // API SERVICE
 // ============================================================
+export enum EDeviceTimelineType {
+  State = 'state',
+  Connection = 'connection',
+}
+
+export enum EDeviceTimelineEvent {
+  Online = 'online',
+  Offline = 'offline',
+  On = 'on',
+  Off = 'off',
+  Pause = 'pause',
+}
+
+export enum EDeviceTimelineSource {
+  App = 'app',
+  Physical = 'physical',
+  Voice = 'voice',
+  Automation = 'automation',
+}
+
 export type TDeviceTimelineItem = {
   id: string;
-  type: 'state' | 'connection';
-  event: string;
-  source: string | null;
+  type: EDeviceTimelineType | string;
+  event: EDeviceTimelineEvent | string;
+  source: EDeviceTimelineSource | string | null;
   entityCode: string | null;
   entityName: string | null;
   createdAt: string; // ISO Date String
