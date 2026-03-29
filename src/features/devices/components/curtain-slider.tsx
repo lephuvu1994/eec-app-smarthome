@@ -85,13 +85,13 @@ export function CurtainSlider({ position, onSlidingComplete, disabled }: Props) 
   return (
     <GestureDetector gesture={composedGesture}>
       <View
-        className="h-10 w-full justify-center px-3"
+        className="h-10 w-full justify-center"
         onLayout={onLayout}
         hitSlop={{ top: 10, bottom: 10 }}
       >
-        <View className="absolute inset-x-3 h-2 rounded-full bg-neutral-200 dark:bg-neutral-700" />
+        <View className="absolute inset-x-0 h-2 rounded-full bg-neutral-200 dark:bg-neutral-700" />
         <Animated.View
-          className="absolute left-3 h-2 rounded-full bg-[#A3E635]"
+          className="absolute h-2 rounded-full bg-[#A3E635]"
           style={progressStyle}
         />
         <Animated.View
