@@ -141,7 +141,6 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
   const bleModal = useModal();
   const rfLearnModal = useModal();
   const motorConfigModal = useModal();
-  const timelineModal = useModal();
 
   const menuElements: TMenuElement[] = [
     {
@@ -246,13 +245,19 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
         </Animated.View>
 
         <Animated.View entering={FadeInRight.duration(300)} className="flex-1 flex-row items-center justify-end gap-2">
-          <TouchableOpacity
-            onPress={timelineModal.present}
-            activeOpacity={0.7}
-            className="size-10 items-center justify-center rounded-full bg-black/5 dark:bg-white/10"
-          >
-            <MaterialCommunityIcons name="bell-outline" size={22} color={isDark ? '#FFF' : '#1B1B1B'} />
-          </TouchableOpacity>
+          <TimelinePopover
+            deviceId={deviceId}
+            renderTrigger={(sourceRef, openPopover) => (
+              <TouchableOpacity
+                ref={sourceRef}
+                onPress={openPopover}
+                activeOpacity={0.7}
+                className="size-10 items-center justify-center rounded-full bg-black/5 dark:bg-white/10"
+              >
+                <MaterialCommunityIcons name="bell-outline" size={22} color={isDark ? '#FFF' : '#1B1B1B'} />
+              </TouchableOpacity>
+            )}
+          />
 
           <ZeegoNativeMenu
             elements={menuElements}
@@ -385,7 +390,6 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
         onConfig={handleConfig}
         initialConfig={motorConfig}
       />
-      <TimelinePopover modalRef={timelineModal.ref} deviceId={deviceId} />
     </View>
   );
 }

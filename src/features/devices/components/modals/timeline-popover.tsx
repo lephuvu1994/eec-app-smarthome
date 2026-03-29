@@ -1,34 +1,38 @@
-import type { BottomSheetModal } from '@gorhom/bottom-sheet';
 import type { TxKeyPath } from '@/lib/i18n';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import dayjs from 'dayjs';
 import { useRouter } from 'expo-router';
 import * as React from 'react';
-import { ActivityIndicator, ScrollView, TouchableOpacity } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ActivityIndicator, Dimensions, ScrollView, TouchableOpacity } from 'react-native';
+import Popover, { PopoverPlacement } from 'react-native-popover-view';
 
-import { Modal, Text, View } from '@/components/ui';
+import { Text, View } from '@/components/ui';
 import { useDeviceTimelinePreview } from '@/features/devices/hooks/use-device-timeline';
 import { translate } from '@/lib/i18n';
 import 'dayjs/locale/vi';
 
 dayjs.locale('vi');
 
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+
 type Props = {
-  modalRef: React.RefObject<BottomSheetModal | null>;
   deviceId: string;
+  renderTrigger: (sourceRef: React.RefObject<any>, openPopover: () => void) => React.ReactNode;
 };
 
-export function TimelinePopover({ modalRef, deviceId }: Props) {
+export function TimelinePopover({ deviceId, renderTrigger }: Props) {
   const router = useRouter();
-  const insets = useSafeAreaInsets();
+  const [isVisible, setIsVisible] = React.useState(false);
 
+  // Mở popover thì mới enable query
   const { data, isLoading, isError } = useDeviceTimelinePreview(deviceId, 5);
   const items = data?.data || [];
 
   const handleViewAll = () => {
-    modalRef.current?.dismiss();
-    router.push(`/device/${deviceId}/timeline`);
+    setIsVisible(false);
+    setTimeout(() => {
+      router.push(`/device/${deviceId}/timeline`);
+    }, 150);
   };
 
   const renderIcon = (type: string, event: string) => {
@@ -60,53 +64,68 @@ export function TimelinePopover({ modalRef, deviceId }: Props) {
   };
 
   return (
-    <Modal ref={modalRef} snapPoints={['60%']} title={(translate('deviceDetail.timeline.title' as TxKeyPath) || 'Lịch sử hoạt động') as string}>
-      <ScrollView contentContainerClassName="p-5" showsVerticalScrollIndicator={false}>
-        {isLoading && (
-          <View className="items-center justify-center py-10">
-            <ActivityIndicator size="small" color="#888" />
-          </View>
-        )}
+    <Popover
+      isVisible={isVisible}
+      onRequestClose={() => setIsVisible(false)}
+      placement={PopoverPlacement.BOTTOM}
+      from={sourceRef => renderTrigger(sourceRef, () => setIsVisible(true))}
+      popoverStyle={{ borderRadius: 16, backgroundColor: '#1B1B1B', width: SCREEN_WIDTH * 0.75 }}
+    >
+      <View className="relative p-4">
+        <View className="mb-4 flex-row items-center justify-between">
+          <Text className="text-base font-bold text-white">
+            {(translate('deviceDetail.timeline.title' as TxKeyPath) || 'Lịch sử hoạt động') as string}
+          </Text>
+          <TouchableOpacity onPress={() => setIsVisible(false)} className="size-6 items-center justify-center rounded-full bg-neutral-800">
+            <MaterialCommunityIcons name="close" size={14} color="#A3A3A3" />
+          </TouchableOpacity>
+        </View>
 
-        {isError && (
-          <Text className="py-4 text-center text-sm text-red-500">Lỗi tải dữ liệu. Vui lòng thử lại sau.</Text>
-        )}
-
-        {!isLoading && !isError && items.length === 0 && (
-          <View className="items-center justify-center py-10">
-            <MaterialCommunityIcons name="clipboard-text-outline" size={48} color="#555" />
-            <Text className="mt-4 text-sm text-neutral-400">Chưa có lịch sử hoạt động</Text>
-          </View>
-        )}
-
-        {items.map(item => (
-          <View key={item.id} className="mb-4 flex-row items-start gap-4">
-            {renderIcon(item.type, item.event)}
-
-            <View className="flex-1 border-b border-neutral-800 pb-4">
-              <Text className="text-sm font-semibold text-white">
-                {renderDescription(item)}
-              </Text>
-              <Text className="mt-1 text-xs text-neutral-400">
-                {dayjs(item.createdAt).format('HH:mm - DD/MM/YYYY')}
-              </Text>
+        <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 300 }}>
+          {isLoading && (
+            <View className="items-center justify-center py-8">
+              <ActivityIndicator size="small" color="#888" />
             </View>
-          </View>
-        ))}
+          )}
+
+          {isError && (
+            <Text className="py-4 text-center text-sm text-red-500">Lỗi tải dữ liệu. Thử lại sau.</Text>
+          )}
+
+          {!isLoading && !isError && items.length === 0 && (
+            <View className="items-center justify-center py-6">
+              <MaterialCommunityIcons name="clipboard-text-outline" size={36} color="#555" />
+              <Text className="mt-3 text-sm text-neutral-400">Chưa có hoạt động</Text>
+            </View>
+          )}
+
+          {items.map((item, idx) => (
+            <View key={item.id} className="mb-3 flex-row items-start gap-3">
+              {renderIcon(item.type, item.event)}
+              <View className={`flex-1 ${idx !== items.length - 1 ? 'border-b border-neutral-800 pb-3' : ''}`}>
+                <Text className="text-sm/5 font-medium text-neutral-200">
+                  {renderDescription(item)}
+                </Text>
+                <Text className="mt-0.5 text-xs text-neutral-500">
+                  {dayjs(item.createdAt).format('HH:mm - DD/MM/YYYY')}
+                </Text>
+              </View>
+            </View>
+          ))}
+        </ScrollView>
 
         {!isLoading && !isError && items.length > 0 && (
           <TouchableOpacity
             onPress={handleViewAll}
             activeOpacity={0.8}
-            className="mt-4 mb-10 w-full items-center rounded-2xl border border-neutral-800 bg-[#1B1B1B] py-3.5"
-            style={{ marginBottom: insets.bottom + 20 }}
+            className="mt-3 w-full items-center rounded-xl bg-blue-600/20 py-3"
           >
-            <Text className="text-sm font-semibold text-white">
+            <Text className="text-sm font-semibold text-blue-500">
               {(translate('deviceDetail.timeline.viewAll' as TxKeyPath) || 'Xem tất cả lịch sử') as string}
             </Text>
           </TouchableOpacity>
         )}
-      </ScrollView>
-    </Modal>
+      </View>
+    </Popover>
   );
 }
