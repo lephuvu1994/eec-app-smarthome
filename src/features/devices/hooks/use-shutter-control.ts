@@ -4,10 +4,11 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { cancelAnimation, Easing, useSharedValue, withTiming } from 'react-native-reanimated';
 import { showErrorMessage } from '@/components/ui';
 import { useDeviceEvent } from '@/hooks/use-device-event';
-import { deviceService } from '@/lib/api/devices/device.service';
+import { deviceService, EDeviceStatus } from '@/lib/api/devices/device.service';
 import { translate } from '@/lib/i18n';
 
 import { useConfigManager } from '@/stores/config/config';
+import { useDeviceStore } from '@/stores/device/device-store';
 
 // ─── Chip firmware schema (app_door_controller_core.c) ───────────────────────
 // Status published: { "online":true, "state":"OPEN|CLOSE|STOP",
@@ -42,28 +43,70 @@ export function useShutterControl(
    * Example: const animatedText = useDerivedValue(() => `${Math.round(position.value)}%`);
    */
   const position = useSharedValue<number>(0);
-  /** Movement state from chip (React state — drives re-render only) */
-  const [doorState, setDoorState] = useState<EDoorState>(EDoorState.Stop);
-  const doorStateRef = useRef<EDoorState>(EDoorState.Stop);
+  const childLockEntity = device?.entities.find(e => e.code === 'child_lock');
+  const configEntity = device?.entities.find(e => e.code === 'config');
+  const learnEntity = device?.entities.find(e => e.code === 'learn');
+
+  /** Movement state from chip (Derived from global store) */
+  const doorState = (primaryEntity?.currentState as EDoorState) || EDoorState.Stop;
+  const doorStateRef = useRef<EDoorState>(doorState);
+  useEffect(() => {
+    doorStateRef.current = doorState;
+  }, [doorState]);
 
   /** Child lock state */
-  const [childLock, setChildLock] = useState<boolean>(false);
+  const childLockAttr = primaryEntity?.attributes?.find(a => a.key === 'child_lock');
+  const childLock = childLockEntity?.currentState === 1
+    || childLockEntity?.currentState === '1'
+    || childLockEntity?.currentState === 'LOCKED'
+    || childLockAttr?.currentValue === 'LOCKED'
+    || childLockAttr?.strValue === 'LOCKED'
+    || false;
 
   /** Configured travel time in ms */
-  const [travelMs, setTravelMs] = useState<number>(0);
-  const travelMsRef = useRef<number>(20000); // Mặc định 20s
+  const travelAttr = primaryEntity?.attributes?.find(a => a.key === 'travel') || configEntity?.attributes?.find(a => a.key === 'travel');
+  const travelMs = (travelAttr?.currentValue as number) || (travelAttr?.numValue as number) || 20000;
+  const travelMsRef = useRef<number>(travelMs);
+  useEffect(() => {
+    travelMsRef.current = travelMs;
+  }, [travelMs]);
 
   /** RF Learning tracking string */
-  const [rfLearnStatus, setRfLearnStatus] = useState<string>('');
+  const rfLearnAttr = primaryEntity?.attributes?.find(a => a.key === 'rf_learn_status') || learnEntity?.attributes?.find(a => a.key === 'rf_learn_status');
+  const rfLearnStatus = (rfLearnAttr?.currentValue as string) || (rfLearnAttr?.strValue as string) || '';
 
-  /** True while an API call is in flight */
+  /** Motor config */
+  let motorConfig: { clicks?: number; start_time?: string; end_time?: string } | undefined;
+  if (configEntity) {
+    let rawConfig: any = null;
+    if (typeof configEntity.currentState === 'object' && configEntity.currentState) {
+      rawConfig = configEntity.currentState;
+    }
+    else if (typeof configEntity.stateText === 'string' && configEntity.stateText) {
+      try {
+        rawConfig = JSON.parse(configEntity.stateText);
+      }
+      catch {
+        /* ignore */
+      }
+    }
+
+    if (rawConfig) {
+      motorConfig = {
+        clicks: rawConfig.req_open_clicks ?? rawConfig.clicks,
+        start_time: rawConfig.start_time,
+        end_time: rawConfig.end_time,
+      };
+    }
+  }
+
+  /** True while an API call is in flight (Keep as localized visual UI state) */
   const [isControlling, setIsControlling] = useState(false);
 
-  /** Config Motor */
-  const [motorConfig, setMotorConfig] = useState<{ clicks?: number; start_time?: string; end_time?: string } | undefined>(undefined);
+  /** Device online/offline real-time status - derived from global store */
+  const isOnline = device?.status === 'online';
 
-  /** Device online/offline real-time status */
-  const [isOnline, setIsOnline] = useState<boolean>(device?.status === 'online');
+  const updateDeviceEntity = useDeviceStore(s => s.updateDeviceEntity);
 
   // ─── Sync state from MQTT shadow / real-time event ───────────────────────
   useDeviceEvent(
@@ -77,13 +120,22 @@ export function useShutterControl(
         [key: string]: any;
       }) => {
         // Online status (from flat LWT or heartbeat)
-        if (data.online !== undefined) {
-          setIsOnline(data.online === true);
+        if (data.online !== undefined && device?.id) {
+          // If we receive a retained "offline" message (from a previous LWT), ignore it!
+          // We rely on the REST API for the initial status. Real-time LWT events
+          // fired while we are actively connected will NOT have the retain flag!
+          if (data.online === false && data.isRetained) {
+            console.log(`[IGNORE STALE LWT] Ignoring retained offline msg for ${device.id}`);
+          }
+          else {
+            useDeviceStore.getState().updateDeviceStatus(device.id, data.online ? EDeviceStatus.ONLINE : EDeviceStatus.OFFLINE);
+          }
         }
 
         const matchesEntity = data.entityCode === primaryEntity?.code || (!data.entityCode && primaryEntity);
-        if (!matchesEntity && data.state === undefined)
+        if (!matchesEntity && data.state === undefined) {
           return;
+        }
 
         // Primary entity state (commandKey = 'state')
         const val = data.state ?? data.value;
@@ -99,9 +151,9 @@ export function useShutterControl(
         }
 
         // Cập nhật State React & Ref đồng bộ
-        if (newState !== doorStateRef.current) {
+        if (newState !== doorStateRef.current && device?.id && primaryEntity?.code) {
           doorStateRef.current = newState;
-          setDoorState(newState);
+          updateDeviceEntity(device.id, primaryEntity.code, { state: newState });
         }
 
         // Entity attributes: position, child_lock, travel
@@ -112,16 +164,6 @@ export function useShutterControl(
             if (attr.key === 'position' && typeof attr.value === 'number') {
               incomingPosition = attr.value;
             }
-            else if (attr.key === 'child_lock') {
-              setChildLock(attr.value === 'LOCKED');
-            }
-            else if (attr.key === 'travel' && typeof attr.value === 'number') {
-              setTravelMs(attr.value);
-              travelMsRef.current = attr.value;
-            }
-            else if (attr.key === 'rf_learn_status' && typeof attr.value === 'string') {
-              setRfLearnStatus(attr.value);
-            }
           }
         }
 
@@ -129,20 +171,24 @@ export function useShutterControl(
         if (typeof data.position === 'number') {
           incomingPosition = data.position;
         }
-        if (data.child_lock !== undefined) {
-          setChildLock(data.child_lock === 'LOCKED');
+
+        // Push flat config/child_lock/travel states natively into the Global Store
+        // The UI will instantly re-render via derived variables without local useState
+        if (data.child_lock !== undefined && device?.id) {
+          const val = data.child_lock === 'LOCKED' ? 1 : 0;
+          updateDeviceEntity(device.id, 'child_lock', { state: val });
+          updateDeviceEntity(device.id, primaryEntity?.code || 'main', { attributes: [{ key: 'child_lock', value: data.child_lock }] });
         }
-        if (typeof data.travel === 'number') {
-          setTravelMs(data.travel);
-          travelMsRef.current = data.travel;
+        if (typeof data.travel === 'number' && device?.id) {
+          updateDeviceEntity(device.id, 'config', { attributes: [{ key: 'travel', value: data.travel }] });
+          updateDeviceEntity(device.id, primaryEntity?.code || 'main', { attributes: [{ key: 'travel', value: data.travel }] });
         }
-        if (data.config && typeof data.config === 'object') {
-          setMotorConfig(prev => ({
-            ...prev,
-            clicks: data.config.req_open_clicks ?? data.config.clicks ?? prev?.clicks,
-            start_time: data.config.start_time ?? prev?.start_time,
-            end_time: data.config.end_time ?? prev?.end_time,
-          }));
+        if (data.rf_learn_status !== undefined && device?.id) {
+          updateDeviceEntity(device.id, 'learn', { attributes: [{ key: 'rf_learn_status', value: data.rf_learn_status }] });
+          updateDeviceEntity(device.id, primaryEntity?.code || 'main', { attributes: [{ key: 'rf_learn_status', value: data.rf_learn_status }] });
+        }
+        if (data.config && typeof data.config === 'object' && device?.id) {
+          updateDeviceEntity(device.id, 'config', { state: data.config });
         }
 
         // --- Fake Position Animation Logic ---
@@ -169,40 +215,9 @@ export function useShutterControl(
           }
         }
       },
-      [primaryEntity, position],
+      [primaryEntity, position, device?.id, updateDeviceEntity],
     ),
   );
-
-  // ─── Extract Initial Config from device entities ───────────────────────
-  useEffect(() => {
-    const configEntity = device?.entities.find(e => e.code === 'config');
-    if (configEntity) {
-      try {
-        let rawConfig: any = null;
-        if (typeof configEntity.currentState === 'object' && configEntity.currentState) {
-          rawConfig = configEntity.currentState;
-        }
-        else if (typeof configEntity.stateText === 'string' && configEntity.stateText) {
-          rawConfig = JSON.parse(configEntity.stateText);
-        }
-
-        if (rawConfig) {
-          const timer = setTimeout(() => {
-            setMotorConfig(prev => ({
-              ...prev, // Allow real-time MQTT to have precedence if already arrived
-              clicks: prev?.clicks ?? rawConfig.req_open_clicks ?? rawConfig.clicks,
-              start_time: prev?.start_time ?? rawConfig.start_time,
-              end_time: prev?.end_time ?? rawConfig.end_time,
-            }));
-          }, 0);
-          return () => clearTimeout(timer);
-        }
-      }
-      catch {
-        // fail silently
-      }
-    }
-  }, [device?.entities]);
 
   // ─── Command sender ───────────────────────────────────────────────────────
   const sendCommand = async (entityCode: string, value: EShutterCmd | number | string | Record<string, any>) => {
@@ -249,7 +264,13 @@ export function useShutterControl(
     handleRfLearnCancel: () => sendCommand('learn', 'cancel'),
     handleRfLearnSave: () => sendCommand('learn', 'save'),
     rfLearnStatus,
-    setRfLearnStatus, // Expose to manually clear status in modal on close
+    setRfLearnStatus: (status: string) => {
+      // Expose to manually clear status in modal on close
+      if (device?.id) {
+        updateDeviceEntity(device.id, 'learn', { attributes: [{ key: 'rf_learn_status', value: status }] });
+        updateDeviceEntity(device.id, primaryEntity?.code || 'main', { attributes: [{ key: 'rf_learn_status', value: status }] });
+      }
+    },
     // Config motor — entity `config` (config domain)
     handleConfig: (config: { clicks?: number; start_time?: string; end_time?: string }) => {
       // Map App's simplified config to Chip Firmware expected C-struct
