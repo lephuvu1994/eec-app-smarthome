@@ -11,7 +11,7 @@ type Props = {
   modalRef: React.RefObject<BottomSheetModal | null>;
   isControlling: boolean;
   rfLearnStatus: string;
-  setRfLearnStatus: React.Dispatch<React.SetStateAction<string>>;
+  setRfLearnStatus: (status: string) => void;
   onStartLearn: () => Promise<void>;
   onCancelLearn: () => Promise<void>;
   onSaveLearn: () => Promise<void>;
