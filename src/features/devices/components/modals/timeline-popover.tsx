@@ -9,6 +9,9 @@ import Popover, { PopoverPlacement } from 'react-native-popover-view';
 import { Text, View } from '@/components/ui';
 import { useDeviceTimelinePreview } from '@/features/devices/hooks/use-device-timeline';
 import { translate } from '@/lib/i18n';
+import { useConfigManager } from '@/stores/config/config';
+
+import { ETheme } from '@/types/base';
 import 'dayjs/locale/vi';
 
 dayjs.locale('vi');
@@ -22,6 +25,8 @@ type Props = {
 
 export function TimelinePopover({ deviceId, renderTrigger }: Props) {
   const router = useRouter();
+  const theme = useConfigManager((s: any) => s.theme);
+  const isDark = theme === ETheme.Dark;
   const [isVisible, setIsVisible] = React.useState(false);
 
   // Mở popover thì mới enable query
@@ -69,15 +74,19 @@ export function TimelinePopover({ deviceId, renderTrigger }: Props) {
       onRequestClose={() => setIsVisible(false)}
       placement={PopoverPlacement.BOTTOM}
       from={sourceRef => renderTrigger(sourceRef, () => setIsVisible(true))}
-      popoverStyle={{ borderRadius: 16, backgroundColor: '#1B1B1B', width: SCREEN_WIDTH * 0.75 }}
+      popoverStyle={{
+        borderRadius: 16,
+        backgroundColor: isDark ? '#1C1C1E' : '#F2F2F7',
+        width: SCREEN_WIDTH * 0.75,
+      }}
     >
       <View className="relative p-4">
         <View className="mb-4 flex-row items-center justify-between">
-          <Text className="text-base font-bold text-white">
+          <Text className="text-base font-bold text-neutral-900 dark:text-white">
             {(translate('deviceDetail.timeline.title' as TxKeyPath) || 'Lịch sử hoạt động') as string}
           </Text>
-          <TouchableOpacity onPress={() => setIsVisible(false)} className="size-6 items-center justify-center rounded-full bg-neutral-800">
-            <MaterialCommunityIcons name="close" size={14} color="#A3A3A3" />
+          <TouchableOpacity onPress={() => setIsVisible(false)} className="size-6 items-center justify-center rounded-full bg-black/10 dark:bg-neutral-800">
+            <MaterialCommunityIcons name="close" size={14} color={isDark ? '#A3A3A3' : '#666'} />
           </TouchableOpacity>
         </View>
 
@@ -100,13 +109,13 @@ export function TimelinePopover({ deviceId, renderTrigger }: Props) {
           )}
 
           {items.map((item, idx) => (
-            <View key={item.id} className="mb-3 flex-row items-start gap-3">
+            <View key={item.id || `timeline-${idx}`} className="mb-3 flex-row items-start gap-3">
               {renderIcon(item.type, item.event)}
-              <View className={`flex-1 ${idx !== items.length - 1 ? 'border-b border-neutral-800 pb-3' : ''}`}>
-                <Text className="text-sm/5 font-medium text-neutral-200">
+              <View className={`flex-1 shrink ${idx !== items.length - 1 ? 'border-b border-black/5 pb-3 dark:border-neutral-800' : ''}`}>
+                <Text className="text-sm/5 font-medium text-neutral-800 dark:text-neutral-200">
                   {renderDescription(item)}
                 </Text>
-                <Text className="mt-0.5 text-xs text-neutral-500">
+                <Text className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
                   {dayjs(item.createdAt).format('HH:mm - DD/MM/YYYY')}
                 </Text>
               </View>
