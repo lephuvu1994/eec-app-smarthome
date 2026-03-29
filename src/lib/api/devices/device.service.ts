@@ -144,6 +144,27 @@ export type TMqttCredentials = {
 // ============================================================
 // API SERVICE
 // ============================================================
+export type TDeviceTimelineItem = {
+  id: string;
+  type: 'state' | 'connection';
+  event: string;
+  source: string | null;
+  entityCode: string | null;
+  entityName: string | null;
+  createdAt: string; // ISO Date String
+};
+
+export type TDeviceTimelineResponse = {
+  statusCode: number;
+  message: string;
+  data: TDeviceTimelineItem[];
+  meta: {
+    total: number;
+    page: number;
+    lastPage: number;
+  };
+};
+
 export const deviceService = {
   registerDevice: async (variables: TRegisterDeviceVariables): Promise<TRegisterDeviceResponse> => {
     const { data } = await client.post<TRegisterDeviceResponse>(
@@ -161,6 +182,14 @@ export const deviceService = {
   getDeviceDetail: async (id: string): Promise<TDevice> => {
     const { data } = await client.get(`/devices/${id}`);
     return data.data?.device || data.data || data;
+  },
+
+  getDeviceTimeline: async (
+    deviceId: string,
+    params?: { page?: number; limit?: number; entityCode?: string; from?: string; to?: string },
+  ): Promise<TDeviceTimelineResponse> => {
+    const { data } = await client.get(`/devices/${deviceId}/timeline`, { params });
+    return data;
   },
 
   getSiriSync: async (): Promise<TSiriSyncData> => {
