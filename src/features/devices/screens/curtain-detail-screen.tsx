@@ -23,6 +23,7 @@ import { CurtainSlider } from '../components/curtain-slider';
 import { CurtainBleModal } from '../components/modals/curtain-ble-modal';
 import { CurtainMotorConfigModal } from '../components/modals/curtain-motor-config-modal';
 import { CurtainRfLearnModal } from '../components/modals/curtain-rf-learn-modal';
+import { RenameDeviceModal } from '../components/modals/rename-device-modal';
 import { ShutterBackgroundModal } from '../components/modals/shutter-background-modal';
 import { TimelinePopover } from '../components/modals/timeline-popover';
 import { getShutterBackgroundSource } from '../utils/shutter-constants';
@@ -142,6 +143,7 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
   const bleModal = useModal();
   const rfLearnModal = useModal();
   const motorConfigModal = useModal();
+  const [isRenameVisible, setIsRenameVisible] = React.useState(false);
 
   const menuElements: TMenuElement[] = [
     {
@@ -161,7 +163,7 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
                 {
                   key: 'ble',
                   title: translate('deviceDetail.shutter.advanced.bleMode'),
-                  icon: { ios: 'bluetooth' },
+                  icon: { ios: 'point.3.connected.trianglepath.dotted' },
                   onPress: bleModal.present,
                 },
                 {
@@ -200,9 +202,7 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
           key: 'rename',
           title: translate('deviceDetail.shutter.rename'),
           icon: { ios: 'pencil' },
-          onPress: () => {
-            console.log('Rename Device');
-          },
+          onPress: () => setIsRenameVisible(true),
         },
       ],
     },
@@ -390,6 +390,16 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
         isControlling={isControlling}
         onConfig={handleConfig}
         initialConfig={motorConfig}
+      />
+      <RenameDeviceModal
+        isVisible={isRenameVisible}
+        onClose={() => setIsRenameVisible(false)}
+        currentName={device?.name || (translate('deviceDetail.shutter.defaultName') as string)}
+        onSave={async (newName) => {
+          // Placeholder function for when BE API is ready
+          console.log('Requested to rename device to: ', newName);
+          await new Promise(resolve => setTimeout(resolve, 600));
+        }}
       />
     </View>
   );
