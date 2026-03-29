@@ -3,11 +3,12 @@ import { useRouter } from 'expo-router';
 import { ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Text, View } from '@/components/ui';
+import { Text, useModal, View } from '@/components/ui';
 import { translate } from '@/lib/i18n';
 import { isPrimaryEntity } from '@/lib/utils/device-entity-helper';
 import { useDeviceStore } from '@/stores/device/device-store';
 import { SwitchModalItem } from '../components/modals/items/switch-modal-item';
+import { TimelinePopover } from '../components/modals/timeline-popover';
 
 type Props = {
   deviceId: string;
@@ -18,6 +19,7 @@ export function SwitchDetailScreen({ deviceId }: Props) {
   const router = useRouter();
   const devices = useDeviceStore(s => s.devices);
   const device = Array.isArray(devices) ? devices.find(d => d.id === deviceId) : undefined;
+  const timelineModal = useModal();
 
   if (!device) {
     return (
@@ -44,7 +46,12 @@ export function SwitchDetailScreen({ deviceId }: Props) {
           <Text className="text-xl font-bold tracking-wide text-white">
             {device.name}
           </Text>
-          <View className="h-11 w-11" />
+          <TouchableOpacity
+            onPress={timelineModal.present}
+            className="h-11 w-11 items-center justify-center rounded-full bg-white/10"
+          >
+            <FontAwesome name="bell-o" size={18} color="#fff" />
+          </TouchableOpacity>
         </View>
 
         <ScrollView className="mt-6 flex-1 px-4">
@@ -60,6 +67,8 @@ export function SwitchDetailScreen({ deviceId }: Props) {
 
         </ScrollView>
       </SafeAreaView>
+
+      <TimelinePopover modalRef={timelineModal.ref} deviceId={deviceId} />
     </View>
   );
 }

@@ -23,6 +23,7 @@ import { CurtainBleModal } from '../components/modals/curtain-ble-modal';
 import { CurtainMotorConfigModal } from '../components/modals/curtain-motor-config-modal';
 import { CurtainRfLearnModal } from '../components/modals/curtain-rf-learn-modal';
 import { ShutterBackgroundModal } from '../components/modals/shutter-background-modal';
+import { TimelinePopover } from '../components/modals/timeline-popover';
 import { getShutterBackgroundSource } from '../utils/shutter-constants';
 
 type Props = {
@@ -140,6 +141,7 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
   const bleModal = useModal();
   const rfLearnModal = useModal();
   const motorConfigModal = useModal();
+  const timelineModal = useModal();
 
   const menuElements: TMenuElement[] = [
     {
@@ -245,7 +247,7 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
 
         <Animated.View entering={FadeInRight.duration(300)} className="flex-1 flex-row items-center justify-end gap-2">
           <TouchableOpacity
-            onPress={() => console.log('History Log')}
+            onPress={timelineModal.present}
             activeOpacity={0.7}
             className="size-10 items-center justify-center rounded-full bg-black/5 dark:bg-white/10"
           >
@@ -383,6 +385,7 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
         onConfig={handleConfig}
         initialConfig={motorConfig}
       />
+      <TimelinePopover modalRef={timelineModal.ref} deviceId={deviceId} />
     </View>
   );
 }
