@@ -162,6 +162,10 @@
     "switch": {
       "turnOffAll": "Tắt tất cả",
       "turnOnAll": "Bật tất cả"
+    },
+    "timeline": {
+      "title": "Lịch sử hoạt động",
+      "viewAll": "Xem tất cả lịch sử"
     }
   },
   "formAuth": {

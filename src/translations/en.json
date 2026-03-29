@@ -162,6 +162,10 @@
     "switch": {
       "turnOffAll": "Turn off all",
       "turnOnAll": "Turn on all"
+    },
+    "timeline": {
+      "title": "Activity History",
+      "viewAll": "View All History"
     }
   },
   "formAuth": {
