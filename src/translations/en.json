@@ -164,7 +164,28 @@
       "turnOnAll": "Turn on all"
     },
     "timeline": {
+      "deviceOffline": "Device is Offline",
+      "deviceOnline": "Device is Online",
+      "events": {
+        "off": "Off",
+        "offline": "Offline",
+        "on": "On",
+        "online": "Online",
+        "pause": "Pause"
+      },
+      "sources": {
+        "app": "App",
+        "automation": "Automation",
+        "physical": "Physical",
+        "voice": "Voice"
+      },
+      "statusOnly": "{{name}}State: {{event}}",
+      "statusVia": "{{name}}State: {{event}} (via {{source}})",
       "title": "Activity History",
+      "types": {
+        "connection": "Connection",
+        "state": "State"
+      },
       "viewAll": "View All History"
     }
   },
