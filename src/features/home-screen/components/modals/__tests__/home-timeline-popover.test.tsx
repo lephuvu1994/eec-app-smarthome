@@ -2,7 +2,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react-nativ
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { HomeTimelinePopover } from '../home-timeline-popover';
-import { useHomeTimelinePreview } from '@/features/home-screen/hooks/use-home-timeline';
+import { useHomeTimelineInfinite } from '@/features/home-screen/hooks/use-home-timeline';
 
 // Mock dependencies
 jest.mock('expo-router', () => ({
@@ -14,7 +14,7 @@ jest.mock('@/stores/config/config', () => ({
 }));
 
 jest.mock('@/features/home-screen/hooks/use-home-timeline', () => ({
-  useHomeTimelinePreview: jest.fn(),
+  useHomeTimelineInfinite: jest.fn(),
 }));
 
 jest.mock('@/lib/i18n', () => ({
@@ -51,10 +51,13 @@ describe('HomeTimelinePopover', () => {
   });
 
   it('renders trigger button correctly', () => {
-    (useHomeTimelinePreview as jest.Mock).mockReturnValue({
-      data: { data: [] },
+    (useHomeTimelineInfinite as jest.Mock).mockReturnValue({
+      data: { pages: [{ data: [] }] },
       isLoading: false,
       isError: false,
+      hasNextPage: false,
+      isFetchingNextPage: false,
+      fetchNextPage: jest.fn(),
     });
 
     render(
@@ -71,10 +74,13 @@ describe('HomeTimelinePopover', () => {
   });
 
   it('shows empty state when no data exists', async () => {
-    (useHomeTimelinePreview as jest.Mock).mockReturnValue({
-      data: { data: [] },
+    (useHomeTimelineInfinite as jest.Mock).mockReturnValue({
+      data: { pages: [{ data: [] }] },
       isLoading: false,
       isError: false,
+      hasNextPage: false,
+      isFetchingNextPage: false,
+      fetchNextPage: jest.fn(),
     });
 
     render(
@@ -96,10 +102,13 @@ describe('HomeTimelinePopover', () => {
   });
 
   it('shows error state correctly', async () => {
-    (useHomeTimelinePreview as jest.Mock).mockReturnValue({
+    (useHomeTimelineInfinite as jest.Mock).mockReturnValue({
       data: null,
       isLoading: false,
       isError: true,
+      hasNextPage: false,
+      isFetchingNextPage: false,
+      fetchNextPage: jest.fn(),
     });
 
     render(
@@ -131,10 +140,13 @@ describe('HomeTimelinePopover', () => {
       },
     ];
 
-    (useHomeTimelinePreview as jest.Mock).mockReturnValue({
-      data: { data: mockItems },
+    (useHomeTimelineInfinite as jest.Mock).mockReturnValue({
+      data: { pages: [{ data: mockItems }] },
       isLoading: false,
       isError: false,
+      hasNextPage: false,
+      isFetchingNextPage: false,
+      fetchNextPage: jest.fn(),
     });
 
     render(

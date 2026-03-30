@@ -182,7 +182,7 @@ export class MqttManager {
       });
 
       this.client!.on('message', (topic: string, payload: Uint8Array, packet: any) => {
-        this.handleMessage(topic, payload, packet.retain);
+        this.handleMessage(topic, payload, packet?.retain);
       });
     }
     catch (error: any) {

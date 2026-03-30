@@ -9,10 +9,13 @@ jest.mock('@/lib/i18n', () => ({
 }));
 
 jest.mock('@/features/devices/hooks/use-device-timeline', () => ({
-  useDeviceTimelinePreview: () => ({
-    data: { data: [] },
+  useDeviceTimelineInfinite: () => ({
+    data: { pages: [{ data: [] }] },
     isLoading: false,
     isError: false,
+    hasNextPage: false,
+    isFetchingNextPage: false,
+    fetchNextPage: jest.fn(),
   }),
 }));
 
