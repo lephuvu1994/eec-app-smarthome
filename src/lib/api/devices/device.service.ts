@@ -79,6 +79,7 @@ export type TDevice = {
   room?: { id: string; name: string } | null;
   entities: TDeviceEntity[];
   modelConfig?: any;
+  customConfig?: any;
 };
 
 export type TDeviceListResponse = {
@@ -243,5 +244,9 @@ export const deviceService = {
 
   deleteDevice: async (deviceId: string): Promise<void> => {
     await client.delete(`/devices/${deviceId}`);
+  },
+
+  updateNotifyConfig: async (deviceId: string, notify: Record<string, boolean>): Promise<void> => {
+    await client.patch(`/devices/${deviceId}/notify-config`, { notify });
   },
 };
