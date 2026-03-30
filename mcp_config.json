@@ -1,7 +1,7 @@
 {
   "mcpServers": {
     "figma": {
-      "command": "bun",
+      "command": "npx",
       "args": [
         "/Users/hamai/Documents/smarthome/eec-app-smarthome/node_modules/figma-mcp-server/mcpServer.ts"
       ],
