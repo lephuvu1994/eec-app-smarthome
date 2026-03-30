@@ -1,4 +1,5 @@
 import type { EHomeRole } from '@/features/auth/types/response';
+import * as Device from 'expo-device';
 import { client } from '../common';
 
 // ============================================================
@@ -66,7 +67,12 @@ export const authService = {
 
   /** Login with email/phone + password */
   login: async (identifier: string, password: string): Promise<TAuthResponse> => {
-    const { data } = await client.post('/auth/login', { identifier, password });
+    const deviceName = Device.deviceName || Device.modelName || 'Unknown Device';
+    const { data } = await client.post('/auth/login', {
+      identifier,
+      password,
+      deviceName,
+    });
     return data.data || data;
   },
 
@@ -84,5 +90,10 @@ export const authService = {
   /** Reset password after OTP verified (Step 3) — requires resetToken */
   resetPassword: async (identifier: string, newPassword: string, resetToken: string): Promise<void> => {
     await client.post('/auth/forgot-password/reset-password', { identifier, newPassword, resetToken });
+  },
+
+  /** Logout current session */
+  logout: async (): Promise<void> => {
+    await client.post('/auth/logout');
   },
 };
