@@ -132,7 +132,7 @@ export function SharedTimelinePopover({
           </TouchableOpacity>
         </View>
 
-        <View className="max-h-[60vh] min-h-[100px] w-full">
+        <View className={items.length > 0 ? 'h-[350px] max-h-[60vh] w-full' : 'min-h-[100px] w-full'}>
           {isLoading && items.length === 0 && (
             <View className="py-4">
               <ActivityIndicator size="small" color="#3B82F6" />
@@ -173,7 +173,7 @@ export function SharedTimelinePopover({
                       {renderDescription(item)}
                     </Text>
                     <Text className="mt-1 text-xs text-neutral-500 dark:text-neutral-500">
-                      {dayjs(item.createdAt).format('HH:mm:ss DD/MM/YYYY')}
+                      {dayjs(item.createdAt).format('HH:mm:ss')}
                     </Text>
                   </View>
                 </View>
