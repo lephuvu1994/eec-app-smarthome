@@ -18,7 +18,7 @@ export function DeviceFullCard({
   displayName,
   deviceImage,
   isOnline,
-  isSingleEntity,
+  canQuickToggle,
   statusLabel,
   entityCount,
   showExpandIcon,
@@ -72,7 +72,7 @@ export function DeviceFullCard({
           </View>
         </View>
 
-        {isSingleEntity && config.hasToggle && (
+        {canQuickToggle && config.hasToggle && (
           <TouchableOpacity onPress={isOnline ? onToggle : undefined} disabled={!isOnline} activeOpacity={0.7}>
             <Animated.View
               style={[

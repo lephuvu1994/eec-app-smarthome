@@ -14,6 +14,28 @@ export default function MobileLayout() {
       <Stack.Screen name="(tabs)" />
       <Stack.Screen name="add-device" />
       <Stack.Screen
+        name="device/[id]"
+        options={{
+          headerShown: true,
+          headerTransparent: true,
+          headerShadowVisible: false,
+          headerTintColor,
+          headerBackButtonDisplayMode: 'minimal',
+          contentStyle: { backgroundColor: colors.screenBackground[theme as ETheme] },
+        }}
+      />
+      <Stack.Screen
+        name="device/[id]/info"
+        options={{
+          headerShown: true,
+          headerTransparent: true,
+          headerShadowVisible: false,
+          title: '',
+          headerTintColor,
+          headerBackTitle: translate('base.back'),
+        }}
+      />
+      <Stack.Screen
         name="home-management"
         options={{
           headerShown: true,

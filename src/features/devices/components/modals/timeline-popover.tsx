@@ -9,12 +9,13 @@ import { translate } from '@/lib/i18n';
 type Props = {
   deviceId: string;
   renderTrigger: (sourceRef: React.RefObject<any>, openPopover: () => void) => React.ReactNode;
+  fromRect?: any;
 };
 
-export function TimelinePopover({ deviceId, renderTrigger }: Props) {
+export function TimelinePopover({ deviceId, renderTrigger, fromRect }: Props) {
   const router = useRouter();
   const { data, isLoading, isError, hasNextPage, isFetchingNextPage, fetchNextPage } = useDeviceTimelineInfinite(deviceId, { limit: 10 });
-  const items = data?.pages.flatMap(page => page.data) || [];
+  const items = data?.pages.flatMap((page: any) => page.data) || [];
 
   return (
     <SharedTimelinePopover
@@ -30,6 +31,7 @@ export function TimelinePopover({ deviceId, renderTrigger }: Props) {
         router.push(`/device/${deviceId}/timeline`);
       }}
       renderTrigger={renderTrigger}
+      fromRect={fromRect}
     />
   );
 }

@@ -29,6 +29,7 @@ type Props = {
   hasNextPage?: boolean;
   isFetchingNextPage?: boolean;
   onLoadMore?: () => void;
+  fromRect?: any;
 };
 
 export function SharedTimelinePopover({
@@ -42,10 +43,13 @@ export function SharedTimelinePopover({
   hasNextPage,
   isFetchingNextPage,
   onLoadMore,
+  fromRect,
 }: Props) {
   const { theme } = useUniwind();
   const isDark = theme === ETheme.Dark;
   const [isVisible, setIsVisible] = React.useState(false);
+  const triggerRef = React.useRef<any>(null);
+  const dummyRef = React.useRef<any>(null);
 
   const handleViewAll = () => {
     setIsVisible(false);
@@ -111,93 +115,98 @@ export function SharedTimelinePopover({
   };
 
   return (
-    <Popover
-      isVisible={isVisible}
-      onRequestClose={() => setIsVisible(false)}
-      placement={PopoverPlacement.BOTTOM}
-      from={sourceRef => renderTrigger(sourceRef, () => setIsVisible(true))}
-      popoverStyle={{
-        borderRadius: 16,
-        backgroundColor: isDark ? '#1C1C1E' : '#F2F2F7',
-        width: SCREEN_WIDTH * 0.75,
-      }}
-    >
-      <View className="w-full rounded-2xl p-5">
-        <View className="mb-4 flex-row items-center justify-between">
-          <Text className="text-base font-bold text-neutral-900 dark:text-white">
-            {title}
-          </Text>
-          <TouchableOpacity onPress={() => setIsVisible(false)}>
-            <MaterialCommunityIcons name="close" size={20} color={isDark ? '#FFF' : '#111'} />
-          </TouchableOpacity>
-        </View>
-
-        <View className={items.length > 0 ? 'h-[350px] max-h-[60vh] w-full' : 'min-h-[100px] w-full'}>
-          {isLoading && items.length === 0 && (
-            <View className="py-4">
-              <ActivityIndicator size="small" color="#3B82F6" />
-            </View>
-          )}
-
-          {isError && (
-            <Text className="py-4 text-center text-sm text-red-500">
-              {(translate('deviceDetail.timeline.errorLoadData' as TxKeyPath) || 'Lỗi tải dữ liệu. Thử lại sau.') as string}
+    <>
+      <View ref={triggerRef} collapsable={false}>
+        {renderTrigger(dummyRef, () => setIsVisible(true))}
+      </View>
+      <Popover
+        isVisible={isVisible}
+        onRequestClose={() => setIsVisible(false)}
+        placement={PopoverPlacement.BOTTOM}
+        from={fromRect || triggerRef}
+        popoverStyle={{
+          borderRadius: 16,
+          backgroundColor: isDark ? '#1C1C1E' : '#F2F2F7',
+          width: SCREEN_WIDTH * 0.75,
+        }}
+      >
+        <View className="w-full rounded-2xl p-5">
+          <View className="mb-4 flex-row items-center justify-between">
+            <Text className="text-base font-bold text-neutral-900 dark:text-white">
+              {title}
             </Text>
-          )}
+            <TouchableOpacity onPress={() => setIsVisible(false)}>
+              <MaterialCommunityIcons name="close" size={20} color={isDark ? '#FFF' : '#111'} />
+            </TouchableOpacity>
+          </View>
 
-          {!isLoading && !isError && items.length === 0 && (
-            <View className="items-center justify-center py-6">
-              <MaterialCommunityIcons name="clipboard-text-outline" size={36} color="#555" />
-              <Text className="mt-3 text-sm text-neutral-400">
-                {emptyText}
+          <View className={items.length > 0 ? 'h-[350px] max-h-[60vh] w-full' : 'min-h-[100px] w-full'}>
+            {isLoading && items.length === 0 && (
+              <View className="py-4">
+                <ActivityIndicator size="small" color="#3B82F6" />
+              </View>
+            )}
+
+            {isError && (
+              <Text className="py-4 text-center text-sm text-red-500">
+                {(translate('deviceDetail.timeline.errorLoadData' as TxKeyPath) || 'Lỗi tải dữ liệu. Thử lại sau.') as string}
               </Text>
-            </View>
-          )}
+            )}
+
+            {!isLoading && !isError && items.length === 0 && (
+              <View className="items-center justify-center py-6">
+                <MaterialCommunityIcons name="clipboard-text-outline" size={36} color="#555" />
+                <Text className="mt-3 text-sm text-neutral-400">
+                  {emptyText}
+                </Text>
+              </View>
+            )}
+
+            {!isLoading && !isError && items.length > 0 && (
+              <List
+                data={items}
+                keyExtractor={(item: any, idx: number) => item?.id || `timeline-${idx}`}
+                onEndReached={() => {
+                  if (hasNextPage && !isFetchingNextPage) {
+                    onLoadMore?.();
+                  }
+                }}
+                onEndReachedThreshold={0.5}
+                showsVerticalScrollIndicator={false}
+                renderItem={({ item, index }: { item: TDeviceTimelineItem; index: number }) => (
+                  <View className="mb-3 flex-row items-start gap-3">
+                    {renderIcon(item.type, item.event)}
+                    <View className={`flex-1 shrink ${index !== items.length - 1 ? 'border-b border-black/5 pb-3 dark:border-neutral-800' : ''}`}>
+                      <Text className="text-sm/5 font-medium text-neutral-800 dark:text-neutral-200">
+                        {renderDescription(item)}
+                      </Text>
+                      <Text className="mt-1 text-xs text-neutral-500 dark:text-neutral-500">
+                        {dayjs(item.createdAt).format('HH:mm:ss')}
+                      </Text>
+                    </View>
+                  </View>
+                )}
+                ListFooterComponent={() => (
+                  <View className="h-10 items-center justify-center">
+                    {isFetchingNextPage && <ActivityIndicator size="small" color="#3B82F6" />}
+                  </View>
+                )}
+              />
+            )}
+          </View>
 
           {!isLoading && !isError && items.length > 0 && (
-            <List
-              data={items}
-              keyExtractor={(item: any, idx: number) => item?.id || `timeline-${idx}`}
-              onEndReached={() => {
-                if (hasNextPage && !isFetchingNextPage) {
-                  onLoadMore?.();
-                }
-              }}
-              onEndReachedThreshold={0.5}
-              showsVerticalScrollIndicator={false}
-              renderItem={({ item, index }: { item: TDeviceTimelineItem; index: number }) => (
-                <View className="mb-3 flex-row items-start gap-3">
-                  {renderIcon(item.type, item.event)}
-                  <View className={`flex-1 shrink ${index !== items.length - 1 ? 'border-b border-black/5 pb-3 dark:border-neutral-800' : ''}`}>
-                    <Text className="text-sm/5 font-medium text-neutral-800 dark:text-neutral-200">
-                      {renderDescription(item)}
-                    </Text>
-                    <Text className="mt-1 text-xs text-neutral-500 dark:text-neutral-500">
-                      {dayjs(item.createdAt).format('HH:mm:ss')}
-                    </Text>
-                  </View>
-                </View>
-              )}
-              ListFooterComponent={() => (
-                <View className="h-10 items-center justify-center">
-                  {isFetchingNextPage && <ActivityIndicator size="small" color="#3B82F6" />}
-                </View>
-              )}
-            />
+            <TouchableOpacity
+              onPress={handleViewAll}
+              className="mt-2 items-center justify-center py-2"
+            >
+              <Text className="text-sm font-semibold text-blue-500">
+                {(translate('deviceDetail.timeline.viewAll' as TxKeyPath) || 'Xem tất cả lịch sử') as string}
+              </Text>
+            </TouchableOpacity>
           )}
         </View>
-
-        {!isLoading && !isError && items.length > 0 && (
-          <TouchableOpacity
-            onPress={handleViewAll}
-            className="mt-2 items-center justify-center py-2"
-          >
-            <Text className="text-sm font-semibold text-blue-500">
-              {(translate('deviceDetail.timeline.viewAll' as TxKeyPath) || 'Xem tất cả lịch sử') as string}
-            </Text>
-          </TouchableOpacity>
-        )}
-      </View>
-    </Popover>
+      </Popover>
+    </>
   );
 }

@@ -34,7 +34,8 @@ export type TDeviceCardProps = {
   deviceImage: ImageSource;
   isOnline: boolean;
   isOn: boolean;
-  isSingleEntity: boolean;
+  isSingleHardwareEntity: boolean;
+  canQuickToggle: boolean;
   statusLabel: string;
   entityCount: number;
   showExpandIcon: boolean;
