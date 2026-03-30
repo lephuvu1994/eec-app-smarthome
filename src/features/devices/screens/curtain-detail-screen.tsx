@@ -1,20 +1,24 @@
 import type { TMenuElement } from '@/components/ui/zeego-native-menu';
 
 import { FontAwesome5, FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import { Image } from 'expo-image';
-import * as React from 'react';
-import { ScrollView, TouchableOpacity } from 'react-native';
-import Animated, { FadeInDown, FadeInLeft, FadeInRight } from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useUniwind } from 'uniwind';
 
-import { Text, View } from '@/components/ui';
+import { useHeaderHeight } from '@react-navigation/elements';
+import { Image } from 'expo-image';
+import { useNavigation, useRouter } from 'expo-router';
+import * as React from 'react';
+import { useLayoutEffect, useMemo } from 'react';
+import { Dimensions, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { useUniwind } from 'uniwind';
+import { BaseLayout } from '@/components/layout/BaseLayout';
+import { IS_IOS, Text, View } from '@/components/ui';
 import { BellIcon } from '@/components/ui/icons';
 import { useModal } from '@/components/ui/modal';
 import { ZeegoNativeMenu } from '@/components/ui/zeego-native-menu';
+import { BASE_SPACE_HORIZONTAL } from '@/constants';
 import { EDoorState, useShutterControl } from '@/features/devices/hooks/use-shutter-control';
-import { deviceService } from '@/lib/api/devices/device.service';
 import { translate } from '@/lib/i18n';
 import { getPrimaryEntities } from '@/lib/utils/device-entity-helper';
 import { useConfigManager } from '@/stores/config/config';
@@ -24,7 +28,6 @@ import { CurtainSlider } from '../components/curtain-slider';
 import { CurtainBleModal } from '../components/modals/curtain-ble-modal';
 import { CurtainMotorConfigModal } from '../components/modals/curtain-motor-config-modal';
 import { CurtainRfLearnModal } from '../components/modals/curtain-rf-learn-modal';
-import { RenameDeviceModal } from '../components/modals/rename-device-modal';
 import { ShutterBackgroundModal } from '../components/modals/shutter-background-modal';
 import { TimelinePopover } from '../components/modals/timeline-popover';
 import { getShutterBackgroundSource } from '../utils/shutter-constants';
@@ -105,13 +108,18 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
   const devices = useDeviceStore(s => s.devices);
   const device = devices.find(d => d.id === deviceId);
   const insets = useSafeAreaInsets();
-  const navigation = useNavigation();
+  const router = useRouter();
   const { theme } = useUniwind();
+  const navigation = useNavigation();
+  const headerHeight = useHeaderHeight();
   const isDark = theme === ETheme.Dark;
 
-  const primaryEntity = entityId
-    ? device?.entities.find(e => e.id === entityId)
-    : device ? getPrimaryEntities(device)[0] : undefined;
+  const primaryEntity = device ? getPrimaryEntities(device)[0] : undefined;
+  const activeEntity = entityId ? device?.entities.find(e => e.id === entityId) : undefined;
+
+  const headerTitle = activeEntity
+    ? (activeEntity.name || activeEntity.code)
+    : (device?.name ?? translate('deviceDetail.shutter.defaultName') as string);
 
   const {
     position,
@@ -144,9 +152,24 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
   const bleModal = useModal();
   const rfLearnModal = useModal();
   const motorConfigModal = useModal();
-  const [isRenameVisible, setIsRenameVisible] = React.useState(false);
 
-  const menuElements: TMenuElement[] = [
+  const menuElements: TMenuElement[] = useMemo(() => [
+    {
+      type: 'group',
+      key: 'group_edit',
+      items: [
+        {
+          key: 'info',
+          title: (translate('deviceDetail.shutter.deviceInfo') || 'Thông tin thiết bị') as string,
+          icon: { ios: 'info.circle' },
+          onPress: () => router.push(`/device/${deviceId}/info`),
+        },
+      ],
+    },
+    {
+      type: 'separator',
+      key: 'sep_1',
+    },
     {
       type: 'group',
       key: 'group_settings',
@@ -191,64 +214,33 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
         },
       ],
     },
-    {
-      type: 'separator',
-      key: 'sep_1',
-    },
-    {
-      type: 'group',
-      key: 'group_edit',
-      items: [
-        {
-          key: 'rename',
-          title: translate('deviceDetail.shutter.rename'),
-          icon: { ios: 'pencil' },
-          onPress: () => setIsRenameVisible(true),
-        },
-      ],
-    },
-  ];
+  ], [deviceId, router, bleModal, rfLearnModal, motorConfigModal, modal]);
 
-  // State dot color
-  const stateColor
-    = doorState === EDoorState.Open
-      ? '#A3E635'
-      : doorState === EDoorState.Close
-        ? '#EF4444'
-        : '#F59E0B';
-
-  return (
-    <View className="flex-1 bg-[#F5F7FA] dark:bg-black" style={{ paddingBottom: insets.bottom }}>
-      {/* ── Custom Header (same pattern as RoomDetailScreen) ── */}
-      <View
-        className="flex-row items-center justify-between bg-white px-4 dark:bg-neutral-900"
-        style={{ paddingTop: insets.top, paddingBottom: 8 }}
-      >
-        <Animated.View entering={FadeInLeft.duration(300)} className="flex-1 items-start">
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            activeOpacity={0.7}
-            className="size-10 items-center justify-center rounded-full bg-black/5 dark:bg-white/10"
-          >
-            <MaterialCommunityIcons name="chevron-left" size={28} color={isDark ? '#FFF' : '#1B1B1B'} />
-          </TouchableOpacity>
-        </Animated.View>
-
-        <Animated.View entering={FadeInDown.duration(300)} className="flex-2 items-center">
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: () => (
+        <Animated.View entering={FadeInDown.duration(300)} className="items-center">
           <Text className="text-lg font-semibold text-black dark:text-white" numberOfLines={1}>
-            {primaryEntity?.name ?? device?.name ?? translate('deviceDetail.shutter.defaultName')}
+            {headerTitle}
           </Text>
           <View className="mt-1 flex-row items-center gap-1.5">
             <View className={`size-2 rounded-full ${isOnline ? 'bg-[#A3E635]' : 'bg-red-500'}`} />
             <Text className="text-[11px] font-medium text-neutral-500 dark:text-neutral-400">
-              {isOnline ? 'Trực tuyến' : 'Ngoại tuyến'}
+              {isOnline ? translate('base.online') : translate('base.offline')}
             </Text>
           </View>
         </Animated.View>
-
-        <Animated.View entering={FadeInRight.duration(300)} className="flex-1 flex-row items-center justify-end gap-2">
+      ),
+      headerRight: () => (
+        <Animated.View entering={FadeInRight.duration(300)} className="flex-row items-center justify-end gap-2">
           <TimelinePopover
             deviceId={deviceId}
+            fromRect={{
+              x: Dimensions.get('window').width - (BASE_SPACE_HORIZONTAL + 40 + 8 + 50), // 16 (padding right) + 40 (cog width) + 8 (gap) + 40 (bell width) = 104
+              y: IS_IOS ? insets.top + 5 : insets.top + 15, // Approximate header content start y
+              width: 40,
+              height: 40,
+            }}
             renderTrigger={(sourceRef, openPopover) => (
               <TouchableOpacity
                 ref={sourceRef}
@@ -264,146 +256,161 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
           <ZeegoNativeMenu
             elements={menuElements}
             triggerComponent={(
-              <TouchableOpacity
-                activeOpacity={0.7}
-                className="size-10 items-center justify-center rounded-full bg-black/5 dark:bg-white/10"
-              >
+              <View pointerEvents="none" className="size-10 items-center justify-center rounded-full bg-black/5 dark:bg-white/10">
                 <MaterialCommunityIcons name="cog-outline" size={22} color={isDark ? '#FFF' : '#1B1B1B'} />
-              </TouchableOpacity>
+              </View>
             )}
           />
         </Animated.View>
-      </View>
-      {/* ── Door Image ─────────────────────────────────────── */}
-      <View className="aspect-4/3 w-full overflow-hidden bg-[#F5F7FA] dark:bg-black">
-        <Image source={bgSource} style={{ width: '100%', height: '100%' }} contentFit="cover" />
+      ),
+    });
+  }, [isDark, isOnline, deviceId, navigation, headerTitle, menuElements, insets.top]);
 
-        {/* State overlay pill (Left) */}
-        <View className="absolute bottom-4 left-4 flex-row items-center gap-2 rounded-full bg-black/60 px-3 py-1.5 shadow-sm">
-          <View className="size-2 rounded-full" style={{ backgroundColor: stateColor }} />
-          <Text className="text-xs font-semibold text-white uppercase shadow-sm">{doorState}</Text>
-        </View>
+  // State dot color
+  const stateColor
+    = doorState === EDoorState.Open
+      ? '#A3E635'
+      : doorState === EDoorState.Close
+        ? '#EF4444'
+        : '#F59E0B';
 
-        {/* Online/Offline pill (Right) */}
-        <View className="absolute right-4 bottom-4 flex-row items-center gap-1.5 rounded-full bg-black/60 px-2.5 py-1.5 shadow-sm">
-          <View className={`size-2 rounded-full ${isOnline ? 'bg-[#10B981]' : 'bg-neutral-500'}`} />
-          <Text className="text-xs font-semibold text-white shadow-sm">
-            {isOnline ? translate('base.online') : translate('base.offline')}
-          </Text>
-        </View>
-      </View>
-
-      <ScrollView
-        className="flex-1"
-        contentContainerClassName="px-4 pb-8 pt-6"
-        showsVerticalScrollIndicator={false}
-      >
-        {/* ── Progress Slider ────────────────────────────────── */}
-        <View className="w-full">
-          <CurtainSlider
-            position={position}
-            onSlidingComplete={handlePosition}
-            disabled={true} // Tạm thời khóa tính năng điều khiển vị trí
+  return (
+    <BaseLayout>
+      <View className="relative w-full flex-1 bg-[#F5F7FA] dark:bg-[#1B1B1B]" style={{ paddingTop: headerHeight, paddingBottom: insets.bottom }}>
+        {isDark && (
+          <Image
+            source={require('@@/assets/base/background-dark.webp')}
+            style={[
+              {
+                width: '100%',
+                height: '100%',
+                position: 'absolute',
+              },
+              StyleSheet.absoluteFillObject,
+            ]}
+            contentFit="cover"
           />
-        </View>
+        )}
+        {/* ── Door Image ─────────────────────────────────────── */}
+        <View
+          className="aspect-4/3 w-full overflow-hidden"
+        >
+          <Image source={bgSource} style={{ width: '100%', height: '100%' }} contentFit="cover" />
 
-        {/* ── Control Buttons ────────────────────────────────── */}
-        <View className="mt-8 flex-row items-end justify-between">
-          <CtrlButton
-            icon={<FontAwesome6 name="chevron-down" size={22} color={isDark ? '#fff' : '#1B1B1B'} />}
-            label={translate('deviceDetail.shutter.close')}
-            onPress={handleClose}
-            disabled={isControlling || !isOnline}
-          />
-          <CtrlButton
-            icon={<FontAwesome6 name="pause" size={22} color={isDark ? '#1B1B1B' : '#fff'} />}
-            label={translate('deviceDetail.shutter.stop')}
-            onPress={handleStop}
-            disabled={isControlling || !isOnline}
-            primary
-          />
-          <CtrlButton
-            icon={<FontAwesome6 name="chevron-up" size={22} color={isDark ? '#fff' : '#1B1B1B'} />}
-            label={translate('deviceDetail.shutter.open')}
-            onPress={handleOpen}
-            disabled={isControlling || !isOnline}
-          />
-        </View>
+          <View className="absolute bottom-4 left-4 flex-row items-center gap-2 rounded-full bg-white/60 px-3 py-1.5 shadow-sm dark:bg-black/60">
+            <View className="size-2 rounded-full" style={{ backgroundColor: stateColor }} />
+            <Text className="text-xs font-semibold text-white uppercase shadow-sm">{doorState}</Text>
+          </View>
 
-        {/* ── Child Lock Toggle ──────────────────────────────── */}
-        <View className="mt-6">
-          <TouchableOpacity
-            className={`flex-row items-center justify-center gap-2 rounded-2xl py-3.5 shadow-sm ${childLock ? 'bg-red-500 dark:bg-red-500/80' : 'bg-white dark:border dark:border-[#292929] dark:bg-[#FFFFFF0D]'}`}
-            onPress={() => handleChildLock(!childLock)}
-            disabled={isControlling || !isOnline}
-            activeOpacity={0.8}
-          >
-            <FontAwesome5
-              name={childLock ? 'lock' : 'lock-open'}
-              size={15}
-              color={childLock ? '#fff' : (isDark ? '#FFF' : '#1B1B1B')}
-            />
-            <Text className={`text-sm font-semibold ${childLock ? 'text-white' : 'text-[#1B1B1B] dark:text-white'}`}>
-              {childLock
-                ? translate('deviceDetail.shutter.childLockOn')
-                : translate('deviceDetail.shutter.childLockOff')}
+          {/* Online/Offline pill (Right) */}
+          <View className="absolute right-4 bottom-4 flex-row items-center gap-1.5 rounded-full bg-black/60 px-2.5 py-1.5 shadow-sm">
+            <View className={`size-2 rounded-full ${isOnline ? 'bg-[#10B981]' : 'bg-neutral-500'}`} />
+            <Text className="text-xs font-semibold text-white shadow-sm">
+              {isOnline ? translate('base.online') : translate('base.offline')}
             </Text>
-          </TouchableOpacity>
+          </View>
         </View>
 
-        {/* ── Footer Stats ───────────────────────────────────── */}
-        <View className="mt-4 flex-row gap-2">
-          <StatCard
-            icon={<FontAwesome6 name="crosshairs" size={18} color="#9CA3AF" />}
-            value={motorConfig?.clicks ? `${motorConfig.clicks} clicks` : '--'}
-            label={translate('deviceDetail.shutter.operations')}
-          />
-          <StatCard
-            icon={<FontAwesome6 name="clock" size={18} color="#9CA3AF" />}
-            value={motorConfig?.start_time && motorConfig?.end_time ? `${motorConfig.start_time} - ${motorConfig.end_time}` : '--'}
-            label={translate('deviceDetail.shutter.workingHours')}
-          />
-          <StatCard
-            icon={<MaterialCommunityIcons name="timer-outline" size={18} color="#9CA3AF" />}
-            value={formatTravelTime(travelMs)}
-            label={translate('deviceDetail.shutter.travelTime')}
-          />
-        </View>
-      </ScrollView>
+        <ScrollView
+          className="flex-1"
+          contentContainerClassName="px-4 pb-8 pt-6"
+          showsVerticalScrollIndicator={false}
+        >
+          {/* ── Progress Slider ────────────────────────────────── */}
+          <View className="w-full">
+            <CurtainSlider
+              position={position}
+              onSlidingComplete={handlePosition}
+              disabled={true} // Tạm thời khóa tính năng điều khiển vị trí
+            />
+          </View>
 
-      <ShutterBackgroundModal modalRef={modal.ref} deviceId={deviceId} />
-      <CurtainBleModal
-        modalRef={bleModal.ref}
-        isControlling={isControlling}
-        onBleMode={handleBleMode}
-      />
-      <CurtainRfLearnModal
-        modalRef={rfLearnModal.ref}
-        isControlling={isControlling}
-        rfLearnStatus={rfLearnStatus}
-        setRfLearnStatus={setRfLearnStatus}
-        onStartLearn={handleRfLearnStart}
-        onCancelLearn={handleRfLearnCancel}
-        onSaveLearn={handleRfLearnSave}
-      />
-      <CurtainMotorConfigModal
-        modalRef={motorConfigModal.ref}
-        isControlling={isControlling}
-        onConfig={handleConfig}
-        initialConfig={motorConfig}
-      />
-      <RenameDeviceModal
-        isVisible={isRenameVisible}
-        onClose={() => setIsRenameVisible(false)}
-        currentName={primaryEntity?.name ?? device?.name ?? (translate('deviceDetail.shutter.defaultName') as string)}
-        onSave={async (newName) => {
-          if (!primaryEntity) {
-            return;
-          }
-          await deviceService.renameDeviceEntity(deviceId, primaryEntity.code, newName);
-          useDeviceStore.getState().updateDeviceEntity(deviceId, primaryEntity.code, { name: newName });
-        }}
-      />
-    </View>
+          {/* ── Control Buttons ────────────────────────────────── */}
+          <View className="mt-8 flex-row items-end justify-between">
+            <CtrlButton
+              icon={<FontAwesome6 name="chevron-down" size={22} color={isDark ? '#fff' : '#1B1B1B'} />}
+              label={translate('deviceDetail.shutter.close')}
+              onPress={handleClose}
+              disabled={isControlling || !isOnline}
+            />
+            <CtrlButton
+              icon={<FontAwesome6 name="pause" size={22} color={isDark ? '#1B1B1B' : '#fff'} />}
+              label={translate('deviceDetail.shutter.stop')}
+              onPress={handleStop}
+              disabled={isControlling || !isOnline}
+              primary
+            />
+            <CtrlButton
+              icon={<FontAwesome6 name="chevron-up" size={22} color={isDark ? '#fff' : '#1B1B1B'} />}
+              label={translate('deviceDetail.shutter.open')}
+              onPress={handleOpen}
+              disabled={isControlling || !isOnline}
+            />
+          </View>
+
+          {/* ── Child Lock Toggle ──────────────────────────────── */}
+          <View className="mt-6">
+            <TouchableOpacity
+              className={`flex-row items-center justify-center gap-2 rounded-2xl py-3.5 shadow-sm ${childLock ? 'bg-red-500 dark:bg-red-500/80' : 'bg-white dark:border dark:border-[#292929] dark:bg-[#FFFFFF0D]'}`}
+              onPress={() => handleChildLock(!childLock)}
+              disabled={isControlling || !isOnline}
+              activeOpacity={0.8}
+            >
+              <FontAwesome5
+                name={childLock ? 'lock' : 'lock-open'}
+                size={15}
+                color={childLock ? '#fff' : (isDark ? '#FFF' : '#1B1B1B')}
+              />
+              <Text className={`text-sm font-semibold ${childLock ? 'text-white' : 'text-[#1B1B1B] dark:text-white'}`}>
+                {childLock
+                  ? translate('deviceDetail.shutter.childLockOn')
+                  : translate('deviceDetail.shutter.childLockOff')}
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* ── Footer Stats ───────────────────────────────────── */}
+          <View className="mt-4 flex-row gap-2">
+            <StatCard
+              icon={<FontAwesome6 name="crosshairs" size={18} color="#9CA3AF" />}
+              value={motorConfig?.clicks ? `${motorConfig.clicks} clicks` : '--'}
+              label={translate('deviceDetail.shutter.operations')}
+            />
+            <StatCard
+              icon={<FontAwesome6 name="clock" size={18} color="#9CA3AF" />}
+              value={motorConfig?.start_time && motorConfig?.end_time ? `${motorConfig.start_time} - ${motorConfig.end_time}` : '--'}
+              label={translate('deviceDetail.shutter.workingHours')}
+            />
+            <StatCard
+              icon={<MaterialCommunityIcons name="timer-outline" size={18} color="#9CA3AF" />}
+              value={formatTravelTime(travelMs)}
+              label={translate('deviceDetail.shutter.travelTime')}
+            />
+          </View>
+        </ScrollView>
+
+        <ShutterBackgroundModal modalRef={modal.ref} deviceId={deviceId} />
+        <CurtainBleModal
+          modalRef={bleModal.ref}
+          isControlling={isControlling}
+          onBleMode={handleBleMode}
+        />
+        <CurtainRfLearnModal
+          modalRef={rfLearnModal.ref}
+          isControlling={isControlling}
+          rfLearnStatus={rfLearnStatus}
+          setRfLearnStatus={setRfLearnStatus}
+          onStartLearn={handleRfLearnStart}
+          onCancelLearn={handleRfLearnCancel}
+          onSaveLearn={handleRfLearnSave}
+        />
+        <CurtainMotorConfigModal
+          modalRef={motorConfigModal.ref}
+          isControlling={isControlling}
+          onConfig={handleConfig}
+          initialConfig={motorConfig}
+        />
+      </View>
+    </BaseLayout>
   );
 }

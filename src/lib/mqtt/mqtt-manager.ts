@@ -187,7 +187,9 @@ export class MqttManager {
     }
     catch (error: any) {
       this.status = EMqttStatus.DISCONNECTED;
-      console.error('📡 MQTT connect failed:', error?.message);
+      // Extract meaningful error message from axios or standard error
+      const errorMessage = error?.response?.data?.message || error?.message || String(error);
+      console.error('📡 MQTT connect failed:', errorMessage);
     }
   }
 

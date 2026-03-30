@@ -1,17 +1,24 @@
 import type { TDevice, TDeviceEntity } from '@/lib/api/devices/device.service';
 
+import * as Haptics from 'expo-haptics';
 import { ActivityIndicator, TouchableOpacity } from 'react-native';
 
 import { Text, View } from '@/components/ui';
 import { useSwitchControl } from '@/features/devices/hooks/use-switch-control';
 
-export function SwitchModalItem({ device, entity }: { device: TDevice; entity: TDeviceEntity }) {
+export function SwitchModalItem({ device, entity, onLongPress }: { device: TDevice; entity: TDeviceEntity; onLongPress?: () => void }) {
   const { isOn, isLoading, handleToggle } = useSwitchControl(device, entity);
+
+  const _onLongPress = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    onLongPress?.();
+  };
 
   return (
     <TouchableOpacity
       className={`h-24 w-[48%] justify-between rounded-xl p-3 ${isOn ? 'bg-[#A3E635]' : 'bg-neutral-100 dark:bg-neutral-800'}`}
       onPress={handleToggle}
+      onLongPress={_onLongPress}
       activeOpacity={0.8}
     >
       <View className="flex-row items-center justify-between">
