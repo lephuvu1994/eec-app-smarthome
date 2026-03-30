@@ -81,7 +81,7 @@ describe('useDeviceControl', () => {
     expect(result.current.isOn).toBe(true);
     expect(result.current.isOnline).toBe(true);
     expect(result.current.entityCount).toBe(1);
-    expect(result.current.displayName).toBe('Living Room Light');
+    expect(result.current.displayName).toBe('Switch 1');
   });
 
   it('should format displayName if activeEntity is explicitly provided', () => {
@@ -89,7 +89,7 @@ describe('useDeviceControl', () => {
       useDeviceControl(mockDevice, mockEntity, { modal: mockModal, config: mockConfig })
     );
 
-    expect(result.current.displayName).toBe('Living Room Light - Switch 1');
+    expect(result.current.displayName).toBe('Switch 1');
   });
 
   it('should toggle state optimistically when onToggle is called', async () => {

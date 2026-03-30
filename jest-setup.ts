@@ -136,3 +136,26 @@ global.window = {};
 
 // @ts-expect-error
 global.window = global;
+
+// Bypass axios fetch feature detection that crashes with Expo streams
+const originalResponse = global.Response;
+const originalReadableStream = global.ReadableStream;
+// @ts-expect-error
+delete global.Response;
+// @ts-expect-error
+delete global.window.Response;
+// @ts-expect-error
+delete global.ReadableStream;
+// @ts-expect-error
+delete global.window.ReadableStream;
+
+const axios = require('axios');
+
+global.Response = originalResponse;
+// @ts-expect-error
+global.window.Response = originalResponse;
+global.ReadableStream = originalReadableStream;
+// @ts-expect-error
+global.window.ReadableStream = originalReadableStream;
+
+axios.defaults.adapter = ['http'];

@@ -179,12 +179,13 @@ describe('MqttManager', () => {
         state: 1,
         attributes: [{ key: 'brightness', value: 80 }],
       });
-      messageHandler('COMPANY/MODEL/device-token-xyz/state', Buffer.from(payload));
+      messageHandler('COMPANY/MODEL/device-token-xyz/state', Buffer.from(payload), { retain: false });
 
       expect(handler).toHaveBeenCalledWith({
         entityCode: 'switch_1',
         state: 1,
         attributes: [{ key: 'brightness', value: 80 }],
+        isRetained: false,
       });
     });
 
@@ -201,7 +202,7 @@ describe('MqttManager', () => {
 
       // Should not throw
       expect(() => {
-        messageHandler('COMPANY/MODEL/dev-t/state', Buffer.from('not-json'));
+        messageHandler('COMPANY/MODEL/dev-t/state', Buffer.from('not-json'), { retain: false });
       }).not.toThrow();
 
       expect(handler).not.toHaveBeenCalled();
@@ -229,7 +230,7 @@ describe('MqttManager', () => {
         timestamp: '2026-03-26T00:00:00Z',
       });
 
-      messageHandler('COMPANY/MODEL/dev-t/state', Buffer.from(payload));
+      messageHandler('COMPANY/MODEL/dev-t/state', Buffer.from(payload), { retain: false });
 
       // Should emit for each update
       expect(handler).toHaveBeenCalledTimes(2);

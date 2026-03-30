@@ -2,7 +2,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import * as React from 'react';
-import { Alert, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Switch, TouchableOpacity } from 'react-native';
 import Animated, { FadeInDown, FadeInLeft } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
@@ -11,6 +11,7 @@ import { PrimarySceneCard } from '@/components/base/scene/PrimarySceneCard';
 
 import { BaseLayout } from '@/components/layout/BaseLayout';
 import { showErrorMessage, showSuccessMessage, Text, View } from '@/components/ui';
+import { requestPushPermissionManually } from '@/features/notifications/use-push-notifications';
 import { deviceService } from '@/lib/api/devices/device.service';
 import { translate } from '@/lib/i18n';
 import { getPrimaryEntities } from '@/lib/utils/device-entity-helper';
@@ -39,6 +40,48 @@ export function DeviceInfoScreen({ deviceId }: Props) {
   const [isDeleting, setIsDeleting] = React.useState(false);
   const primaryEntities = device ? getPrimaryEntities(device) : [];
   const isSingleHardwareEntity = primaryEntities.length <= 1;
+
+  const [isUpdatingNotify, setIsUpdatingNotify] = React.useState(false);
+  const isNotifyOffline = device?.customConfig?.notify?.offline === true;
+
+  const toggleNotifyOffline = async (value: boolean) => {
+    if (!device)
+      return;
+
+    try {
+      setIsUpdatingNotify(true);
+
+      if (value) {
+        // Checking and requesting OS permissions before enabling
+        const token = await requestPushPermissionManually();
+        if (!token) {
+          Alert.alert(
+            translate('device.notify.permissionTitle' as any) || 'Chưa cấp quyền',
+            translate('device.notify.permissionDesc' as any) || 'Vui lòng mở Cài đặt thiết bị và cấp quyền Thông báo cho ứng dụng.',
+          );
+          setIsUpdatingNotify(false);
+          return;
+        }
+      }
+
+      await deviceService.updateNotifyConfig(device.id, { offline: value });
+
+      const updatedConfig = {
+        ...device.customConfig,
+        notify: {
+          ...(device.customConfig?.notify || {}),
+          offline: value,
+        },
+      };
+      useDeviceStore.getState().updateDevice(device.id, { customConfig: updatedConfig });
+    }
+    catch {
+      showErrorMessage(translate('base.somethingWentWrong') || 'Có lỗi xảy ra');
+    }
+    finally {
+      setIsUpdatingNotify(false);
+    }
+  };
 
   if (!device) {
     return (
@@ -174,6 +217,29 @@ export function DeviceInfoScreen({ deviceId }: Props) {
               </View>
             </View>
           )}
+
+          {/* ── Notification Settings ── */}
+          <View className="mb-6 rounded-2xl bg-white/80 p-4 shadow-sm backdrop-blur-md dark:bg-[#1C1C1E]/80">
+            <Text className="mb-3 text-sm font-semibold tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
+              {translate('device.info.notifyTitle' as any) || 'Cài đặt cảnh báo'}
+            </Text>
+            <View className="flex-row items-center justify-between rounded-xl bg-black/5 px-4 py-3 dark:bg-white/5">
+              <View className="flex-1 pr-4">
+                <Text className="text-base font-medium text-[#1B1B1B] dark:text-white" numberOfLines={1}>
+                  {translate('device.info.notifyOffline' as any) || 'Cảnh báo khi mất kết nối'}
+                </Text>
+                <Text className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
+                  {translate('device.info.notifyOfflineDesc' as any) || 'Gửi thông báo khi thiết bị bị mất điện hoặc ngoại tuyến quá 5 phút.'}
+                </Text>
+              </View>
+              <Switch
+                value={isNotifyOffline}
+                onValueChange={toggleNotifyOffline}
+                disabled={isUpdatingNotify}
+                trackColor={{ false: isDark ? '#3A3A3C' : '#E5E5EA', true: '#34C759' }}
+              />
+            </View>
+          </View>
 
           {/* ── Action Cards Grid ── */}
           <View className="flex-row flex-wrap justify-between gap-y-4">
