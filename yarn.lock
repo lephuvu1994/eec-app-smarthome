@@ -5736,6 +5736,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/lodash.isequal@npm:^4.5.8":
+  version: 4.5.8
+  resolution: "@types/lodash.isequal@npm:4.5.8"
+  dependencies:
+    "@types/lodash": "npm:*"
+  checksum: 10c0/6db28cacf165d55421fbf2970ccfb1682a7b82b743bb7aba4398fa8ab98f1711fca2fe4afa1aa2b7b4afb3eff76c8aca13b22206f5efeb038d99e41300589bca
+  languageName: node
+  linkType: hard
+
 "@types/lodash.memoize@npm:^4.1.9":
   version: 4.1.9
   resolution: "@types/lodash.memoize@npm:4.1.9"
@@ -13995,6 +14004,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.isequal@npm:^4.5.0":
+  version: 4.5.0
+  resolution: "lodash.isequal@npm:4.5.0"
+  checksum: 10c0/dfdb2356db19631a4b445d5f37868a095e2402292d59539a987f134a8778c62a2810c2452d11ae9e6dcac71fc9de40a6fedcb20e2952a15b431ad8b29e50e28f
+  languageName: node
+  linkType: hard
+
 "lodash.kebabcase@npm:^4.1.1":
   version: 4.1.1
   resolution: "lodash.kebabcase@npm:4.1.1"
@@ -18283,6 +18299,7 @@ __metadata:
     "@types/i18n-js": "npm:^4.0.1"
     "@types/invariant": "npm:^2.2.37"
     "@types/jest": "npm:^29.5.14"
+    "@types/lodash.isequal": "npm:^4.5.8"
     "@types/lodash.memoize": "npm:^4.1.9"
     "@types/papaparse": "npm:5.3.15"
     "@types/react": "npm:~19.2.10"
@@ -18338,6 +18355,7 @@ __metadata:
     jest-expo: "npm:~55.0.11"
     jest-junit: "npm:^16.0.0"
     lint-staged: "npm:^16.2.7"
+    lodash.isequal: "npm:^4.5.0"
     lodash.memoize: "npm:^4.1.2"
     moti: "npm:^0.30.0"
     mqtt: "npm:^5.15.1"

@@ -168,7 +168,7 @@ export const HomeScreenWrapper = memo(({ className }: { className?: string }) =>
       duration: ANIMATION_DURATION,
       easing: Easing.inOut(Easing.ease),
     }),
-  }));
+  }), [showCameraPreview]);
 
   // Đồng bộ hóa Shared Value để thực hiện scrollTo mượt mà
   useEffect(() => {
