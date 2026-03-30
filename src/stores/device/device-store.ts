@@ -1,4 +1,5 @@
 import type { EDeviceStatus, TDevice } from '@/lib/api/devices/device.service';
+import isEqual from 'lodash.isequal';
 
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
@@ -42,17 +43,33 @@ const _useDeviceStore = create<TDeviceStoreState>()(
 
       updateDevice: (id, override) => {
         set({
-          devices: get().devices.map(d =>
-            d.id === id ? { ...d, ...override } : d,
-          ),
+          devices: get().devices.map((d) => {
+            if (d.id !== id)
+              return d;
+
+            // Validate if changes are actually different
+            let hasChanged = false;
+            for (const key of Object.keys(override)) {
+              if (!isEqual((d as any)[key], (override as any)[key])) {
+                hasChanged = true;
+                break;
+              }
+            }
+            if (!hasChanged)
+              return d;
+
+            return { ...d, ...override };
+          }),
         });
       },
 
       updateDeviceStatus: (id, status) => {
         set({
-          devices: get().devices.map(d =>
-            d.id === id ? { ...d, status } : d,
-          ),
+          devices: get().devices.map((d) => {
+            if (d.id !== id || d.status === status)
+              return d;
+            return { ...d, status };
+          }),
         });
       },
 
@@ -63,50 +80,77 @@ const _useDeviceStore = create<TDeviceStoreState>()(
               return d;
             }
 
+            let isDeviceEntitiesChanged = false;
             const updatedEntities = d.entities.map((e) => {
               if (e.code !== entityCode) {
                 return e;
               }
 
               const newEntity = { ...e };
-              if (updates.name !== undefined) {
+              let isEntityChanged = false;
+
+              if (updates.name !== undefined && newEntity.name !== updates.name) {
                 newEntity.name = updates.name;
+                isEntityChanged = true;
               }
 
-              if (updates.state !== undefined) {
+              if (updates.state !== undefined && !isEqual(newEntity.currentState, updates.state)) {
                 newEntity.currentState = updates.state;
+                isEntityChanged = true;
               }
 
               if (updates.attributes && updates.attributes.length > 0) {
                 const updatedAttributes = [...(e.attributes || [])];
+                let isAttributesChanged = false;
+
                 for (const updatedAttr of updates.attributes) {
-                  // Find existing attribute and merge
                   const index = updatedAttributes.findIndex(a => a.key === updatedAttr.key);
                   if (index >= 0) {
-                    updatedAttributes[index] = {
-                      ...updatedAttributes[index],
-                      currentValue: updatedAttr.value,
-                      numValue: typeof updatedAttr.value === 'number' ? updatedAttr.value : updatedAttributes[index].numValue,
-                      strValue: typeof updatedAttr.value === 'string' ? updatedAttr.value : updatedAttributes[index].strValue,
-                    };
+                    // Check primitive equality to avoid unnecessary arrays allocation
+                    const oldNumValue = updatedAttributes[index].numValue;
+                    const oldStrValue = updatedAttributes[index].strValue;
+                    const oldCurrentValue = updatedAttributes[index].currentValue;
+
+                    const newNumValue = typeof updatedAttr.value === 'number' ? updatedAttr.value : oldNumValue;
+                    const newStrValue = typeof updatedAttr.value === 'string' ? updatedAttr.value : oldStrValue;
+
+                    if (oldNumValue !== newNumValue || oldStrValue !== newStrValue || oldCurrentValue !== updatedAttr.value) {
+                      updatedAttributes[index] = {
+                        ...updatedAttributes[index],
+                        currentValue: updatedAttr.value,
+                        numValue: newNumValue,
+                        strValue: newStrValue,
+                      };
+                      isAttributesChanged = true;
+                    }
                   }
                   else {
-                    // Note: We don't construct fully new attributes here if they don't exist in DB schema
-                    // because we only care to update known properties for the UI.
-                    // But if it's completely missing, we inject a minimal representation for UI hooks to read.
                     updatedAttributes.push({
                       key: updatedAttr.key,
                       currentValue: updatedAttr.value,
                       numValue: typeof updatedAttr.value === 'number' ? updatedAttr.value : null,
                       strValue: typeof updatedAttr.value === 'string' ? updatedAttr.value : null,
                     } as any);
+                    isAttributesChanged = true;
                   }
                 }
-                newEntity.attributes = updatedAttributes;
+
+                if (isAttributesChanged) {
+                  newEntity.attributes = updatedAttributes;
+                  isEntityChanged = true;
+                }
               }
 
-              return newEntity;
+              if (isEntityChanged) {
+                isDeviceEntitiesChanged = true;
+                return newEntity;
+              }
+              return e; // Return old entity literal if practically no change
             });
+
+            if (!isDeviceEntitiesChanged) {
+              return d; // Completely abort device recreation
+            }
 
             return { ...d, entities: updatedEntities };
           }),

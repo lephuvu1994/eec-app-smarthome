@@ -150,8 +150,10 @@ export function useShutterControl(
           newState = EDoorState.Stop;
         }
 
+        const isStateChanged = newState !== doorStateRef.current;
+
         // Cập nhật State React & Ref đồng bộ
-        if (newState !== doorStateRef.current && device?.id && primaryEntity?.code) {
+        if (isStateChanged && device?.id && primaryEntity?.code) {
           doorStateRef.current = newState;
           updateDeviceEntity(device.id, primaryEntity.code, { state: newState });
         }
@@ -194,24 +196,26 @@ export function useShutterControl(
         // --- Fake Position Animation Logic ---
         // Vì C-code đang "hack" mqtt_position = 50 khi di chuyển,
         // ta bỏ qua incomingPosition nếu rèm đang chạy. Tự nội suy phần trăm theo thời gian!
-        const durationMs = travelMsRef.current > 0 ? travelMsRef.current : 20000;
+        // Only trigger animations when state actually changes
+        if (isStateChanged) {
+          const durationMs = travelMsRef.current > 0 ? travelMsRef.current : 20000;
 
-        if (newState === EDoorState.Open) {
-          cancelAnimation(position);
-          const remain = ((100 - position.value) / 100) * durationMs;
-          position.value = withTiming(100, { duration: Math.max(remain, 100), easing: Easing.linear });
-        }
-        else if (newState === EDoorState.Close) {
-          cancelAnimation(position);
-          const remain = (position.value / 100) * durationMs;
-          position.value = withTiming(0, { duration: Math.max(remain, 100), easing: Easing.linear });
-        }
-        else if (newState === EDoorState.Stop) {
-          cancelAnimation(position);
-          // Mới dừng: lỡ đâu chip đang gửi % thật lúc STOP? Cập nhật theo chip (nhưng bỏ qua 50% rác)
-          // Để an toàn, nếu chip báo STOP và position != 50 (nếu chip đã sửa) thì đồng bộ, còn không giữ nguyên vị trí nội suy
-          if (incomingPosition !== null && incomingPosition !== 50) {
-            position.value = withTiming(incomingPosition, { duration: 300 });
+          if (newState === EDoorState.Open) {
+            cancelAnimation(position);
+            const remain = ((100 - position.value) / 100) * durationMs;
+            position.value = withTiming(100, { duration: Math.max(remain, 100), easing: Easing.linear });
+          }
+          else if (newState === EDoorState.Close) {
+            cancelAnimation(position);
+            const remain = (position.value / 100) * durationMs;
+            position.value = withTiming(0, { duration: Math.max(remain, 100), easing: Easing.linear });
+          }
+          else if (newState === EDoorState.Stop) {
+            cancelAnimation(position);
+            // Mới dừng: lỡ đâu chip đang gửi % thật lúc STOP? Cập nhật theo chip (nhưng bỏ qua 50% rác)
+            if (incomingPosition !== null && incomingPosition !== 50) {
+              position.value = withTiming(incomingPosition, { duration: 300 });
+            }
           }
         }
       },
@@ -220,7 +224,7 @@ export function useShutterControl(
   );
 
   // ─── Command sender ───────────────────────────────────────────────────────
-  const sendCommand = async (entityCode: string, value: EShutterCmd | number | string | Record<string, any>) => {
+  const sendCommand = useCallback(async (entityCode: string, value: EShutterCmd | number | string | Record<string, any>) => {
     if (!device)
       return;
 
@@ -239,7 +243,7 @@ export function useShutterControl(
     finally {
       setIsControlling(false);
     }
-  };
+  }, [device, allowHaptics]);
 
   const mainCode = primaryEntity?.code ?? 'main';
 
@@ -250,29 +254,29 @@ export function useShutterControl(
     travelMs,
     isControlling,
     // Movement — entity `main` (curtain domain)
-    handleOpen: () => sendCommand(mainCode, EShutterCmd.Open),
-    handleClose: () => sendCommand(mainCode, EShutterCmd.Close),
-    handleStop: () => sendCommand(mainCode, EShutterCmd.Stop),
+    handleOpen: useCallback(() => sendCommand(mainCode, EShutterCmd.Open), [sendCommand, mainCode]),
+    handleClose: useCallback(() => sendCommand(mainCode, EShutterCmd.Close), [sendCommand, mainCode]),
+    handleStop: useCallback(() => sendCommand(mainCode, EShutterCmd.Stop), [sendCommand, mainCode]),
     // Position control (0-100)
-    handlePosition: (val: number) => sendCommand(mainCode, val),
+    handlePosition: useCallback((val: number) => sendCommand(mainCode, val), [sendCommand, mainCode]),
     // Child lock — entity `child_lock` (lock domain), value: 0 | 1
-    handleChildLock: (lock: boolean) => sendCommand('child_lock', lock ? 1 : 0),
+    handleChildLock: useCallback((lock: boolean) => sendCommand('child_lock', lock ? 1 : 0), [sendCommand]),
     // BLE mode — entity `ble_mode` (switch domain), value: "on" | "off"
-    handleBleMode: (on: boolean) => sendCommand('ble_mode', on ? 'on' : 'off'),
+    handleBleMode: useCallback((on: boolean) => sendCommand('ble_mode', on ? 'on' : 'off'), [sendCommand]),
     // RF learning (Hardware-driven Flow)
-    handleRfLearnStart: () => sendCommand('learn', 'start'),
-    handleRfLearnCancel: () => sendCommand('learn', 'cancel'),
-    handleRfLearnSave: () => sendCommand('learn', 'save'),
+    handleRfLearnStart: useCallback(() => sendCommand('learn', 'start'), [sendCommand]),
+    handleRfLearnCancel: useCallback(() => sendCommand('learn', 'cancel'), [sendCommand]),
+    handleRfLearnSave: useCallback(() => sendCommand('learn', 'save'), [sendCommand]),
     rfLearnStatus,
-    setRfLearnStatus: (status: string) => {
+    setRfLearnStatus: useCallback((status: string) => {
       // Expose to manually clear status in modal on close
       if (device?.id) {
         updateDeviceEntity(device.id, 'learn', { attributes: [{ key: 'rf_learn_status', value: status }] });
         updateDeviceEntity(device.id, primaryEntity?.code || 'main', { attributes: [{ key: 'rf_learn_status', value: status }] });
       }
-    },
+    }, [device?.id, primaryEntity?.code, updateDeviceEntity]),
     // Config motor — entity `config` (config domain)
-    handleConfig: (config: { clicks?: number; start_time?: string; end_time?: string }) => {
+    handleConfig: useCallback((config: { clicks?: number; start_time?: string; end_time?: string }) => {
       // Map App's simplified config to Chip Firmware expected C-struct
       const chipConfig = {
         req_open_clicks: config.clicks ?? 2,
@@ -284,9 +288,9 @@ export function useShutterControl(
         end_time: config.end_time ?? '23:59',
       };
       return sendCommand('config', chipConfig);
-    },
+    }, [sendCommand]),
     // OTA Update — entity `update` (update domain)
-    handleOta: (url: string) => sendCommand('update', url),
+    handleOta: useCallback((url: string) => sendCommand('update', url), [sendCommand]),
     sendCommand,
     motorConfig,
     isOnline,

@@ -18,15 +18,13 @@ type TListDeviceProps = {
 
 export function ListDevice({ roomId, isFavorite }: TListDeviceProps) {
   const storeDevices = useDeviceStore.use.devices();
-  const allDevices = Array.isArray(storeDevices) ? storeDevices : [];
   const isLoading = useDeviceStore.use.isLoading();
-  // const favoriteIds = useFavoriteStore(s => s.favoriteIds) ?? [];
   const deviceViewMode = useConfigManager(s => s.deviceViewMode);
 
-  // Filter devices from store
-  const realDevices = isFavorite
-    ? allDevices
-    : allDevices.filter(d => d.room?.id === roomId);
+  const realDevices = useMemo(() => {
+    const allDevices = Array.isArray(storeDevices) ? storeDevices : [];
+    return isFavorite ? allDevices : allDevices.filter(d => d.room?.id === roomId);
+  }, [isFavorite, storeDevices, roomId]);
 
   // Unpack or group them according to preferences
   const displayItems = useMemo<{ device: TDevice; entity?: TDeviceEntity }[]>(() => {
