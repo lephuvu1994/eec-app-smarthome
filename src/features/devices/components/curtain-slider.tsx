@@ -31,6 +31,7 @@ export function CurtainSlider({ position, onSlidingComplete, disabled }: Props) 
         sliderPosition.value = val;
       }
     },
+    [position, isInteracting, sliderPosition],
   );
 
   const tapGesture = Gesture.Tap()
@@ -73,14 +74,14 @@ export function CurtainSlider({ position, onSlidingComplete, disabled }: Props) 
     return {
       width: `${sliderPosition.value}%`,
     };
-  });
+  }, [sliderPosition]);
 
   const thumbStyle = useAnimatedStyle(() => {
     return {
       left: `${sliderPosition.value}%`,
       transform: [{ translateX: -12 }],
     };
-  });
+  }, [sliderPosition]);
 
   return (
     <GestureDetector gesture={composedGesture}>
