@@ -2,7 +2,8 @@ import type { AxiosInstance, AxiosRequestConfig, InternalAxiosRequestConfig } fr
 import Env from '@env';
 import axios from 'axios';
 import get from 'lodash/get';
-import { useUserManager } from '@/features/auth/user-store';
+// Breaking require cycle by loading user-store dynamically
+const getUserManager = () => require('@/features/auth/user-store').useUserManager;
 
 export const TIMEOUT = 10000;
 const API_VERSION = '/api/v1';
@@ -27,7 +28,7 @@ function setupAuthInterceptor(instance: AxiosInstance) {
       // Update baseURL before each request
       config.baseURL = Env.EXPO_PUBLIC_API_URL + API_VERSION;
 
-      const accessToken = useUserManager.getState().accessToken;
+      const accessToken = getUserManager().getState().accessToken;
       if (accessToken) {
         config.headers.Authorization = `Bearer ${accessToken}`;
       }
@@ -43,9 +44,9 @@ function setupAuthInterceptor(instance: AxiosInstance) {
       const prevRequest = error?.config;
       if (statusCode === 401 && !prevRequest?._retry) {
         prevRequest._retry = true;
-        const refreshToken = useUserManager.getState().refreshToken;
+        const refreshToken = getUserManager().getState().refreshToken;
         if (refreshToken) {
-          const state = useUserManager.getState();
+          const state = getUserManager().getState();
           try {
             const { data } = await instance.post('/refreshToken', {
               refreshToken,
