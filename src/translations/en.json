@@ -93,6 +93,7 @@
     "sendingConfig": "Sending configuration...",
     "somethingWentWrong": "Something went wrong",
     "success": "Success",
+    "timelineTitle": "Activity History",
     "unableToConnect": "Unable to connect",
     "ungroupedRooms": "Ungrouped Rooms",
     "unsupportedDevice": "This device is not supported.",
@@ -162,6 +163,39 @@
     "switch": {
       "turnOffAll": "Turn off all",
       "turnOnAll": "Turn on all"
+    },
+    "timeline": {
+      "deviceOffline": "Device is Offline",
+      "deviceOnline": "Device is Online",
+      "errorLoadData": "Error loading data. Try again later.",
+      "events": {
+        "close": "Close",
+        "off": "Off",
+        "offline": "Offline",
+        "on": "On",
+        "online": "Online",
+        "open": "Open",
+        "pause": "Pause",
+        "stop": "Stop"
+      },
+      "noActivity": "No activity yet",
+      "sources": {
+        "app": "App",
+        "automation": "Automation",
+        "mqtt": "App",
+        "physical": "Physical Button",
+        "rf": "RF Remote",
+        "system": "System",
+        "voice": "Voice"
+      },
+      "statusOnly": "{{name}}State: {{event}}",
+      "statusVia": "{{name}}State: {{event}} (via {{source}})",
+      "title": "Activity History",
+      "types": {
+        "connection": "Connection",
+        "state": "State"
+      },
+      "viewAll": "View All History"
     }
   },
   "formAuth": {

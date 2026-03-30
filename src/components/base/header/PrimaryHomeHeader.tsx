@@ -10,6 +10,7 @@ import { BellIcon, SnownyIcon } from '@/components/ui/icons';
 import { ZeegoNativeMenu } from '@/components/ui/zeego-native-menu';
 import { EHomeRole } from '@/features/auth/types/response';
 import { useUserManager } from '@/features/auth/user-store';
+import { HomeTimelinePopover } from '@/features/home-screen/components/modals/home-timeline-popover';
 import { translate } from '@/lib/i18n';
 import { useHomeStore } from '@/stores/home/home-store';
 import { ETheme } from '@/types/base';
@@ -98,23 +99,32 @@ export const PrimaryHeaderHome: React.FC = memo(() => {
         </View>
       </View>
       <View className="flex-1 flex-row justify-end gap-2">
-        <View className="relative size-8 items-center justify-center rounded-full bg-white/40 shadow-sm dark:bg-black/40">
-          <BellIcon color={theme === ETheme.Light ? '#737373' : '#FFFFFF'} />
-          <PulseDot
-            color="#22C55E"
-            size={8}
-            duration={1200}
-            style={{
-              position: 'absolute',
-              top: 6,
-              right: 6,
-            }}
-          />
-        </View>
+        <HomeTimelinePopover
+          homeId={selectedHomeId ?? ''}
+          renderTrigger={(sourceRef, openPopover) => (
+            <TouchableOpacity
+              ref={sourceRef}
+              onPress={openPopover}
+              className="relative size-10 items-center justify-center rounded-full bg-white/40 shadow-sm dark:bg-black/40"
+            >
+              <BellIcon color={theme === ETheme.Light ? '#737373' : '#FFFFFF'} />
+              <PulseDot
+                color="#22C55E"
+                size={8}
+                duration={1200}
+                style={{
+                  position: 'absolute',
+                  top: 6,
+                  right: 6,
+                }}
+              />
+            </TouchableOpacity>
+          )}
+        />
 
         <ZeegoNativeMenu
           triggerComponent={(
-            <View pointerEvents="none" className="size-8 items-center justify-center rounded-full bg-white/40 shadow-sm dark:bg-black/40">
+            <View pointerEvents="none" className="size-10 items-center justify-center rounded-full bg-white/40 shadow-sm dark:bg-black/40">
               <AntDesign name="plus" size={16} color={theme === ETheme.Light ? '#737373' : '#FFFFFF'} />
             </View>
           )}
