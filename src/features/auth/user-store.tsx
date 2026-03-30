@@ -13,7 +13,7 @@ import { EAuthStatus } from './types/enum';
 export type UserState = TUser & {
   status: EAuthStatus;
   signIn: (user: TUser) => void;
-  signOut: () => void;
+  signOut: () => Promise<void>;
   updateToken: (token: TTokenType) => void;
   hydrateAuth: () => Promise<void>;
 };
@@ -59,7 +59,7 @@ const _useGetUser = create<UserState>()(
         catch (err) {
           console.warn('[UserStore] Logout API failed:', err);
         }
- 
+
         // 2. Local Cleanup
         // Disconnect MQTT
         MqttManager.getInstance().disconnect();
@@ -83,7 +83,7 @@ const _useGetUser = create<UserState>()(
         const currentState = get();
         try {
           if (!currentState.accessToken) {
-            get().signOut();
+            await get().signOut();
             return;
           }
           set({
