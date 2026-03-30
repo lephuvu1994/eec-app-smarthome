@@ -152,10 +152,8 @@ delete global.window.ReadableStream;
 const axios = require('axios');
 
 global.Response = originalResponse;
-// @ts-expect-error
 global.window.Response = originalResponse;
 global.ReadableStream = originalReadableStream;
-// @ts-expect-error
 global.window.ReadableStream = originalReadableStream;
 
 axios.defaults.adapter = ['http'];
