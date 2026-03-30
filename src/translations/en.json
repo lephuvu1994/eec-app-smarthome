@@ -104,6 +104,18 @@
     "wifiPasswordPlaceholder": "Enter password",
     "wifiSsidPlaceholder": "Enter Wi-Fi SSID"
   },
+  "device": {
+    "info": {
+      "title": "Device Information"
+    },
+    "remove": {
+      "button": "Remove Device",
+      "confirmMessage": "Are you sure you want to remove this device? All settings and activity history will be permanently deleted.",
+      "error": "Error removing device",
+      "success": "Device removed successfully",
+      "title": "Remove Device"
+    }
+  },
   "deviceDetail": {
     "climate": {
       "currentTemp": "Room temp",
@@ -150,6 +162,7 @@
       "childLockOn": "Child Lock: ON",
       "close": "Close",
       "defaultName": "Roller Shutter",
+      "deviceInfo": "Device Information",
       "deviceType": "Device Type",
       "open": "Open",
       "operations": "Operations",

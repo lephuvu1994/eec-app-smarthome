@@ -18,7 +18,7 @@ export function DeviceGridCard({
   displayName,
   deviceImage,
   isOnline,
-  isSingleEntity,
+  canQuickToggle,
   statusLabel,
   showExpandIcon,
   config,
@@ -61,7 +61,7 @@ export function DeviceGridCard({
           style={{ width: 52, height: 52, opacity: isOnline ? 1 : 0.35 }}
           contentFit="cover"
         />
-        {isSingleEntity && config.hasToggle && (
+        {canQuickToggle && config.hasToggle && (
           <TouchableOpacity onPress={isOnline ? onToggle : undefined} disabled={!isOnline} activeOpacity={0.7}>
             <Animated.View
               style={[

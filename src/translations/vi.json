@@ -104,6 +104,18 @@
     "wifiPasswordPlaceholder": "Nhập mật khẩu",
     "wifiSsidPlaceholder": "Nhập tên Wi-Fi (SSID)"
   },
+  "device": {
+    "info": {
+      "title": "Thông tin thiết bị"
+    },
+    "remove": {
+      "button": "Gỡ bỏ thiết bị",
+      "confirmMessage": "Bạn có chắc chắn muốn gỡ bỏ thiết bị này không? Tất cả thông tin cài đặt và lịch sử hoạt động sẽ bị xoá vĩnh viễn.",
+      "error": "Lỗi khi gỡ bỏ thiết bị",
+      "success": "Thiết bị đã được gỡ bỏ",
+      "title": "Gỡ bỏ thiết bị"
+    }
+  },
   "deviceDetail": {
     "climate": {
       "currentTemp": "Nhiệt độ phòng",
@@ -150,6 +162,7 @@
       "childLockOn": "Khoá trẻ em: BẬT",
       "close": "Đóng",
       "defaultName": "Cửa cuốn",
+      "deviceInfo": "Thông tin thiết bị",
       "deviceType": "Loại thiết bị",
       "open": "Mở",
       "operations": "Lượt thao tác",
