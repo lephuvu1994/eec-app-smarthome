@@ -10,6 +10,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 
 import { Text, View } from '@/components/ui';
+import { BellIcon } from '@/components/ui/icons';
 import { useModal } from '@/components/ui/modal';
 import { ZeegoNativeMenu } from '@/components/ui/zeego-native-menu';
 import { EDoorState, useShutterControl } from '@/features/devices/hooks/use-shutter-control';
@@ -22,7 +23,9 @@ import { CurtainSlider } from '../components/curtain-slider';
 import { CurtainBleModal } from '../components/modals/curtain-ble-modal';
 import { CurtainMotorConfigModal } from '../components/modals/curtain-motor-config-modal';
 import { CurtainRfLearnModal } from '../components/modals/curtain-rf-learn-modal';
+import { RenameDeviceModal } from '../components/modals/rename-device-modal';
 import { ShutterBackgroundModal } from '../components/modals/shutter-background-modal';
+import { TimelinePopover } from '../components/modals/timeline-popover';
 import { getShutterBackgroundSource } from '../utils/shutter-constants';
 
 type Props = {
@@ -140,6 +143,7 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
   const bleModal = useModal();
   const rfLearnModal = useModal();
   const motorConfigModal = useModal();
+  const [isRenameVisible, setIsRenameVisible] = React.useState(false);
 
   const menuElements: TMenuElement[] = [
     {
@@ -159,7 +163,7 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
                 {
                   key: 'ble',
                   title: translate('deviceDetail.shutter.advanced.bleMode'),
-                  icon: { ios: 'bluetooth' },
+                  icon: { ios: 'point.3.connected.trianglepath.dotted' },
                   onPress: bleModal.present,
                 },
                 {
@@ -198,9 +202,7 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
           key: 'rename',
           title: translate('deviceDetail.shutter.rename'),
           icon: { ios: 'pencil' },
-          onPress: () => {
-            console.log('Rename Device');
-          },
+          onPress: () => setIsRenameVisible(true),
         },
       ],
     },
@@ -244,13 +246,19 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
         </Animated.View>
 
         <Animated.View entering={FadeInRight.duration(300)} className="flex-1 flex-row items-center justify-end gap-2">
-          <TouchableOpacity
-            onPress={() => console.log('History Log')}
-            activeOpacity={0.7}
-            className="size-10 items-center justify-center rounded-full bg-black/5 dark:bg-white/10"
-          >
-            <MaterialCommunityIcons name="bell-outline" size={22} color={isDark ? '#FFF' : '#1B1B1B'} />
-          </TouchableOpacity>
+          <TimelinePopover
+            deviceId={deviceId}
+            renderTrigger={(sourceRef, openPopover) => (
+              <TouchableOpacity
+                ref={sourceRef}
+                onPress={openPopover}
+                activeOpacity={0.7}
+                className="size-10 items-center justify-center rounded-full bg-black/5 dark:bg-white/10"
+              >
+                <BellIcon color={isDark ? '#FFF' : '#1B1B1B'} />
+              </TouchableOpacity>
+            )}
+          />
 
           <ZeegoNativeMenu
             elements={menuElements}
@@ -382,6 +390,16 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
         isControlling={isControlling}
         onConfig={handleConfig}
         initialConfig={motorConfig}
+      />
+      <RenameDeviceModal
+        isVisible={isRenameVisible}
+        onClose={() => setIsRenameVisible(false)}
+        currentName={device?.name || (translate('deviceDetail.shutter.defaultName') as string)}
+        onSave={async (newName) => {
+          // Placeholder function for when BE API is ready
+          console.log('Requested to rename device to: ', newName);
+          await new Promise(resolve => setTimeout(resolve, 600));
+        }}
       />
     </View>
   );

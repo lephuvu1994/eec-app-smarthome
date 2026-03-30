@@ -4,10 +4,12 @@ import { ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Text, View } from '@/components/ui';
+import { BellIcon } from '@/components/ui/icons';
 import { translate } from '@/lib/i18n';
 import { isPrimaryEntity } from '@/lib/utils/device-entity-helper';
 import { useDeviceStore } from '@/stores/device/device-store';
 import { SwitchModalItem } from '../components/modals/items/switch-modal-item';
+import { TimelinePopover } from '../components/modals/timeline-popover';
 
 type Props = {
   deviceId: string;
@@ -44,7 +46,18 @@ export function SwitchDetailScreen({ deviceId }: Props) {
           <Text className="text-xl font-bold tracking-wide text-white">
             {device.name}
           </Text>
-          <View className="h-11 w-11" />
+          <TimelinePopover
+            deviceId={deviceId}
+            renderTrigger={(sourceRef, openPopover) => (
+              <TouchableOpacity
+                ref={sourceRef}
+                onPress={openPopover}
+                className="size-10 items-center justify-center rounded-full bg-white/20 dark:bg-black/20"
+              >
+                <BellIcon color="#fff" />
+              </TouchableOpacity>
+            )}
+          />
         </View>
 
         <ScrollView className="mt-6 flex-1 px-4">
