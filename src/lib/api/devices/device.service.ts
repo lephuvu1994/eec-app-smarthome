@@ -230,4 +230,9 @@ export const deviceService = {
   setEntityValue: async (deviceToken: string, entityCode: string, value: any): Promise<void> => {
     await client.post(`/devices/${deviceToken}/entities/${entityCode}/setValue`, { value });
   },
+
+  renameDeviceEntity: async (deviceId: string, entityCode: string, name: string): Promise<any> => {
+    const { data } = await client.patch(`/devices/${deviceId}/entities/${entityCode}`, { name });
+    return data.data || data;
+  },
 };

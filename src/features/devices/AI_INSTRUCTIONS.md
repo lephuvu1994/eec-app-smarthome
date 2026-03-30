@@ -34,3 +34,14 @@ When the app establishes an MQTT connection, it subscribes to topics directly fr
 
 ## 5. Defensive State Initialization
 When deriving states from the global store, handle missing objects, missing attributes, or legacy schemas defensively using optional chaining `?.` and fallback values.
+
+## 6. Splitting vs Unified Devices (Dashboard Rendering)
+When mapping raw `device.entities` to Dashboard UI cards, the function `getPrimaryEntities()` (inside `device-entity-helper.ts`) dictates how a device is split:
+- **Unified Appliances (e.g., Curtain, Air Conditioner, Water Heater, Robot Vacuum):**
+  If a device configuration conceptually groups multiple features into a single cohesive physical product, **ONE** of its entities MUST be assigned the code `"main"`. 
+  *Result:* The helper will return ONLY the `"main"` entity, collapsing the entire device into exactly **1 Card** on the Dashboard. Clicking the card opens a Detail Screen that has access to the full `device.entities` array to render its secondary controls (Child Lock, RF, BLE Mode).
+- **Multi-Gang Devices (e.g., 1-4 Gang Switches, Multi-channel Relays):**
+  Instead of a `"main"` entity, use distinct sibling entities like `"channel_1"`, `"channel_2"`, etc.
+  *Result:* The helper will return all matching robust domains (`switch_`, `light`, etc.), generating **N Cards** on the Dashboard for independent control.
+- **Secondary Modifiers (e.g., Dimmer, Color, Battery):**
+  Modifiers should ideally be mapped as `attributes` within a primary entity (e.g., `brightness` inside `light_1`). If defined as sibling entities, their domains must not be listed in `isPrimaryEntity()` (e.g., use `number`, `color`), ensuring they do not leak out as extraneous floating cards on the Dashboard.

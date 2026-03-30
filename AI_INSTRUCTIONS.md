@@ -266,6 +266,7 @@ export const useUserManager = createSelectors(_useGetUser);
 ### ⚠️ Chiến lược "Offline-First / Cache-First" (Kiến trúc chuẩn Apple HomeKit / Tuya)
 
 Đối với các dữ liệu mang tính cấu trúc vật lý cốt lõi của Smart Home (Homes, Floors, Rooms, Devices Metadata):
+- Xem **[Device Integration Rules](./src/features/devices/AI_INSTRUCTIONS.md)** để biết chi tiết về luật xử lý trạng thái thời gian thực và cách quyết định **Tách lẻ Card (Splitting)** hay **Gộp Card (Unified)** khi map `device.entities` lên Dashboard UI dựa trên quy ước mã code `"main"`.
 
 - **BẮT BUỘC lưu trữ ở bộ nhớ đệm (Local Cache)** thông qua Zustand `persist` (MMKV) để đạt trải nghiệm Zero-Latency (Mở app là thấy ngay cấu trúc UI, tuyệt đối cấm dùng biến `isLoading` / vòng quay Loading che màn hình block UI).
 - **Boot-Level Hydration:** Quá trình gọi API đồng bộ dữ liệu ngầm (Background Sync) phải được đưa lên Root Component (trên `_layout.tsx`) để chạy song song với `CustomSplashScreen` thông qua cơ chế `Promise.race`. Không gọi các API nạp cấu trúc tổng ở các màn hình con để tránh đụng độ lifecycle khi khởi động.
