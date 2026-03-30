@@ -50,6 +50,16 @@ export function getPrimaryEntities(device: TDevice): TDeviceEntity[] {
   if (entities.length === 0)
     return [];
 
+  // 1. Identify if device is inherently unified (e.g. Curtain, Air Conditioner, Water Heater).
+  // These complex appliances usually have one overarching "main" entity,
+  // and we should NOT split their secondary controls (like child lock, RF learn) into separate cards.
+  const mainEntity = entities.find(e => e.code === 'main');
+  if (mainEntity) {
+    return [mainEntity];
+  }
+
+  // 2. Otherwise (e.g. multi-gang switches with "channel_1", "channel_2"...),
+  // we filter out and return all primary entities so they can be split into distinct cards if desired.
   const primaries = entities.filter(isPrimaryEntity);
 
   if (primaries.length === 0) {
