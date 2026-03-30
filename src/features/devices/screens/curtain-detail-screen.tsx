@@ -14,6 +14,7 @@ import { BellIcon } from '@/components/ui/icons';
 import { useModal } from '@/components/ui/modal';
 import { ZeegoNativeMenu } from '@/components/ui/zeego-native-menu';
 import { EDoorState, useShutterControl } from '@/features/devices/hooks/use-shutter-control';
+import { deviceService } from '@/lib/api/devices/device.service';
 import { translate } from '@/lib/i18n';
 import { getPrimaryEntities } from '@/lib/utils/device-entity-helper';
 import { useConfigManager } from '@/stores/config/config';
@@ -235,7 +236,7 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
 
         <Animated.View entering={FadeInDown.duration(300)} className="flex-2 items-center">
           <Text className="text-lg font-semibold text-black dark:text-white" numberOfLines={1}>
-            {device?.name ?? translate('deviceDetail.shutter.defaultName')}
+            {primaryEntity?.name ?? device?.name ?? translate('deviceDetail.shutter.defaultName')}
           </Text>
           <View className="mt-1 flex-row items-center gap-1.5">
             <View className={`size-2 rounded-full ${isOnline ? 'bg-[#A3E635]' : 'bg-red-500'}`} />
@@ -394,11 +395,13 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
       <RenameDeviceModal
         isVisible={isRenameVisible}
         onClose={() => setIsRenameVisible(false)}
-        currentName={device?.name || (translate('deviceDetail.shutter.defaultName') as string)}
+        currentName={primaryEntity?.name ?? device?.name ?? (translate('deviceDetail.shutter.defaultName') as string)}
         onSave={async (newName) => {
-          // Placeholder function for when BE API is ready
-          console.log('Requested to rename device to: ', newName);
-          await new Promise(resolve => setTimeout(resolve, 600));
+          if (!primaryEntity) {
+            return;
+          }
+          await deviceService.renameDeviceEntity(deviceId, primaryEntity.code, newName);
+          useDeviceStore.getState().updateDeviceEntity(deviceId, primaryEntity.code, { name: newName });
         }}
       />
     </View>

@@ -19,7 +19,7 @@ type TDeviceStoreState = {
   updateDeviceEntity: (
     id: string,
     entityCode: string,
-    updates: { state?: any; attributes?: Array<{ key: string; value: string | number }> },
+    updates: { name?: string; state?: any; attributes?: Array<{ key: string; value: string | number }> },
   ) => void;
   reorderInRoom: (roomId: string, orderedIds: string[]) => void;
   clear: () => void;
@@ -60,6 +60,10 @@ const _useDeviceStore = create<TDeviceStoreState>()(
               }
 
               const newEntity = { ...e };
+              if (updates.name !== undefined) {
+                newEntity.name = updates.name;
+              }
+
               if (updates.state !== undefined) {
                 newEntity.currentState = updates.state;
               }

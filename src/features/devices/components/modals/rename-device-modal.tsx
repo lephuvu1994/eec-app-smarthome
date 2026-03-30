@@ -27,10 +27,8 @@ export function RenameDeviceModal({ isVisible, onClose, currentName, onSave }: P
 
   useEffect(() => {
     if (isVisible) {
-      setTimeout(() => {
-        setName(currentName);
-        setIsSaving(false);
-      }, 0);
+      setName(currentName);
+      setIsSaving(false);
     }
   }, [isVisible, currentName]);
 
