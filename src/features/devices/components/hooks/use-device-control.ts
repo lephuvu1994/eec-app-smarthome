@@ -79,17 +79,34 @@ export function useDeviceControl(
 
   // ─── Derived data ──────────────────────────────────
   const entityCount = entities.length;
-  const isSingleEntity = entityCount <= 1;
-  const hasMultipleEntities = entityCount > 1;
-  const hasAttributes = !!activeEntity?.attributes?.length;
-  const showExpandIcon = (!activeEntity && hasMultipleEntities) || hasAttributes;
+  // Natural hardware layout flag
+  const isSingleHardwareEntity = entityCount <= 1;
+
+  // Rules:
+  // - Group Mode (no activeEntity): show Expand if multiple entities OR has attributes. Never QuickToggle.
+  // - Flat Mode (has activeEntity): show QuickToggle. Show Expand ONLY if that specific entity has attributes.
+  // - Naturally 1 button device: show QuickToggle. Show Expand ONLY if it has attributes.
+  const hasAttributes = !!activeEntity?.attributes?.length || (!activeEntity && entities.some(e => e.attributes?.length > 0));
+
+  const canQuickToggle = isSingleHardwareEntity || !!activeEntity;
+  const showExpandIcon = (!activeEntity && !isSingleHardwareEntity) || !!activeEntity?.attributes?.length || (isSingleHardwareEntity && hasAttributes);
 
   const deviceImage = getDeviceImage(
     activeEntity?.domain || device.type || entities[0]?.domain || 'camera',
   );
-  const displayName = activeEntity
-    ? `${device.name} - ${activeEntity.name || activeEntity.code}`
-    : device.name;
+
+  let displayName = device.name;
+  if (activeEntity) {
+    // If it's a Flat Mode split card
+    displayName = isSingleHardwareEntity
+      ? (activeEntity.name || device.name)
+      : `${device.name} - ${activeEntity.name || activeEntity.code}`;
+  }
+  else if (isSingleHardwareEntity) {
+    // Single entity hardware
+    displayName = primaryEntity?.name || device.name;
+  }
+
   const statusLabel = isOnline ? translate('base.online') : translate('base.offline');
 
   // ─── Handlers ──────────────────────────────────────
@@ -130,8 +147,8 @@ export function useDeviceControl(
       || domain === EEntityDomain.SWITCH
       || domain === EEntityDomain.CLIMATE
     ) {
-      const targetEntityId = activeEntity?.id || primaryEntity?.id;
-      router.push(`/device/${device.id}?entityId=${targetEntityId}`);
+      const targetEntityParam = activeEntity ? `?entityId=${activeEntity.id}` : '';
+      router.push(`/device/${device.id}${targetEntityParam}`);
       return;
     }
 
@@ -153,7 +170,8 @@ export function useDeviceControl(
     deviceImage,
     isOnline,
     isOn,
-    isSingleEntity,
+    isSingleHardwareEntity,
+    canQuickToggle,
     statusLabel,
     entityCount,
     showExpandIcon,

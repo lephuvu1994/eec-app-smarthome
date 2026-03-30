@@ -15,6 +15,7 @@ type TDeviceStoreState = {
 
   setDevices: (devices: TDevice[]) => void;
   setLoading: (loading: boolean) => void;
+  updateDevice: (id: string, override: Partial<TDevice>) => void;
   updateDeviceStatus: (id: string, status: EDeviceStatus) => void;
   updateDeviceEntity: (
     id: string,
@@ -38,6 +39,14 @@ const _useDeviceStore = create<TDeviceStoreState>()(
       setDevices: devices => set({ devices }),
 
       setLoading: isLoading => set({ isLoading }),
+
+      updateDevice: (id, override) => {
+        set({
+          devices: get().devices.map(d =>
+            d.id === id ? { ...d, ...override } : d,
+          ),
+        });
+      },
 
       updateDeviceStatus: (id, status) => {
         set({

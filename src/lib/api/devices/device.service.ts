@@ -231,8 +231,17 @@ export const deviceService = {
     await client.post(`/devices/${deviceToken}/entities/${entityCode}/setValue`, { value });
   },
 
+  renameDevice: async (deviceId: string, name: string): Promise<TDevice> => {
+    const { data } = await client.patch(`/devices/${deviceId}`, { name });
+    return data.data || data;
+  },
+
   renameDeviceEntity: async (deviceId: string, entityCode: string, name: string): Promise<any> => {
     const { data } = await client.patch(`/devices/${deviceId}/entities/${entityCode}`, { name });
     return data.data || data;
+  },
+
+  deleteDevice: async (deviceId: string): Promise<void> => {
+    await client.delete(`/devices/${deviceId}`);
   },
 };
