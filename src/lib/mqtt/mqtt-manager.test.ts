@@ -185,6 +185,7 @@ describe('MqttManager', () => {
         entityCode: 'switch_1',
         state: 1,
         attributes: [{ key: 'brightness', value: 80 }],
+        isRetained: false,
       });
     });
 

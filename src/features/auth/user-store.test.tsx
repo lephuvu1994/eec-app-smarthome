@@ -24,6 +24,7 @@ jest.mock('@/lib/storage', () => ({
 jest.mock('@/lib/api/auth/auth.service', () => ({
   authService: {
     getMe: jest.fn(),
+    logout: jest.fn().mockResolvedValue(undefined),
   },
 }));
 
@@ -37,9 +38,11 @@ jest.mock('@/lib/mqtt/mqtt-manager', () => ({
 }));
 
 describe('user-store hydrateAuth', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.clearAllMocks();
-    useUserManager.getState().signOut();
+    await act(async () => {
+      await useUserManager.getState().signOut();
+    });
   });
 
   it('should sign out if no access token is present', async () => {
