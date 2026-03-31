@@ -2,6 +2,7 @@ import type { TDeviceTimelineItem } from '@/lib/api/devices/device.service';
 import type { TxKeyPath } from '@/lib/i18n';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import dayjs from 'dayjs';
+import { Image } from 'expo-image';
 import * as React from 'react';
 import { ActivityIndicator, Dimensions, TouchableOpacity } from 'react-native';
 import Popover, { PopoverPlacement } from 'react-native-popover-view';
@@ -58,7 +59,7 @@ export function SharedTimelinePopover({
     }, 150);
   };
 
-  const renderIcon = (type: string, event: string) => {
+  const renderIcon = (type: string, event: string, avatarUrl?: string | null) => {
     if (type === EDeviceTimelineType.Connection) {
       const isOnline = event === EDeviceTimelineEvent.Online;
       return (
@@ -71,6 +72,17 @@ export function SharedTimelinePopover({
         </View>
       );
     }
+
+    if (avatarUrl) {
+      return (
+        <Image
+          source={{ uri: avatarUrl }}
+          className="size-8 shrink-0 items-center justify-center rounded-full bg-neutral-200 dark:bg-neutral-800"
+          contentFit="cover"
+        />
+      );
+    }
+
     return (
       <View className="size-8 shrink-0 items-center justify-center rounded-full bg-blue-500/20">
         <MaterialCommunityIcons name="history" size={16} color="#3B82F6" />
@@ -100,18 +112,21 @@ export function SharedTimelinePopover({
       i18nSource = transSource !== sourceKey ? transSource : item.source;
     }
 
+    const authorName = item.actionBy?.userName;
     if (i18nSource) {
-      return (translate('deviceDetail.timeline.statusVia' as TxKeyPath, {
+      const statusText = translate('deviceDetail.timeline.statusVia' as TxKeyPath, {
         name: namePrefix,
         event: i18nEvent,
         source: i18nSource,
-      }) as string);
+      }) as string;
+      return authorName ? `${statusText} — ${authorName}` : statusText;
     }
 
-    return (translate('deviceDetail.timeline.statusOnly' as TxKeyPath, {
+    const statusText = translate('deviceDetail.timeline.statusOnly' as TxKeyPath, {
       name: namePrefix,
       event: i18nEvent,
-    }) as string);
+    }) as string;
+    return authorName ? `${statusText} — ${authorName}` : statusText;
   };
 
   return (
@@ -175,7 +190,7 @@ export function SharedTimelinePopover({
                 showsVerticalScrollIndicator={false}
                 renderItem={({ item, index }: { item: TDeviceTimelineItem; index: number }) => (
                   <View className="mb-3 flex-row items-start gap-3">
-                    {renderIcon(item.type, item.event)}
+                    {renderIcon(item.type, item.event, item.actionBy?.userAvatar)}
                     <View className={`flex-1 shrink ${index !== items.length - 1 ? 'border-b border-black/5 pb-3 dark:border-neutral-800' : ''}`}>
                       <Text className="text-sm/5 font-medium text-neutral-800 dark:text-neutral-200">
                         {renderDescription(item)}
