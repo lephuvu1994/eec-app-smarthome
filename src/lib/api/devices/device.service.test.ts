@@ -15,6 +15,28 @@ describe('deviceService', () => {
     jest.clearAllMocks();
   });
 
+  describe('getNotifyConfig', () => {
+    it('should successfully fetch notification config', async () => {
+      const mockConfig = { online: true, offline: false };
+      (client.get as jest.Mock).mockResolvedValue({ status: 200, data: { data: mockConfig } });
+
+      const deviceId = 'dev-123';
+      const result = await deviceService.getNotifyConfig(deviceId);
+
+      expect(client.get).toHaveBeenCalledWith(`/devices/${deviceId}/notify-config`);
+      expect(result).toEqual(mockConfig);
+    });
+
+    it('should throw error when API fails', async () => {
+      (client.get as jest.Mock).mockRejectedValue(new Error('Network error'));
+
+      const deviceId = 'dev-123';
+      await expect(deviceService.getNotifyConfig(deviceId)).rejects.toThrow('Network error');
+
+      expect(client.get).toHaveBeenCalledWith(`/devices/${deviceId}/notify-config`);
+    });
+  });
+
   describe('updateNotifyConfig', () => {
     it('should successfully update notification config', async () => {
       (client.patch as jest.Mock).mockResolvedValue({ status: 200, data: { success: true } });

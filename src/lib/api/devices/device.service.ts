@@ -246,6 +246,11 @@ export const deviceService = {
     await client.delete(`/devices/${deviceId}`);
   },
 
+  getNotifyConfig: async (deviceId: string): Promise<Record<string, boolean>> => {
+    const { data } = await client.get(`/devices/${deviceId}/notify-config`);
+    return data.data || data;
+  },
+
   updateNotifyConfig: async (deviceId: string, notify: Record<string, boolean>): Promise<void> => {
     await client.patch(`/devices/${deviceId}/notify-config`, { notify });
   },

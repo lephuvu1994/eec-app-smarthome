@@ -35,6 +35,28 @@ export function DeviceNotificationsScreen({ deviceId }: Props) {
   // Keep a local dict to prevent spamming multiple same-key API calls
   const [updatingKeys, setUpdatingKeys] = useState<Record<string, boolean>>({});
 
+  React.useEffect(() => {
+    if (!deviceId) return;
+    let isMounted = true;
+    deviceService.getNotifyConfig(deviceId)
+      .then((notifyConfig) => {
+        if (!isMounted || !notifyConfig) return;
+        const currentDevice = useDeviceStore.getState().devices.find(d => d.id === deviceId);
+        if (!currentDevice) return;
+        
+        useDeviceStore.getState().updateDevice(deviceId, {
+          customConfig: {
+            ...(currentDevice.customConfig || {}),
+            notify: notifyConfig,
+          },
+        });
+      })
+      .catch((e) => {
+        console.log('[DeviceNotificationsScreen] Failed to fetch notify config', e);
+      });
+    return () => { isMounted = false; };
+  }, [deviceId]);
+
   if (!device) {
     return (
       <View className="flex-1 items-center justify-center bg-[#F5F7FA] dark:bg-neutral-900">
