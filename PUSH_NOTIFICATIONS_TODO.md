@@ -75,7 +75,8 @@ npx expo prebuild --clean
 
 ### C. Công việc tiếp theo (To-Do cho ngày mai)
 - **Tích hợp vào Giao diện (App)**: 
-  1. Trong trang cài đặt Profile hoặc luồng Đăng nhập/Home, thêm nút/thao tác cho phép tính năng "Bật nhận thông báo", gọi hook `requestPushPermissionManually`.
-  2. Khi sinh ra được token, gọi `authService.updatePushToken(token)`.
+  1. ~~Trong trang cài đặt Profile hoặc luồng Đăng nhập/Home, thêm nút/thao tác cho phép tính năng "Bật nhận thông báo"~~ (ĐÃ HOÀN THÀNH - Chuyển sang dùng màn hình `DeviceNotificationsScreen` với `NeonSwitch`)
+  2. ~~Khi sinh ra được token, gọi `authService.updatePushToken(token)`.~~ (ĐÃ HOÀN THÀNH - Tích hợp flow trong `toggleNotify`)
+- **Cấu hình giá trị cảnh báo ngưỡng (Threshold Alert)**: Thiết kế bổ sung giao diện/logic để người dùng setup các giá trị ngưỡng cụ thể (Ví dụ: nhiệt độ > 35°C, độ ẩm < 20%) để trigger Push Notification, thay vì chỉ bật/tắt chung chung.
 - Thực hiện **[Bước 1] Cấu hình ứng dụng thật** (tạo APNs, FCM json) như đã ghi chú phía trên.
 - Tiến hành chạy ứng dụng trên thiết bị vật lý thật (Real Device - iOS hoặc Android) vì máy ảo Simulator của iOS không lấy được Device Push Token của Expo. Đảm bảo nhận notification đẩy về.

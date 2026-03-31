@@ -1,12 +1,17 @@
 import { Redirect, Slot } from 'expo-router';
+import { useEffect } from 'react';
+
 import { useUserManager } from '@/features/auth/user-store';
-import { usePushNotifications } from '@/features/notifications/use-push-notifications';
 import { useIsFirstTime } from '@/lib/hooks/use-is-first-time';
+import { useNotificationStore } from '@/stores/notification';
 
 function AppLayout() {
   const { status } = useUserManager();
   const [isFirstTime] = useIsFirstTime();
-  usePushNotifications();
+
+  useEffect(() => {
+    useNotificationStore.getState().init();
+  }, []);
 
   if (isFirstTime) {
     return <Redirect href="/onboarding" />;

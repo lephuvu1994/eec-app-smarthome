@@ -30,6 +30,7 @@ export type TRootProps = {
 
 export type TIconProps = {
   checked: boolean;
+  activeColor?: string;
 };
 
 export function Root({
@@ -204,12 +205,12 @@ export const Radio = Object.assign(RadioBase, {
   Label,
 });
 
-export function SwitchIcon({ checked = false }: TIconProps) {
+export function SwitchIcon({ checked = false, activeColor }: TIconProps) {
   const translateX = checked
     ? THUMB_OFFSET
     : WIDTH - THUMB_WIDTH - THUMB_OFFSET;
 
-  const backgroundColor = checked ? colors.primary[300] : colors.charcoal[400];
+  const backgroundColor = checked ? (activeColor || colors.primary[300]) : colors.charcoal[400];
 
   return (
     <View className="w-[50px] justify-center">
@@ -251,11 +252,12 @@ function SwitchBase({
   checked = false,
   testID,
   label,
+  activeColor,
   ...props
-}: TRootProps & { label?: string }) {
+}: TRootProps & { label?: string; activeColor?: string }) {
   return (
     <SwitchRoot checked={checked} testID={testID} {...props}>
-      <SwitchIcon checked={checked} />
+      <SwitchIcon checked={checked} activeColor={activeColor} />
       {label
         ? (
             <Label text={label} testID={testID ? `${testID}-label` : undefined} />

@@ -37,22 +37,38 @@ export function useShutterControl(
 ) {
   const allowHaptics = useConfigManager(s => s.allowHaptics);
 
-  /**
-   * Animated position 0–100 %.
-   * Use `useAnimatedProps` or `useAnimatedStyle` in the UI to read this.
-   * Example: const animatedText = useDerivedValue(() => `${Math.round(position.value)}%`);
-   */
-  const position = useSharedValue<number>(0);
-  const childLockEntity = device?.entities.find(e => e.code === 'child_lock');
-  const configEntity = device?.entities.find(e => e.code === 'config');
-  const learnEntity = device?.entities.find(e => e.code === 'learn');
-
   /** Movement state from chip (Derived from global store) */
   const doorState = (primaryEntity?.currentState as EDoorState) || EDoorState.Stop;
   const doorStateRef = useRef<EDoorState>(doorState);
   useEffect(() => {
     doorStateRef.current = doorState;
   }, [doorState]);
+
+  /** Initial Position Resolution */
+  const initialPositionAttr = primaryEntity?.attributes?.find(a => a.key === 'position');
+  let initialPos = 0;
+  if (typeof initialPositionAttr?.currentValue === 'number') {
+    initialPos = initialPositionAttr.currentValue;
+  }
+  else if (doorState === EDoorState.Open) {
+    initialPos = 100;
+  }
+  else if (doorState === EDoorState.Close) {
+    initialPos = 0;
+  }
+  else {
+    initialPos = 0; // Default or STOP
+  }
+
+  /**
+   * Animated position 0–100 %.
+   * Use `useAnimatedProps` or `useAnimatedStyle` in the UI to read this.
+   */
+  const position = useSharedValue<number>(initialPos);
+
+  const childLockEntity = device?.entities.find(e => e.code === 'child_lock');
+  const configEntity = device?.entities.find(e => e.code === 'config');
+  const learnEntity = device?.entities.find(e => e.code === 'learn');
 
   /** Child lock state */
   const childLockAttr = primaryEntity?.attributes?.find(a => a.key === 'child_lock');
