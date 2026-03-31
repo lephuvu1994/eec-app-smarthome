@@ -97,14 +97,13 @@ export function useDeviceControl(
 
   let displayName = device.name;
   if (activeEntity) {
-    // If it's a Flat Mode split card
-    displayName = isSingleHardwareEntity
-      ? (activeEntity.name || device.name)
-      : `${device.name} - ${activeEntity.name || activeEntity.code}`;
+    // If it's a Flat Mode split card (always has activeEntity)
+    // We use hyphenated format to distinguish it as a specific entity card
+    displayName = `${device.name} - ${activeEntity.name || activeEntity.code}`;
   }
   else if (isSingleHardwareEntity) {
-    // Single entity hardware
-    displayName = primaryEntity?.name || device.name;
+    // Single entity hardware - group mode
+    displayName = device.name || primaryEntity?.name;
   }
 
   const statusLabel = isOnline ? translate('base.online') : translate('base.offline');
