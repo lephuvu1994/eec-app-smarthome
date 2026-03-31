@@ -434,20 +434,67 @@ translate('formAuth.verifyIdentifier', { identifier: 'Email' });
 
 ---
 
-## 11. Error & Success Messages
+## 11. User Feedback — Toast vs Alert
+
+### Toast (Flash Message) — Thông báo nhẹ, không chặn luồng
+
+Dùng `showErrorMessage()` / `showSuccessMessage()` cho các thông tin **đơn giản, thoáng qua**, KHÔNG yêu cầu user phải hành động gì:
 
 ```typescript
 import { showErrorMessage, showSuccessMessage } from "@/components/ui";
 
-// Error (red flash message)
+// Thao tác thành công
+showSuccessMessage(translate("device.remove.success"));
+
+// Lỗi API / validation
 showErrorMessage(translate("formAuth.signupFailed"));
 showErrorMessage(error?.message ?? translate("base.somethingWentWrong"));
-
-// Success (green flash message)
-showSuccessMessage(translate("formAuth.signupSuccess"));
 ```
 
-**Tuyệt đối không dùng** `Alert.alert()` — luôn dùng flash messages.
+**Khi nào dùng Toast:**
+- Xác nhận thao tác thành công/thất bại (lưu, xóa, cập nhật...)
+- Lỗi validation form, lỗi mạng
+- Thông tin ngắn gọn không cần user phản hồi
+
+### Alert.alert() — Hộp thoại yêu cầu xác nhận hoặc quyết định
+
+Dùng `Alert.alert()` cho các tình huống **quan trọng**, cần user **đọc kỹ và ra quyết định**:
+
+```typescript
+import { Alert } from "react-native";
+
+// Xác nhận hành động nguy hiểm (xóa, đăng xuất)
+Alert.alert(
+  translate("device.remove.title"),
+  translate("device.remove.confirmMessage"),
+  [
+    { text: translate("base.cancel"), style: "cancel" },
+    { text: translate("base.deleteButton"), style: "destructive", onPress: handleDelete },
+  ]
+);
+
+// Thông báo cần user chủ động đóng (quyền hệ thống, hướng dẫn thao tác)
+Alert.alert(
+  translate("settings.notification.permissionDenied"),
+  translate("settings.notification.permissionDeniedDesc"),
+);
+```
+
+**Khi nào dùng Alert:**
+- Xác nhận hành động không thể hoàn tác (xóa thiết bị, đăng xuất, unbind...)
+- Yêu cầu quyền hệ thống bị từ chối — cần hướng dẫn user vào Settings
+- Thông báo quan trọng mà user CẦN PHẢI đọc xong mới tiếp tục (breaking change, data loss)
+- Bất kỳ tình huống nào cần user chọn giữa 2+ hành động (Yes/No, Cancel/Confirm)
+
+### ⚠️ Tóm tắt:
+
+| Tình huống | Dùng |
+|---|---|
+| "Lưu thành công", "Xóa thành công" | `showSuccessMessage()` |
+| "Lỗi mạng", "Sai mật khẩu" | `showErrorMessage()` |
+| "Bạn có chắc muốn xóa?" | `Alert.alert()` với 2 nút |
+| "Vui lòng bật quyền trong Settings" | `Alert.alert()` |
+| "Đăng xuất?" | `Alert.alert()` với Cancel/Confirm |
 
 ---
 

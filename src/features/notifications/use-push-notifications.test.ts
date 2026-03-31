@@ -1,13 +1,26 @@
-import { renderHook, act } from '@testing-library/react-native';
+import { renderHook } from '@testing-library/react-native';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
-import { authService } from '@/lib/api/auth/auth.service';
-import { usePushNotifications, requestPushPermissionManually } from './use-push-notifications';
+
+import { usePushNotifications, requestPushPermissionManually, ensurePushTokenSynced } from './use-push-notifications';
 
 // Mock Expo modules
 jest.mock('expo-device', () => ({
   isDevice: true,
+}));
+
+jest.mock('expo-constants', () => ({
+  __esModule: true,
+  default: {
+    expoConfig: {
+      extra: {
+        eas: {
+          projectId: '75ae721d-f4db-4468-ad91-e5e77831ec57',
+        },
+      },
+    },
+  },
 }));
 
 jest.mock('expo-notifications', () => ({
@@ -22,19 +35,37 @@ jest.mock('expo-notifications', () => ({
   AndroidImportance: { MAX: 5 },
 }));
 
+// Mock auth service
 jest.mock('@/lib/api/auth/auth.service', () => ({
   authService: {
-    updatePushToken: jest.fn().mockResolvedValue(true),
+    updatePushToken: jest.fn().mockResolvedValue(undefined),
   },
 }));
+
+// Mock the notification store
+const mockSetLastSyncedToken = jest.fn();
+jest.mock('@/stores/notification', () => ({
+  useNotificationStore: {
+    getState: jest.fn(() => ({
+      lastSyncedToken: null,
+      setLastSyncedToken: mockSetLastSyncedToken,
+    })),
+  },
+}));
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { authService } = require('@/lib/api/auth/auth.service');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { useNotificationStore } = require('@/stores/notification');
 
 describe('usePushNotifications', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    Platform.OS = 'ios';
   });
 
-  describe('on mount', () => {
-    it('should setup notification listeners and unmount cleanly', async () => {
+  describe('passive listener behavior', () => {
+    it('should setup notification listeners and unmount cleanly', () => {
       const mockRemoveReceived = jest.fn();
       const mockRemoveResponse = jest.fn();
 
@@ -46,65 +77,37 @@ describe('usePushNotifications', () => {
       expect(Notifications.addNotificationReceivedListener).toHaveBeenCalled();
       expect(Notifications.addNotificationResponseReceivedListener).toHaveBeenCalled();
 
-      // Ensure listeners are cleaned up properly
       unmount();
 
       expect(mockRemoveReceived).toHaveBeenCalled();
       expect(mockRemoveResponse).toHaveBeenCalled();
     });
 
-    it('should register for push notifications and sync to backend if on physical device', async () => {
-      // @ts-ignore
-      Device.isDevice = true;
-      (Notifications.getPermissionsAsync as jest.Mock).mockResolvedValue({ status: 'granted' });
-      (Notifications.getExpoPushTokenAsync as jest.Mock).mockResolvedValue({ data: 'mock-expo-token-123' });
+    it('should NOT call getExpoPushTokenAsync or any backend API on mount', () => {
+      renderHook(() => usePushNotifications());
 
-      const { result } = renderHook(() => usePushNotifications());
-
-      // Let async effect complete
-      await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
-      });
-
-      expect(Notifications.getExpoPushTokenAsync).toHaveBeenCalledWith({
-        projectId: process.env.EXPO_PUBLIC_EAS_PROJECT_ID || 'dummy-project-id',
-      });
-      expect(result.current.expoPushToken).toBe('mock-expo-token-123');
-      expect(authService.updatePushToken).toHaveBeenCalledWith('mock-expo-token-123');
+      expect(Notifications.getExpoPushTokenAsync).not.toHaveBeenCalled();
+      expect(Notifications.getPermissionsAsync).not.toHaveBeenCalled();
+      expect(Notifications.requestPermissionsAsync).not.toHaveBeenCalled();
     });
 
-    it('should not request token if permission is not granted (will not prompt user automatically)', async () => {
-      // @ts-ignore
-      Device.isDevice = true;
-      (Notifications.getPermissionsAsync as jest.Mock).mockResolvedValue({ status: 'undetermined' });
+    it('should set up Android notification channel on Android', () => {
+      Platform.OS = 'android';
 
       renderHook(() => usePushNotifications());
 
-      await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 0));
-      });
-
-      // It shouldn't get the token or prompt
-      expect(Notifications.requestPermissionsAsync).not.toHaveBeenCalled();
-      expect(Notifications.getExpoPushTokenAsync).not.toHaveBeenCalled();
-      expect(authService.updatePushToken).not.toHaveBeenCalled();
-    });
-
-    it('should set up Android notification channels if on Android', async () => {
-      Platform.OS = 'android';
-      (Notifications.getNotificationChannelsAsync as jest.Mock).mockResolvedValue([{ id: 'default', name: 'Mặc định' }]);
-
-      const { result } = renderHook(() => usePushNotifications());
-
-      await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 0));
-      });
-
-      expect(result.current.channels).toHaveLength(1);
       expect(Notifications.setNotificationChannelAsync).toHaveBeenCalledWith(
         'default',
-        expect.objectContaining({ name: 'Mặc định', importance: 5 })
+        expect.objectContaining({ name: 'Mặc định', importance: 5 }),
       );
+    });
+
+    it('should NOT set up Android notification channel on iOS', () => {
+      Platform.OS = 'ios';
+
+      renderHook(() => usePushNotifications());
+
+      expect(Notifications.setNotificationChannelAsync).not.toHaveBeenCalled();
     });
   });
 
@@ -138,6 +141,74 @@ describe('usePushNotifications', () => {
 
       expect(token).toBeNull();
       expect(Notifications.getExpoPushTokenAsync).not.toHaveBeenCalled();
+    });
+
+    it('should return null if not a physical device', async () => {
+      Object.defineProperty(Device, 'isDevice', { value: false, writable: true });
+
+      const token = await requestPushPermissionManually();
+
+      expect(token).toBeNull();
+
+      // Restore
+      Object.defineProperty(Device, 'isDevice', { value: true, writable: true });
+    });
+  });
+
+  describe('ensurePushTokenSynced', () => {
+    beforeEach(() => {
+      Object.defineProperty(Device, 'isDevice', { value: true, writable: true });
+      (Notifications.getPermissionsAsync as jest.Mock).mockResolvedValue({ status: 'granted' });
+      (Notifications.getExpoPushTokenAsync as jest.Mock).mockResolvedValue({ data: 'expo-token-123' });
+    });
+
+    it('should skip API call if token is already synced', async () => {
+      useNotificationStore.getState.mockReturnValue({
+        lastSyncedToken: 'expo-token-123',
+        setLastSyncedToken: mockSetLastSyncedToken,
+      });
+
+      const result = await ensurePushTokenSynced();
+
+      expect(result).toBe(true);
+      expect(authService.updatePushToken).not.toHaveBeenCalled();
+      expect(mockSetLastSyncedToken).not.toHaveBeenCalled();
+    });
+
+    it('should call API and update store if token is new', async () => {
+      useNotificationStore.getState.mockReturnValue({
+        lastSyncedToken: null,
+        setLastSyncedToken: mockSetLastSyncedToken,
+      });
+
+      const result = await ensurePushTokenSynced();
+
+      expect(result).toBe(true);
+      expect(authService.updatePushToken).toHaveBeenCalledWith('expo-token-123');
+      expect(mockSetLastSyncedToken).toHaveBeenCalledWith('expo-token-123');
+    });
+
+    it('should call API and update store if token has changed', async () => {
+      useNotificationStore.getState.mockReturnValue({
+        lastSyncedToken: 'old-token-abc',
+        setLastSyncedToken: mockSetLastSyncedToken,
+      });
+
+      const result = await ensurePushTokenSynced();
+
+      expect(result).toBe(true);
+      expect(authService.updatePushToken).toHaveBeenCalledWith('expo-token-123');
+      expect(mockSetLastSyncedToken).toHaveBeenCalledWith('expo-token-123');
+    });
+
+    it('should return false if permission is denied', async () => {
+      (Notifications.getPermissionsAsync as jest.Mock).mockResolvedValue({ status: 'denied' });
+      (Notifications.requestPermissionsAsync as jest.Mock).mockResolvedValue({ status: 'denied' });
+
+      const result = await ensurePushTokenSynced();
+
+      expect(result).toBe(false);
+      expect(authService.updatePushToken).not.toHaveBeenCalled();
     });
   });
 });
