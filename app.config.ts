@@ -1,4 +1,5 @@
 import type { ConfigContext, ExpoConfig } from '@expo/config';
+import 'dotenv/config';
 
 import 'tsx/cjs';
 
