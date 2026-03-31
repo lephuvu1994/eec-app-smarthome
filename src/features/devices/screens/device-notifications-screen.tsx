@@ -36,14 +36,17 @@ export function DeviceNotificationsScreen({ deviceId }: Props) {
   const [updatingKeys, setUpdatingKeys] = useState<Record<string, boolean>>({});
 
   React.useEffect(() => {
-    if (!deviceId) return;
+    if (!deviceId)
+      return;
     let isMounted = true;
     deviceService.getNotifyConfig(deviceId)
       .then((notifyConfig) => {
-        if (!isMounted || !notifyConfig) return;
+        if (!isMounted || !notifyConfig)
+          return;
         const currentDevice = useDeviceStore.getState().devices.find(d => d.id === deviceId);
-        if (!currentDevice) return;
-        
+        if (!currentDevice)
+          return;
+
         useDeviceStore.getState().updateDevice(deviceId, {
           customConfig: {
             ...(currentDevice.customConfig || {}),
@@ -54,7 +57,9 @@ export function DeviceNotificationsScreen({ deviceId }: Props) {
       .catch((e) => {
         console.log('[DeviceNotificationsScreen] Failed to fetch notify config', e);
       });
-    return () => { isMounted = false; };
+    return () => {
+      isMounted = false;
+    };
   }, [deviceId]);
 
   if (!device) {
