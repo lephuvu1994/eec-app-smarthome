@@ -6,15 +6,14 @@ import { Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 import { BaseLayout } from '@/components/layout/BaseLayout';
-import { ScrollView, Text, TouchableOpacity, View } from '@/components/ui';
+import { ScrollView, showError, Text, TouchableOpacity, View } from '@/components/ui';
 import { useUserManager } from '@/features/auth/user-store';
-import { client } from '@/lib/api/common';
 import { translate } from '@/lib/i18n';
 import { ETheme } from '@/types/base';
 
 export function ProfileScreen() {
   const insets = useSafeAreaInsets();
-  const { signOut, userName, id: userId, avatar, email, phone } = useUserManager();
+  const { signOut, userName, avatar, email, phone } = useUserManager();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { theme } = useUniwind();
   const headerHeight = useHeaderHeight();
@@ -34,13 +33,10 @@ export function ProfileScreen() {
           onPress: async () => {
             try {
               setIsLoggingOut(true);
-              const res = await client.post(`/session/${userId}/revoke`);
-              if (res.status === 200) {
-                signOut();
-              }
+              await signOut();
             }
-            catch {
-              signOut();
+            catch (e) {
+              showError(e as any);
             }
             finally {
               setIsLoggingOut(false);
@@ -114,7 +110,7 @@ export function ProfileScreen() {
             {/* Name row */}
             <TouchableOpacity
               activeOpacity={0.7}
-              className="flex-row items-center gap-3 px-4 py-4"
+              className="flex-row items-center gap-3 p-4"
               onPress={() => { }}
             >
               <View className="size-9 items-center justify-center rounded-xl bg-neutral-100 dark:bg-neutral-700">
@@ -132,7 +128,7 @@ export function ProfileScreen() {
             <View className="ml-[60px] h-px bg-neutral-100 dark:bg-neutral-700" />
 
             {/* Phone row */}
-            <View className="flex-row items-center gap-3 px-4 py-4">
+            <View className="flex-row items-center gap-3 p-4">
               <View className="size-9 items-center justify-center rounded-xl bg-neutral-100 dark:bg-neutral-700">
                 <MaterialCommunityIcons name="phone-outline" size={20} color={theme === ETheme.Dark ? '#FFFFFF' : '#525252'} />
               </View>
@@ -147,7 +143,7 @@ export function ProfileScreen() {
             <View className="ml-[60px] h-px bg-neutral-100 dark:bg-neutral-700" />
 
             {/* Email row */}
-            <View className="flex-row items-center gap-3 px-4 py-4">
+            <View className="flex-row items-center gap-3 p-4">
               <View className="size-9 items-center justify-center rounded-xl bg-neutral-100 dark:bg-neutral-700">
                 <MaterialCommunityIcons name="email-outline" size={20} color={theme === ETheme.Dark ? '#FFFFFF' : '#525252'} />
               </View>
@@ -164,7 +160,7 @@ export function ProfileScreen() {
           <View className="mx-4 overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-neutral-800">
             <TouchableOpacity
               activeOpacity={0.7}
-              className="flex-row items-center gap-3 px-4 py-4"
+              className="flex-row items-center gap-3 p-4"
               onPress={handleLogout}
               disabled={isLoggingOut}
             >

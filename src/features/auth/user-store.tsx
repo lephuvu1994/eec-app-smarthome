@@ -3,6 +3,7 @@ import type { TTokenType, TUser } from './types/response';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
+import { authService } from '@/lib/api/auth/auth.service';
 import { MqttManager } from '@/lib/mqtt/mqtt-manager';
 import { mmkvStorage } from '@/lib/storage';
 import { createSelectors } from '@/lib/utils';
@@ -12,7 +13,7 @@ import { EAuthStatus } from './types/enum';
 export type UserState = TUser & {
   status: EAuthStatus;
   signIn: (user: TUser) => void;
-  signOut: () => void;
+  signOut: () => Promise<void>;
   updateToken: (token: TTokenType) => void;
   hydrateAuth: () => Promise<void>;
 };
@@ -47,8 +48,19 @@ const _useGetUser = create<UserState>()(
           );
         }
       },
-      signOut: () => {
+      signOut: async () => {
         const currentState = get();
+        // 1. Call backend to revoke session (optional, but good for stateful logout)
+        try {
+          if (currentState.accessToken) {
+            await authService.logout();
+          }
+        }
+        catch (err) {
+          console.warn('[UserStore] Logout API failed:', err);
+        }
+
+        // 2. Local Cleanup
         // Disconnect MQTT
         MqttManager.getInstance().disconnect();
         // Clear home data khi logout để tránh stale homeId
@@ -71,7 +83,7 @@ const _useGetUser = create<UserState>()(
         const currentState = get();
         try {
           if (!currentState.accessToken) {
-            get().signOut();
+            await get().signOut();
             return;
           }
           set({

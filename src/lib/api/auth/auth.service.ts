@@ -1,4 +1,5 @@
 import type { EHomeRole } from '@/features/auth/types/response';
+import * as Device from 'expo-device';
 import { client } from '../common';
 
 // ============================================================
@@ -66,7 +67,12 @@ export const authService = {
 
   /** Login with email/phone + password */
   login: async (identifier: string, password: string): Promise<TAuthResponse> => {
-    const { data } = await client.post('/auth/login', { identifier, password });
+    const deviceName = Device.deviceName || Device.modelName || 'Unknown Device';
+    const { data } = await client.post('/auth/login', {
+      identifier,
+      password,
+      deviceName,
+    });
     return data.data || data;
   },
 
@@ -88,5 +94,9 @@ export const authService = {
   /** Update Expo Push Token for the current session */
   updatePushToken: async (pushToken: string | null): Promise<void> => {
     await client.patch('/user/sessions/push-token', { pushToken });
+  },
+  /** Logout current session */
+  logout: async (): Promise<void> => {
+    await client.post('/auth/logout');
   },
 };
