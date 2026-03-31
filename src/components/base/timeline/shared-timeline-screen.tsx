@@ -40,7 +40,7 @@ export function SharedTimelineScreen({
   const { theme } = useUniwind();
   const headerHeight = useHeaderHeight();
 
-  const renderIcon = (type: string, event: string) => {
+  const renderIcon = (type: string, event: string, avatarUrl?: string | null) => {
     if (type === EDeviceTimelineType.Connection) {
       const isOnline = event === EDeviceTimelineEvent.Online;
       return (
@@ -53,6 +53,16 @@ export function SharedTimelineScreen({
         </View>
       );
     }
+    if (avatarUrl) {
+      return (
+        <Image
+          source={{ uri: avatarUrl }}
+          className="mt-0.5 size-10 shrink-0 items-center justify-center rounded-full bg-neutral-200 dark:bg-neutral-800"
+          contentFit="cover"
+        />
+      );
+    }
+
     return (
       <View className="mt-0.5 size-10 shrink-0 items-center justify-center rounded-full bg-blue-500/20">
         <MaterialCommunityIcons name="history" size={20} color="#3B82F6" />
@@ -81,18 +91,22 @@ export function SharedTimelineScreen({
       i18nSource = transSource !== sourceKey ? transSource : item.source;
     }
 
+    const authorName = item.actionBy?.userName;
+
     if (i18nSource) {
-      return (translate('deviceDetail.timeline.statusVia' as TxKeyPath, {
+      const statusText = translate('deviceDetail.timeline.statusVia' as TxKeyPath, {
         name: namePrefix,
         event: i18nEvent,
         source: i18nSource,
-      }) as string);
+      }) as string;
+      return authorName ? `${statusText} — ${authorName}` : statusText;
     }
 
-    return (translate('deviceDetail.timeline.statusOnly' as TxKeyPath, {
+    const statusText = translate('deviceDetail.timeline.statusOnly' as TxKeyPath, {
       name: namePrefix,
       event: i18nEvent,
-    }) as string);
+    }) as string;
+    return authorName ? `${statusText} — ${authorName}` : statusText;
   };
 
   const flattenedData = React.useMemo(() => {
@@ -125,7 +139,7 @@ export function SharedTimelineScreen({
     const { item: deviceItem, isFirst, isLast } = item;
     return (
       <View className={`mx-4 flex-row items-start bg-white/70 px-5 py-4 backdrop-blur-md dark:bg-[#1C1C1E]/80 ${isFirst ? 'rounded-t-2xl' : ''} ${isLast ? 'rounded-b-2xl' : 'border-b border-black/5 dark:border-white/5'}`}>
-        {renderIcon(deviceItem.type, deviceItem.event)}
+        {renderIcon(deviceItem.type, deviceItem.event, deviceItem.actionBy?.userAvatar)}
         <View className="ml-4 flex-1 justify-center">
           <Text className="text-base font-semibold text-neutral-800 dark:text-neutral-100">
             {renderDescription(deviceItem)}
