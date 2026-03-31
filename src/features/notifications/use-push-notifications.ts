@@ -1,9 +1,16 @@
+import Constants from 'expo-constants';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { useEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
-import { authService } from '@/lib/api/auth/auth.service';
 
+import { authService } from '@/lib/api/auth/auth.service';
+import { useNotificationStore } from '@/stores/notification';
+
+/**
+ * Configure how notifications are displayed when the app is in the foreground.
+ * This runs once at module load time (not per-render).
+ */
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -14,9 +21,20 @@ Notifications.setNotificationHandler({
   }),
 });
 
+/**
+ * Passive notification listener hook.
+ *
+ * Responsibilities:
+ * - Set up Android notification channels
+ * - Listen for incoming notifications (foreground)
+ * - Listen for notification tap responses (deep linking)
+ *
+ * Does NOT:
+ * - Request permissions (that's the Device Info screen's job)
+ * - Register push tokens (that's the Device Info screen's job)
+ * - Call any backend APIs
+ */
 export function usePushNotifications() {
-  const [expoPushToken, setExpoPushToken] = useState<string | null>(null);
-  const [channels, setChannels] = useState<Notifications.NotificationChannel[]>([]);
   const [notification, setNotification] = useState<Notifications.Notification | undefined>(
     undefined,
   );
@@ -24,88 +42,48 @@ export function usePushNotifications() {
   const responseListenerRef = useRef<Notifications.EventSubscription | null>(null);
 
   useEffect(() => {
-    // Only register if we are on a physical device. Simulators will fail to get push tokens.
-    if (Device.isDevice) {
-      registerForPushNotificationsAsync().then((token) => {
-        if (token) {
-          setExpoPushToken(token);
-          // Auto-sync token to backend if available
-          authService.updatePushToken(token).catch(console.error);
-        }
+    // Set up Android notification channel (idempotent, no API call)
+    if (Platform.OS === 'android') {
+      Notifications.setNotificationChannelAsync('default', {
+        name: 'Mặc định',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#FF231F7C',
       });
     }
 
-    if (Platform.OS === 'android') {
-      Notifications.getNotificationChannelsAsync().then(value => setChannels(value ?? []));
-    }
-
-    notificationListenerRef.current = Notifications.addNotificationReceivedListener((notification) => {
-      setNotification(notification);
+    // Listen for notifications received while app is in foreground
+    notificationListenerRef.current = Notifications.addNotificationReceivedListener((n) => {
+      setNotification(n);
     });
 
+    // Listen for user tapping on a notification
     responseListenerRef.current = Notifications.addNotificationResponseReceivedListener((response) => {
       // Handle deep links or routing here based on response.notification.request.content.data
       console.log('Notification Response:', response.notification.request.content.data);
     });
 
     return () => {
-      if (notificationListenerRef.current) {
-        notificationListenerRef.current.remove();
-      }
-      if (responseListenerRef.current) {
-        responseListenerRef.current.remove();
-      }
+      notificationListenerRef.current?.remove();
+      responseListenerRef.current?.remove();
     };
   }, []);
 
-  return {
-    expoPushToken,
-    channels,
-    notification,
-  };
+  return { notification };
 }
 
-async function registerForPushNotificationsAsync() {
-  let token;
-
-  if (Platform.OS === 'android') {
-    await Notifications.setNotificationChannelAsync('default', {
-      name: 'Mặc định',
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#FF231F7C',
-    });
+/**
+ * Request push notification permission and obtain the Expo push token.
+ * This should ONLY be called from a user-initiated action (e.g. toggling a device alert).
+ *
+ * @returns The Expo push token string, or null if permission was denied or device is not physical.
+ */
+export async function requestPushPermissionManually(): Promise<string | null> {
+  if (!Device.isDevice) {
+    console.log('Push notifications require a physical device.');
+    return null;
   }
 
-  if (Device.isDevice) {
-    const { status: existingStatus } = await Notifications.getPermissionsAsync();
-    const finalStatus = existingStatus;
-    if (existingStatus !== 'granted') {
-      // Tier 1 logic: This hook automatically calls askAsync ONLY ONCE.
-      // If we want contextual requesting (only when user toggles), we should not call it here directly.
-      // Wait, the specification says: "The app will only request OS-level notification permissions when the user interacts with a notification toggle for the first time".
-      // Let's NOT auto ask for permission here. We'll only GET it if it's there.
-      // But wait! This function `registerForPushNotificationsAsync` is typically called to GET the token. We can't get the token without permission.
-      // So this effect will exit cleanly if permission is not granted.
-    }
-
-    if (finalStatus !== 'granted') {
-      return null;
-    }
-
-    const projectId = process.env.EXPO_PUBLIC_EAS_PROJECT_ID || 'dummy-project-id';
-    try {
-      token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
-    }
-    catch (e) {
-      console.log('Failed to get push token:', e);
-    }
-  }
-
-  return token;
-}
-
-export async function requestPushPermissionManually() {
   const { status: existingStatus } = await Notifications.getPermissionsAsync();
   let finalStatus = existingStatus;
 
@@ -118,6 +96,50 @@ export async function requestPushPermissionManually() {
     return null;
   }
 
-  const projectId = process.env.EXPO_PUBLIC_EAS_PROJECT_ID || 'dummy-project-id';
-  return (await Notifications.getExpoPushTokenAsync({ projectId })).data;
+  const projectId = Constants.expoConfig?.extra?.eas?.projectId;
+  try {
+    return (await Notifications.getExpoPushTokenAsync({ projectId })).data;
+  }
+  catch (e) {
+    console.error('Failed to get Expo push token:', e);
+    return null;
+  }
+}
+
+/**
+ * Ensure the push token is synced to the server.
+ * Called from Device Info screen before enabling per-device notifications.
+ *
+ * Flow:
+ * 1. Request OS permission (prompts user if not yet granted)
+ * 2. Get Expo push token
+ * 3. Check MMKV store — only call API if token is new/changed
+ *
+ * @returns true if token is ready, false if user denied permission or on simulator
+ */
+export async function ensurePushTokenSynced(): Promise<boolean> {
+  // 1. Get or request token
+  const token = await requestPushPermissionManually();
+  if (!token) {
+    return false;
+  }
+
+  // 2. Check if already synced
+  const { lastSyncedToken, setLastSyncedToken } = useNotificationStore.getState();
+
+  if (token === lastSyncedToken) {
+    // Already synced, no API call needed
+    return true;
+  }
+
+  // 3. Sync to server
+  try {
+    await authService.updatePushToken(token);
+    setLastSyncedToken(token);
+    return true;
+  }
+  catch (e) {
+    console.error('Failed to sync push token:', e);
+    return false;
+  }
 }

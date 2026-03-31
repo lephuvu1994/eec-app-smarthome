@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1050136802529",
+    "project_id": "sensa-eba9e",
+    "storage_bucket": "sensa-eba9e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1050136802529:android:ccc4001d9e5b096614f3a0",
+        "android_client_info": {
+          "package_name": "sensasmart.development"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAI5aQto2DNrMN_AW_SamKKdMLu3tCpidM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

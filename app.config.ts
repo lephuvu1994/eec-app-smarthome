@@ -60,6 +60,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     },
     permissions: ['WAKE_LOCK', 'RECORD_AUDIO'],
     package: Env.EXPO_PUBLIC_PACKAGE,
+    googleServicesFile: './google-services.json',
     intentFilters: [
       {
         action: 'VIEW',
@@ -191,6 +192,19 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         androidSpeechServicePackages: [
           'com.google.android.googlequicksearchbox',
         ],
+      },
+    ],
+    [
+      'expo-notifications',
+      {
+        icon: './assets/logo.png',
+        color: '#ffffff',
+        defaultChannel: 'default',
+        sounds: [
+          './assets/sounds/fire_notification.wav',
+          './assets/sounds/fire_notification.wav',
+        ],
+        enableBackgroundRemoteNotifications: false,
       },
     ],
   ],
