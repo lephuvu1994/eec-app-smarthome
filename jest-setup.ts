@@ -137,41 +137,42 @@ global.window = {};
 // @ts-expect-error
 global.window = global;
 
+// Bypass axios fetch feature detection that crashes with Expo streams
+const originalResponse = global.Response;
+const originalReadableStream = global.ReadableStream;
+// @ts-expect-error
+delete global.Response;
+// @ts-expect-error
+delete global.window.Response;
+// @ts-expect-error
+delete global.ReadableStream;
+// @ts-expect-error
+delete global.window.ReadableStream;
+
+const axios = require('axios');
+
+global.Response = originalResponse;
+global.window.Response = originalResponse;
+global.ReadableStream = originalReadableStream;
+global.window.ReadableStream = originalReadableStream;
+
+axios.defaults.adapter = ['http'];
 // Mock axios globally to avoid "fetch adapter" requirement issues in JSDOM
-jest.mock('axios', () => ({
-  create: jest.fn(() => ({
-    get: jest.fn(),
-    post: jest.fn(),
-    put: jest.fn(),
-    delete: jest.fn(),
-    patch: jest.fn(),
-    interceptors: {
-      request: { use: jest.fn(), eject: jest.fn() },
-      response: { use: jest.fn(), eject: jest.fn() },
-    },
-  })),
-  get: jest.fn(),
-  post: jest.fn(),
-  put: jest.fn(),
-  delete: jest.fn(),
-  patch: jest.fn(),
-  interceptors: {
+jest.mock('axios', () => {
+  const mockAxios: any = jest.fn(() => Promise.resolve({ data: {} }));
+  mockAxios.create = jest.fn(() => mockAxios);
+  mockAxios.get = jest.fn(() => Promise.resolve({ data: {} }));
+  mockAxios.post = jest.fn(() => Promise.resolve({ data: {} }));
+  mockAxios.put = jest.fn(() => Promise.resolve({ data: {} }));
+  mockAxios.delete = jest.fn(() => Promise.resolve({ data: {} }));
+  mockAxios.patch = jest.fn(() => Promise.resolve({ data: {} }));
+  mockAxios.interceptors = {
     request: { use: jest.fn(), eject: jest.fn() },
     response: { use: jest.fn(), eject: jest.fn() },
-  },
-}));
-
-// Mock the common API client
-jest.mock('@/lib/api/common', () => ({
-  client: {
-    get: jest.fn(),
-    post: jest.fn(),
-    put: jest.fn(),
-    delete: jest.fn(),
-    patch: jest.fn(),
-    interceptors: {
-      request: { use: jest.fn(), eject: jest.fn() },
-      response: { use: jest.fn(), eject: jest.fn() },
-    },
-  },
-}));
+  };
+  mockAxios.defaults = {
+    adapter: ['http'],
+    headers: { common: {} },
+  };
+  return mockAxios;
+});

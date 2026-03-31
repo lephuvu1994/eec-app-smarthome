@@ -87,11 +87,14 @@ export const authService = {
     return data.data || data;
   },
 
-  /** Reset password after OTP verified (Step 3) — requires resetToken */
   resetPassword: async (identifier: string, newPassword: string, resetToken: string): Promise<void> => {
     await client.post('/auth/forgot-password/reset-password', { identifier, newPassword, resetToken });
   },
 
+  /** Update Expo Push Token for the current session */
+  updatePushToken: async (pushToken: string | null): Promise<void> => {
+    await client.patch('/user/sessions/push-token', { pushToken });
+  },
   /** Logout current session */
   logout: async (): Promise<void> => {
     await client.post('/auth/logout');
