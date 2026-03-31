@@ -53,6 +53,7 @@
     "finish": "Finish",
     "foundDevices": "Found {{count}} devices",
     "home": "Home",
+    "info": "Information",
     "kitchen": "Kitchen",
     "ledFastBlink": "LED blinking fast",
     "ledFastBlinkDesc": "Device is in BLE (Bluetooth) mode. Fast and stable connection.",
@@ -106,7 +107,22 @@
   },
   "device": {
     "info": {
+      "entitiesTitle": "Feature List",
+      "notifyOffline": "Offline Alert",
+      "notifyOfflineDesc": "Get notified when the device loses connection or goes offline for more than 5 minutes.",
+      "notifyOnline": "Online Alert",
+      "notifyOnlineDesc": "Get notified when the device reconnects after being offline.",
+      "notifyStateChange": "State Change Alert",
+      "notifyStateChangeDesc": "Get notified when the device is turned on/off via physical button or remote.",
+      "notifyThresholdAlert": "Threshold Alert",
+      "notifyThresholdAlertDesc": "Get notified when values exceed thresholds (energy, temperature...).",
+      "notifyTitle": "Alert Settings",
       "title": "Device Information"
+    },
+    "notify": {
+      "permissionDesc": "Please open your device Settings and enable Notification permissions for the app.",
+      "permissionTitle": "Notification Permission Required",
+      "syncError": "Could not sync notifications. Please try again."
     },
     "remove": {
       "button": "Remove Device",
@@ -372,8 +388,22 @@
       "emptyTitle": "No messages"
     },
     "notification": {
-      "emptyDescription": "You're all caught up! We'll notify you when something important happens.",
-      "emptyTitle": "No notifications"
+      "devicesWithAlerts": "Devices with Alerts",
+      "disableAll": "Disable All Alerts",
+      "disableAllConfirm": "Disable all alerts? Your push token will be removed from the server and you won't receive any notifications.",
+      "disableAllSuccess": "All notifications disabled successfully.",
+      "disableInfo": "To fully disable notifications, please visit your device System Settings.",
+      "emptyDescription": "You haven't enabled alerts for any device yet. Go to device info to enable alerts.",
+      "emptyTitle": "No Alerts",
+      "enablePush": "Push Notifications",
+      "noDeviceAlerts": "No devices have alerts enabled",
+      "openSystemSettings": "Open System Settings",
+      "permissionDenied": "Permission Denied",
+      "permissionDeniedDesc": "Please enable notifications in your device settings to receive alerts.",
+      "permissionGranted": "Permission Granted",
+      "permissionNotGranted": "Permission Not Granted",
+      "permissionSection": "Notification Permission",
+      "pushDescription": "Receive real-time alerts and updates from your smart devices."
     },
     "privacy": {
       "bluetooth": "Bluetooth",

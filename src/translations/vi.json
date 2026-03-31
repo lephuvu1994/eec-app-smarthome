@@ -53,6 +53,7 @@
     "finish": "Hoàn tất",
     "foundDevices": "Đã tìm thấy {{count}} thiết bị",
     "home": "Nhà",
+    "info": "Thông tin",
     "kitchen": "Phòng bếp",
     "ledFastBlink": "Đèn nháy nhanh",
     "ledFastBlinkDesc": "Thiết bị đang ở chế độ BLE (Bluetooth). Kết nối nhanh và ổn định.",
@@ -106,7 +107,22 @@
   },
   "device": {
     "info": {
+      "entitiesTitle": "Danh sách tính năng",
+      "notifyOffline": "Cảnh báo khi mất kết nối",
+      "notifyOfflineDesc": "Gửi thông báo khi thiết bị bị mất điện hoặc ngoại tuyến quá 5 phút.",
+      "notifyOnline": "Cảnh báo khi kết nối lại",
+      "notifyOnlineDesc": "Gửi thông báo khi thiết bị kết nối trở lại sau khi mất kết nối.",
+      "notifyStateChange": "Cảnh báo thay đổi trạng thái",
+      "notifyStateChangeDesc": "Gửi thông báo khi thiết bị bật/tắt từ nút vật lý hoặc remote.",
+      "notifyThresholdAlert": "Cảnh báo ngưỡng",
+      "notifyThresholdAlertDesc": "Gửi thông báo khi vượt ngưỡng (năng lượng, nhiệt độ...).",
+      "notifyTitle": "Cài đặt cảnh báo",
       "title": "Thông tin thiết bị"
+    },
+    "notify": {
+      "permissionDesc": "Vui lòng mở Cài đặt thiết bị và cấp quyền Thông báo cho ứng dụng.",
+      "permissionTitle": "Chưa cấp quyền thông báo",
+      "syncError": "Không thể đồng bộ thông báo. Vui lòng thử lại."
     },
     "remove": {
       "button": "Gỡ bỏ thiết bị",
@@ -372,8 +388,22 @@
       "emptyTitle": "Không có tin nhắn"
     },
     "notification": {
-      "emptyDescription": "Bạn đã xem hết! Chúng tôi sẽ thông báo khi có điều quan trọng.",
-      "emptyTitle": "Không có thông báo"
+      "devicesWithAlerts": "Thiết bị đã bật cảnh báo",
+      "disableAll": "Tắt tất cả cảnh báo",
+      "disableAllConfirm": "Xác nhận tắt tất cả cảnh báo? Token sẽ bị xóa khỏi máy chủ và bạn sẽ không nhận được thông báo nào.",
+      "disableAllSuccess": "Đã tắt tất cả thông báo thành công.",
+      "disableInfo": "Để tắt hoàn toàn thông báo, vui lòng truy cập Cài đặt hệ thống của thiết bị.",
+      "emptyDescription": "Bạn chưa bật cảnh báo cho thiết bị nào. Vào thông tin thiết bị để bật cảnh báo.",
+      "emptyTitle": "Chưa có cảnh báo nào",
+      "enablePush": "Thông báo đẩy",
+      "noDeviceAlerts": "Chưa có thiết bị nào bật cảnh báo",
+      "openSystemSettings": "Mở Cài đặt hệ thống",
+      "permissionDenied": "Quyền bị từ chối",
+      "permissionDeniedDesc": "Vui lòng bật quyền Thông báo trong cài đặt thiết bị để nhận được các cảnh báo.",
+      "permissionGranted": "Đã cấp quyền",
+      "permissionNotGranted": "Chưa cấp quyền",
+      "permissionSection": "Quyền thông báo",
+      "pushDescription": "Nhận cảnh báo và cập nhật tức thì từ các thiết bị thông minh của bạn."
     },
     "privacy": {
       "bluetooth": "Bluetooth",
