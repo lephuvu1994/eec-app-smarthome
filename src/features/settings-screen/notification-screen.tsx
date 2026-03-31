@@ -1,16 +1,14 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { Image } from 'expo-image';
-import * as Notifications from 'expo-notifications';
 import { useRouter } from 'expo-router';
-import { useCallback, useEffect, useState } from 'react';
-import { Alert, Linking, Platform, TouchableOpacity } from 'react-native';
+import { useState } from 'react';
+import { Alert, Linking, Platform, Switch, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 
 import { BaseLayout } from '@/components/layout/BaseLayout';
 import { ScrollView, showSuccessMessage, Text, View } from '@/components/ui';
-import { authService } from '@/lib/api/auth/auth.service';
 import { translate } from '@/lib/i18n';
 import { useDeviceStore } from '@/stores/device/device-store';
 import { useNotificationStore } from '@/stores/notification';
@@ -23,8 +21,9 @@ export function NotificationScreen() {
   const router = useRouter();
   const isDark = theme === ETheme.Dark;
 
-  const [permissionStatus, setPermissionStatus] = useState<'granted' | 'denied' | 'undetermined'>('undetermined');
+  const hasPermission = useNotificationStore(s => s.hasPermission);
   const devices = useDeviceStore(s => s.devices);
+  const [isUpdatingGlobal, setIsUpdatingGlobal] = useState(false);
 
   // Filter devices that have at least one notify config enabled
   const devicesWithAlerts = devices.filter((d) => {
@@ -35,26 +34,47 @@ export function NotificationScreen() {
     return Object.values(notify).includes(true);
   });
 
-  const checkPermission = async () => {
-    try {
-      const { status } = await Notifications.getPermissionsAsync();
-      setPermissionStatus(status === 'granted' ? 'granted' : 'denied');
-    }
-    catch (e) {
-      console.error('Failed to check notification permission:', e);
-    }
-  };
-
-  useEffect(() => {
-    checkPermission();
-  }, []);
-
   const openSystemSettings = () => {
     if (Platform.OS === 'ios') {
       Linking.openURL('app-settings:');
     }
     else {
       Linking.openSettings();
+    }
+  };
+
+  const toggleGlobalPermission = async (val: boolean) => {
+    setIsUpdatingGlobal(true);
+    try {
+      if (val) {
+        try {
+          const success = await useNotificationStore.getState().requestPermissionAndSync();
+          if (!success) {
+            Alert.alert(
+              translate('device.notify.permissionTitle') || 'Yêu cầu cấp quyền',
+              translate('device.notify.permissionDesc') || 'Vui lòng cấp quyền thông báo trong Cài đặt hệ thống để nhận cảnh báo.',
+              [
+                { text: translate('base.cancel'), style: 'cancel' },
+                { text: translate('settings.notification.openSystemSettings'), onPress: openSystemSettings },
+              ],
+            );
+          }
+          else {
+            showSuccessMessage('Bật thông báo thành công');
+          }
+        }
+        catch (error: any) {
+          console.error('API Error during Push Token sync:', error);
+          Alert.alert('Lỗi kết nối', 'Không thể đồng bộ trạng thái thông báo với máy chủ. Vui lòng thử lại sau.');
+        }
+      }
+      else {
+        await useNotificationStore.getState().clearToken();
+        showSuccessMessage(translate('settings.notification.disableAllSuccess'));
+      }
+    }
+    finally {
+      setIsUpdatingGlobal(false);
     }
   };
 
@@ -69,8 +89,7 @@ export function NotificationScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
-              await authService.updatePushToken(null);
-              useNotificationStore.getState().clearToken();
+              await useNotificationStore.getState().clearToken();
               showSuccessMessage(translate('settings.notification.disableAllSuccess'));
             }
             catch (e) {
@@ -81,8 +100,6 @@ export function NotificationScreen() {
       ],
     );
   };
-
-  const isGranted = permissionStatus === 'granted';
 
   return (
     <BaseLayout>
@@ -107,38 +124,32 @@ export function NotificationScreen() {
                 {translate('settings.notification.permissionSection')}
               </Text>
               <View className="flex-row items-center justify-between rounded-xl bg-black/5 px-4 py-3 dark:bg-white/5">
-                <View className="flex-row items-center gap-3">
-                  <View className={`size-10 items-center justify-center rounded-full ${isGranted ? 'bg-green-100 dark:bg-green-900/30' : 'bg-red-100 dark:bg-red-900/30'}`}>
+                <View className="flex-1 flex-row items-center gap-3 pr-4">
+                  <View className={`size-10 items-center justify-center rounded-full ${hasPermission ? 'bg-green-100 dark:bg-green-900/30' : 'bg-red-100 dark:bg-red-900/30'}`}>
                     <MaterialCommunityIcons
-                      name={isGranted ? 'bell-check-outline' : 'bell-off-outline'}
+                      name={hasPermission ? 'bell-check-outline' : 'bell-off-outline'}
                       size={22}
-                      color={isGranted ? '#22C55E' : '#EF4444'}
+                      color={hasPermission ? '#22C55E' : '#EF4444'}
                     />
                   </View>
-                  <View>
-                    <Text className="text-base font-medium text-[#1B1B1B] dark:text-white">
-                      {isGranted
+                  <View className="flex-1">
+                    <Text className="text-base font-medium text-[#1B1B1B] dark:text-white" numberOfLines={1}>
+                      {hasPermission
                         ? translate('settings.notification.permissionGranted')
                         : translate('settings.notification.permissionNotGranted')}
                     </Text>
-                    <Text className="mt-0.5 text-sm text-neutral-500 dark:text-neutral-400">
+                    <Text className="mt-0.5 text-sm text-neutral-500 dark:text-neutral-400" numberOfLines={2}>
                       {translate('settings.notification.pushDescription')}
                     </Text>
                   </View>
                 </View>
+                <Switch
+                  value={hasPermission}
+                  onValueChange={toggleGlobalPermission}
+                  disabled={isUpdatingGlobal}
+                  trackColor={{ false: isDark ? '#3A3A3C' : '#E5E5EA', true: '#34C759' }}
+                />
               </View>
-              {!isGranted && (
-                <TouchableOpacity
-                  className="mt-3 flex-row items-center justify-center gap-2 rounded-xl bg-blue-500 px-4 py-3"
-                  onPress={openSystemSettings}
-                  activeOpacity={0.7}
-                >
-                  <MaterialCommunityIcons name="cog-outline" size={18} color="#FFFFFF" />
-                  <Text className="text-sm font-semibold text-white">
-                    {translate('settings.notification.openSystemSettings')}
-                  </Text>
-                </TouchableOpacity>
-              )}
             </View>
 
             {/* ── Devices with Alerts ── */}
