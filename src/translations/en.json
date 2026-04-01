@@ -81,6 +81,7 @@
     "registerDeviceFailed": "Cannot register device. Please try again.",
     "registeringDevice": "Registering device...",
     "roomManagement": "Room Management",
+    "save": "Save",
     "saveButton": "Save",
     "scan": "Scan",
     "scanAgainDesc": "If you don't see your device, please scan again.",
@@ -240,9 +241,10 @@
       "passwordNotMatch": "Passwords do not match",
       "passwordRequired": "Please enter password"
     },
-    "firstName": "FirstName",
+    "firstName": "First Name",
+    "fullName": "Full Name",
     "haveAccount": "You have an account?",
-    "lastName": "LastName",
+    "lastName": "Last Name",
     "loginFailed": "Login failed",
     "messageDescriptionOtp": "We have sent OTP to your {{identifier}}, please check your inbox.",
     "notReceivedOtp": "Not received OTP?",
@@ -337,6 +339,7 @@
     "about": "About",
     "account": "Sensa Smart Account",
     "defaultUser": "User",
+    "editProfile": "Edit Profile",
     "energyCard": {
       "currentUsage": "Current consumption",
       "estimatedCost": "Estimated cost",
