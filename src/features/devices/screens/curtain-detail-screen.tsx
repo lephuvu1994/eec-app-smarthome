@@ -21,7 +21,6 @@ import { BASE_SPACE_HORIZONTAL } from '@/constants';
 import { EDoorState, useShutterControl } from '@/features/devices/hooks/use-shutter-control';
 import { translate } from '@/lib/i18n';
 import { getPrimaryEntities } from '@/lib/utils/device-entity-helper';
-import { useConfigManager } from '@/stores/config/config';
 import { useDeviceStore } from '@/stores/device/device-store';
 import { ETheme } from '@/types/base';
 import { CurtainSlider } from '../components/curtain-slider';
@@ -30,7 +29,7 @@ import { CurtainMotorConfigModal } from '../components/modals/curtain-motor-conf
 import { CurtainRfLearnModal } from '../components/modals/curtain-rf-learn-modal';
 import { ShutterBackgroundModal } from '../components/modals/shutter-background-modal';
 import { TimelinePopover } from '../components/modals/timeline-popover';
-import { getShutterBackgroundSource } from '../utils/shutter-constants';
+import { ShutterVisualizer } from '../components/shutter-visualizer';
 
 type Props = {
   deviceId: string;
@@ -146,8 +145,6 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
   // Note: Position is rendered by CurtainSlider directly.
 
   // Background image & background picker modal
-  const backgroundId = useConfigManager(s => s.shutterBackgrounds[deviceId]) || '1';
-  const bgSource = getShutterBackgroundSource(backgroundId);
   const modal = useModal();
   const bleModal = useModal();
   const rfLearnModal = useModal();
@@ -291,25 +288,13 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
             contentFit="cover"
           />
         )}
-        {/* ── Door Image ─────────────────────────────────────── */}
-        <View
-          className="aspect-4/3 w-full overflow-hidden"
-        >
-          <Image source={bgSource} style={{ width: '100%', height: '100%' }} contentFit="cover" />
-
-          <View className="absolute bottom-4 left-4 flex-row items-center gap-2 rounded-full bg-white/60 px-3 py-1.5 shadow-sm dark:bg-black/60">
-            <View className="size-2 rounded-full" style={{ backgroundColor: stateColor }} />
-            <Text className="text-xs font-semibold text-white uppercase shadow-sm">{doorState}</Text>
-          </View>
-
-          {/* Online/Offline pill (Right) */}
-          <View className="absolute right-4 bottom-4 flex-row items-center gap-1.5 rounded-full bg-black/60 px-2.5 py-1.5 shadow-sm">
-            <View className={`size-2 rounded-full ${isOnline ? 'bg-[#10B981]' : 'bg-neutral-500'}`} />
-            <Text className="text-xs font-semibold text-white shadow-sm">
-              {isOnline ? translate('base.online') : translate('base.offline')}
-            </Text>
-          </View>
-        </View>
+        {/* ── Door Visualization ─────────────────────────────────── */}
+        <ShutterVisualizer
+          position={position}
+          doorState={doorState}
+          stateColor={stateColor}
+          isOnline={isOnline}
+        />
 
         <ScrollView
           className="flex-1"
