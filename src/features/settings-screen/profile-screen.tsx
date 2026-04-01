@@ -1,20 +1,30 @@
+import type { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { Image } from 'expo-image';
-import { useState } from 'react';
+import * as ImagePicker from 'expo-image-picker';
+import { useRef, useState } from 'react';
 import { Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
+
 import { BaseLayout } from '@/components/layout/BaseLayout';
 import { ScrollView, showError, Text, TouchableOpacity, View } from '@/components/ui';
 import { useUserManager } from '@/features/auth/user-store';
+import { EditProfileModal } from '@/features/settings-screen/components/edit-profile-modal';
+import { cloudinaryService } from '@/lib/api/cloudinary/cloudinary.service';
+import { userService } from '@/lib/api/user/user.service';
 import { translate } from '@/lib/i18n';
 import { ETheme } from '@/types/base';
 
 export function ProfileScreen() {
   const insets = useSafeAreaInsets();
-  const { signOut, userName, avatar, email, phone } = useUserManager();
+  const { signOut, userName, avatar, email, phone, id, updateUser } = useUserManager();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [isSavingName, setIsSavingName] = useState(false);
+
+  const editModalRef = useRef<BottomSheetModal>(null);
   const { theme } = useUniwind();
   const headerHeight = useHeaderHeight();
 
@@ -47,6 +57,107 @@ export function ProfileScreen() {
     );
   };
 
+  const processImageResult = async (result: ImagePicker.ImagePickerResult) => {
+    if (!result.canceled && result.assets[0]?.base64) {
+      setIsUploading(true);
+      try {
+        const base64Uri = `data:image/jpeg;base64,${result.assets[0].base64}`;
+
+        // Use user ID as publicId to keep Cloudinary clean
+        const uploadedUrl = await cloudinaryService.uploadImage(base64Uri, `avatar_${id}`);
+
+        // Update via Core API
+        await userService.updateProfile({ avatar: uploadedUrl });
+
+        // Sync Zustand store
+        updateUser({ avatar: uploadedUrl });
+        Alert.alert(translate('base.success' as any));
+      }
+      catch (error: any) {
+        showError(new Error(error?.message || 'Failed to upload avatar') as any);
+      }
+      finally {
+        setIsUploading(false);
+      }
+    }
+  };
+
+  const pickFromLibrary = async () => {
+    try {
+      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permission.granted) {
+        showError(translate('base.error') as any);
+        return;
+      }
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: 'images',
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+        base64: true,
+      });
+      await processImageResult(result);
+    }
+    catch (error: any) {
+      showError(new Error(error?.message || 'Failed to open library') as any);
+    }
+  };
+
+  const pickFromCamera = async () => {
+    try {
+      const permission = await ImagePicker.requestCameraPermissionsAsync();
+      if (!permission.granted) {
+        showError(translate('base.error') as any);
+        return;
+      }
+      const result = await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+        base64: true,
+      });
+      await processImageResult(result);
+    }
+    catch (error: any) {
+      showError(new Error(error?.message || 'Failed to open camera') as any);
+    }
+  };
+
+  const handleSelectAvatar = () => {
+    Alert.alert(
+      translate('settings.editProfile' as any) || 'Update Avatar',
+      translate('base.info' as any) || 'Choose image source',
+      [
+        { text: translate('base.cancel' as any) || 'Cancel', style: 'cancel' },
+        { text: 'Camera', onPress: pickFromCamera },
+        { text: 'Library', onPress: pickFromLibrary },
+      ],
+    );
+  };
+
+  const handleUpdateName = async (newName: string) => {
+    try {
+      setIsSavingName(true);
+      const nameParts = newName.trim().split(' ');
+      const firstName = nameParts[0];
+      const lastName = nameParts.slice(1).join(' ');
+
+      // Update via Core API
+      await userService.updateProfile({ firstName, lastName });
+
+      // Update local store with full userName mapping
+      updateUser({ userName: newName.trim() });
+      Alert.alert(translate('base.success' as any));
+      editModalRef.current?.dismiss();
+    }
+    catch (error: any) {
+      showError(new Error(error?.message || 'Failed to update name') as any);
+    }
+    finally {
+      setIsSavingName(false);
+    }
+  };
+
   return (
     <BaseLayout>
       <View className="relative w-full flex-1">
@@ -75,23 +186,24 @@ export function ProfileScreen() {
           {/* ─── Avatar ─── */}
           <View className="mb-6 items-center px-4">
             <View className="mb-4">
-              <TouchableOpacity activeOpacity={0.8}>
+              <TouchableOpacity activeOpacity={0.8} onPress={handleSelectAvatar} disabled={isUploading}>
                 {avatar && avatar.length > 0
                   ? (
                       <Image
                         source={{ uri: avatar }}
                         className="size-24 rounded-full"
                         contentFit="cover"
+                        style={isUploading ? { opacity: 0.5 } : {}}
                       />
                     )
                   : (
-                      <View className="size-24 items-center justify-center rounded-full bg-neutral-200">
+                      <View className="size-24 items-center justify-center rounded-full bg-neutral-200" style={isUploading ? { opacity: 0.5 } : {}}>
                         <MaterialCommunityIcons name="account" size={52} color="#A3A3A3" />
                       </View>
                     )}
                 {/* Camera overlay */}
                 <View className="absolute right-0 bottom-0 size-7 items-center justify-center rounded-full bg-neutral-700">
-                  <MaterialCommunityIcons name="camera-outline" size={14} color="#fff" />
+                  <MaterialCommunityIcons name={isUploading ? 'progress-clock' : 'camera-outline'} size={14} color="#fff" />
                 </View>
               </TouchableOpacity>
             </View>
@@ -111,7 +223,7 @@ export function ProfileScreen() {
             <TouchableOpacity
               activeOpacity={0.7}
               className="flex-row items-center gap-3 p-4"
-              onPress={() => { }}
+              onPress={() => editModalRef.current?.present()}
             >
               <View className="size-9 items-center justify-center rounded-xl bg-neutral-100 dark:bg-neutral-700">
                 <MaterialCommunityIcons name="account-outline" size={20} color={theme === ETheme.Dark ? '#FFFFFF' : '#525252'} />
@@ -174,6 +286,12 @@ export function ProfileScreen() {
           </View>
         </ScrollView>
       </View>
+      <EditProfileModal
+        ref={editModalRef}
+        initialName={hasName ? userName : ''}
+        isSaving={isSavingName}
+        onSave={handleUpdateName}
+      />
     </BaseLayout>
   );
 }
