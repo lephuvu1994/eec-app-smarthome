@@ -19,6 +19,10 @@ const envSchema = z.object({
   EXPO_PUBLIC_AP_SSID_PREFIX: z.string().default('EEC_'),
   EXPO_PUBLIC_AP_GATEWAY_IP: z.string().default('192.168.4.1'),
   EXPO_PUBLIC_AP_PORT: z.string().default('8080'),
+  CLOUDINARY_UPLOAD_CLOUD_NAME: z.string().default(''),
+  CLOUDINARY_UPLOAD_API_KEY: z.string().default(''),
+  CLOUDINARY_UPLOAD_API_SECRET: z.string().default(''),
+  CLOUDINARY_UPLOAD_PRESET: z.string().default(''),
 });
 
 // Config records per environment
@@ -64,6 +68,10 @@ const _env: z.infer<typeof envSchema> = {
   EXPO_PUBLIC_AP_SSID_PREFIX: process.env.EXPO_PUBLIC_AP_SSID_PREFIX ?? 'EEC_',
   EXPO_PUBLIC_AP_GATEWAY_IP: process.env.EXPO_PUBLIC_AP_GATEWAY_IP ?? '192.168.4.1',
   EXPO_PUBLIC_AP_PORT: process.env.EXPO_PUBLIC_AP_PORT ?? '8080',
+  CLOUDINARY_UPLOAD_CLOUD_NAME: process.env.CLOUDINARY_UPLOAD_CLOUD_NAME ?? '',
+  CLOUDINARY_UPLOAD_API_KEY: process.env.CLOUDINARY_UPLOAD_API_KEY ?? '',
+  CLOUDINARY_UPLOAD_API_SECRET: process.env.CLOUDINARY_UPLOAD_API_SECRET ?? '',
+  CLOUDINARY_UPLOAD_PRESET: process.env.CLOUDINARY_UPLOAD_PRESET ?? '',
 };
 
 function getValidatedEnv(env: z.infer<typeof envSchema>) {

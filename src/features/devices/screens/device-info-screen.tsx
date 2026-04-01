@@ -175,7 +175,6 @@ export function DeviceInfoScreen({ deviceId }: Props) {
             </View>
           )}
 
-
           <View className="flex-row flex-wrap justify-between gap-y-4">
             <View className="w-[48%]">
               <PrimarySceneCard
