@@ -15,6 +15,7 @@ export type UserState = TUser & {
   signIn: (user: TUser) => void;
   signOut: () => Promise<void>;
   updateToken: (token: TTokenType) => void;
+  updateUser: (update: Partial<TUser>) => void;
   hydrateAuth: () => Promise<void>;
 };
 
@@ -77,6 +78,13 @@ const _useGetUser = create<UserState>()(
         set({
           ...currentState,
           ...token,
+        });
+      },
+      updateUser: (update: Partial<TUser>) => {
+        const currentState = get();
+        set({
+          ...currentState,
+          ...update,
         });
       },
       hydrateAuth: async () => {
