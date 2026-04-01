@@ -81,6 +81,7 @@
     "registerDeviceFailed": "Không thể đăng ký thiết bị. Vui lòng thử lại.",
     "registeringDevice": "Đang đăng ký thiết bị...",
     "roomManagement": "Quản lý phòng",
+    "save": "Lưu",
     "saveButton": "Lưu",
     "scan": "Quét",
     "scanAgainDesc": "Nếu bạn không thấy thiết bị của mình, vui lòng quét lại.",
@@ -241,6 +242,7 @@
       "passwordRequired": "Vui lòng nhập mật khẩu"
     },
     "firstName": "Họ",
+    "fullName": "Họ và tên",
     "haveAccount": "Bạn đã có tài khoản?",
     "lastName": "Tên",
     "loginFailed": "Đăng nhập thất bại",
@@ -337,6 +339,7 @@
     "about": "Giới thiệu",
     "account": "Tài khoản Sensa Smart",
     "defaultUser": "Người dùng",
+    "editProfile": "Cập nhật tên",
     "energyCard": {
       "currentUsage": "Mức tiêu thụ hiện tại",
       "estimatedCost": "Chi phí ước tính",

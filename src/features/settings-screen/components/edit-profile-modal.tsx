@@ -41,7 +41,7 @@ export function EditProfileModal({
     <Modal ref={ref} snapPoints={['40%']} title={translate('settings.editProfile' as any)}>
       <View className="flex-1 px-4 pt-2">
         <Text className="mb-2 text-sm font-medium text-neutral-500 dark:text-neutral-400">
-          {translate('formAuth.firstName')}
+          {translate('formAuth.fullName')}
         </Text>
         <BottomSheetTextInput
           value={name}
