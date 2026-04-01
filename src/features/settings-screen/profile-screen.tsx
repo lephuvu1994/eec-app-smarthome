@@ -229,7 +229,7 @@ export function ProfileScreen() {
                 <MaterialCommunityIcons name="account-outline" size={20} color={theme === ETheme.Dark ? '#FFFFFF' : '#525252'} />
               </View>
               <View className="flex-1">
-                <Text className="text-xs text-neutral-400">{translate('formAuth.firstName')}</Text>
+                <Text className="text-xs text-neutral-400">{translate('formAuth.fullName')}</Text>
                 <Text className="text-[15px] font-medium text-[#1B1B1B] dark:text-white">
                   {hasName ? userName : '—'}
                 </Text>
