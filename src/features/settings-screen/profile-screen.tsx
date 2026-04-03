@@ -1,16 +1,20 @@
 import type { BottomSheetModal } from '@gorhom/bottom-sheet';
+
+import type { TxKeyPath } from '@/lib/i18n';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import { useRef, useState } from 'react';
-import { Alert } from 'react-native';
+import { ActivityIndicator, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { useUniwind } from 'uniwind';
 
 import { BaseLayout } from '@/components/layout/BaseLayout';
-import { ScrollView, showError, Text, TouchableOpacity, View } from '@/components/ui';
+import { ScrollView, showError, showSuccessMessage, Text, TouchableOpacity, View } from '@/components/ui';
 import { useUserManager } from '@/features/auth/user-store';
+import { AvatarPickerSheet } from '@/features/settings-screen/components/avatar-picker-sheet';
 import { EditProfileModal } from '@/features/settings-screen/components/edit-profile-modal';
 import { cloudinaryService } from '@/lib/api/cloudinary/cloudinary.service';
 import { userService } from '@/lib/api/user/user.service';
@@ -24,7 +28,9 @@ export function ProfileScreen() {
   const [isUploading, setIsUploading] = useState(false);
   const [isSavingName, setIsSavingName] = useState(false);
 
-  const editModalRef = useRef<BottomSheetModal>(null);
+  const [isEditNameVisible, setIsEditNameVisible] = useState(false);
+  const avatarSheetRef = useRef<BottomSheetModal>(null);
+
   const { theme } = useUniwind();
   const headerHeight = useHeaderHeight();
 
@@ -69,9 +75,19 @@ export function ProfileScreen() {
         // Update via Core API
         await userService.updateProfile({ avatar: uploadedUrl });
 
+        // Bust image cache via expo-image API and version querying
+        if (Image.clearDiskCache) {
+          await Image.clearDiskCache();
+        }
+        if (Image.clearMemoryCache) {
+          await Image.clearMemoryCache();
+        }
+
+        const versionedUrl = `${uploadedUrl}?v=${Date.now()}`;
+
         // Sync Zustand store
-        updateUser({ avatar: uploadedUrl });
-        Alert.alert(translate('base.success' as any));
+        updateUser({ avatar: versionedUrl });
+        showSuccessMessage(translate('base.success' as TxKeyPath));
       }
       catch (error: any) {
         showError(new Error(error?.message || 'Failed to upload avatar') as any);
@@ -86,14 +102,14 @@ export function ProfileScreen() {
     try {
       const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (!permission.granted) {
-        showError(translate('base.error') as any);
+        showError(translate('base.error' as TxKeyPath) as any);
         return;
       }
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: 'images',
         allowsEditing: true,
         aspect: [1, 1],
-        quality: 0.8,
+        quality: 0.5,
         base64: true,
       });
       await processImageResult(result);
@@ -107,13 +123,13 @@ export function ProfileScreen() {
     try {
       const permission = await ImagePicker.requestCameraPermissionsAsync();
       if (!permission.granted) {
-        showError(translate('base.error') as any);
+        showError(translate('base.error' as TxKeyPath) as any);
         return;
       }
       const result = await ImagePicker.launchCameraAsync({
         allowsEditing: true,
         aspect: [1, 1],
-        quality: 0.8,
+        quality: 0.5,
         base64: true,
       });
       await processImageResult(result);
@@ -124,31 +140,22 @@ export function ProfileScreen() {
   };
 
   const handleSelectAvatar = () => {
-    Alert.alert(
-      translate('settings.editProfile' as any) || 'Update Avatar',
-      translate('base.info' as any) || 'Choose image source',
-      [
-        { text: translate('base.cancel' as any) || 'Cancel', style: 'cancel' },
-        { text: 'Camera', onPress: pickFromCamera },
-        { text: 'Library', onPress: pickFromLibrary },
-      ],
-    );
+    avatarSheetRef.current?.present();
   };
 
-  const handleUpdateName = async (newName: string) => {
+  const handleUpdateName = async (firstName: string, lastName: string) => {
     try {
       setIsSavingName(true);
-      const nameParts = newName.trim().split(' ');
-      const firstName = nameParts[0];
-      const lastName = nameParts.slice(1).join(' ');
 
       // Update via Core API
       await userService.updateProfile({ firstName, lastName });
 
       // Update local store with full userName mapping
-      updateUser({ userName: newName.trim() });
-      Alert.alert(translate('base.success' as any));
-      editModalRef.current?.dismiss();
+      const newUserName = `${firstName} ${lastName}`.trim();
+      updateUser({ userName: newUserName });
+
+      showSuccessMessage(translate('base.success' as TxKeyPath));
+      setIsEditNameVisible(false);
     }
     catch (error: any) {
       showError(new Error(error?.message || 'Failed to update name') as any);
@@ -157,6 +164,14 @@ export function ProfileScreen() {
       setIsSavingName(false);
     }
   };
+
+  let initialFirstName = '';
+  let initialLastName = '';
+  if (userName) {
+    const parts = userName.trim().split(' ');
+    initialFirstName = parts[0] || '';
+    initialLastName = parts.slice(1).join(' ') || '';
+  }
 
   return (
     <BaseLayout>
@@ -203,8 +218,14 @@ export function ProfileScreen() {
                     )}
                 {/* Camera overlay */}
                 <View className="absolute right-0 bottom-0 size-7 items-center justify-center rounded-full bg-neutral-700">
-                  <MaterialCommunityIcons name={isUploading ? 'progress-clock' : 'camera-outline'} size={14} color="#fff" />
+                  <MaterialCommunityIcons name="camera-outline" size={14} color="#fff" />
                 </View>
+
+                {isUploading && (
+                  <View className="absolute inset-0 items-center justify-center rounded-full bg-black/30">
+                    <ActivityIndicator color="#fff" />
+                  </View>
+                )}
               </TouchableOpacity>
             </View>
 
@@ -223,7 +244,7 @@ export function ProfileScreen() {
             <TouchableOpacity
               activeOpacity={0.7}
               className="flex-row items-center gap-3 p-4"
-              onPress={() => editModalRef.current?.present()}
+              onPress={() => setIsEditNameVisible(true)}
             >
               <View className="size-9 items-center justify-center rounded-xl bg-neutral-100 dark:bg-neutral-700">
                 <MaterialCommunityIcons name="account-outline" size={20} color={theme === ETheme.Dark ? '#FFFFFF' : '#525252'} />
@@ -286,11 +307,19 @@ export function ProfileScreen() {
           </View>
         </ScrollView>
       </View>
+
       <EditProfileModal
-        ref={editModalRef}
-        initialName={hasName ? userName : ''}
+        visible={isEditNameVisible}
+        onClose={() => setIsEditNameVisible(false)}
+        initialFirstName={initialFirstName}
+        initialLastName={initialLastName}
         isSaving={isSavingName}
         onSave={handleUpdateName}
+      />
+      <AvatarPickerSheet
+        ref={avatarSheetRef}
+        onSelectCamera={pickFromCamera}
+        onSelectLibrary={pickFromLibrary}
       />
     </BaseLayout>
   );

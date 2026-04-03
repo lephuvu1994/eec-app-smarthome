@@ -2,7 +2,7 @@ import Env from '@env';
 import axios from 'axios';
 
 import { extractError } from '@/components/ui';
-import { getHash1, getOptimizedImageUrl } from '@/lib/utils';
+import { getOptimizedImageUrl } from '@/lib/utils';
 
 export class CloudinaryService {
   /**
@@ -13,29 +13,10 @@ export class CloudinaryService {
    * @returns Optimized WebP URL
    */
   async uploadImage(imageUri: string, publicId: string): Promise<string> {
-    const timestamp = Math.floor(Date.now() / 1000);
-
-    const dataUploadHash = {
-      public_id: publicId,
-      timestamp,
-      upload_preset: Env.CLOUDINARY_UPLOAD_PRESET,
-    };
-
-    // Sort keys alphabetically as required by Cloudinary signature generation
-    const handleStringHash = Object.keys(dataUploadHash)
-      .sort()
-      .map(key => `${key}=${dataUploadHash[key as keyof typeof dataUploadHash]}`)
-      .join('&');
-
-    // Append API secret to generate SHA1
-    const stringToSign = handleStringHash + Env.CLOUDINARY_UPLOAD_API_SECRET;
-    const generateSignature = await getHash1(stringToSign);
-
     const dataUploadImage = {
-      ...dataUploadHash,
       file: imageUri,
-      api_key: Env.CLOUDINARY_UPLOAD_API_KEY,
-      signature: generateSignature,
+      upload_preset: Env.CLOUDINARY_UPLOAD_PRESET,
+      public_id: publicId,
     };
 
     try {

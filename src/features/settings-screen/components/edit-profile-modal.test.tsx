@@ -1,61 +1,48 @@
-import { render, fireEvent } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import React from 'react';
+
 import { EditProfileModal } from './edit-profile-modal';
 
-// Mock dependencies
-jest.mock('uniwind', () => ({
-  useUniwind: jest.fn(() => ({ theme: 'light' })),
-  withUniwind: jest.fn((component) => component),
+jest.mock('react-native-keyboard-controller', () => ({
+  KeyboardAvoidingView: ({ children }: any) => <>{children}</>,
 }));
 
 jest.mock('@/lib/i18n', () => ({
-  translate: jest.fn((key: string) => key),
+  translate: (key: string) => key,
+}));
+
+jest.mock('uniwind', () => ({
+  useUniwind: () => ({ theme: 'light' }),
 }));
 
 describe('EditProfileModal', () => {
-  it('renders correctly with initial name', () => {
-    const mockSave = jest.fn();
-    const { getByDisplayValue, getByText } = render(
-      <EditProfileModal initialName="Test User" onSave={mockSave} />
+  it('renders correctly and handles name changes', () => {
+    const handleSave = jest.fn();
+    const handleClose = jest.fn();
+
+    const { getByPlaceholderText, getByText } = render(
+      <EditProfileModal
+        visible={true}
+        onClose={handleClose}
+        initialFirstName="John"
+        initialLastName="Doe"
+        onSave={handleSave}
+      />
     );
 
-    expect(getByDisplayValue('Test User')).toBeTruthy();
-    expect(getByText('formAuth.firstName')).toBeTruthy();
-  });
-
-  it('handles name changes and calls onSave properly', () => {
-    const mockSave = jest.fn();
-    const { getByDisplayValue, getByText } = render(
-      <EditProfileModal initialName="Test User" onSave={mockSave} />
-    );
-
-    const input = getByDisplayValue('Test User');
-    fireEvent.changeText(input, 'New User Name');
-
-    // Simulate pressing the Save button
-    const saveButton = getByText('base.save');
-    fireEvent.press(saveButton);
-
-    expect(mockSave).toHaveBeenCalledWith('New User Name');
-  });
-
-  it('disables save button when input is identical to initial name', () => {
-    const mockSave = jest.fn();
-    const { getByDisplayValue, getByText } = render(
-      <EditProfileModal initialName="John" onSave={mockSave} />
-    );
+    // Initial renders
+    expect(getByPlaceholderText('formAuth.firstName')).toBeTruthy();
+    expect(getByPlaceholderText('formAuth.lastName')).toBeTruthy();
 
     const saveButton = getByText('base.save');
-    // Save button should be disabled because the text is currently "John"
-    fireEvent.press(saveButton);
-    expect(mockSave).not.toHaveBeenCalled();
+    expect(saveButton).toBeTruthy();
 
-    // Change the name to empty string
-    const input = getByDisplayValue('John');
-    fireEvent.changeText(input, '    ');
+    // Change first name
+    const firstNameInput = getByPlaceholderText('formAuth.firstName');
+    fireEvent.changeText(firstNameInput, 'Jane');
+
+    // Trigger save
     fireEvent.press(saveButton);
-    
-    // Saving empty string string is blocked
-    expect(mockSave).not.toHaveBeenCalled();
+    expect(handleSave).toHaveBeenCalledWith('Jane', 'Doe');
   });
 });

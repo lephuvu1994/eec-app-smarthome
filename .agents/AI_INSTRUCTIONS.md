@@ -100,7 +100,7 @@ src/
 - **Sử dụng TypeScript strict mode**
 - **Dùng `type` cho data shapes.** Tuyệt đối KHÔNG dùng `interface`.
 - **Dùng `enum` (với prefix `E`) cho các nhóm giá trị cố định (fixed values) để loại bỏ Magic Strings.**
-  - *Ví dụ:* Các trường trạng thái từ API trả về (`status`, `type`, `event`, `source`) **BẮT BUỘC** phải được định nghĩa `enum` (vd: `EDeviceTimelineEvent.Online`).
+  - _Ví dụ:_ Các trường trạng thái từ API trả về (`status`, `type`, `event`, `source`) **BẮT BUỘC** phải được định nghĩa `enum` (vd: `EDeviceTimelineEvent.Online`).
   - **TUYỆT ĐỐI KHÔNG** so sánh hardcode chuỗi chay như `if (event === 'online')` hay định nghĩa type `event: 'online' | 'offline'`.
 - Import types với `import type { ... }` khi chỉ dùng type.
 
@@ -266,6 +266,7 @@ export const useUserManager = createSelectors(_useGetUser);
 ### ⚠️ Chiến lược "Offline-First / Cache-First" (Kiến trúc chuẩn Apple HomeKit / Tuya)
 
 Đối với các dữ liệu mang tính cấu trúc vật lý cốt lõi của Smart Home (Homes, Floors, Rooms, Devices Metadata):
+
 - Xem **[Device Integration Rules](./src/features/devices/AI_INSTRUCTIONS.md)** để biết chi tiết về luật xử lý trạng thái thời gian thực và cách quyết định **Tách lẻ Card (Splitting)** hay **Gộp Card (Unified)** khi map `device.entities` lên Dashboard UI dựa trên quy ước mã code `"main"`.
 
 - **BẮT BUỘC lưu trữ ở bộ nhớ đệm (Local Cache)** thông qua Zustand `persist` (MMKV) để đạt trải nghiệm Zero-Latency (Mở app là thấy ngay cấu trúc UI, tuyệt đối cấm dùng biến `isLoading` / vòng quay Loading che màn hình block UI).
@@ -345,6 +346,7 @@ const router = useRouter();
 router.push("/devices");
 router.back();
 router.replace("/(welcome)/signin");
+Không được dùng với as any, tệ nhất dùng as Href
 ```
 
 ---
@@ -381,8 +383,27 @@ import {
   Text,
   TouchableOpacity,
   View,
+  IS_IOS,
+  Input,
 } from "@/components/ui";
 ```
+
+### Kích thước màn hình
+
+```typescript
+import { WIDTH, HEIGHT, BASE_SPACE_HORIZONTAL } from "@/components/ui";
+```
+
+### Xử lý keyboard
+
+```typescript
+import { KeyboardAvoidingView } from "react-native-keyboard-controller";
+```
+
+### Check Hệ Điều Hành thiết bị
+
+- **BẮT BUỘC** dùng hằng số `IS_IOS` import từ `@/components/ui` để check môi trường iOS.
+- **TUYỆT ĐỐI KHÔNG** dùng `Platform.OS === 'ios'` hoặc import `Platform` từ `react-native` tự check (để tối ưu performance tránh gọi qua bridge và giữ code clean).
 
 ### `cn()` utility cho conditional classes:
 
@@ -427,7 +448,7 @@ translate('formAuth.verifyIdentifier', { identifier: 'Email' });
 - **BẮT BUỘC dùng `translate(key)`** cho TẤT CẢ văn bản hiển thị. **TUYỆT ĐỐI KHÔNG** để raw text / string chay lồng trực tiếp trong View/Component dưới mọi hình thức (vd: ❌ `<Text>Thiết bị</Text>` / ❌ `const status = "Đang chạy"`).
 - **Tuyệt đối tránh Nối chuỗi (String Concatenation):**
   - Khi cần ghép giá trị động vào câu (vd: "Trạng thái: Bật (qua Ứng dụng)"), **BẮT BUỘC** phải dùng tính năng `Interpolation` (biến trong cặp `{{ }}`) của i18next thay vì nối chuỗi JavaScript (`+` hoặc template literals `${}`).
-  - *Ví dụ đúng:* `"statusVia": "{{name}}Trạng thái: {{event}} (qua {{source}})"`
+  - _Ví dụ đúng:_ `"statusVia": "{{name}}Trạng thái: {{event}} (qua {{source}})"`
 - Các giá trị sinh ra từ API (Source, Event, Error) thay vì map chữ cứng thì cũng phải chạy qua `translate(mappingEnum)`.
 - **KHÔNG dùng Alert.alert** — dùng `showErrorMessage()` / `showSuccessMessage()`
 - Key format: `{feature}.{context}.{name}` (e.g., `formAuth.error.passwordRequired`)
@@ -452,6 +473,7 @@ showErrorMessage(error?.message ?? translate("base.somethingWentWrong"));
 ```
 
 **Khi nào dùng Toast:**
+
 - Xác nhận thao tác thành công/thất bại (lưu, xóa, cập nhật...)
 - Lỗi validation form, lỗi mạng
 - Thông tin ngắn gọn không cần user phản hồi
@@ -469,8 +491,12 @@ Alert.alert(
   translate("device.remove.confirmMessage"),
   [
     { text: translate("base.cancel"), style: "cancel" },
-    { text: translate("base.deleteButton"), style: "destructive", onPress: handleDelete },
-  ]
+    {
+      text: translate("base.deleteButton"),
+      style: "destructive",
+      onPress: handleDelete,
+    },
+  ],
 );
 
 // Thông báo cần user chủ động đóng (quyền hệ thống, hướng dẫn thao tác)
@@ -481,6 +507,7 @@ Alert.alert(
 ```
 
 **Khi nào dùng Alert:**
+
 - Xác nhận hành động không thể hoàn tác (xóa thiết bị, đăng xuất, unbind...)
 - Yêu cầu quyền hệ thống bị từ chối — cần hướng dẫn user vào Settings
 - Thông báo quan trọng mà user CẦN PHẢI đọc xong mới tiếp tục (breaking change, data loss)
@@ -488,13 +515,13 @@ Alert.alert(
 
 ### ⚠️ Tóm tắt:
 
-| Tình huống | Dùng |
-|---|---|
-| "Lưu thành công", "Xóa thành công" | `showSuccessMessage()` |
-| "Lỗi mạng", "Sai mật khẩu" | `showErrorMessage()` |
-| "Bạn có chắc muốn xóa?" | `Alert.alert()` với 2 nút |
-| "Vui lòng bật quyền trong Settings" | `Alert.alert()` |
-| "Đăng xuất?" | `Alert.alert()` với Cancel/Confirm |
+| Tình huống                          | Dùng                               |
+| ----------------------------------- | ---------------------------------- |
+| "Lưu thành công", "Xóa thành công"  | `showSuccessMessage()`             |
+| "Lỗi mạng", "Sai mật khẩu"          | `showErrorMessage()`               |
+| "Bạn có chắc muốn xóa?"             | `Alert.alert()` với 2 nút          |
+| "Vui lòng bật quyền trong Settings" | `Alert.alert()`                    |
+| "Đăng xuất?"                        | `Alert.alert()` với Cancel/Confirm |
 
 ---
 
@@ -836,6 +863,8 @@ type IUser = {
 - `en.json` là reference file — `vi.json` phải có **chính xác** cùng tập keys
 - Keys phải sorted alphabetically (ASC)
 - Validation syntax: i18next format
+- Không được dùng translate với key không có trong file json ( không dùng với as any, tệ nhất là as TxKeyPath)
+- **Tuyệt đối KHÔNG** dùng chuỗi fallback tĩnh đi kèm toán tử OR khi gọi hàm sửa ngôn ngữ (vd: ❌ `translate('key' as TxKeyPath) || 'Fallback string'`). Mọi nội dung text bắt buộc phải khai báo chuẩn trong `vi.json`/`en.json` và dùng thuần túy kết quả của hàm `translate`.
 
 ### Scripts
 
