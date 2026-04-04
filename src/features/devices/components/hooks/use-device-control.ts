@@ -19,12 +19,15 @@ import { getDeviceImage } from '@/features/home-screen/utils/device-image';
 
 import { useDeviceEvent } from '@/hooks/use-device-event';
 import { deviceService, EDeviceStatus, EEntityDomain } from '@/lib/api/devices/device.service';
+import { bleCommandQueue, buildBleCmd } from '@/lib/ble-control';
 import { translate } from '@/lib/i18n';
 import { useConfigManager } from '@/stores/config/config';
 
 type TDeviceControlOptions = {
   modal: ReturnType<typeof useModal>;
   config: TDeviceConfig;
+  /** Map<deviceId, peripheralId> từ useBleNearby — undefined khi chưa có */
+  availableBleDevices?: Map<string, string>;
 };
 
 /**
@@ -125,7 +128,14 @@ export function useDeviceControl(
     setIsOn(nextState);
 
     try {
-      if (primaryEntity?.code) {
+      // ── BLE fallback: device offline VÀ chip đang quảng cáo BLE nearby ──
+      const peripheralId = options.availableBleDevices?.get(device.id);
+      if (!isOnline && peripheralId && primaryEntity?.code) {
+        const cmd = buildBleCmd(primaryEntity.code, nextState);
+        await bleCommandQueue.enqueue(peripheralId, { cmd });
+      }
+      else if (primaryEntity?.code) {
+        // ── MQTT path bình thường ──
         await deviceService.setEntityValue(device.token, primaryEntity.code, nextState ? 1 : 0);
       }
     }
