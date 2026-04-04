@@ -165,6 +165,7 @@ export enum EDeviceTimelineSource {
   Voice = 'voice',
   Automation = 'automation',
   System = 'system',
+  Ble = 'ble',
 }
 
 export type TDeviceTimelineItem = {

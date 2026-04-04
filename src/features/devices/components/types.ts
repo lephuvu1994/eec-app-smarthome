@@ -57,4 +57,6 @@ export type TDeviceItemProps = {
   device: TDevice;
   typeViewDevice?: ETypeViewDevice;
   activeEntity?: TDeviceEntity;
+  /** Map<deviceId, peripheralId> từ useBleNearby — cho BLE fallback */
+  availableBleDevices?: Map<string, string>;
 };
