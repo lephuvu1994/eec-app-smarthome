@@ -13,6 +13,7 @@ import { Text, View } from '@/components/ui';
 import { useModal } from '@/components/ui/modal';
 import { deviceService } from '@/lib/api/devices/device.service';
 import { translate } from '@/lib/i18n';
+import { getPrimaryEntities } from '@/lib/utils/device-entity-helper';
 import { useConfigManager } from '@/stores/config/config';
 import { useDeviceStore } from '@/stores/device/device-store';
 import { ETheme } from '@/types/base';
@@ -99,7 +100,14 @@ export function DeviceActionBar({ device, entities }: Props) {
   const selectEntityModal = useModal();
   const [actionMode, setActionMode] = React.useState<'schedule' | 'timer'>('schedule');
 
-  const isGroup = entities.length > 1;
+  // isMultiGang determines if we show the "All On / All Off" master buttons
+  // (e.g., a 3-gang switch has 3 primary entities).
+  // A curtain with 1 main + 1 child_lock is NOT a multi-gang.
+  const isMultiGang = React.useMemo(() => getPrimaryEntities(device).length > 1, [device]);
+
+  // hasMultiTargets determines if we need to show the Select Entity Sheet for schedules/timers
+  const hasMultiTargets = entities.length > 1;
+
   const { handleAllOn, handleAllOff } = useGroupToggle(device, entities);
 
   const handleEntitySelect = React.useCallback((entity: TDeviceEntity) => {
@@ -113,7 +121,7 @@ export function DeviceActionBar({ device, entities }: Props) {
 
   const handleActionPress = React.useCallback((mode: 'schedule' | 'timer') => {
     setActionMode(mode);
-    if (isGroup) {
+    if (hasMultiTargets) {
       selectEntityModal.present();
     }
     else {
@@ -123,7 +131,7 @@ export function DeviceActionBar({ device, entities }: Props) {
         params: { id: device.id, entityId: entities[0].id },
       });
     }
-  }, [isGroup, selectEntityModal, entities, device.id, router]);
+  }, [hasMultiTargets, selectEntityModal, entities, device.id, router]);
 
   return (
     <>
@@ -133,8 +141,8 @@ export function DeviceActionBar({ device, entities }: Props) {
         style={{ paddingTop: 12, paddingBottom: insets.bottom }}
       >
         <View className="flex-row gap-3">
-          {/* Bật tất / Tắt tất — chỉ hiện với group */}
-          {isGroup && (
+          {/* Bật tất / Tắt tất — chỉ hiện với thiết bị dạng Multi-Gang (nhiều nút chính) */}
+          {isMultiGang && (
             <>
               <ActionButton
                 icon={<FontAwesome5 name="power-off" size={16} color="#1B1B1B" />}
@@ -168,7 +176,7 @@ export function DeviceActionBar({ device, entities }: Props) {
       </Animated.View>
 
       {/* Select entity sheet — group only */}
-      {isGroup && (
+      {hasMultiTargets && (
         <SelectEntitySheet
           modalRef={selectEntityModal.ref}
           device={device}
