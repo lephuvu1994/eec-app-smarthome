@@ -18,6 +18,7 @@ import { isPrimaryEntity } from '@/lib/utils/device-entity-helper';
 import { useDeviceStore } from '@/stores/device/device-store';
 import { ETheme } from '@/types/base';
 
+import { DeviceActionBar } from '../components/device-action-bar';
 import { SwitchModalItem } from '../components/modals/items/switch-modal-item';
 import { RenameDeviceModal } from '../components/modals/rename-device-modal';
 import { TimelinePopover } from '../components/modals/timeline-popover';
@@ -154,6 +155,8 @@ export function SwitchDetailScreen({ deviceId, entityId }: Props) {
             }
           }}
         />
+
+        <DeviceActionBar device={device} entities={displayedEntities} />
       </View>
     </BaseLayout>
   );

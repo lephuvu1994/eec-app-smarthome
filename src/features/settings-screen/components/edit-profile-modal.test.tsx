@@ -20,7 +20,7 @@ describe('EditProfileModal', () => {
     );
 
     expect(getByDisplayValue('Test User')).toBeTruthy();
-    expect(getByText('formAuth.firstName')).toBeTruthy();
+    expect(getByText('formAuth.fullName')).toBeTruthy();
   });
 
   it('handles name changes and calls onSave properly', () => {

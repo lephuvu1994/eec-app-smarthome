@@ -25,6 +25,7 @@ type Props = {
   hasNextPage: boolean;
   emptyText: string;
   onLoadMore: () => void;
+  fallbackDeviceName?: string;
 };
 
 export function SharedTimelineScreen({
@@ -36,6 +37,7 @@ export function SharedTimelineScreen({
   hasNextPage,
   emptyText,
   onLoadMore,
+  fallbackDeviceName,
 }: Props) {
   const { theme } = useUniwind();
   const headerHeight = useHeaderHeight();
@@ -71,7 +73,18 @@ export function SharedTimelineScreen({
   };
 
   const renderDescription = (item: TDeviceTimelineItem) => {
-    const namePrefix = item.deviceName ? `[${item.deviceName}] ` : (item.entityName ? `[${item.entityName}] ` : '');
+    const isMain = item.entityCode === 'main';
+    const deviceNameStr = item.deviceName || fallbackDeviceName;
+
+    let finalPrefixName = '';
+    if (isMain && deviceNameStr) {
+      finalPrefixName = deviceNameStr; // Prefer Device Name for 'main' entity
+    }
+    else {
+      finalPrefixName = item.entityName || deviceNameStr || '';
+    }
+
+    const namePrefix = finalPrefixName ? `[${finalPrefixName}] ` : '';
 
     if (item.type === EDeviceTimelineType.Connection) {
       const connEvent = item.event === EDeviceTimelineEvent.Online
