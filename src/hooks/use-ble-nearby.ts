@@ -7,6 +7,9 @@
  * Trả về: availableBleDevices: Map<deviceId, peripheralId>
  *   - deviceId    = device.id từ API (UUID)
  *   - peripheralId = react-native-ble-manager peripheral UUID (dùng để connect)
+ *
+ * ⚠️ Hook này KHÔNG xin quyền BLE. Nếu chưa cấp quyền thì bỏ qua hoàn toàn.
+ *    Việc request permission chỉ xảy ra ở màn điều khiển BLE khi user chủ động.
  */
 
 import type { TDevice } from '@/lib/api/devices/device.service';
@@ -52,6 +55,14 @@ export function useBleNearby(devices: TDevice[]): BleNearbyResult {
 
     const doScan = async () => {
       try {
+        // ⚠️ CHỈ check quyền — KHÔNG request, KHÔNG hỏi user.
+        // Chưa có quyền thì bỏ qua lặng lẽ. Việc xin quyền được
+        // thực hiện ở màn điều khiển BLE khi user chủ động bật.
+        const hasPermission = await bleService.checkPermissions();
+        if (!hasPermission) {
+          return;
+        }
+
         await bleService.init();
         await bleService.startScan(SCAN_DURATION_SEC);
       }
