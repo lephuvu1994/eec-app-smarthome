@@ -16,6 +16,29 @@ class BleService {
     this.isInitialized = true;
   }
 
+  /**
+   * Chỉ KIỂM TRA quyền hiện tại — KHÔNG xin thêm quyền mới.
+   * Trả về true nếu đã đủ quyền để scan BLE, false nếu chưa.
+   * Dùng cho background scan: nếu chưa có quyền thì bỏ qua, không hỏi.
+   */
+  async checkPermissions(): Promise<boolean> {
+    if (Platform.OS === 'android') {
+      if (Platform.Version >= 31) {
+        const [scan, connect] = await Promise.all([
+          PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN),
+          PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT),
+        ]);
+        return scan && connect;
+      }
+      else {
+        return PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
+      }
+    }
+    // iOS: quyền BLE chỉ hỏi khi gọi BleManager.start(). Nếu đã init thì coi là đã có.
+    // Nếu chưa init → chưa có quyền → trả false.
+    return this.isInitialized;
+  }
+
   async requestPermissions(): Promise<boolean> {
     if (Platform.OS === 'android') {
       if (Platform.Version >= 31) {
