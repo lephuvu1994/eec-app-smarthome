@@ -1,1 +1,1 @@
-export { TimerListScreen as default } from '@/features/devices/screens/timer-list-screen';
+export { TimerListScreen as default } from '@/features/devices/automation/timers/timer-list-screen';
