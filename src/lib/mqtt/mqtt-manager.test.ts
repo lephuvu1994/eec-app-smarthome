@@ -128,7 +128,7 @@ describe('MqttManager', () => {
       manager.subscribeDevices(devices);
 
       expect(mockMqttClient.subscribe).toHaveBeenCalledWith(
-        ['+/+/dev-aaa/state', '+/+/dev-aaa/status', '+/+/dev-bbb/state', '+/+/dev-bbb/status'],
+        ['device/dev-aaa/state', 'device/dev-aaa/status', 'device/dev-bbb/state', 'device/dev-bbb/status'],
         expect.any(Function),
       );
     });
@@ -146,7 +146,7 @@ describe('MqttManager', () => {
       manager.unsubscribeDevices([{ token: 'dev-aaa', id: 'id-1' }]);
 
       expect(mockMqttClient.unsubscribe).toHaveBeenCalledWith(
-        ['+/+/dev-aaa/state', '+/+/dev-aaa/status'],
+        ['device/dev-aaa/state', 'device/dev-aaa/status'],
         expect.any(Function),
       );
     });
@@ -179,7 +179,7 @@ describe('MqttManager', () => {
         state: 1,
         attributes: [{ key: 'brightness', value: 80 }],
       });
-      messageHandler('COMPANY/MODEL/device-token-xyz/state', Buffer.from(payload), { retain: false });
+      messageHandler('device/device-token-xyz/state', Buffer.from(payload), { retain: false });
 
       expect(handler).toHaveBeenCalledWith({
         entityCode: 'switch_1',
@@ -230,7 +230,7 @@ describe('MqttManager', () => {
         timestamp: '2026-03-26T00:00:00Z',
       });
 
-      messageHandler('COMPANY/MODEL/dev-t/state', Buffer.from(payload), { retain: false });
+      messageHandler('device/dev-t/state', Buffer.from(payload), { retain: false });
 
       // Should emit for each update
       expect(handler).toHaveBeenCalledTimes(2);

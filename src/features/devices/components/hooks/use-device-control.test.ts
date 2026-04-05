@@ -26,6 +26,31 @@ jest.mock('mqtt', () => ({
   connect: jest.fn(),
 }), { virtual: true });
 
+jest.mock('react-native-ble-manager', () => ({
+  start: jest.fn(),
+  scan: jest.fn(),
+  stopScan: jest.fn(),
+  connect: jest.fn(),
+  disconnect: jest.fn(),
+  retrieveServices: jest.fn(),
+  startNotification: jest.fn(),
+  write: jest.fn(),
+}), { virtual: true });
+
+jest.mock('@/lib/ble', () => ({
+  CHIP_SERVICE_UUID: 'mock-service-uuid',
+  CHIP_TX_CHAR_UUID: 'mock-tx-uuid',
+  CHIP_RX_CHAR_UUID: 'mock-rx-uuid',
+}));
+
+jest.mock('@/lib/ble-control', () => ({
+  bleControl: {
+    sendCommand: jest.fn(),
+    connect: jest.fn(),
+    disconnect: jest.fn(),
+  },
+}));
+
 jest.mock('@dev-plugins/react-query', () => ({
   useReactQueryDevTools: jest.fn(),
 }));

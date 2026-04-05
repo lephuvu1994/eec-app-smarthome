@@ -47,17 +47,18 @@ export function useShutterControl(
   /** Initial Position Resolution */
   const initialPositionAttr = primaryEntity?.attributes?.find(a => a.key === 'position');
   let initialPos = 0;
-  if (typeof initialPositionAttr?.currentValue === 'number') {
-    initialPos = initialPositionAttr.currentValue;
+  const posRaw = initialPositionAttr?.currentValue;
+  if (posRaw !== undefined && posRaw !== null && posRaw !== '') {
+    const parsed = Number(posRaw);
+    if (!Number.isNaN(parsed)) {
+      initialPos = parsed;
+    }
   }
   else if (doorState === EDoorState.Open) {
     initialPos = 100;
   }
   else if (doorState === EDoorState.Close) {
     initialPos = 0;
-  }
-  else {
-    initialPos = 0; // Default or STOP
   }
 
   /**
