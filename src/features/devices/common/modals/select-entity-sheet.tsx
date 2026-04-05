@@ -19,7 +19,7 @@ type Props = {
 
 export function SelectEntitySheet({ modalRef, device, entities, onSelect, title }: Props) {
   const insets = useSafeAreaInsets();
-  const snapHeight = insets.bottom + 80 + entities.length * 64;
+  const snapHeight = insets.bottom + 140 + entities.length * 76;
 
   const handleSelect = (entity: TDeviceEntity) => {
     modalRef.current?.dismiss();
