@@ -42,19 +42,31 @@ src/
 │   └── ui/                       # Design system components (Button, Input, Modal, etc.)
 │       └── index.tsx             # Barrel export (tất cả UI import từ đây)
 ├── features/                     # Domain-specific feature modules
-│   ├── auth/                     # Auth flow
-│   │   ├── components/           # Form components (login-form, signup-form...)
-│   │   ├── hooks/                # Custom hooks (use-sign-up, use-forgot-password)
-│   │   ├── types/                # Types & enums
-│   │   ├── utils/                # Constants, regex
-│   │   ├── user-store.tsx        # Zustand auth store
-│   │   ├── signin-screen.tsx     # Screen component
-│   │   └── signup-screen.tsx
-│   ├── home-screen/
-│   ├── add-device-screen/
-│   ├── settings-screen/
-│   └── ...
-├── hooks/                        # Shared custom hooks
+│   ├── auth/                     # Auth flow (components, hooks, screens)
+│   ├── devices/                  # Cấu trúc Thiết bị (Domain-driven)
+│   │   ├── common/               # Dùng chung: device-list, action-bar, hooks (use-device-control)
+│   │   ├── types/                # Component & Logic điều khiển từng loại thiết bị
+│   │   │   ├── switch/           # Công tắc
+│   │   │   ├── curtain/          # Rèm / Cửa cuốn
+│   │   │   ├── climate/          # Điều hòa
+│   │   │   └── light/            # Đèn
+│   │   ├── automation/           # Tự động hóa thiết bị
+│   │   │   ├── schedules/        # Lên lịch đóng mở
+│   │   │   ├── timers/           # Đếm ngược
+│   │   │   └── timeline/         # Lịch sử thiết bị
+│   │   └── management/           # Thiết lập thiết bị
+│   │       ├── add-device-screen/# Luồng cài đặt cấu hình ESP32/BLE
+│   │       └── settings/         # Thông tin, xoá thiết bị, thông báo
+│   ├── scenes/                   # Cấu trúc Kịch bản thông minh
+│   │   ├── common/               # Dùng chung: scene-card, hooks list
+│   │   ├── builder/              # Trình tạo/sửa ngữ cảnh (Builder UI)
+│   │   ├── triggers/             # Các loại kích hoạt (Time, DeviceState)
+│   │   ├── actions/              # Các hành động (Control device, Delay)
+│   │   └── management/           # Quản lý logs kịch bản
+│   ├── home-screen/              # Màn hình chính Dashboard
+│   ├── smart-screen/             # TTTM / Dashboard phụ
+│   └── settings-screen/          # Cài đặt người dùng
+├── hooks/                        # Shared custom hooks (App global hooks)
 ├── lib/
 │   ├── api/                      # API layer
 │   │   ├── common/               # Axios client, APIProvider, utils
@@ -266,7 +278,7 @@ export const useUserManager = createSelectors(_useGetUser);
 ### ⚠️ Chiến lược "Offline-First / Cache-First" (Kiến trúc chuẩn Apple HomeKit / Tuya)
 
 Đối với các dữ liệu mang tính cấu trúc vật lý cốt lõi của Smart Home (Homes, Floors, Rooms, Devices Metadata):
-- Xem **[Device Integration Rules](./src/features/devices/AI_INSTRUCTIONS.md)** để biết chi tiết về luật xử lý trạng thái thời gian thực và cách quyết định **Tách lẻ Card (Splitting)** hay **Gộp Card (Unified)** khi map `device.entities` lên Dashboard UI dựa trên quy ước mã code `"main"`.
+- Xem **[Device Integration Rules](./device/AI_INSTRUCTIONS.md)** để biết chi tiết về luật xử lý trạng thái thời gian thực và cách quyết định **Tách lẻ Card (Splitting)** hay **Gộp Card (Unified)** khi map `device.entities` lên Dashboard UI dựa trên quy ước mã code `"main"`.
 
 - **BẮT BUỘC lưu trữ ở bộ nhớ đệm (Local Cache)** thông qua Zustand `persist` (MMKV) để đạt trải nghiệm Zero-Latency (Mở app là thấy ngay cấu trúc UI, tuyệt đối cấm dùng biến `isLoading` / vòng quay Loading che màn hình block UI).
 - **Boot-Level Hydration:** Quá trình gọi API đồng bộ dữ liệu ngầm (Background Sync) phải được đưa lên Root Component (trên `_layout.tsx`) để chạy song song với `CustomSplashScreen` thông qua cơ chế `Promise.race`. Không gọi các API nạp cấu trúc tổng ở các màn hình con để tránh đụng độ lifecycle khi khởi động.

@@ -1,10 +1,10 @@
 import { useLocalSearchParams } from 'expo-router';
-import { ClimateDetailScreen } from '@/features/devices/screens/climate-detail-screen';
-import { CurtainDetailScreen } from '@/features/devices/screens/curtain-detail-screen';
+import { FallbackDeviceScreen } from '@/features/devices/management/settings/fallback-device-screen';
+import { ClimateDetailScreen } from '@/features/devices/types/climate/screens/climate-detail-screen';
 
-import { FallbackDeviceScreen } from '@/features/devices/screens/fallback-device-screen';
-import { LightDetailScreen } from '@/features/devices/screens/light-detail-screen';
-import { SwitchDetailScreen } from '@/features/devices/screens/switch-detail-screen';
+import { CurtainDetailScreen } from '@/features/devices/types/curtain/screens/curtain-detail-screen';
+import { LightDetailScreen } from '@/features/devices/types/light/screens/light-detail-screen';
+import { SwitchDetailScreen } from '@/features/devices/types/switch/screens/switch-detail-screen';
 import { EEntityDomain } from '@/lib/api/devices/device.service';
 import { getPrimaryEntities } from '@/lib/utils/device-entity-helper';
 import { useDeviceStore } from '@/stores/device/device-store';

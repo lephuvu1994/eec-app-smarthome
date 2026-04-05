@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from 'expo-router';
-import { DeviceInfoScreen } from '@/features/devices/screens/device-info-screen';
+import { DeviceInfoScreen } from '@/features/devices/management/settings/device-info-screen';
 
 export default function DeviceInfoRoute() {
   const { id } = useLocalSearchParams();

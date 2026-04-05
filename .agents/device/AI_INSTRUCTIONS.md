@@ -76,3 +76,11 @@ When a user opens a Device Detail Screen (e.g. `switch-detail-screen.tsx`, `curt
 To reduce friction in the UX:
 - Primary control components (e.g., `SwitchModalItem`) MUST support an `onLongPress` event. 
 - Long-pressing a control component inside a Device Detail screen should silently trigger `Haptics.impactAsync` and launch an inline `<RenameDeviceModal>` targeted directly at renaming that specific `entity.name` via `deviceService.renameDeviceEntity`.
+
+## 8. Tái cấu trúc thư mục (Refactored Directory Structure)
+Các file của một thiết bị phân tán theo nguyên tắc Domain-driven:
+- **`src/features/devices/common/`**: Header/Action Bar/Danh sách thiết bị dùng chung cho toàn bộ module. Chứa `use-device-control`.
+- **`src/features/devices/types/{Tên_Thiết_Bị}/`**: Hook, Screen, Modal UI riêng biệt cho từng dòng thiết bị. VD: `types/switch`, `types/curtain`.
+- **`src/features/devices/automation/`**: Tách bạch Schedules, Timers, và Timeline sử dụng chéo.
+- **`src/features/devices/management/`**: Flow cài đặt (add-device) và cấu hình app Setting (info).
+Hãy bảo toàn cấu trúc này khi tích hợp thêm các phần cứng/device types mới.

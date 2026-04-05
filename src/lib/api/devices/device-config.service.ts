@@ -1,4 +1,4 @@
-import type { TDeviceConfig } from '@/features/devices/components/types';
+import type { TDeviceConfig } from '@/features/devices/common/types';
 
 import { client } from '../common';
 
