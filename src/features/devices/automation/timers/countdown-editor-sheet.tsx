@@ -8,6 +8,7 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { ScrollView, TouchableOpacity } from 'react-native';
 
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 import { Button, IS_IOS, Modal, Text, View } from '@/components/ui';
 import { translate } from '@/lib/i18n';
@@ -23,6 +24,7 @@ type Props = {
 };
 
 export function CountdownEditorSheet({ modalRef, device, entity, existingTimer, onSuccess }: Props) {
+  const insets = useSafeAreaInsets();
   const { theme } = useUniwind();
   const isDark = theme === ETheme.Dark;
 
@@ -33,7 +35,7 @@ export function CountdownEditorSheet({ modalRef, device, entity, existingTimer, 
   });
   const [targetValue, setTargetValue] = useState<1 | 0 | 'OPEN' | 'CLOSE' | 'STOP'>(1);
 
-  const isCurtain = entity?.domain === 'curtain' || entity?.domain === 'curtain_switch' || device?.type === 'SHUTTER_DOOR';
+  const isCurtainMotor = entity?.domain === 'curtain' || entity?.domain === 'curtain_switch' || (device?.type === 'SHUTTER_DOOR' && (!entity || entity.code === 'main'));
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -61,12 +63,12 @@ export function CountdownEditorSheet({ modalRef, device, entity, existingTimer, 
         const d = new Date();
         d.setHours(0, 5, 0, 0);
         setDurationDate(d);
-        setTargetValue(isCurtain ? 'OPEN' : 1);
+        setTargetValue(isCurtainMotor ? 'OPEN' : 1);
       }
     });
-  }, [existingTimer, isCurtain]);
+  }, [existingTimer, isCurtainMotor]);
 
-  if (isCurtain && typeof targetValue === 'number') {
+  if (isCurtainMotor && typeof targetValue === 'number') {
     setTargetValue('OPEN');
   }
 
@@ -82,7 +84,7 @@ export function CountdownEditorSheet({ modalRef, device, entity, existingTimer, 
   });
 
   return (
-    <Modal ref={modalRef} snapPoints={['65%']}>
+    <Modal ref={modalRef} snapPoints={[insets.bottom + 420]}>
       <View className="flex-1 pb-4">
         {/* Header */}
         <View className="mb-4 flex-row items-center justify-between px-4">
@@ -100,7 +102,7 @@ export function CountdownEditorSheet({ modalRef, device, entity, existingTimer, 
         <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
           {/* Target state toggle */}
           <View className="mb-5 flex-row gap-2">
-            {isCurtain
+            {isCurtainMotor
               ? (
                   <>
                     <TouchableOpacity
