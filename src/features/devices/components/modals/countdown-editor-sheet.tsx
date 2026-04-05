@@ -1,0 +1,212 @@
+import type { BottomSheetModal } from '@gorhom/bottom-sheet';
+import type { TDeviceTimer } from '@/lib/api/automation/automation.service';
+import type { TDevice, TDeviceEntity } from '@/lib/api/devices/device.service';
+
+import { FontAwesome5, FontAwesome6 } from '@expo/vector-icons';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import * as React from 'react';
+import { useEffect, useState } from 'react';
+import { ScrollView, TouchableOpacity } from 'react-native';
+
+import { useUniwind } from 'uniwind';
+import { Button, IS_IOS, Modal, Text, View } from '@/components/ui';
+import { translate } from '@/lib/i18n';
+import { ETheme } from '@/types/base';
+import { useTimerEditor } from '../../hooks/use-timer-editor';
+
+type Props = {
+  modalRef: React.RefObject<BottomSheetModal | null>;
+  device: TDevice;
+  entity: TDeviceEntity;
+  existingTimer?: TDeviceTimer | null;
+  onSuccess?: () => void;
+};
+
+export function CountdownEditorSheet({ modalRef, device, entity, existingTimer, onSuccess }: Props) {
+  const { theme } = useUniwind();
+  const isDark = theme === ETheme.Dark;
+
+  const [durationDate, setDurationDate] = useState(() => {
+    const d = new Date();
+    d.setHours(0, 5, 0, 0);
+    return d;
+  });
+  const [targetValue, setTargetValue] = useState<1 | 0 | 'OPEN' | 'CLOSE' | 'STOP'>(1);
+
+  const isCurtain = entity?.domain === 'curtain' || entity?.domain === 'curtain_switch' || device?.type === 'SHUTTER_DOOR';
+
+  useEffect(() => {
+    queueMicrotask(() => {
+      if (existingTimer) {
+        const executeAt = new Date(existingTimer.executeAt);
+        const remainingMs = executeAt.getTime() - Date.now();
+        const d = new Date();
+        if (remainingMs > 0) {
+          const totalSecs = Math.floor(remainingMs / 1000);
+          const hours = Math.floor(totalSecs / 3600);
+          const mins = Math.floor((totalSecs % 3600) / 60);
+          d.setHours(hours, mins, 0, 0);
+        }
+        else {
+          d.setHours(0, 0, 0, 0);
+        }
+        setDurationDate(d);
+
+        const actionVal = existingTimer.actions?.[0]?.value;
+        if (actionVal !== undefined) {
+          setTargetValue(actionVal as any);
+        }
+      }
+      else {
+        const d = new Date();
+        d.setHours(0, 5, 0, 0);
+        setDurationDate(d);
+        setTargetValue(isCurtain ? 'OPEN' : 1);
+      }
+    });
+  }, [existingTimer, isCurtain]);
+
+  if (isCurtain && typeof targetValue === 'number') {
+    setTargetValue('OPEN');
+  }
+
+  const totalSeconds = durationDate.getHours() * 3600 + durationDate.getMinutes() * 60;
+
+  const { saveTimer, deleteTimer, isSaving, isBusy } = useTimerEditor({
+    entity,
+    existingTimer,
+    onSuccess: () => {
+      modalRef.current?.dismiss();
+      onSuccess?.();
+    },
+  });
+
+  return (
+    <Modal ref={modalRef} snapPoints={['65%']}>
+      <View className="flex-1 pb-4">
+        {/* Header */}
+        <View className="mb-4 flex-row items-center justify-between px-4">
+          <Text className="text-lg font-bold text-[#1B1B1B] dark:text-white">
+            {existingTimer ? translate('automation.countdown.edit') : translate('automation.countdown.title')}
+          </Text>
+          <TouchableOpacity
+            onPress={() => modalRef.current?.dismiss()}
+            className="size-8 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800"
+          >
+            <FontAwesome6 name="xmark" size={16} color={isDark ? '#fff' : '#1B1B1B'} />
+          </TouchableOpacity>
+        </View>
+
+        <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
+          {/* Target state toggle */}
+          <View className="mb-5 flex-row gap-2">
+            {isCurtain
+              ? (
+                  <>
+                    <TouchableOpacity
+                      onPress={() => setTargetValue('OPEN')}
+                      className={`flex-1 flex-row items-center justify-center gap-2 rounded-2xl py-3 ${targetValue === 'OPEN' ? 'bg-[#A3E635]' : 'bg-neutral-100 dark:bg-neutral-800'}`}
+                      activeOpacity={0.7}
+                    >
+                      <FontAwesome5 name="arrow-up" size={12} color={targetValue === 'OPEN' ? '#1B1B1B' : (isDark ? '#fff' : '#6b7280')} />
+                      <Text className={`text-[13px] font-bold ${targetValue === 'OPEN' ? 'text-[#1B1B1B]' : 'text-neutral-500 dark:text-neutral-400'}`}>
+                        {translate('deviceDetail.shutter.open')}
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => setTargetValue('STOP')}
+                      className={`flex-1 flex-row items-center justify-center gap-2 rounded-2xl py-3 ${targetValue === 'STOP' ? 'bg-amber-400' : 'bg-neutral-100 dark:bg-neutral-800'}`}
+                      activeOpacity={0.7}
+                    >
+                      <FontAwesome5 name="stop" size={12} color={targetValue === 'STOP' ? '#1B1B1B' : (isDark ? '#fff' : '#6b7280')} />
+                      <Text className={`text-[13px] font-bold ${targetValue === 'STOP' ? 'text-[#1B1B1B]' : 'text-neutral-500 dark:text-neutral-400'}`}>
+                        {translate('deviceDetail.shutter.stop')}
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => setTargetValue('CLOSE')}
+                      className={`flex-1 flex-row items-center justify-center gap-2 rounded-2xl py-3 ${targetValue === 'CLOSE' ? 'bg-[#1B1B1B] dark:bg-white' : 'bg-neutral-100 dark:bg-neutral-800'}`}
+                      activeOpacity={0.7}
+                    >
+                      <FontAwesome5 name="arrow-down" size={12} color={targetValue === 'CLOSE' ? (isDark ? '#1B1B1B' : '#fff') : (isDark ? '#fff' : '#6b7280')} />
+                      <Text className={`text-[13px] font-bold ${targetValue === 'CLOSE' ? 'text-white dark:text-[#1B1B1B]' : 'text-neutral-500 dark:text-neutral-400'}`}>
+                        {translate('deviceDetail.shutter.close')}
+                      </Text>
+                    </TouchableOpacity>
+                  </>
+                )
+              : (
+                  <>
+                    <TouchableOpacity
+                      onPress={() => setTargetValue(1)}
+                      className={`flex-1 flex-row items-center justify-center gap-3 rounded-2xl py-3 ${targetValue === 1 ? 'bg-[#A3E635]' : 'bg-neutral-100 dark:bg-neutral-800'}`}
+                      activeOpacity={0.7}
+                    >
+                      <FontAwesome5 name="power-off" size={14} color={targetValue === 1 ? '#1B1B1B' : (isDark ? '#fff' : '#6b7280')} />
+                      <Text className={`text-sm font-bold ${targetValue === 1 ? 'text-[#1B1B1B]' : 'text-neutral-500 dark:text-neutral-400'}`}>
+                        {translate('base.on')}
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => setTargetValue(0)}
+                      className={`flex-1 flex-row items-center justify-center gap-3 rounded-2xl py-3 ${targetValue === 0 ? 'bg-[#1B1B1B] dark:bg-white' : 'bg-neutral-100 dark:bg-neutral-800'}`}
+                      activeOpacity={0.7}
+                    >
+                      <FontAwesome6 name="power-off" size={14} color={targetValue === 0 ? (isDark ? '#1B1B1B' : '#fff') : (isDark ? '#fff' : '#6b7280')} />
+                      <Text className={`text-sm font-bold ${targetValue === 0 ? 'text-white dark:text-[#1B1B1B]' : 'text-neutral-500 dark:text-neutral-400'}`}>
+                        {translate('base.off')}
+                      </Text>
+                    </TouchableOpacity>
+                  </>
+                )}
+          </View>
+
+          {/* Time wheel */}
+          <View className="mb-6 h-48 items-center justify-center py-2">
+            <DateTimePicker
+              display={IS_IOS ? 'spinner' : 'default'}
+              value={durationDate}
+              mode="countdown"
+              onChange={(event, selectedDate) => {
+                if (selectedDate)
+                  setDurationDate(selectedDate);
+              }}
+              textColor={isDark ? '#FFFFFF' : '#000000'}
+              themeVariant={isDark ? 'dark' : 'light'}
+              style={IS_IOS ? { width: '100%', flex: 1 } : {}}
+            />
+          </View>
+
+          <View className="mb-4">
+            <Text className="text-center text-sm text-neutral-600 dark:text-neutral-400">
+              {translate('automation.countdown.summary', {
+                time: `${durationDate.getHours() > 0 ? `${durationDate.getHours()}h ` : ''}${durationDate.getMinutes() > 0 ? `${durationDate.getMinutes()}p ` : ''}`.trim(),
+                state: targetValue === 'OPEN' ? translate('deviceDetail.shutter.open').toLowerCase() : targetValue === 'CLOSE' ? translate('deviceDetail.shutter.close').toLowerCase() : targetValue === 'STOP' ? translate('deviceDetail.shutter.stop').toLowerCase() : targetValue === 1 ? translate('base.on') : translate('base.off'),
+              })}
+            </Text>
+          </View>
+        </ScrollView>
+
+        <View className="flex-row gap-3 px-4 pt-2">
+          {existingTimer && (
+            <Button
+              className="h-12 flex-1 rounded-full bg-red-100 p-0 dark:bg-red-900/30"
+              textClassName="text-base font-semibold text-red-600 dark:text-red-400"
+              label={translate('base.deleteButton')}
+              onPress={() => deleteTimer(existingTimer.id)}
+              disabled={isBusy}
+            />
+          )}
+          <Button
+            className={`h-12 flex-1 rounded-full p-0 shadow-sm ${totalSeconds === 0 || isBusy ? 'bg-[#A3E635]/50 dark:bg-[#A3E635]/50' : 'bg-[#A3E635] dark:bg-[#A3E635]'}`}
+            textClassName="text-base font-semibold text-[#0F0F0F] dark:text-[#0F0F0F]"
+            label={translate('base.save')}
+            onPress={() => saveTimer(totalSeconds, targetValue)}
+            loading={isSaving}
+            disabled={totalSeconds === 0 || isBusy}
+          />
+        </View>
+      </View>
+    </Modal>
+  );
+}

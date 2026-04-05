@@ -21,6 +21,7 @@ import { useLightControl } from '@/features/devices/hooks/use-light-control';
 import { translate } from '@/lib/i18n';
 import { getPrimaryEntities } from '@/lib/utils/device-entity-helper';
 import { useDeviceStore } from '@/stores/device/device-store';
+import { DeviceActionBar } from '../components/device-action-bar';
 
 type Props = {
   deviceId: string;
@@ -167,6 +168,7 @@ export function LightDetailScreen({ deviceId, entityId }: Props) {
           </TouchableOpacity>
         </View>
 
+        <DeviceActionBar device={device} entities={primaryEntity ? [primaryEntity] : []} />
       </SafeAreaView>
     </Animated.View>
   );

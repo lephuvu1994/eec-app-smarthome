@@ -5,6 +5,53 @@
     "settingTab": "Cài đặt",
     "smartTab": "Thông minh"
   },
+  "automation": {
+    "bar": {
+      "allOff": "Tắt tất cả",
+      "allOn": "Bật tất cả",
+      "countdown": "Đếm ngược",
+      "schedule": "Hẹn giờ"
+    },
+    "countdown": {
+      "deleted": "Đã xoá bộ đếm ngược thành công",
+      "edit": "Sửa đếm ngược",
+      "hours": "Giờ",
+      "invalidTime": "Vui lòng chọn thời gian lớn hơn 0",
+      "minutes": "Phút",
+      "noTimers": "Chưa có bộ đếm ngược nào",
+      "seconds": "Giây",
+      "selectSwitch": "Chọn thiết bị",
+      "setTimer": "Đặt đếm ngược",
+      "summary": "Thiết bị sẽ chuyển sang trạng thái {{state}} sau {{time}}",
+      "tapToAdd": "Chạm + để thêm mới",
+      "timerFor": "Đếm ngược cho",
+      "timerSet": "Đã thiết lập đếm ngược thành công",
+      "title": "Đếm ngược"
+    },
+    "schedule": {
+      "createNew": "Thêm lịch mới",
+      "created": "Đã tạo lịch mới thành công",
+      "deleteConfirm": "Bạn có chắc chắn muốn xóa hẹn giờ này không?",
+      "deleteTitle": "Xóa hẹn giờ",
+      "deleted": "Đã xoá lịch thành công",
+      "edit": "Sửa lịch",
+      "everyday": "Mỗi ngày",
+      "existing": "Các lịch đang có",
+      "noSchedules": "Chưa có lịch hoạt động",
+      "repeat": "Lặp lại",
+      "scheduleFor": "Hẹn giờ cho",
+      "selectDaysRequired": "Vui lòng chọn ít nhất một ngày lặp lại",
+      "tapToAdd": "Chạm + để thêm mới",
+      "title": "Lập lịch trình",
+      "weekdays": "Riêng tuần",
+      "weekends": "Cuối tuần"
+    },
+    "selectEntity": {
+      "forSchedule": "Thiết lập cho công tắc này",
+      "subtitle": "Bạn muốn hẹn giờ cho công tắc nào của {{name}}?",
+      "title": "Chọn công tắc"
+    }
+  },
   "base": {
     "addDevice": "Thêm thiết bị",
     "addManually": "Thêm thủ công",
@@ -40,6 +87,16 @@
     "connectionError": "Lỗi kết nối",
     "continue": "Tiếp tục",
     "createUser": "Tạo tài khoản",
+    "date": "Ngày",
+    "days": {
+      "friShort": "T6",
+      "monShort": "T2",
+      "satShort": "T7",
+      "sunShort": "CN",
+      "thuShort": "T5",
+      "tueShort": "T3",
+      "wedShort": "T4"
+    },
     "deleteButton": "Xoá",
     "device": "Thiết bị",
     "deviceManagement": "Quản lý thiết bị",

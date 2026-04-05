@@ -161,7 +161,7 @@ export class MqttManager {
         // Re-subscribe to all globally tracked devices previously registered
         if (this.tokenToDeviceId.size > 0) {
           const topics = Array.from(this.tokenToDeviceId.keys()).flatMap(
-            token => [`+/+/${token}/state`, `+/+/${token}/status`],
+            token => [`device/${token}/state`, `device/${token}/status`],
           );
           this.client?.subscribe(topics, () => {});
         }
@@ -209,8 +209,8 @@ export class MqttManager {
     const topics: string[] = [];
     for (const device of devices) {
       this.tokenToDeviceId.set(device.token, device.id);
-      topics.push(`+/+/${device.token}/state`);
-      topics.push(`+/+/${device.token}/status`);
+      topics.push(`device/${device.token}/state`);
+      topics.push(`device/${device.token}/status`);
     }
 
     if (this.client && topics.length > 0) {
@@ -223,8 +223,8 @@ export class MqttManager {
     const topics: string[] = [];
     for (const device of devices) {
       this.tokenToDeviceId.delete(device.token);
-      topics.push(`+/+/${device.token}/state`);
-      topics.push(`+/+/${device.token}/status`);
+      topics.push(`device/${device.token}/state`);
+      topics.push(`device/${device.token}/status`);
     }
 
     if (this.client && topics.length > 0) {
@@ -234,13 +234,13 @@ export class MqttManager {
 
   // ─── Message Handling ──────────────────────────────
   private handleMessage(topic: string, payload: Uint8Array, isRetained: boolean = false): void {
-    // Extract device token from topic: "COMPANY/MODEL/{token}/state"
+    // Extract device token from topic: "device/{token}/status" or "device/{token}/state"
     const parts = topic.split('/');
-    if (parts.length < 4) {
+    if (parts.length < 3 || parts[0] !== 'device') {
       return;
     }
 
-    const token = parts[2];
+    const token = parts[1];
     const deviceId = this.tokenToDeviceId.get(token);
     if (!deviceId) {
       return;

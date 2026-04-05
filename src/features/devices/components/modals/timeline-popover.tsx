@@ -6,6 +6,8 @@ import { useDeviceTimelineInfinite } from '@/features/devices/hooks/use-device-t
 
 import { translate } from '@/lib/i18n';
 
+import { useDeviceStore } from '@/stores/device/device-store';
+
 type Props = {
   deviceId: string;
   renderTrigger: (sourceRef: React.RefObject<any>, openPopover: () => void) => React.ReactNode;
@@ -16,9 +18,11 @@ export function TimelinePopover({ deviceId, renderTrigger, fromRect }: Props) {
   const router = useRouter();
   const { data, isLoading, isError, hasNextPage, isFetchingNextPage, fetchNextPage } = useDeviceTimelineInfinite(deviceId, { limit: 10 });
   const items = data?.pages.flatMap((page: any) => page.data) || [];
+  const device = useDeviceStore(s => s.devices.find(d => d.id === deviceId));
 
   return (
     <SharedTimelinePopover
+      fallbackDeviceName={device?.name}
       items={items}
       isLoading={isLoading}
       isError={isError}

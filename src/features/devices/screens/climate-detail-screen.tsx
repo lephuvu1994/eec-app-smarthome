@@ -14,6 +14,7 @@ import { useClimateControl } from '@/features/devices/hooks/use-climate-control'
 import { translate } from '@/lib/i18n';
 import { getPrimaryEntities } from '@/lib/utils/device-entity-helper';
 import { useDeviceStore } from '@/stores/device/device-store';
+import { DeviceActionBar } from '../components/device-action-bar';
 
 type Props = {
   deviceId: string;
@@ -172,8 +173,8 @@ export function ClimateDetailScreen({ deviceId, entityId }: Props) {
               </View>
             </View>
           </View>
-
         </ScrollView>
+        <DeviceActionBar device={device} entities={primaryEntity ? [primaryEntity] : []} />
       </SafeAreaView>
     </Animated.View>
   );

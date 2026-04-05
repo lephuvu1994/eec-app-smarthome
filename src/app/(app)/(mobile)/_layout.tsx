@@ -36,6 +36,28 @@ export default function MobileLayout() {
         }}
       />
       <Stack.Screen
+        name="device/[id]/schedule"
+        options={{
+          presentation: 'fullScreenModal',
+          headerShown: true,
+          headerTransparent: true,
+          headerShadowVisible: false,
+          headerTitleAlign: 'center',
+          title: '',
+        }}
+      />
+      <Stack.Screen
+        name="device/[id]/timer"
+        options={{
+          presentation: 'fullScreenModal',
+          headerShown: true,
+          headerTransparent: true,
+          headerShadowVisible: false,
+          headerTitleAlign: 'center',
+          title: '',
+        }}
+      />
+      <Stack.Screen
         name="home-management"
         options={{
           headerShown: true,
