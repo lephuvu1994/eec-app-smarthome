@@ -24,6 +24,7 @@ import { getPrimaryEntities } from '@/lib/utils/device-entity-helper';
 import { useDeviceStore } from '@/stores/device/device-store';
 import { ETheme } from '@/types/base';
 import { CurtainSlider } from '../components/curtain-slider';
+import { DeviceActionBar } from '../components/device-action-bar';
 import { CurtainBleModal } from '../components/modals/curtain-ble-modal';
 import { CurtainMotorConfigModal } from '../components/modals/curtain-motor-config-modal';
 import { CurtainRfLearnModal } from '../components/modals/curtain-rf-learn-modal';
@@ -61,7 +62,7 @@ function StatCard({ icon, value, label }: TStatCardProps) {
   return (
     <View className="flex-1 items-center justify-center gap-1 rounded-2xl bg-white px-2 py-3 shadow-sm dark:border dark:border-[#292929] dark:bg-[#FFFFFF0D]">
       {icon}
-      <Text className="text-base font-bold text-[#1B1B1B] dark:text-white">{value}</Text>
+      <Text className="text-sm font-bold text-[#1B1B1B] dark:text-white" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>{value}</Text>
       <Text className="text-center text-[10px] text-neutral-400 dark:text-neutral-500" numberOfLines={1}>{label}</Text>
     </View>
   );
@@ -395,6 +396,8 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
           onConfig={handleConfig}
           initialConfig={motorConfig}
         />
+
+        <DeviceActionBar device={device!} entities={primaryEntity ? [primaryEntity] : []} />
       </View>
     </BaseLayout>
   );

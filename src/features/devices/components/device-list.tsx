@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 
 import { Skeleton, View } from '@/components/ui';
 import { GAP_DEVICE_VIEW_MOBILE } from '@/constants';
+import { useBleNearby } from '@/hooks/use-ble-nearby';
 import { getPrimaryEntities } from '@/lib/utils/device-entity-helper';
 import { useConfigManager } from '@/stores/config/config';
 import { useDeviceStore } from '@/stores/device/device-store';
@@ -20,6 +21,9 @@ export function ListDevice({ roomId, isFavorite }: TListDeviceProps) {
   const storeDevices = useDeviceStore.use.devices();
   const isLoading = useDeviceStore.use.isLoading();
   const deviceViewMode = useConfigManager(s => s.deviceViewMode);
+
+  // BLE background scan — match sensa-smart_{MAC} → deviceId
+  const { availableBleDevices } = useBleNearby(storeDevices);
 
   const realDevices = useMemo(() => {
     const allDevices = Array.isArray(storeDevices) ? storeDevices : [];
@@ -59,6 +63,7 @@ export function ListDevice({ roomId, isFavorite }: TListDeviceProps) {
           key={entity ? `${device.id}-${entity.id}` : device.id}
           device={device}
           activeEntity={entity}
+          availableBleDevices={availableBleDevices}
           typeViewDevice={idx % 3 === 0 ? ETypeViewDevice.FullWidth : ETypeViewDevice.HalfWidth}
         />
       ))}

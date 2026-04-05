@@ -5,6 +5,53 @@
     "settingTab": "Setting",
     "smartTab": "Smart"
   },
+  "automation": {
+    "bar": {
+      "allOff": "Turn Off All",
+      "allOn": "Turn On All",
+      "countdown": "Countdown",
+      "schedule": "Schedule"
+    },
+    "countdown": {
+      "deleted": "Countdown deleted successfully",
+      "edit": "Edit Countdown",
+      "hours": "Hours",
+      "invalidTime": "Please select a time greater than 0",
+      "minutes": "Minutes",
+      "noTimers": "No countdown timers yet",
+      "seconds": "Seconds",
+      "selectSwitch": "Select Device",
+      "setTimer": "Set Timer",
+      "summary": "The device will turn {{state}} in {{time}}",
+      "tapToAdd": "Tap + to add a new one",
+      "timerFor": "Countdown for",
+      "timerSet": "Countdown timer set successfully",
+      "title": "Countdown Timer"
+    },
+    "schedule": {
+      "createNew": "Create New",
+      "created": "New schedule created successfully",
+      "deleteConfirm": "Are you sure you want to delete this schedule?",
+      "deleteTitle": "Delete Schedule",
+      "deleted": "Schedule deleted successfully",
+      "edit": "Edit Schedule",
+      "everyday": "Every day",
+      "existing": "Existing Schedules",
+      "noSchedules": "No schedules active yet",
+      "repeat": "Repeat",
+      "scheduleFor": "Schedule for",
+      "selectDaysRequired": "Please select at least one day to repeat",
+      "tapToAdd": "Tap + to add a new one",
+      "title": "Schedule Device",
+      "weekdays": "Weekdays",
+      "weekends": "Weekends"
+    },
+    "selectEntity": {
+      "forSchedule": "Set schedule for this switch",
+      "subtitle": "Which switch of {{name}} do you want to schedule?",
+      "title": "Select Switch"
+    }
+  },
   "base": {
     "addDevice": "Add device",
     "addManually": "Add manually",
@@ -40,6 +87,16 @@
     "connectionError": "Connection error",
     "continue": "Continue",
     "createUser": "Create User",
+    "date": "Date",
+    "days": {
+      "friShort": "Fri",
+      "monShort": "Mon",
+      "satShort": "Sat",
+      "sunShort": "Sun",
+      "thuShort": "Thu",
+      "tueShort": "Tue",
+      "wedShort": "Wed"
+    },
     "deleteButton": "Delete",
     "device": "Devices",
     "deviceManagement": "Device Management",

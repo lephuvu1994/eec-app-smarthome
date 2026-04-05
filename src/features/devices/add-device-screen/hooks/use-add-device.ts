@@ -83,7 +83,7 @@ export function useAddDevice() {
       (peripheral) => {
         // Use advertising localName (actual BLE name) over cached peripheral.name
         const deviceName = peripheral.advertising?.localName || peripheral.name;
-        if (!deviceName || !deviceName.includes('BKTech'))
+        if (!deviceName || !deviceName.includes('sensa-smart'))
           return;
         setDevices((prev) => {
           if (prev.some(d => d.id === peripheral.id))

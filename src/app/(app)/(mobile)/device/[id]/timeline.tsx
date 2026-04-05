@@ -10,6 +10,7 @@ import { useUniwind } from 'uniwind';
 import { SharedTimelineScreen } from '@/components/base/timeline/shared-timeline-screen';
 import { useDeviceTimelineInfinite } from '@/features/devices/hooks/use-device-timeline';
 import { translate } from '@/lib/i18n';
+import { useDeviceStore } from '@/stores/device/device-store';
 import { ETheme } from '@/types/base';
 import 'dayjs/locale/vi';
 
@@ -19,6 +20,7 @@ export default function DeviceTimelineScreen() {
   const { id: deviceId } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { theme } = useUniwind();
+  const device = useDeviceStore((s: any) => s.devices.find((d: any) => d.id === deviceId));
 
   const {
     data,
@@ -69,6 +71,7 @@ export default function DeviceTimelineScreen() {
         }}
       />
       <SharedTimelineScreen
+        fallbackDeviceName={device?.name}
         sections={sections}
         isLoading={isLoading}
         isRefetching={isRefetching}
