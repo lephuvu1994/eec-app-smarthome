@@ -8,7 +8,7 @@ import * as React from 'react';
 import { TouchableOpacity } from 'react-native';
 import { useUniwind } from 'uniwind';
 import { SharedTimelineScreen } from '@/components/base/timeline/shared-timeline-screen';
-import { useDeviceTimelineInfinite } from '@/features/devices/hooks/use-device-timeline';
+import { useDeviceTimelineInfinite } from '@/features/devices/automation/timeline/use-device-timeline';
 import { translate } from '@/lib/i18n';
 import { useDeviceStore } from '@/stores/device/device-store';
 import { ETheme } from '@/types/base';

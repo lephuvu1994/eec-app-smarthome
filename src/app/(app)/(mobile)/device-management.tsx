@@ -1,1 +1,1 @@
-export { DeviceManagementScreen as default } from '@/features/devices/device-management-screen';
+export { DeviceManagementScreen as default } from '@/features/devices/management/device-management-screen';
