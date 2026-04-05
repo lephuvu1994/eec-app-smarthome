@@ -141,6 +141,7 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
     handlePosition,
     motorConfig,
     isOnline,
+    childLockEntity,
   } = useShutterControl(device, primaryEntity);
 
   // Note: Position is rendered by CurtainSlider directly.
@@ -397,7 +398,7 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
           initialConfig={motorConfig}
         />
 
-        <DeviceActionBar device={device!} entities={primaryEntity ? [primaryEntity] : []} />
+        <DeviceActionBar device={device!} entities={[primaryEntity, childLockEntity].filter(Boolean) as any} />
       </View>
     </BaseLayout>
   );

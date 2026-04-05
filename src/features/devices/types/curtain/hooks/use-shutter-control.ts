@@ -311,5 +311,6 @@ export function useShutterControl(
     sendCommand,
     motorConfig,
     isOnline,
+    childLockEntity,
   };
 }
