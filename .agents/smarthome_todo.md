@@ -77,7 +77,7 @@ Tính năng cho phép chủ sở hữu thiết bị (Owner) có thể chia sẻ 
 
 ## Tính năng 3: Timer & Schedule (Hẹn giờ và Lịch trình)
 
-**Trạng thái**: Đang lên kế hoạch.
+**Trạng thái**: ✅ Đã hoàn thành UI App (Backend cũng đã có).
 
 ### 1. Mô tả tổng quan
 
@@ -91,10 +91,12 @@ Cho phép người dùng đặt lịch bật/tắt thiết bị theo thời gian
 - [ ] Tích hợp BullMQ để quản lý các Jobs đếm ngược (Countdown).
 - [ ] Xây dựng Scheduler (Cron) để quét và thực thi các lịch trình lặp lại hàng ngày/hàng tuần.
 
-**B. Phía Mobile App (App: new-app)**
+**B. Phía Mobile App (eec-app-smarthome)**
 
-- [ ] UI thiết lập thời gian (Time picker).
-- [ ] UI chọn ngày lặp lại trong tuần.
+- [x] UI thiết lập thời gian (Time picker) qua BottomSheet (CountdownEditorSheet / ScheduleEditorSheet).
+- [x] UI chọn ngày lặp lại trong tuần tự thay đổi giao diện.
+- [x] Thiết lập Redux/Zustand Store + React Query Mutate API cho Timers và Schedules.
+- [x] DeviceActionBar phân luồng linh hoạt (Group Devices / Single Device).
 
 ---
 
