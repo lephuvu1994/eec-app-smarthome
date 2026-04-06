@@ -98,7 +98,7 @@ export function NetworkSignalIndicator({ protocol, isOnline, rssi, linkquality, 
     return (
       <View className="flex-row items-center gap-1.5">
         <SignalWrapper level={level} size={size}>
-          <WifiSignalIcon level={level} size={size} activeColor="#10B981" inactiveColor="#52525B" />
+          <WifiSignalIcon level={level} size={size} activeColor="#A3E635" inactiveColor="#52525B" />
         </SignalWrapper>
       </View>
     );
@@ -128,7 +128,7 @@ export function NetworkSignalIndicator({ protocol, isOnline, rssi, linkquality, 
     return (
       <View className="flex-row items-center gap-1">
         <SignalWrapper level={level} size={size}>
-          <CellularSignalIcon level={level} size={size} activeColor="#10B981" inactiveColor="#52525B" />
+          <CellularSignalIcon level={level} size={size} activeColor="#A3E635" inactiveColor="#52525B" />
         </SignalWrapper>
       </View>
     );

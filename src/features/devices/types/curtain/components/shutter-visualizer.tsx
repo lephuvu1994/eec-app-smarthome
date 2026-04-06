@@ -101,7 +101,10 @@ export function ShutterVisualizer({ position, doorState, stateColor, isOnline, p
             size={12}
           />
         )}
-        <Text className="text-xs font-semibold text-white shadow-sm">
+        <Text
+          className="text-xs font-semibold shadow-sm"
+          style={{ color: isOnline ? '#A3E635' : '#EF4444' }}
+        >
           {isOnline ? translate('base.online') : translate('base.offline')}
         </Text>
       </View>
