@@ -11,9 +11,11 @@ import { PrimarySceneCard } from '@/components/base/scene/PrimarySceneCard';
 
 import { BaseLayout } from '@/components/layout/BaseLayout';
 import { ScrollView, showErrorMessage, showSuccessMessage, Text, TouchableOpacity, View } from '@/components/ui';
+import { NetworkSignalIndicator } from '@/features/devices/common/components/network-signal-indicator';
 import { RenameDeviceModal } from '@/features/devices/common/modals/rename-device-modal';
-import { deviceService } from '@/lib/api/devices/device.service';
+import { deviceService, EDeviceStatus } from '@/lib/api/devices/device.service';
 import { translate } from '@/lib/i18n';
+import { MqttManager } from '@/lib/mqtt/mqtt-manager';
 import { getPrimaryEntities } from '@/lib/utils/device-entity-helper';
 import { useDeviceStore } from '@/stores/device/device-store';
 import { useHomeDataStore } from '@/stores/home/home-data-store';
@@ -40,10 +42,22 @@ export function DeviceInfoScreen({ deviceId }: Props) {
   const primaryEntities = device ? getPrimaryEntities(device) : [];
   const isSingleHardwareEntity = primaryEntities.length <= 1;
 
+  // On-demand Pull: request fresh RSSI/status when opening device info
+  const deviceToken = device?.token;
+  const deviceStatus = device?.status;
+  React.useEffect(() => {
+    if (deviceToken && deviceStatus === EDeviceStatus.ONLINE) {
+      MqttManager.getInstance().publish(
+        `device/${deviceToken}/set`,
+        JSON.stringify({ cmd: 'get_status' }),
+      );
+    }
+  }, [deviceToken, deviceStatus]);
+
   if (!device) {
     return (
       <View className="flex-1 items-center justify-center bg-[#F5F7FA] dark:bg-neutral-900">
-        <Text>Thiết bị không tồn tại.</Text>
+        <Text>{translate('device.info.notFound')}</Text>
       </View>
     );
   }
@@ -140,11 +154,12 @@ export function DeviceInfoScreen({ deviceId }: Props) {
             </View>
             {locationText
               ? (
-                  <Text className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
+                  <Text className="mt-1 pb-2 text-sm text-neutral-500 dark:text-neutral-400">
                     {locationText}
                   </Text>
                 )
               : null}
+            <NetworkSignalIndicator protocol={device.protocol} rssi={device.rssi} linkquality={device.linkquality} />
           </View>
 
           {/* ── Entity List (For Multi-Gang Devices) ── */}
