@@ -6,6 +6,7 @@ import { showMessage } from 'react-native-flash-message';
 import { translate } from '@/lib/i18n';
 
 export const IS_IOS = Platform.OS === 'ios';
+export const IS_ANDROID = Platform.OS === 'android';
 const { width, height } = Dimensions.get('screen');
 
 export const WIDTH = width;

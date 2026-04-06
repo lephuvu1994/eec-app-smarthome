@@ -1,13 +1,14 @@
 import type { TDeviceTimelineItem } from '@/lib/api/devices/device.service';
 import type { TxKeyPath } from '@/lib/i18n';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useHeaderHeight } from '@react-navigation/elements';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import dayjs from 'dayjs';
 import { Image } from 'expo-image';
+import { useRouter } from 'expo-router';
 import * as React from 'react';
 import { StyleSheet } from 'react-native';
-import { useUniwind } from 'uniwind';
 
+import { useUniwind } from 'uniwind';
+import { CustomHeader, HeaderIconButton, useHeaderOffset } from '@/components/base/header/CustomHeader';
 import { BaseLayout } from '@/components/layout/BaseLayout';
 import { ActivityIndicator, List, Text, View } from '@/components/ui';
 import { translate } from '@/lib/i18n';
@@ -26,6 +27,8 @@ type Props = {
   emptyText: string;
   onLoadMore: () => void;
   fallbackDeviceName?: string;
+  title?: string;
+  showBackButton?: boolean;
 };
 
 export function SharedTimelineScreen({
@@ -38,9 +41,12 @@ export function SharedTimelineScreen({
   emptyText,
   onLoadMore,
   fallbackDeviceName,
+  title,
+  showBackButton = false,
 }: Props) {
   const { theme } = useUniwind();
-  const headerHeight = useHeaderHeight();
+  const router = useRouter();
+  const headerHeight = useHeaderOffset();
 
   const flattenedData = React.useMemo(() => {
     const data: any[] = [];
@@ -101,6 +107,23 @@ export function SharedTimelineScreen({
           }, StyleSheet.absoluteFillObject]}
           contentFit="cover"
         />
+
+        {title && (
+          <View className="z-10">
+            <CustomHeader
+              title={title}
+              style={{ backgroundColor: 'transparent' }}
+              leftContent={showBackButton
+                ? (
+                    <HeaderIconButton onPress={() => router.canGoBack() && router.back()}>
+                      <Ionicons name="chevron-back" size={28} color={theme === ETheme.Dark ? '#FFF' : '#111'} />
+                    </HeaderIconButton>
+                  )
+                : undefined}
+            />
+          </View>
+        )}
+
         <View className="flex-1">
           {isLoading && !isRefetching
             ? (
@@ -132,13 +155,13 @@ export function SharedTimelineScreen({
                       keyExtractor={(item: any, index: number) => item.type === 'header' ? item.id : (item.item.id || `timeline-${index}`)}
                       renderItem={renderFlashItem}
                       getItemType={(item: any) => item.type}
-                      contentContainerStyle={{ paddingTop: headerHeight, paddingBottom: 100 }}
+                      contentContainerStyle={{ paddingTop: title ? headerHeight : 24, paddingBottom: 150 }}
                       showsVerticalScrollIndicator={false}
                       className="w-full flex-1"
                       onEndReached={loadMore}
                       onEndReachedThreshold={0.5}
                       ListFooterComponent={() => (
-                        <View className="h-16 items-center justify-center">
+                        <View className="h-20 items-center justify-center">
                           {isFetchingNextPage && <ActivityIndicator size="small" color="#888" />}
                         </View>
                       )}

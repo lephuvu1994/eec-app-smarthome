@@ -1,7 +1,6 @@
 import { Stack } from 'expo-router';
 import { useUniwind } from 'uniwind';
-import { colors, IS_IOS, Text, View, WIDTH } from '@/components/ui';
-import { BASE_SPACE_HORIZONTAL } from '@/constants';
+import { colors } from '@/components/ui';
 import { translate } from '@/lib/i18n';
 import { ETheme } from '@/types/base';
 
@@ -16,18 +15,14 @@ export default function MobileLayout() {
       <Stack.Screen
         name="device/[id]"
         options={{
-          headerShown: true,
-          headerTransparent: true,
-          headerShadowVisible: false,
-          headerTintColor,
-          headerBackButtonDisplayMode: 'minimal',
+          headerShown: false,
           contentStyle: { backgroundColor: colors.screenBackground[theme as ETheme] },
         }}
       />
       <Stack.Screen
         name="device/[id]/info"
         options={{
-          headerShown: true,
+          headerShown: false,
           headerTransparent: true,
           headerShadowVisible: false,
           title: '',
@@ -39,48 +34,27 @@ export default function MobileLayout() {
         name="device/[id]/schedule"
         options={{
           presentation: 'fullScreenModal',
-          headerShown: true,
-          headerTransparent: true,
-          headerShadowVisible: false,
-          headerTitleAlign: 'center',
-          title: '',
+          headerShown: false,
         }}
       />
       <Stack.Screen
         name="device/[id]/timer"
         options={{
           presentation: 'fullScreenModal',
-          headerShown: true,
-          headerTransparent: true,
-          headerShadowVisible: false,
-          headerTitleAlign: 'center',
-          title: '',
+          headerShown: false,
         }}
       />
       <Stack.Screen
         name="home-management"
         options={{
-          headerShown: true,
-          headerTransparent: true,
-          headerShadowVisible: false,
-          headerTitle: () => (
-            <View className="items-center justify-center" style={{ width: WIDTH - 2 * BASE_SPACE_HORIZONTAL - (36 * 2 + BASE_SPACE_HORIZONTAL), paddingRight: 36 }}>
-              <Text style={{ fontSize: IS_IOS ? 17 : 20, fontWeight: IS_IOS ? '600' : '500', color: headerTintColor }}>
-                {translate('base.roomManagement')}
-              </Text>
-            </View>
-          ),
-          headerTintColor,
-          headerBackTitle: translate('base.back'),
-          // Placeholder to reserve space — route file overrides with actual ZeegoNativeMenu
-          headerRight: () => <View className="size-9" />,
+          headerShown: false,
           contentStyle: { backgroundColor: colors.screenBackground[theme as ETheme] },
         }}
       />
       <Stack.Screen
         name="device-management"
         options={{
-          headerShown: true,
+          headerShown: false,
           headerTransparent: true,
           title: translate('base.deviceManagement'),
           headerTitleAlign: 'center',
@@ -93,7 +67,7 @@ export default function MobileLayout() {
       <Stack.Screen
         name="floor-detail"
         options={{
-          headerShown: true,
+          headerShown: false,
           headerTransparent: true,
           title: '',
           headerTintColor,
@@ -104,7 +78,7 @@ export default function MobileLayout() {
       <Stack.Screen
         name="room-detail"
         options={{
-          headerShown: true,
+          headerShown: false,
           headerTransparent: true,
           title: '',
           headerTintColor,
@@ -115,13 +89,7 @@ export default function MobileLayout() {
       <Stack.Screen
         name="assign-rooms"
         options={{
-          headerShown: true,
-          headerTransparent: true,
-          headerShadowVisible: false,
-          title: translate('roomManagement.addRoomToFloor'),
-          headerTitleAlign: 'center',
-          headerTintColor,
-          headerTitleStyle: { color: headerTintColor, fontWeight: '600' },
+          headerShown: false,
           presentation: 'fullScreenModal',
           contentStyle: { backgroundColor: colors.screenBackground[theme as ETheme] },
         }}
@@ -129,13 +97,7 @@ export default function MobileLayout() {
       <Stack.Screen
         name="assign-room-entities"
         options={{
-          headerShown: true,
-          headerTransparent: true,
-          headerShadowVisible: false,
-          title: translate('roomManagement.devices'),
-          headerTitleAlign: 'center',
-          headerTintColor,
-          headerTitleStyle: { color: headerTintColor, fontWeight: '600' },
+          headerShown: false,
           presentation: 'fullScreenModal',
           contentStyle: { backgroundColor: colors.screenBackground[theme as ETheme] },
         }}
@@ -143,13 +105,7 @@ export default function MobileLayout() {
       <Stack.Screen
         name="assign-room-scenes"
         options={{
-          headerShown: true,
-          headerTransparent: true,
-          headerShadowVisible: false,
-          title: translate('roomManagement.scenes'),
-          headerTitleAlign: 'center',
-          headerTintColor,
-          headerTitleStyle: { color: headerTintColor, fontWeight: '600' },
+          headerShown: false,
           presentation: 'fullScreenModal',
           contentStyle: { backgroundColor: colors.screenBackground[theme as ETheme] },
         }}

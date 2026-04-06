@@ -3,12 +3,12 @@ import type { Ref } from 'react';
 import type { TFloor, TRoom } from '@/lib/api/homes/home.service';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useHeaderHeight } from '@react-navigation/elements';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useCallback, useImperativeHandle, useMemo, useRef } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
+import { useHeaderOffset } from '@/components/base/header/CustomHeader';
 
 import { BaseLayout } from '@/components/layout/BaseLayout';
 import { ScrollView, Text, TouchableOpacity, View } from '@/components/ui';
@@ -118,7 +118,7 @@ function FloorSection({ floor }: { floor: TFloor }) {
 
 // ─── Main Screen ──────────────────────────
 export function HomeManagement({ ref }: { ref?: Ref<THomeManagementHandle> }) {
-  const headerHeight = useHeaderHeight();
+  const headerOffset = useHeaderOffset();
   const { theme } = useUniwind();
   const insets = useSafeAreaInsets();
   const isDark = theme === ETheme.Dark;
@@ -170,7 +170,7 @@ export function HomeManagement({ ref }: { ref?: Ref<THomeManagementHandle> }) {
 
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingTop: headerHeight + 8, paddingBottom: insets.bottom + 32 }}
+          contentContainerStyle={{ paddingTop: headerOffset + 8, paddingBottom: insets.bottom + 32 }}
         >
           <View className="px-4">
             {hasFloors

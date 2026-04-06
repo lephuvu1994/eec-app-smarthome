@@ -1,14 +1,14 @@
 import type { TScene } from '@/lib/api/scenes/scene.service';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useHeaderHeight } from '@react-navigation/elements';
-import { useLocalSearchParams, useNavigation } from 'expo-router';
-import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator } from 'react-native';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 
+import { CustomHeader, HeaderIconButton, SpringButton, useHeaderOffset } from '@/components/base/header/CustomHeader';
 import { ScrollView, Text, TouchableOpacity, View } from '@/components/ui';
 import { useAssignScenesToRoom } from '@/hooks/use-homes';
 import { useScenes } from '@/hooks/use-scenes';
@@ -65,8 +65,7 @@ export function AssignRoomScenesScreen() {
   const { theme } = useUniwind();
   const isDark = theme === ETheme.Dark;
   const insets = useSafeAreaInsets();
-  const navigation = useNavigation();
-  const headerHeight = useHeaderHeight();
+  const headerOffset = useHeaderOffset();
 
   const selectedHomeId = useHomeStore(s => s.selectedHomeId);
   const { data: scenes = [], isLoading: isScenesLoading } = useScenes(selectedHomeId ?? '');
@@ -79,7 +78,7 @@ export function AssignRoomScenesScreen() {
     [scenes, roomId],
   );
 
-  // Local state: IDs of scenes currently assigned (uncommitted)
+  // Local state
   const [localAssignedIds, setLocalAssignedIds] = useState<Set<string>>(() => new Set());
 
   // Sync initially when fetched
@@ -95,7 +94,7 @@ export function AssignRoomScenesScreen() {
   const hasChanges = useMemo(() => {
     if (localAssignedIds.size !== originalSceneIds.size)
       return true;
-    for (const id of localAssignedIds) {
+    for (const id of Array.from(localAssignedIds)) {
       if (!originalSceneIds.has(id))
         return true;
     }
@@ -104,17 +103,15 @@ export function AssignRoomScenesScreen() {
 
   const [isSaving, setIsSaving] = useState(false);
 
-  // Compute lists
-  const assignedScenes = useMemo(() => {
-    return scenes.filter(s => localAssignedIds.has(s.id));
-  }, [scenes, localAssignedIds]);
-
-  const availableScenes = useMemo(() => {
-    return scenes.filter(s => !localAssignedIds.has(s.id));
-  }, [scenes, localAssignedIds]);
+  const assignedScenes = useMemo(() => scenes.filter(s => localAssignedIds.has(s.id)), [scenes, localAssignedIds]);
+  const availableScenes = useMemo(() => scenes.filter(s => !localAssignedIds.has(s.id)), [scenes, localAssignedIds]);
 
   const handleAdd = useCallback((sceneId: string) => {
-    setLocalAssignedIds(prev => new Set([...prev, sceneId]));
+    setLocalAssignedIds((prev) => {
+      const next = new Set(prev);
+      next.add(sceneId);
+      return next;
+    });
   }, []);
 
   const handleRemove = useCallback((sceneId: string) => {
@@ -143,7 +140,7 @@ export function AssignRoomScenesScreen() {
         );
       });
 
-      navigation.goBack();
+      router.back();
     }
     catch {
       // Error handled by hook
@@ -151,39 +148,9 @@ export function AssignRoomScenesScreen() {
     finally {
       setIsSaving(false);
     }
-  }, [hasChanges, isSaving, localAssignedIds, roomId, assignScenes, navigation]);
+  }, [hasChanges, isSaving, localAssignedIds, roomId, assignScenes]);
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          activeOpacity={0.7}
-          className="size-9 items-center justify-center"
-        >
-          <MaterialCommunityIcons name="close" size={24} color={isDark ? '#FFF' : '#1B1B1B'} />
-        </TouchableOpacity>
-      ),
-      headerRight: () => (
-        <TouchableOpacity
-          onPress={handleSave}
-          disabled={!hasChanges || isSaving}
-          activeOpacity={0.7}
-          className="h-9 w-12 items-center justify-center"
-        >
-          {isSaving
-            ? (
-                <ActivityIndicator size="small" color="#6366F1" />
-              )
-            : (
-                <Text className={`text-[16px] font-semibold ${hasChanges ? 'text-indigo-500' : 'text-neutral-300 dark:text-neutral-600'}`}>
-                  {translate('base.saveButton')}
-                </Text>
-              )}
-        </TouchableOpacity>
-      ),
-    });
-  }, [navigation, handleSave, hasChanges, isSaving, isDark]);
+  const iconColor = isDark ? '#FFF' : '#1B1B1B';
 
   if (isScenesLoading) {
     return (
@@ -195,18 +162,41 @@ export function AssignRoomScenesScreen() {
 
   return (
     <View className="flex-1 bg-neutral-100 dark:bg-neutral-900">
+      <CustomHeader
+        title={translate('roomManagement.scenes')}
+        tintColor={iconColor}
+        leftContent={(
+          <HeaderIconButton onPress={() => router.back()}>
+            <MaterialCommunityIcons name="close" size={24} color={iconColor} />
+          </HeaderIconButton>
+        )}
+        rightContent={(
+          <SpringButton
+            onPress={handleSave}
+            disabled={!hasChanges || isSaving}
+            style={{ paddingHorizontal: 8, height: 36, borderRadius: 8 }}
+          >
+            {isSaving
+              ? (
+                  <ActivityIndicator size="small" color="#6366F1" />
+                )
+              : (
+                  <Text className={`text-[15px] font-semibold ${hasChanges ? 'text-indigo-500' : 'text-neutral-300 dark:text-neutral-600'}`}>
+                    {translate('base.saveButton')}
+                  </Text>
+                )}
+          </SpringButton>
+        )}
+      />
+
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: insets.bottom + 24, paddingTop: headerHeight + 16 }}
+        contentContainerStyle={{ paddingBottom: insets.bottom + 24, paddingTop: headerOffset + 16 }}
       >
         {/* ─── Assigned Scenes ─── */}
         <View className="mx-4 mb-5">
           <View className="mb-2 flex-row items-center gap-2 px-1">
-            <MaterialCommunityIcons
-              name="check-circle-outline"
-              size={16}
-              color={isDark ? '#6EE7B7' : '#059669'}
-            />
+            <MaterialCommunityIcons name="check-circle-outline" size={16} color={isDark ? '#6EE7B7' : '#059669'} />
             <Text className="text-[13px] font-semibold tracking-wider text-emerald-600 uppercase dark:text-emerald-400">
               Đã gán vào phòng (
               {assignedScenes.length}
@@ -214,19 +204,11 @@ export function AssignRoomScenesScreen() {
             </Text>
           </View>
 
-          <Animated.View
-            className="overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-neutral-800"
-            layout={LinearTransition}
-          >
+          <Animated.View className="overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-neutral-800" layout={LinearTransition}>
             {assignedScenes.length > 0
               ? (
                   assignedScenes.map((s, idx) => (
-                    <Animated.View
-                      key={s.id}
-                      layout={LinearTransition}
-                      entering={FadeIn}
-                      exiting={FadeOut}
-                    >
+                    <Animated.View key={s.id} layout={LinearTransition} entering={FadeIn} exiting={FadeOut}>
                       <SceneRow scene={s} action="remove" onPress={() => handleRemove(s.id)} />
                       {idx < assignedScenes.length - 1 && (
                         <View className="ml-[64px] h-px bg-neutral-100 dark:bg-neutral-700" />
@@ -246,11 +228,7 @@ export function AssignRoomScenesScreen() {
         {/* ─── Available Scenes ─── */}
         <View className="mx-4">
           <View className="mb-2 flex-row items-center gap-2 px-1">
-            <MaterialCommunityIcons
-              name="plus-circle-outline"
-              size={16}
-              color={isDark ? '#A5B4FC' : '#6366F1'}
-            />
+            <MaterialCommunityIcons name="plus-circle-outline" size={16} color={isDark ? '#A5B4FC' : '#6366F1'} />
             <Text className="text-[13px] font-semibold tracking-wider text-indigo-600 uppercase dark:text-indigo-400">
               Có thể gán (
               {availableScenes.length}
@@ -258,19 +236,11 @@ export function AssignRoomScenesScreen() {
             </Text>
           </View>
 
-          <Animated.View
-            className="overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-neutral-800"
-            layout={LinearTransition}
-          >
+          <Animated.View className="overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-neutral-800" layout={LinearTransition}>
             {availableScenes.length > 0
               ? (
                   availableScenes.map((s, idx) => (
-                    <Animated.View
-                      key={s.id}
-                      layout={LinearTransition}
-                      entering={FadeIn}
-                      exiting={FadeOut}
-                    >
+                    <Animated.View key={s.id} layout={LinearTransition} entering={FadeIn} exiting={FadeOut}>
                       <SceneRow scene={s} action="add" onPress={() => handleAdd(s.id)} />
                       {idx < availableScenes.length - 1 && (
                         <View className="ml-[64px] h-px bg-neutral-100 dark:bg-neutral-700" />
