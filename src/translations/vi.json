@@ -166,6 +166,7 @@
   "device": {
     "info": {
       "entitiesTitle": "Danh sách tính năng",
+      "notFound": "Thiết bị không tồn tại.",
       "notifyOffline": "Cảnh báo khi mất kết nối",
       "notifyOfflineDesc": "Gửi thông báo khi thiết bị bị mất điện hoặc ngoại tuyến quá 5 phút.",
       "notifyOnline": "Cảnh báo khi kết nối lại",
@@ -188,6 +189,10 @@
       "error": "Lỗi khi gỡ bỏ thiết bị",
       "success": "Thiết bị đã được gỡ bỏ",
       "title": "Gỡ bỏ thiết bị"
+    },
+    "signal": {
+      "dBm": "dBm",
+      "lqi": "{{pct}}% ({{lqi}})"
     }
   },
   "deviceDetail": {

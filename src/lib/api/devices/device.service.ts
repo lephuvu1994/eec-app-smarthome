@@ -71,6 +71,8 @@ export type TDevice = {
   identifier: string;
   token: string;
   status: EDeviceStatus;
+  rssi?: number | null;
+  linkquality?: number | null;
   type: string; // DeviceModel.code (e.g. "SHUTTER_DOOR")
   modelName: string; // DeviceModel.name (e.g. "Cửa cuốn")
   protocol: EDeviceProtocol;

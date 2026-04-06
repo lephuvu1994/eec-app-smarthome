@@ -166,6 +166,7 @@
   "device": {
     "info": {
       "entitiesTitle": "Feature List",
+      "notFound": "Device not found.",
       "notifyOffline": "Offline Alert",
       "notifyOfflineDesc": "Get notified when the device loses connection or goes offline for more than 5 minutes.",
       "notifyOnline": "Online Alert",
@@ -188,6 +189,10 @@
       "error": "Error removing device",
       "success": "Device removed successfully",
       "title": "Remove Device"
+    },
+    "signal": {
+      "dBm": "dBm",
+      "lqi": "{{pct}}% ({{lqi}})"
     }
   },
   "deviceDetail": {
