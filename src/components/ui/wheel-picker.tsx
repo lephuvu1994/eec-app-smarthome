@@ -8,8 +8,8 @@ import {
   View,
 } from 'react-native';
 import { useUniwind } from 'uniwind';
-import { Text } from '@/components/ui';
 import { ETheme } from '@/types/base';
+import { Text } from './text';
 
 const ITEM_HEIGHT = 44;
 

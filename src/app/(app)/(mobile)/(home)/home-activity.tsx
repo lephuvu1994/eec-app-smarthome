@@ -1,11 +1,14 @@
 import type { TDeviceTimelineItem } from '@/lib/api/devices/device.service';
 import type { TxKeyPath } from '@/lib/i18n';
-import * as React from 'react';
+
 import dayjs from 'dayjs';
+import * as React from 'react';
+
 import { SharedTimelineScreen } from '@/components/base/timeline/shared-timeline-screen';
 import { useHomeTimelineInfinite } from '@/features/home-screen/hooks/use-home-timeline';
 import { translate } from '@/lib/i18n';
 import { useHomeStore } from '@/stores/home/home-store';
+
 import 'dayjs/locale/vi';
 
 dayjs.locale('vi');

@@ -6,7 +6,7 @@ import { useLocalSearchParams, useNavigation } from 'expo-router';
 import * as React from 'react';
 
 import { ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native';
-import Animated, { FadeIn, FadeInDown, FadeOut, LinearTransition } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeInDown, LinearTransition } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 import { CustomHeader, HeaderIconButton, useHeaderOffset } from '@/components/base/header/CustomHeader';

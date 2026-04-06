@@ -113,8 +113,6 @@ export function Modal({ ref, snapPoints: _snapPoints = ['60%'] as (string | numb
   );
 }
 
-
-
 export function renderBackdrop(props: BottomSheetBackdropProps) {
   return (
     <BottomSheetBackdrop
