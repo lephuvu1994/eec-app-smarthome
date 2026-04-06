@@ -1,8 +1,9 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useHeaderHeight } from '@react-navigation/elements';
 import { Image } from 'expo-image';
+import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
+import { CustomHeader, HeaderIconButton, useHeaderOffset } from '@/components/base/header/CustomHeader';
 import { BaseLayout } from '@/components/layout/BaseLayout';
 import { ScrollView, Text, View } from '@/components/ui';
 import { translate } from '@/lib/i18n';
@@ -11,11 +12,21 @@ import { ETheme } from '@/types/base';
 export function MessageCenterScreen() {
   const { theme } = useUniwind();
   const insets = useSafeAreaInsets();
-  const headerHeight = useHeaderHeight();
+  const headerOffset = useHeaderOffset();
 
   return (
     <BaseLayout>
       <View className="relative w-full flex-1">
+        <CustomHeader
+          title={translate('settings.menu.messageCenter')}
+          tintColor={theme === 'dark' ? '#FFF' : '#1B1B1B'}
+          leftContent={(
+            <HeaderIconButton onPress={() => router.back()}>
+              <MaterialCommunityIcons name="chevron-left" size={28} color={theme === 'dark' ? '#FFF' : '#1B1B1B'} />
+            </HeaderIconButton>
+          )}
+        />
+
         <Image
           source={
             theme === ETheme.Dark
@@ -27,7 +38,7 @@ export function MessageCenterScreen() {
         />
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingTop: headerHeight + 16, paddingBottom: insets.bottom + 32 }}
+          contentContainerStyle={{ paddingTop: headerOffset + 16, paddingBottom: insets.bottom + 32 }}
         >
           {/* Empty State */}
           <View className="flex-1 items-center justify-center px-8 pt-24">

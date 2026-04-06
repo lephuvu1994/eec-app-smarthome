@@ -1,16 +1,16 @@
 import type { TDeviceTimer } from '@/lib/api/automation/automation.service';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import { useHeaderHeight } from '@react-navigation/elements';
+import { Image } from 'expo-image';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 import * as React from 'react';
-import { useLayoutEffect } from 'react';
-import { ActivityIndicator, TouchableOpacity } from 'react-native';
 
-import Animated, { FadeIn, FadeInDown, FadeOut, LinearTransition } from 'react-native-reanimated';
+import { ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native';
+import Animated, { FadeIn, FadeInDown, LinearTransition } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
+import { CustomHeader, HeaderIconButton, useHeaderOffset } from '@/components/base/header/CustomHeader';
+import { BaseLayout } from '@/components/layout/BaseLayout';
 import { ScrollView, Text, View } from '@/components/ui';
 import { useModal } from '@/components/ui/modal';
 import { translate } from '@/lib/i18n';
@@ -24,7 +24,7 @@ export function TimerListScreen() {
   const { id: deviceId, entityId } = useLocalSearchParams<{ id: string; entityId: string }>();
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
-  const headerHeight = useHeaderHeight();
+  const headerOffset = useHeaderOffset();
   const { theme } = useUniwind();
   const isDark = theme === ETheme.Dark;
 
@@ -50,45 +50,51 @@ export function TimerListScreen() {
     editorModal.present();
   };
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerTitle: () => (
-        <Animated.View entering={FadeInDown.duration(300)} className="items-center">
-          <Text className="text-[17px] font-semibold text-[#1B1B1B] dark:text-white" numberOfLines={1}>
-            {translate('automation.countdown.title')}
-          </Text>
-          <Text className="text-[11px] font-medium text-neutral-500 dark:text-neutral-400">
-            {entity?.name || entity?.code || device?.name}
-          </Text>
-        </Animated.View>
-      ),
-      headerLeft: () => (
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          activeOpacity={0.7}
-          className="size-9 items-center justify-center"
-        >
-          <MaterialCommunityIcons name="close" size={24} color={isDark ? '#FFF' : '#1B1B1B'} />
-        </TouchableOpacity>
-      ),
-      headerRight: () => (
-        <TouchableOpacity
-          onPress={handleCreate}
-          activeOpacity={0.7}
-          className="size-9 items-center justify-center"
-        >
-          <MaterialCommunityIcons name="plus" size={24} color={isDark ? '#FFF' : '#1B1B1B'} />
-        </TouchableOpacity>
-      ),
-    });
-  }, [navigation, isDark, entity, device, handleCreate]);
-
   return (
-    <BottomSheetModalProvider>
-      <View className="flex-1 bg-neutral-100 dark:bg-neutral-900">
+    <BaseLayout>
+      <View className="relative w-full flex-1">
+        <CustomHeader
+          titleComponent={(
+            <Animated.View entering={FadeInDown.duration(300)} className="items-center">
+              <Text className="text-[17px] font-semibold text-[#1B1B1B] dark:text-white" numberOfLines={1}>
+                {translate('automation.countdown.title')}
+              </Text>
+              <Text className="text-[11px] font-medium text-neutral-500 dark:text-neutral-400">
+                {entity?.name || entity?.code || device?.name}
+              </Text>
+            </Animated.View>
+          )}
+          tintColor={isDark ? '#FFF' : '#1B1B1B'}
+          leftContent={(
+            <HeaderIconButton onPress={() => navigation.goBack()}>
+              <MaterialCommunityIcons name="close" size={28} color={isDark ? '#FFF' : '#1B1B1B'} />
+            </HeaderIconButton>
+          )}
+          rightContent={(
+            <HeaderIconButton onPress={handleCreate}>
+              <MaterialCommunityIcons name="plus" size={28} color={isDark ? '#FFF' : '#1B1B1B'} />
+            </HeaderIconButton>
+          )}
+        />
+        <Image
+          source={
+            theme === ETheme.Dark
+              ? require('@@/assets/base/background-dark.webp')
+              : require('@@/assets/base/background-light.webp')
+          }
+          style={[
+            {
+              width: '100%',
+              height: '100%',
+              position: 'absolute',
+            },
+            StyleSheet.absoluteFillObject,
+          ]}
+          contentFit="cover"
+        />
         <ScrollView
           className="flex-1"
-          contentContainerStyle={{ paddingBottom: insets.bottom + 24, paddingTop: headerHeight + 16 }}
+          contentContainerStyle={{ paddingBottom: insets.bottom + 24, paddingTop: headerOffset + 16 }}
           showsVerticalScrollIndicator={false}
         >
           <View className="px-4 pb-4">
@@ -140,7 +146,7 @@ export function TimerListScreen() {
                             const dateFormatted = execDate.toLocaleDateString('vi-VN', { month: '2-digit', day: '2-digit' });
 
                             return (
-                              <Animated.View key={timer.id} layout={LinearTransition} entering={FadeIn} exiting={FadeOut}>
+                              <Animated.View key={timer.id} layout={LinearTransition} entering={FadeIn}>
                                 <TouchableOpacity
                                   className="flex-row items-center justify-between p-4"
                                   activeOpacity={0.7}
@@ -187,20 +193,14 @@ export function TimerListScreen() {
                 )}
           </View>
         </ScrollView>
-
-        {/* Editor Sheet */}
-        {device && entity && (
-          <CountdownEditorSheet
-            modalRef={editorModal.ref}
-            device={device}
-            entity={entity}
-            existingTimer={selectedTimer}
-            onSuccess={() => {
-            // Refetch automatically handled by react-query via invalidate
-            }}
-          />
-        )}
       </View>
-    </BottomSheetModalProvider>
+      <CountdownEditorSheet
+        modalRef={editorModal.ref}
+        device={device as any}
+        entity={entity as any}
+        existingTimer={selectedTimer}
+        onSuccess={() => {}}
+      />
+    </BaseLayout>
   );
 }

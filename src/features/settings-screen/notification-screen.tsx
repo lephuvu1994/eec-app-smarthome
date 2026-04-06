@@ -1,11 +1,11 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useHeaderHeight } from '@react-navigation/elements';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Alert, Linking, Platform, Switch, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
+import { CustomHeader, HeaderIconButton, useHeaderOffset } from '@/components/base/header/CustomHeader';
 
 import { BaseLayout } from '@/components/layout/BaseLayout';
 import { ScrollView, showSuccessMessage, Text, View } from '@/components/ui';
@@ -17,7 +17,7 @@ import { ETheme } from '@/types/base';
 export function NotificationScreen() {
   const { theme } = useUniwind();
   const insets = useSafeAreaInsets();
-  const headerHeight = useHeaderHeight();
+  const headerOffset = useHeaderOffset();
   const router = useRouter();
   const isDark = theme === ETheme.Dark;
 
@@ -113,9 +113,19 @@ export function NotificationScreen() {
           style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
           contentFit="cover"
         />
+        <CustomHeader
+          title={translate('settings.menu.notification')}
+          tintColor={theme === 'dark' ? '#FFF' : '#1B1B1B'}
+          leftContent={(
+            <HeaderIconButton onPress={() => router.back()}>
+              <MaterialCommunityIcons name="chevron-left" size={28} color={theme === 'dark' ? '#FFF' : '#1B1B1B'} />
+            </HeaderIconButton>
+          )}
+        />
+
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingTop: headerHeight + 16, paddingBottom: insets.bottom + 32 }}
+          contentContainerStyle={{ paddingTop: headerOffset + 16, paddingBottom: insets.bottom + 32 }}
         >
           <View className="px-4">
             {/* ── Permission Status ── */}

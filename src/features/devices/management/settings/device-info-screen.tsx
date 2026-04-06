@@ -3,12 +3,13 @@ import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import * as React from 'react';
 import { Alert, StyleSheet } from 'react-native';
-import Animated, { FadeInDown, FadeInLeft } from 'react-native-reanimated';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 
-import { PrimarySceneCard } from '@/components/base/scene/PrimarySceneCard';
+import { CustomHeader, HeaderBackButton, useHeaderOffset } from '@/components/base/header/CustomHeader';
 
+import { PrimarySceneCard } from '@/components/base/scene/PrimarySceneCard';
 import { BaseLayout } from '@/components/layout/BaseLayout';
 import { ScrollView, showErrorMessage, showSuccessMessage, Text, TouchableOpacity, View } from '@/components/ui';
 import { RenameDeviceModal } from '@/features/devices/common/modals/rename-device-modal';
@@ -26,6 +27,7 @@ type Props = {
 export function DeviceInfoScreen({ deviceId }: Props) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const headerOffset = useHeaderOffset();
   const { theme } = useUniwind();
   const isDark = theme === ETheme.Dark;
 
@@ -127,7 +129,7 @@ export function DeviceInfoScreen({ deviceId }: Props) {
 
   return (
     <BaseLayout>
-      <View className="relative w-full flex-1" style={{ paddingBottom: insets.bottom }}>
+      <View className="relative w-full flex-1">
         <Image
           source={theme === ETheme.Dark ? require('@@/assets/base/background-dark.webp') : require('@@/assets/base/background-light.webp')}
           style={[{
@@ -138,30 +140,15 @@ export function DeviceInfoScreen({ deviceId }: Props) {
           contentFit="cover"
         />
         {/* ── Header ── */}
-        <View
-          className="z-10 flex-row items-center justify-between px-4"
-          style={{ paddingTop: insets.top, paddingBottom: 8 }}
-        >
-          <Animated.View entering={FadeInLeft.duration(300)} className="flex-1 items-start">
-            <TouchableOpacity
-              onPress={() => router.back()}
-              activeOpacity={0.7}
-              className="size-10 items-center justify-center rounded-full bg-black/5 dark:bg-white/10"
-            >
-              <MaterialCommunityIcons name="chevron-left" size={28} color={isDark ? '#FFF' : '#1B1B1B'} />
-            </TouchableOpacity>
-          </Animated.View>
-          <Animated.View entering={FadeInDown.duration(300)} className="flex-2 items-center">
-            <Text className="text-lg font-semibold text-black dark:text-white" numberOfLines={1}>
-              {translate('device.info.title') || 'Thông tin thiết bị'}
-            </Text>
-          </Animated.View>
-          <View className="flex-1" />
-        </View>
+        <CustomHeader
+          title={(translate('device.info.title') as string) || 'Thông tin thiết bị'}
+          tintColor={isDark ? '#FFFFFF' : '#1B1B1B'}
+          leftContent={<HeaderBackButton onPress={() => router.back()} color={isDark ? '#FFFFFF' : '#1B1B1B'} />}
+        />
 
         <ScrollView
           className="z-10 flex-1"
-          contentContainerClassName="px-4 pb-8 pt-4"
+          contentContainerStyle={{ paddingTop: headerOffset + 16, paddingHorizontal: 16, paddingBottom: 32 }}
           showsVerticalScrollIndicator={false}
         >
           {/* ── Profile Section ── */}
@@ -363,7 +350,11 @@ export function DeviceInfoScreen({ deviceId }: Props) {
         </ScrollView>
 
         {/* ── Fixed Bottom Actions ── */}
-        <Animated.View entering={FadeInDown.duration(400).delay(200)} className="px-4 pt-2 pb-2">
+        <Animated.View
+          entering={FadeInDown.duration(400).delay(200)}
+          className="px-4 pt-2"
+          style={{ paddingBottom: Math.max(insets.bottom, 24) }}
+        >
           <TouchableOpacity
             className="w-full flex-row items-center justify-center gap-2 rounded-2xl border border-danger-200 bg-danger-50 py-4 dark:border-danger-800 dark:bg-[#EF44441A]"
             onPress={handleRemoveDevice}

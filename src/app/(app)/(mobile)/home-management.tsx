@@ -1,15 +1,14 @@
 import type { THomeManagementHandle } from '@/features/settings-screen/home-management-screen';
 
-import { AntDesign } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from 'expo-router';
-import { useLayoutEffect, useRef } from 'react';
+import { useRef } from 'react';
+import { View } from 'react-native';
 import { useUniwind } from 'uniwind';
 
-import { View } from '@/components/ui';
-import { ZeegoNativeMenu } from '@/components/ui/zeego-native-menu';
-import {
-  HomeManagement,
-} from '@/features/settings-screen/home-management-screen';
+import { CustomHeader, HeaderIconButton } from '@/components/base/header/CustomHeader';
+
+import { HomeManagement } from '@/features/settings-screen/home-management-screen';
 import { translate } from '@/lib/i18n';
 import { ETheme } from '@/types/base';
 
@@ -18,44 +17,33 @@ export default function HomeManagementRoute() {
   const isDark = theme === ETheme.Dark;
   const screenRef = useRef<THomeManagementHandle>(null);
   const navigation = useNavigation();
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <ZeegoNativeMenu
-          style={{ alignSelf: 'flex-end' }}
-          elements={[
-            {
-              key: 'add-room',
-              title: translate('roomManagement.addRoom'),
-              icon: { ios: 'plus.square' },
-              onPress: () => screenRef.current?.addRoom(),
-            },
-            {
-              key: 'add-floor',
-              title: translate('roomManagement.addFloor'),
-              icon: { ios: 'square.stack.3d.up' },
-              onPress: () => screenRef.current?.addFloor(),
-            },
-            { type: 'separator' as const, key: 'sep-1' },
-            {
-              key: 'edit',
-              title: translate('roomManagement.edit'),
-              icon: { ios: 'pencil' },
-              onPress: () => screenRef.current?.edit(),
-            },
-          ]}
-          triggerComponent={(
-            <View pointerEvents="none" className="size-9 items-center justify-center">
-              <AntDesign name="plus" size={20} color={isDark ? '#fff' : '#737373'} />
-            </View>
-          )}
-        />
-      ),
-    });
-  }, [isDark, navigation]);
+  const iconColor = isDark ? '#FFF' : '#1B1B1B';
 
   return (
-    <HomeManagement ref={screenRef} />
+    <View style={{ flex: 1 }}>
+      <CustomHeader
+        title={translate('base.roomManagement')}
+        tintColor={iconColor}
+        leftContent={(
+          <HeaderIconButton onPress={() => navigation.goBack()}>
+            <MaterialCommunityIcons name="chevron-left" size={28} color={iconColor} />
+          </HeaderIconButton>
+        )}
+        rightContent={(
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <HeaderIconButton onPress={() => screenRef.current?.addRoom()}>
+              <MaterialCommunityIcons name="door-open" size={22} color={iconColor} />
+            </HeaderIconButton>
+            <HeaderIconButton onPress={() => screenRef.current?.addFloor()}>
+              <MaterialCommunityIcons name="layers-plus" size={22} color={iconColor} />
+            </HeaderIconButton>
+            <HeaderIconButton onPress={() => screenRef.current?.edit()}>
+              <MaterialCommunityIcons name="pencil-outline" size={20} color={iconColor} />
+            </HeaderIconButton>
+          </View>
+        )}
+      />
+      <HomeManagement ref={screenRef} />
+    </View>
   );
 }

@@ -10,7 +10,7 @@ import { ScrollView, TouchableOpacity } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
-import { Button, IS_IOS, Modal, Text, View } from '@/components/ui';
+import { Button, IS_IOS, Modal, Text, View, WheelPicker } from '@/components/ui';
 import { translate } from '@/lib/i18n';
 import { ETheme } from '@/types/base';
 import { useTimerEditor } from './use-timer-editor';
@@ -104,7 +104,7 @@ export function CountdownEditorSheet({ modalRef, device, entity, existingTimer, 
           <View className="mb-5 flex-row gap-2">
             {isCurtainMotor
               ? (
-                  <>
+                  <View collapsable={false} className="flex-1 flex-row gap-2">
                     <TouchableOpacity
                       onPress={() => setTargetValue('OPEN')}
                       className={`flex-1 flex-row items-center justify-center gap-2 rounded-2xl py-3 ${targetValue === 'OPEN' ? 'bg-[#A3E635]' : 'bg-neutral-100 dark:bg-neutral-800'}`}
@@ -135,10 +135,10 @@ export function CountdownEditorSheet({ modalRef, device, entity, existingTimer, 
                         {translate('deviceDetail.shutter.close')}
                       </Text>
                     </TouchableOpacity>
-                  </>
+                  </View>
                 )
               : (
-                  <>
+                  <View collapsable={false} className="flex-1 flex-row gap-2">
                     <TouchableOpacity
                       onPress={() => setTargetValue(1)}
                       className={`flex-1 flex-row items-center justify-center gap-3 rounded-2xl py-3 ${targetValue === 1 ? 'bg-[#A3E635]' : 'bg-neutral-100 dark:bg-neutral-800'}`}
@@ -159,24 +159,62 @@ export function CountdownEditorSheet({ modalRef, device, entity, existingTimer, 
                         {translate('base.off')}
                       </Text>
                     </TouchableOpacity>
-                  </>
+                  </View>
                 )}
           </View>
 
-          {/* Time wheel */}
+          {/* Time Wheel / Picker */}
           <View className="mb-6 h-48 items-center justify-center py-2">
-            <DateTimePicker
-              display={IS_IOS ? 'spinner' : 'default'}
-              value={durationDate}
-              mode="countdown"
-              onChange={(event, selectedDate) => {
-                if (selectedDate)
-                  setDurationDate(selectedDate);
-              }}
-              textColor={isDark ? '#FFFFFF' : '#000000'}
-              themeVariant={isDark ? 'dark' : 'light'}
-              style={IS_IOS ? { width: '100%', flex: 1 } : {}}
-            />
+            {IS_IOS
+              ? (
+                  <DateTimePicker
+                    display="spinner"
+                    value={durationDate}
+                    mode="countdown"
+                    onChange={(event, selectedDate) => {
+                      if (selectedDate)
+                        setDurationDate(selectedDate);
+                    }}
+                    textColor={isDark ? '#FFFFFF' : '#000000'}
+                    themeVariant={isDark ? 'dark' : 'light'}
+                    style={{ width: '100%', height: 140, flex: 1 }}
+                  />
+                )
+              : (
+                  <View className="flex-row items-center justify-center gap-8 px-8">
+                    {/* Hours Wheel */}
+                    <View className="items-center">
+                      <WheelPicker
+                        data={Array.from({ length: 24 }, (_, i) => i)}
+                        value={durationDate.getHours()}
+                        onValueChange={(h) => {
+                          const d = new Date(durationDate);
+                          d.setHours(h);
+                          setDurationDate(d);
+                        }}
+                        formatLabel={val => val.toString().padStart(2, '0')}
+                      />
+                      <Text className="mt-2 text-xs font-semibold text-neutral-500 uppercase">Giờ</Text>
+                    </View>
+
+                    <Text className="pb-6 text-2xl font-bold dark:text-white">:</Text>
+
+                    {/* Minutes Wheel */}
+                    <View className="items-center">
+                      <WheelPicker
+                        data={Array.from({ length: 60 }, (_, i) => i)}
+                        value={durationDate.getMinutes()}
+                        onValueChange={(m) => {
+                          const d = new Date(durationDate);
+                          d.setMinutes(m);
+                          setDurationDate(d);
+                        }}
+                        formatLabel={val => val.toString().padStart(2, '0')}
+                      />
+                      <Text className="mt-2 text-xs font-semibold text-neutral-500 uppercase">Phút</Text>
+                    </View>
+                  </View>
+                )}
           </View>
 
           <View className="mb-4">
@@ -190,15 +228,17 @@ export function CountdownEditorSheet({ modalRef, device, entity, existingTimer, 
         </ScrollView>
 
         <View className="flex-row gap-3 px-4 pt-2">
-          {existingTimer && (
-            <Button
-              className="h-12 flex-1 rounded-full bg-red-100 p-0 dark:bg-red-900/30"
-              textClassName="text-base font-semibold text-red-600 dark:text-red-400"
-              label={translate('base.deleteButton')}
-              onPress={() => deleteTimer(existingTimer.id)}
-              disabled={isBusy}
-            />
-          )}
+          {existingTimer
+            ? (
+                <Button
+                  className="h-12 flex-1 rounded-full bg-red-100 p-0 dark:bg-red-900/30"
+                  textClassName="text-base font-semibold text-red-600 dark:text-red-400"
+                  label={translate('base.deleteButton')}
+                  onPress={() => deleteTimer(existingTimer.id)}
+                  disabled={isBusy}
+                />
+              )
+            : null}
           <Button
             className={`h-12 flex-1 rounded-full p-0 shadow-sm ${totalSeconds === 0 || isBusy ? 'bg-[#A3E635]/50 dark:bg-[#A3E635]/50' : 'bg-[#A3E635] dark:bg-[#A3E635]'}`}
             textClassName="text-base font-semibold text-[#0F0F0F] dark:text-[#0F0F0F]"
