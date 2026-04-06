@@ -11,10 +11,12 @@ import { useUniwind } from 'uniwind';
 import { PulseDot } from '@/components/base/PulseDot';
 import { Text, TouchableOpacity, View } from '@/components/ui';
 import { PowerIcon } from '@/components/ui/icons/power-icon';
+import { NetworkSignalIndicator } from '@/features/devices/common/components/network-signal-indicator';
 import { translate } from '@/lib/i18n';
 import { ETheme } from '@/types/base';
 
 export function DeviceFullCard({
+  device,
   displayName,
   deviceImage,
   isOnline,
@@ -62,10 +64,24 @@ export function DeviceFullCard({
               {displayName}
             </Text>
             <View className="flex-row items-center gap-1.5">
-              {isOnline
-                ? <PulseDot color="#A3EC3E" size={6} />
-                : <View className="size-1.5 rounded-full bg-neutral-300 dark:bg-neutral-600" />}
-              <Text className={isOnline ? 'text-xs font-medium text-[#A3EC3E]' : 'text-xs text-neutral-400'}>
+              {device.protocol
+                ? (
+                    <NetworkSignalIndicator
+                      protocol={device.protocol}
+                      isOnline={isOnline}
+                      rssi={device.rssi}
+                      linkquality={device.linkquality}
+                      size={10}
+                    />
+                  )
+                : isOnline
+                  ? (
+                      <PulseDot color="#10B981" size={6} />
+                    )
+                  : (
+                      <View className="size-1.5 rounded-full bg-neutral-300 dark:bg-neutral-600" />
+                    )}
+              <Text className={isOnline ? 'text-xs font-medium text-[#10B981]' : 'text-xs text-neutral-400'}>
                 {statusLabel}
               </Text>
             </View>

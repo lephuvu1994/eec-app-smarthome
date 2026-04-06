@@ -1,14 +1,17 @@
 import type { DimensionValue } from 'react-native';
-
 import type { SharedValue } from 'react-native-reanimated';
+
+import type { EDeviceProtocol } from '@/lib/api/devices/device.service';
 import { Image } from 'expo-image';
 import { StyleSheet } from 'react-native';
+
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
 
 import { Text, View } from '@/components/ui';
+import { NetworkSignalIndicator } from '@/features/devices/common/components/network-signal-indicator';
 import { translate } from '@/lib/i18n';
 
 type TProps = {
@@ -16,6 +19,9 @@ type TProps = {
   doorState: string;
   stateColor: string;
   isOnline: boolean;
+  protocol?: EDeviceProtocol;
+  rssi?: number | null;
+  linkquality?: number | null;
 };
 
 const config: {
@@ -42,7 +48,7 @@ const config: {
  * - Container "doorHole" dùng overflow:'hidden' để clip phần cửa vượt ra ngoài.
  * - translateY tính bằng pixel (qua onLayout) để tương thích Reanimated.
  */
-export function ShutterVisualizer({ position, doorState, stateColor, isOnline }: TProps) {
+export function ShutterVisualizer({ position, doorState, stateColor, isOnline, protocol, rssi, linkquality }: TProps) {
   const doorHoleHeight = useSharedValue(0);
 
   const animatedDoorStyle = useAnimatedStyle(() => {
@@ -75,20 +81,30 @@ export function ShutterVisualizer({ position, doorState, stateColor, isOnline }:
           doorHoleHeight.value = e.nativeEvent.layout.height;
         }}
       >
-        <Animated.View className="h-full w-full" style={animatedDoorStyle}>
+        <Animated.View className="size-full" style={animatedDoorStyle}>
           <Image source={config.doorImage} style={styles.shutterImage} contentFit="fill" />
         </Animated.View>
       </View>
 
       {/* 3. Overlay pills — nằm trong container nên responsive theo ảnh */}
-      <View className="absolute bottom-3 left-3 flex-row items-center gap-2 rounded-full bg-white/60 px-3 py-1.5 shadow-sm dark:bg-black/60">
+      <View className="absolute top-3 right-3 flex-row items-center gap-2 rounded-full bg-white/60 px-3 py-1.5 shadow-sm dark:bg-black/60">
         <View className="size-2 rounded-full" style={{ backgroundColor: stateColor }} />
-        <Text className="text-xs font-semibold text-black uppercase shadow-sm dark:text-white">{doorState}</Text>
+        <Text className="text-xs font-semibold text-black uppercase dark:text-white">{doorState}</Text>
       </View>
 
-      <View className="absolute right-3 bottom-3 flex-row items-center gap-1.5 rounded-full bg-black/60 px-2.5 py-1.5 shadow-sm">
-        <View className={`size-2 rounded-full ${isOnline ? 'bg-[#10B981]' : 'bg-neutral-500'}`} />
-        <Text className="text-xs font-semibold text-white shadow-sm">
+      <View className="absolute top-3 left-3 flex-row items-center gap-1.5 rounded-full bg-black/60 px-2.5 py-1.5 shadow-sm">
+        {protocol && (
+          <NetworkSignalIndicator
+            protocol={protocol}
+            rssi={rssi}
+            linkquality={linkquality}
+            size={12}
+          />
+        )}
+        <Text
+          className="text-xs font-semibold shadow-sm"
+          style={{ color: isOnline ? '#A3E635' : '#EF4444' }}
+        >
           {isOnline ? translate('base.online') : translate('base.offline')}
         </Text>
       </View>

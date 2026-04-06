@@ -165,7 +165,11 @@
   },
   "device": {
     "info": {
+      "addShortcut": "Add to Home Screen",
       "entitiesTitle": "Feature List",
+      "generalSettings": "General Settings",
+      "latestVersion": "Latest",
+      "notFound": "Device not found.",
       "notifyOffline": "Offline Alert",
       "notifyOfflineDesc": "Get notified when the device loses connection or goes offline for more than 5 minutes.",
       "notifyOnline": "Online Alert",
@@ -175,7 +179,9 @@
       "notifyThresholdAlert": "Threshold Alert",
       "notifyThresholdAlertDesc": "Get notified when values exceed thresholds (energy, temperature...).",
       "notifyTitle": "Alert Settings",
-      "title": "Device Information"
+      "partnerIntegration": "Partner Integration",
+      "title": "Device Information",
+      "updateFirmware": "Firmware Update"
     },
     "notify": {
       "permissionDesc": "Please open your device Settings and enable Notification permissions for the app.",
@@ -188,6 +194,10 @@
       "error": "Error removing device",
       "success": "Device removed successfully",
       "title": "Remove Device"
+    },
+    "signal": {
+      "dBm": "dBm",
+      "lqi": "{{pct}}% ({{lqi}})"
     }
   },
   "deviceDetail": {
@@ -235,6 +245,7 @@
       "childLockOff": "Child Lock: OFF",
       "childLockOn": "Child Lock: ON",
       "close": "Close",
+      "configInfo": "Configuration Info",
       "defaultName": "Roller Shutter",
       "deviceInfo": "Device Information",
       "deviceType": "Device Type",

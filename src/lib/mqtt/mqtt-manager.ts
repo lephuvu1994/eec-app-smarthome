@@ -283,6 +283,21 @@ export class MqttManager {
     this.deviceEmitter.off(event, callback);
   }
 
+  // ─── Publish (Direct MQTT command) ──────────────────
+  /**
+   * Publish a message directly to an MQTT topic.
+   * Use for lightweight read-only commands (e.g. get_status)
+   * that don't need to go through the REST API pipeline.
+   */
+  publish(topic: string, payload: string): void {
+    if (this.client?.connected) {
+      this.client.publish(topic, payload);
+    }
+    else {
+      console.warn('📡 MQTT: cannot publish, not connected');
+    }
+  }
+
   // ─── Status ────────────────────────────────────────
   isConnected(): boolean {
     return this.client?.connected ?? false;
