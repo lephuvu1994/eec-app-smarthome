@@ -61,7 +61,7 @@ export function SharedTimelinePopover({
   };
 
   return (
-    <>
+    <View collapsable={false}>
       <View ref={triggerRef} collapsable={false}>
         {renderTrigger(dummyRef, () => setIsVisible(true))}
       </View>
@@ -149,6 +149,6 @@ export function SharedTimelinePopover({
           )}
         </View>
       </Popover>
-    </>
+    </View>
   );
 }

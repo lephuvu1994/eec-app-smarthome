@@ -1,11 +1,11 @@
 import type { Href } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useHeaderHeight } from '@react-navigation/elements';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
+import { CustomHeader, useHeaderOffset } from '@/components/base/header/CustomHeader';
 import { BaseLayout } from '@/components/layout/BaseLayout';
 import { ScrollView, Text, TouchableOpacity, View } from '@/components/ui';
 import { BASE_TAB_HEIGHT, EXTRA_GLASS_SPACE } from '@/constants';
@@ -24,7 +24,7 @@ export function SettingsScreen() {
   const { theme } = useUniwind();
   const insets = useSafeAreaInsets();
   const { userName, avatar } = useUserManager();
-  const headerHeight = useHeaderHeight();
+  const headerOffset = useHeaderOffset();
 
   const hasName = Boolean(userName && userName.trim().length > 0);
 
@@ -103,9 +103,19 @@ export function SettingsScreen() {
           contentFit="contain"
         />
 
+        <CustomHeader
+          title=""
+          rightContent={(
+            <View className="flex-row items-center gap-2 px-1">
+              <TouchableOpacity activeOpacity={0.7} onPress={() => router.push('/(app)/(mobile)/(settings)/scan-qr' as any)} className="size-9 items-center justify-center rounded-full bg-white/40 shadow-sm dark:bg-black/40"><MaterialCommunityIcons name="line-scan" size={20} color={theme === ETheme.Dark ? '#fff' : '#1B1B1B'} /></TouchableOpacity>
+              <TouchableOpacity activeOpacity={0.7} onPress={() => router.push('/(app)/(mobile)/(settings)/general' as any)} className="size-9 items-center justify-center rounded-full bg-white/40 shadow-sm dark:bg-black/40"><MaterialCommunityIcons name="tune-variant" size={20} color={theme === ETheme.Dark ? '#fff' : '#1B1B1B'} /></TouchableOpacity>
+            </View>
+          )}
+        />
+
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingTop: headerHeight || (insets.top + 44), paddingBottom: insets.bottom + BASE_TAB_HEIGHT + EXTRA_GLASS_SPACE }}
+          contentContainerStyle={{ paddingTop: headerOffset, paddingBottom: insets.bottom + BASE_TAB_HEIGHT + EXTRA_GLASS_SPACE }}
         >
           {/* ─── Profile Section ─── */}
           <TouchableOpacity

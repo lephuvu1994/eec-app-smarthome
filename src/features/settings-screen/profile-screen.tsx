@@ -1,12 +1,13 @@
 import type { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useHeaderHeight } from '@react-navigation/elements';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
+import { router } from 'expo-router';
 import { useRef, useState } from 'react';
 import { Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
+import { CustomHeader, HeaderIconButton, useHeaderOffset } from '@/components/base/header/CustomHeader';
 
 import { BaseLayout } from '@/components/layout/BaseLayout';
 import { ScrollView, showError, Text, TouchableOpacity, View } from '@/components/ui';
@@ -26,7 +27,7 @@ export function ProfileScreen() {
 
   const editModalRef = useRef<BottomSheetModal>(null);
   const { theme } = useUniwind();
-  const headerHeight = useHeaderHeight();
+  const headerOffset = useHeaderOffset();
 
   const hasName = Boolean(userName && userName.trim().length > 0);
   const displayContact = phone ?? email ?? '';
@@ -161,6 +162,16 @@ export function ProfileScreen() {
   return (
     <BaseLayout>
       <View className="relative w-full flex-1">
+        <CustomHeader
+          title={translate('settings.userInformation')}
+          tintColor={theme === 'dark' ? '#FFF' : '#1B1B1B'}
+          leftContent={(
+            <HeaderIconButton onPress={() => router.back()}>
+              <MaterialCommunityIcons name="chevron-left" size={28} color={theme === 'dark' ? '#FFF' : '#1B1B1B'} />
+            </HeaderIconButton>
+          )}
+        />
+
         {/* Background */}
         <Image
           source={
@@ -181,7 +192,7 @@ export function ProfileScreen() {
         />
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingTop: headerHeight, paddingBottom: insets.bottom + 32 }}
+          contentContainerStyle={{ paddingTop: headerOffset, paddingBottom: insets.bottom + 32 }}
         >
           {/* ─── Avatar ─── */}
           <View className="mb-6 items-center px-4">

@@ -18,7 +18,7 @@ function SettingScreen() {
       <Stack.Screen
         name="index"
         options={{
-          headerShown: true,
+          headerShown: false,
           headerTransparent: true,
           title: '',
           headerTitleAlign: 'center',
@@ -50,7 +50,7 @@ function SettingScreen() {
       <Stack.Screen
         name="profile"
         options={{
-          headerShown: true,
+          headerShown: false,
           headerTransparent: true,
           title: translate('settings.userInformation'),
           headerTintColor: theme === ETheme.Dark ? colors.white : '#1B1B1B',
@@ -64,7 +64,7 @@ function SettingScreen() {
       <Stack.Screen
         name="general"
         options={{
-          headerShown: true,
+          headerShown: false,
           headerTransparent: true,
           title: translate('settings.general.title'),
           headerTitleAlign: 'center',
@@ -79,7 +79,7 @@ function SettingScreen() {
       <Stack.Screen
         name="notification"
         options={{
-          headerShown: true,
+          headerShown: false,
           headerTransparent: true,
           title: translate('settings.menu.notification'),
           headerTitleAlign: 'center',
@@ -94,7 +94,7 @@ function SettingScreen() {
       <Stack.Screen
         name="message-center"
         options={{
-          headerShown: true,
+          headerShown: false,
           headerTransparent: true,
           title: translate('settings.menu.messageCenter'),
           headerTitleAlign: 'center',
@@ -109,7 +109,7 @@ function SettingScreen() {
       <Stack.Screen
         name="support"
         options={{
-          headerShown: true,
+          headerShown: false,
           headerTransparent: true,
           title: translate('settings.menu.support'),
           headerTitleAlign: 'center',
@@ -124,7 +124,7 @@ function SettingScreen() {
       <Stack.Screen
         name="introduction"
         options={{
-          headerShown: true,
+          headerShown: false,
           headerTransparent: true,
           title: translate('settings.general.introduction'),
           headerTitleAlign: 'center',
@@ -139,7 +139,7 @@ function SettingScreen() {
       <Stack.Screen
         name="privacy-settings"
         options={{
-          headerShown: true,
+          headerShown: false,
           headerTransparent: true,
           title: translate('settings.general.privacySettings'),
           headerTitleAlign: 'center',
@@ -154,7 +154,7 @@ function SettingScreen() {
       <Stack.Screen
         name="privacy-policy"
         options={{
-          headerShown: true,
+          headerShown: false,
           headerTransparent: true,
           title: translate('settings.general.privacyPolicy'),
           headerTitleAlign: 'center',
@@ -169,7 +169,7 @@ function SettingScreen() {
       <Stack.Screen
         name="scan-qr"
         options={{
-          headerShown: true,
+          headerShown: false,
           headerTransparent: true,
           title: '',
           headerTintColor: '#fff',

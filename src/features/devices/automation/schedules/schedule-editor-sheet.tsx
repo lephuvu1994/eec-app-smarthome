@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 import { ScrollView, TouchableOpacity } from 'react-native';
 
 import { useUniwind } from 'uniwind';
-import { Button, IS_IOS, Modal, Switch, Text, View } from '@/components/ui';
+import { Button, IS_IOS, Modal, Switch, Text, View, WheelPicker } from '@/components/ui';
 import { translate } from '@/lib/i18n';
 import { ETheme } from '@/types/base';
 import { useScheduleEditor } from './use-schedule-editor';
@@ -113,15 +113,43 @@ export function ScheduleEditorSheet({ modalRef, device, entity, existingSchedule
         <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
           {/* Time Picker */}
           <View className="mb-6 items-center justify-center py-2">
-            <RNDateTimePicker
-              value={time}
-              mode="time"
-              display={IS_IOS ? 'spinner' : 'default'}
-              onChange={(_, date) => date && setTime(date)}
-              textColor={isDark ? '#FFFFFF' : '#000000'}
-              themeVariant={isDark ? 'dark' : 'light'}
-              style={IS_IOS ? { height: 140 } : {}}
-            />
+            {IS_IOS
+              ? (
+                  <RNDateTimePicker
+                    value={time}
+                    mode="time"
+                    display="spinner"
+                    onChange={(_, date) => date && setTime(date)}
+                    textColor={isDark ? '#FFFFFF' : '#000000'}
+                    themeVariant={isDark ? 'dark' : 'light'}
+                    style={{ height: 140 }}
+                  />
+                )
+              : (
+                  <View className="flex-row items-center justify-center gap-4 rounded-2xl bg-neutral-50 px-6 py-4 dark:bg-neutral-800/80">
+                    <WheelPicker
+                      data={Array.from({ length: 24 }, (_, i) => i)}
+                      value={time.getHours()}
+                      onValueChange={(val: number) => {
+                        const newTime = new Date(time);
+                        newTime.setHours(val);
+                        setTime(newTime);
+                      }}
+                      formatLabel={val => val.toString().padStart(2, '0')}
+                    />
+                    <Text className="text-3xl font-bold text-[#1B1B1B] dark:text-white">:</Text>
+                    <WheelPicker
+                      data={Array.from({ length: 60 }, (_, i) => i)}
+                      value={time.getMinutes()}
+                      onValueChange={(val: number) => {
+                        const newTime = new Date(time);
+                        newTime.setMinutes(val);
+                        setTime(newTime);
+                      }}
+                      formatLabel={val => val.toString().padStart(2, '0')}
+                    />
+                  </View>
+                )}
           </View>
 
           {/* Target Value */}
@@ -228,15 +256,17 @@ export function ScheduleEditorSheet({ modalRef, device, entity, existingSchedule
         </ScrollView>
 
         <View className="flex-row gap-3 px-4 pt-2">
-          {existingSchedule && (
-            <Button
-              className="h-12 flex-1 rounded-full bg-red-100 p-0 dark:bg-red-900/30"
-              textClassName="text-base font-semibold text-red-600 dark:text-red-400"
-              label={translate('base.deleteButton')}
-              onPress={() => deleteSchedule(existingSchedule.id)}
-              disabled={isBusy}
-            />
-          )}
+          {existingSchedule
+            ? (
+                <Button
+                  className="h-12 flex-1 rounded-full bg-red-100 p-0 dark:bg-red-900/30"
+                  textClassName="text-base font-semibold text-red-600 dark:text-red-400"
+                  label={translate('base.deleteButton')}
+                  onPress={() => deleteSchedule(existingSchedule.id)}
+                  disabled={isBusy}
+                />
+              )
+            : null}
           <Button
             className={`h-12 flex-1 rounded-full p-0 shadow-sm ${isBusy ? 'bg-[#A3E635]/50 dark:bg-[#A3E635]/50' : 'bg-[#A3E635] dark:bg-[#A3E635]'}`}
             textClassName="text-base font-semibold text-[#0F0F0F] dark:text-[#0F0F0F]"

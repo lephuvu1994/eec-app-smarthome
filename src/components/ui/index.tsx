@@ -16,6 +16,7 @@ export * from './select';
 export * from './skeleton';
 export * from './text';
 export * from './utils';
+export * from './wheel-picker';
 
 // export base components from react-native
 export {
