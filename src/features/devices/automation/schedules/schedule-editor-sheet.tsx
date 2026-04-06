@@ -42,7 +42,6 @@ export function ScheduleEditorSheet({ modalRef, device, entity, existingSchedule
   const [selectedDays, setSelectedDays] = useState<number[]>([1, 2, 3, 4, 5]);
   const [targetValue, setTargetValue] = useState<1 | 0 | 'OPEN' | 'CLOSE' | 'STOP'>(1);
   const [enableNotification, setEnableNotification] = useState<boolean>(true);
-  const [showAndroidPicker, setShowAndroidPicker] = useState(false);
 
   const isCurtain = entity?.domain === 'curtain' || entity?.domain === 'curtain_switch' || device?.type === 'SHUTTER_DOOR';
 

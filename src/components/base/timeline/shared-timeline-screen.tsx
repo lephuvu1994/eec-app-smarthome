@@ -6,13 +6,14 @@ import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import * as React from 'react';
 import { StyleSheet } from 'react-native';
-
 import { useUniwind } from 'uniwind';
+
 import { CustomHeader, HeaderIconButton, useHeaderOffset } from '@/components/base/header/CustomHeader';
 import { BaseLayout } from '@/components/layout/BaseLayout';
 import { ActivityIndicator, List, Text, View } from '@/components/ui';
 import { translate } from '@/lib/i18n';
 import { ETheme } from '@/types/base';
+
 import { TimelineItemCard } from './TimelineItemCard';
 import 'dayjs/locale/vi';
 

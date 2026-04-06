@@ -31,7 +31,6 @@ export function SwitchDetailScreen({ deviceId, entityId }: Props) {
   const navigation = useNavigation();
   const headerOffset = useHeaderOffset();
   const { theme } = useUniwind();
-  const insets = useSafeAreaInsets();
   const isDark = theme === ETheme.Dark;
   const [renameTargetEntity, setRenameTargetEntity] = React.useState<string | null>(null);
 
