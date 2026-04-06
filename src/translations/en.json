@@ -227,9 +227,9 @@
       "advanced": {
         "bleMode": "BLE Mode",
         "bleModeDesc": "Enable Bluetooth visibility",
+        "buttonConfig": "Button Configuration",
         "clicks": "Clicks count",
         "lock": "Lock",
-        "motorConfig": "Motor Configuration",
         "otaUpdate": "Firmware Update (OTA)",
         "otaUrl": "Firmware URL",
         "rfLearning": "RF Learning",

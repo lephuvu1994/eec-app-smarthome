@@ -227,9 +227,9 @@
       "advanced": {
         "bleMode": "Chế độ BLE",
         "bleModeDesc": "Bật hiển thị Bluetooth",
+        "buttonConfig": "Cấu hình Nút ấn",
         "clicks": "Số lần click",
         "lock": "Khoá",
-        "motorConfig": "Cấu hình Motor",
         "otaUpdate": "Cập nhật Firmware (OTA)",
         "otaUrl": "URL Firmware",
         "rfLearning": "Học lệnh RF",

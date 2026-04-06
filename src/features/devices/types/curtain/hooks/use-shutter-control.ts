@@ -1,6 +1,7 @@
 import type { TDevice, TDeviceEntity } from '@/lib/api/devices/device.service';
 import * as Haptics from 'expo-haptics';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { AppState } from 'react-native';
 import { cancelAnimation, Easing, useSharedValue, withTiming } from 'react-native-reanimated';
 import { showErrorMessage } from '@/components/ui';
 import { useDeviceEvent } from '@/hooks/use-device-event';
@@ -61,7 +62,6 @@ export function useShutterControl(
   else if (doorState === EDoorState.Closed) {
     initialPos = 0;
   }
-
   /**
    * Animated position 0–100 %.
    * Use `useAnimatedProps` or `useAnimatedStyle` in the UI to read this.
@@ -130,6 +130,59 @@ export function useShutterControl(
 
   const updateDeviceEntity = useDeviceStore(s => s.updateDeviceEntity);
 
+  // ─── Force-sync SharedValue when app resumes from background ──────────────
+  // Reanimated SharedValue on UI thread can lose/corrupt its value when iOS
+  // suspends the app. Since doorState may not change (still CLOSED), we must
+  // explicitly re-set position.value on every inactive→active transition.
+  useEffect(() => {
+    const syncPosition = () => {
+      const state = doorStateRef.current;
+      cancelAnimation(position);
+      if (state === EDoorState.Opened) {
+        position.value = 100;
+      }
+      else if (state === EDoorState.Closed) {
+        position.value = 0;
+      }
+      else if (state === EDoorState.Stopped) {
+        const posAttr = primaryEntity?.attributes?.find(a => a.key === 'position');
+        const storedPos = Number(posAttr?.currentValue);
+        if (!Number.isNaN(storedPos) && storedPos >= 0 && storedPos <= 100) {
+          position.value = storedPos;
+        }
+      }
+      else if (state === EDoorState.Opening) {
+        const durationMs = travelMsRef.current > 0 ? travelMsRef.current : 20000;
+        const remain = ((100 - position.value) / 100) * durationMs;
+        position.value = withTiming(100, { duration: Math.max(remain, 100), easing: Easing.linear });
+      }
+      else if (state === EDoorState.Closing) {
+        const durationMs = travelMsRef.current > 0 ? travelMsRef.current : 20000;
+        const remain = (position.value / 100) * durationMs;
+        position.value = withTiming(0, { duration: Math.max(remain, 100), easing: Easing.linear });
+      }
+    };
+
+    // Sync on doorState change (e.g. from API refetch or MQTT)
+    syncPosition();
+
+    let resumeTimeout: ReturnType<typeof setTimeout>;
+    // Sync on app resume (doorState unchanged but SharedValue corrupted)
+    const sub = AppState.addEventListener('change', (nextState) => {
+      if (nextState === 'active') {
+        // Small delay to ensure UI thread is fully resumed
+        resumeTimeout = setTimeout(syncPosition, 100);
+      }
+    });
+
+    return () => {
+      sub.remove();
+      if (resumeTimeout) {
+        clearTimeout(resumeTimeout);
+      }
+    };
+  }, [doorState, position, primaryEntity?.attributes]);
+
   // ─── Sync state from MQTT shadow / real-time event ───────────────────────
   useDeviceEvent(
     device?.id || '',
@@ -143,15 +196,7 @@ export function useShutterControl(
       }) => {
         // Online status (from flat LWT or heartbeat)
         if (data.online !== undefined && device?.id) {
-          // If we receive a retained "offline" message (from a previous LWT), ignore it!
-          // We rely on the REST API for the initial status. Real-time LWT events
-          // fired while we are actively connected will NOT have the retain flag!
-          if (data.online === false && data.isRetained) {
-            console.log(`[IGNORE STALE LWT] Ignoring retained offline msg for ${device.id}`);
-          }
-          else {
-            useDeviceStore.getState().updateDeviceStatus(device.id, data.online ? EDeviceStatus.ONLINE : EDeviceStatus.OFFLINE);
-          }
+          useDeviceStore.getState().updateDeviceStatus(device.id, data.online ? EDeviceStatus.ONLINE : EDeviceStatus.OFFLINE);
         }
 
         const matchesEntity = data.entityCode === primaryEntity?.code || (!data.entityCode && primaryEntity);
@@ -195,6 +240,10 @@ export function useShutterControl(
         // --- Flat attributes from raw /status telemetry (bypassing backend DTO) ---
         if (typeof data.position === 'number') {
           incomingPosition = data.position;
+        }
+
+        if (incomingPosition !== null && device?.id && primaryEntity?.code) {
+          updateDeviceEntity(device.id, primaryEntity.code, { attributes: [{ key: 'position', value: incomingPosition }] });
         }
 
         // Push flat config/child_lock/travel states natively into the Global Store

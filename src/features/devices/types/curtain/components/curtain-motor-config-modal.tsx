@@ -127,7 +127,7 @@ export function CurtainMotorConfigModal({
   };
 
   return (
-    <Modal ref={modalRef} snapPoints={[insets.bottom + HEIGHT * 0.65]} title={translate('deviceDetail.shutter.advanced.motorConfig')}>
+    <Modal ref={modalRef} snapPoints={[insets.bottom + HEIGHT * 0.65]} title={translate('deviceDetail.shutter.advanced.buttonConfig')}>
       <ScrollView contentContainerClassName="p-5 pb-10" showsVerticalScrollIndicator={false}>
         <View className="rounded-2xl bg-white p-5 shadow-sm dark:bg-neutral-800">
           <View className="gap-5">

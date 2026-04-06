@@ -249,6 +249,21 @@ export class MqttManager {
     try {
       const data = JSON.parse(payload.toString());
 
+      // ★ RETAINED MESSAGE GUARD ─────────────────────────────────────
+      // Retained messages are stale broker cache from previous sessions
+      // or chip reboots (e.g. "STOPPED/50" boot status). They must NOT
+      // overwrite the app's current state which is already correct from
+      // the API/store. Only pass through online status for LWT handling.
+      if (isRetained) {
+        if (data.online !== undefined) {
+          this.deviceEmitter.emit(`device:${deviceId}`, {
+            online: data.online,
+            isRetained: true,
+          });
+        }
+        return;
+      }
+
       // Format 1: Batch updates from iot-gateway handleStateMessage
       // { deviceId, token, updates: [{ entityCode, state, attributes }], timestamp }
       if (Array.isArray(data.updates)) {
@@ -261,12 +276,12 @@ export class MqttManager {
       // Format 2: Single entity update
       // { entityCode, state, attributes }
       if (data.entityCode) {
-        this.deviceEmitter.emit(`device:${deviceId}`, { ...data, isRetained });
+        this.deviceEmitter.emit(`device:${deviceId}`, data);
         return;
       }
 
       // Format 3: Raw flat state (fallback) — emit as-is
-      this.deviceEmitter.emit(`device:${deviceId}`, { ...data, isRetained });
+      this.deviceEmitter.emit(`device:${deviceId}`, data);
     }
     catch {
       // Malformed JSON — skip silently

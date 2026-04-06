@@ -160,10 +160,18 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
                   onPress: rfLearnModal.present,
                 },
                 {
-                  key: 'motor_config',
-                  title: translate('deviceDetail.shutter.advanced.motorConfig'),
+                  key: 'button_config',
+                  title: translate('deviceDetail.shutter.advanced.buttonConfig'),
                   icon: { ios: 'gear' },
                   onPress: motorConfigModal.present,
+                },
+                {
+                  key: 'motor_direction',
+                  title: isMotorReversed
+                    ? (translate('deviceDetail.shutter.motorReversed') as string)
+                    : (translate('deviceDetail.shutter.motorForward') as string),
+                  icon: { ios: 'arrow.up.arrow.down' },
+                  onPress: () => handleMotorDirection(!isMotorReversed),
                 },
               ],
             },
@@ -177,7 +185,7 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
         },
       ],
     },
-  ], [deviceId, router, bleModal, rfLearnModal, motorConfigModal, modal]);
+  ], [deviceId, router, bleModal, rfLearnModal, motorConfigModal, modal, handleMotorDirection, isMotorReversed]);
 
   const iconColor = isDark ? '#FFF' : '#1B1B1B';
 
@@ -291,23 +299,6 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
                 </Text>
               </TouchableOpacity>
 
-              <TouchableOpacity
-                className={`flex-1 flex-row items-center justify-center gap-2 rounded-2xl py-3.5 shadow-sm ${isMotorReversed ? 'bg-orange-500 dark:bg-orange-500/80' : 'bg-white dark:border dark:border-[#292929] dark:bg-[#FFFFFF0D]'}`}
-                onPress={() => handleMotorDirection(!isMotorReversed)}
-                disabled={isControlling || !isOnline}
-                activeOpacity={0.8}
-              >
-                <MaterialCommunityIcons
-                  name="swap-vertical"
-                  size={16}
-                  color={isMotorReversed ? '#fff' : (isDark ? '#FFF' : '#1B1B1B')}
-                />
-                <Text className={`text-sm font-semibold ${isMotorReversed ? 'text-white' : 'text-[#1B1B1B] dark:text-white'}`}>
-                  {isMotorReversed
-                    ? translate('deviceDetail.shutter.motorReversed')
-                    : translate('deviceDetail.shutter.motorForward')}
-                </Text>
-              </TouchableOpacity>
             </View>
 
             {/* ── Control Buttons ────────────────────────────────── */}
