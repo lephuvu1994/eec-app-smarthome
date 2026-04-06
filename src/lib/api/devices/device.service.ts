@@ -180,7 +180,12 @@ export type TDeviceTimelineItem = {
   roomName?: string | null;
   entityCode: string | null;
   entityName: string | null;
-  actionBy?: { userName: string | null; userAvatar: string | null } | null;
+  actionBy?: {
+    userName: string | null;
+    userAvatar: string | null;
+    userEmail?: string | null;
+    userPhone?: string | null;
+  } | null;
   createdAt: string; // ISO Date String
 };
 

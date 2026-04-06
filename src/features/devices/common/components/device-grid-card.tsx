@@ -11,10 +11,12 @@ import { PulseDot } from '@/components/base/PulseDot';
 import { Text, TouchableOpacity, View } from '@/components/ui';
 import { PowerIcon } from '@/components/ui/icons/power-icon';
 import { BASE_SPACE_HORIZONTAL, GAP_DEVICE_VIEW_MOBILE } from '@/constants';
+import { NetworkSignalIndicator } from '@/features/devices/common/components/network-signal-indicator';
 import { ETheme } from '@/types/base';
 import { ETypeViewDevice } from '@/types/device';
 
 export function DeviceGridCard({
+  device,
   displayName,
   deviceImage,
   isOnline,
@@ -85,11 +87,25 @@ export function DeviceGridCard({
         <Text className="text-[15px] font-bold text-neutral-800 dark:text-white" numberOfLines={1}>
           {displayName}
         </Text>
-        <View className="flex-row items-center gap-1">
-          {isOnline
-            ? <PulseDot color="#A3EC3E" size={5} />
-            : <View className="size-1.5 rounded-full bg-neutral-300 dark:bg-neutral-600" />}
-          <Text className={isOnline ? 'text-xs font-medium text-[#A3EC3E]' : 'text-xs text-neutral-400'}>
+        <View className="flex-row items-center gap-1.5">
+          {device.protocol
+            ? (
+                <NetworkSignalIndicator
+                  protocol={device.protocol}
+                  isOnline={isOnline}
+                  rssi={device.rssi}
+                  linkquality={device.linkquality}
+                  size={10}
+                />
+              )
+            : isOnline
+              ? (
+                  <PulseDot color="#10B981" size={6} />
+                )
+              : (
+                  <View className="size-1.5 rounded-full bg-neutral-300 dark:bg-neutral-600" />
+                )}
+          <Text className={isOnline ? 'text-xs font-medium text-[#10B981]' : 'text-xs text-neutral-400'}>
             {statusLabel}
           </Text>
         </View>

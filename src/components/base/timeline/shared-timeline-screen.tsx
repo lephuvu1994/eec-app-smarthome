@@ -10,9 +10,9 @@ import { useUniwind } from 'uniwind';
 
 import { BaseLayout } from '@/components/layout/BaseLayout';
 import { ActivityIndicator, List, Text, View } from '@/components/ui';
-import { EDeviceTimelineEvent, EDeviceTimelineType } from '@/lib/api/devices/device.service';
 import { translate } from '@/lib/i18n';
 import { ETheme } from '@/types/base';
+import { TimelineItemCard } from './TimelineItemCard';
 import 'dayjs/locale/vi';
 
 dayjs.locale('vi');
@@ -41,86 +41,6 @@ export function SharedTimelineScreen({
 }: Props) {
   const { theme } = useUniwind();
   const headerHeight = useHeaderHeight();
-
-  const renderIcon = (type: string, event: string, avatarUrl?: string | null) => {
-    if (type === EDeviceTimelineType.Connection) {
-      const isOnline = event === EDeviceTimelineEvent.Online;
-      return (
-        <View className={`mt-0.5 size-10 shrink-0 items-center justify-center rounded-full ${isOnline ? 'bg-green-500/20' : 'bg-red-500/20'}`}>
-          <MaterialCommunityIcons
-            name={isOnline ? 'wifi' : 'wifi-off'}
-            size={20}
-            color={isOnline ? '#10B981' : '#EF4444'}
-          />
-        </View>
-      );
-    }
-    if (avatarUrl) {
-      return (
-        <Image
-          source={{ uri: avatarUrl }}
-          className="mt-0.5 size-10 shrink-0 items-center justify-center rounded-full bg-neutral-200 dark:bg-neutral-800"
-          contentFit="cover"
-        />
-      );
-    }
-
-    return (
-      <View className="mt-0.5 size-10 shrink-0 items-center justify-center rounded-full bg-blue-500/20">
-        <MaterialCommunityIcons name="history" size={20} color="#3B82F6" />
-      </View>
-    );
-  };
-
-  const renderDescription = (item: TDeviceTimelineItem) => {
-    const isMain = item.entityCode === 'main';
-    const deviceNameStr = item.deviceName || fallbackDeviceName;
-
-    let finalPrefixName = '';
-    if (isMain && deviceNameStr) {
-      finalPrefixName = deviceNameStr; // Prefer Device Name for 'main' entity
-    }
-    else {
-      finalPrefixName = item.entityName || deviceNameStr || '';
-    }
-
-    const namePrefix = finalPrefixName ? `[${finalPrefixName}] ` : '';
-
-    if (item.type === EDeviceTimelineType.Connection) {
-      const connEvent = item.event === EDeviceTimelineEvent.Online
-        ? (translate('deviceDetail.timeline.deviceOnline' as TxKeyPath) as string)
-        : (translate('deviceDetail.timeline.deviceOffline' as TxKeyPath) as string);
-      return `${namePrefix}${connEvent}`;
-    }
-
-    const eventKey = `deviceDetail.timeline.events.${item.event.toLowerCase()}`;
-    const transEvent = translate(eventKey as TxKeyPath);
-    const i18nEvent = transEvent !== eventKey ? transEvent : item.event;
-
-    let i18nSource = null;
-    if (item.source) {
-      const sourceKey = `deviceDetail.timeline.sources.${item.source.toLowerCase()}`;
-      const transSource = translate(sourceKey as TxKeyPath);
-      i18nSource = transSource !== sourceKey ? transSource : item.source;
-    }
-
-    const authorName = item.actionBy?.userName;
-
-    if (i18nSource) {
-      const statusText = translate('deviceDetail.timeline.statusVia' as TxKeyPath, {
-        name: namePrefix,
-        event: i18nEvent,
-        source: i18nSource,
-      }) as string;
-      return authorName ? `${statusText} — ${authorName}` : statusText;
-    }
-
-    const statusText = translate('deviceDetail.timeline.statusOnly' as TxKeyPath, {
-      name: namePrefix,
-      event: i18nEvent,
-    }) as string;
-    return authorName ? `${statusText} — ${authorName}` : statusText;
-  };
 
   const flattenedData = React.useMemo(() => {
     const data: any[] = [];
@@ -151,16 +71,14 @@ export function SharedTimelineScreen({
 
     const { item: deviceItem, isFirst, isLast } = item;
     return (
-      <View className={`mx-4 flex-row items-start bg-white/70 px-5 py-4 backdrop-blur-md dark:bg-[#1C1C1E]/80 ${isFirst ? 'rounded-t-2xl' : ''} ${isLast ? 'rounded-b-2xl' : 'border-b border-black/5 dark:border-white/5'}`}>
-        {renderIcon(deviceItem.type, deviceItem.event, deviceItem.actionBy?.userAvatar)}
-        <View className="ml-4 flex-1 justify-center">
-          <Text className="text-base font-semibold text-neutral-800 dark:text-neutral-100">
-            {renderDescription(deviceItem)}
-          </Text>
-          <Text className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-            {dayjs(deviceItem.createdAt).format('HH:mm:ss')}
-          </Text>
-        </View>
+      <View className={`mx-4 bg-white/70 px-5 py-4 backdrop-blur-md dark:bg-[#1C1C1E]/80 ${isFirst ? 'rounded-t-2xl' : ''} ${isLast ? 'rounded-b-2xl' : 'border-b border-black/5 dark:border-white/5'}`}>
+        <TimelineItemCard
+          item={deviceItem}
+          isDark={theme === ETheme.Dark}
+          isLast={true}
+          fallbackDeviceName={fallbackDeviceName}
+          isModal={false}
+        />
       </View>
     );
   };
