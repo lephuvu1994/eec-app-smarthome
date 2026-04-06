@@ -38,37 +38,6 @@ type Props = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Helper: format travelMs → "X phút Y giây"
-// ─────────────────────────────────────────────────────────────────────────────
-function formatTravelTime(ms: number): string {
-  if (!ms) {
-    return '--';
-  }
-  const sec = Math.round(ms / 1000);
-  if (sec < 60) {
-    return `${sec}s`;
-  }
-  const min = Math.floor(sec / 60);
-  const remain = sec % 60;
-  return remain > 0 ? `${min}p ${remain}s` : `${min} phút`;
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Stat Card (bottom info cards)
-// ─────────────────────────────────────────────────────────────────────────────
-type TStatCardProps = { icon: React.ReactNode; value: string; label: string };
-
-function StatCard({ icon, value, label }: TStatCardProps) {
-  return (
-    <View className="flex-1 items-center justify-center gap-1 rounded-2xl bg-white px-2 py-3 shadow-sm dark:border dark:border-[#292929] dark:bg-[#FFFFFF0D]">
-      {icon}
-      <Text className="text-sm font-bold text-[#1B1B1B] dark:text-white" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>{value}</Text>
-      <Text className="text-center text-[10px] text-neutral-400 dark:text-neutral-500" numberOfLines={1}>{label}</Text>
-    </View>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
 // Control Button
 // ─────────────────────────────────────────────────────────────────────────────
 type TCtrlBtnProps = {
@@ -125,7 +94,6 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
     position,
     doorState,
     childLock,
-    travelMs,
     isControlling,
     handleOpen,
     handleClose,
@@ -222,12 +190,6 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
           <Text className="text-lg font-semibold text-black dark:text-white" numberOfLines={1}>
             {headerTitle}
           </Text>
-          <View className="mt-1 flex-row items-center gap-1.5">
-            <View className={`size-2 rounded-full ${isOnline ? 'bg-[#A3E635]' : 'bg-red-500'}`} />
-            <Text className="text-[11px] font-medium text-neutral-500 dark:text-neutral-400">
-              {isOnline ? translate('base.online') : translate('base.offline')}
-            </Text>
-          </View>
         </Animated.View>
       ),
       headerRight: () => (
@@ -296,6 +258,9 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
           doorState={doorState}
           stateColor={stateColor}
           isOnline={isOnline}
+          protocol={device?.protocol}
+          rssi={device?.rssi}
+          linkquality={device?.linkquality}
         />
 
         <ScrollView
@@ -312,8 +277,29 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
             />
           </View>
 
+          {/* ── Child Lock Toggle ──────────────────────────────── */}
+          <View className="mt-8 mb-2">
+            <TouchableOpacity
+              className={`flex-row items-center justify-center gap-2 rounded-2xl py-3.5 shadow-sm ${childLock ? 'bg-red-500 dark:bg-red-500/80' : 'bg-white dark:border dark:border-[#292929] dark:bg-[#FFFFFF0D]'}`}
+              onPress={() => handleChildLock(!childLock)}
+              disabled={isControlling || !isOnline}
+              activeOpacity={0.8}
+            >
+              <FontAwesome5
+                name={childLock ? 'lock' : 'lock-open'}
+                size={15}
+                color={childLock ? '#fff' : (isDark ? '#FFF' : '#1B1B1B')}
+              />
+              <Text className={`text-sm font-semibold ${childLock ? 'text-white' : 'text-[#1B1B1B] dark:text-white'}`}>
+                {childLock
+                  ? translate('deviceDetail.shutter.childLockOn')
+                  : translate('deviceDetail.shutter.childLockOff')}
+              </Text>
+            </TouchableOpacity>
+          </View>
+
           {/* ── Control Buttons ────────────────────────────────── */}
-          <View className="mt-8 flex-row items-end justify-between">
+          <View className="mt-6 flex-row items-end justify-between">
             <CtrlButton
               icon={<FontAwesome6 name="chevron-down" size={22} color={isDark ? '#fff' : '#1B1B1B'} />}
               label={translate('deviceDetail.shutter.close')}
@@ -335,45 +321,6 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
             />
           </View>
 
-          {/* ── Child Lock Toggle ──────────────────────────────── */}
-          <View className="mt-6">
-            <TouchableOpacity
-              className={`flex-row items-center justify-center gap-2 rounded-2xl py-3.5 shadow-sm ${childLock ? 'bg-red-500 dark:bg-red-500/80' : 'bg-white dark:border dark:border-[#292929] dark:bg-[#FFFFFF0D]'}`}
-              onPress={() => handleChildLock(!childLock)}
-              disabled={isControlling || !isOnline}
-              activeOpacity={0.8}
-            >
-              <FontAwesome5
-                name={childLock ? 'lock' : 'lock-open'}
-                size={15}
-                color={childLock ? '#fff' : (isDark ? '#FFF' : '#1B1B1B')}
-              />
-              <Text className={`text-sm font-semibold ${childLock ? 'text-white' : 'text-[#1B1B1B] dark:text-white'}`}>
-                {childLock
-                  ? translate('deviceDetail.shutter.childLockOn')
-                  : translate('deviceDetail.shutter.childLockOff')}
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* ── Footer Stats ───────────────────────────────────── */}
-          <View className="mt-4 flex-row gap-2">
-            <StatCard
-              icon={<FontAwesome6 name="crosshairs" size={18} color="#9CA3AF" />}
-              value={motorConfig?.clicks ? `${motorConfig.clicks} clicks` : '--'}
-              label={translate('deviceDetail.shutter.operations')}
-            />
-            <StatCard
-              icon={<FontAwesome6 name="clock" size={18} color="#9CA3AF" />}
-              value={motorConfig?.start_time && motorConfig?.end_time ? `${motorConfig.start_time} - ${motorConfig.end_time}` : '--'}
-              label={translate('deviceDetail.shutter.workingHours')}
-            />
-            <StatCard
-              icon={<MaterialCommunityIcons name="timer-outline" size={18} color="#9CA3AF" />}
-              value={formatTravelTime(travelMs)}
-              label={translate('deviceDetail.shutter.travelTime')}
-            />
-          </View>
         </ScrollView>
 
         <ShutterBackgroundModal modalRef={modal.ref} deviceId={deviceId} />

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 
 import { MqttManager } from '@/lib/mqtt/mqtt-manager';
+import { useDeviceStore } from '@/stores/device/device-store';
 
 /**
  * Subscribe to device-specific events from MQTT.
@@ -35,6 +36,13 @@ export function useDeviceEvent(
 
     // Static callback that delegates to the latest handler ref
     const stableCallback = (data: any) => {
+      if (data.rssi !== undefined || data.linkquality !== undefined) {
+        useDeviceStore.getState().updateDevice(deviceId, {
+          ...(data.rssi !== undefined && { rssi: Number(data.rssi) }),
+          ...(data.linkquality !== undefined && { linkquality: Number(data.linkquality) }),
+        });
+      }
+
       if (handlerRef.current) {
         handlerRef.current(data);
       }

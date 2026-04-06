@@ -163,8 +163,10 @@ describe('HomeTimelinePopover', () => {
     fireEvent.press(screen.getByTestId('trigger-btn'));
 
     await waitFor(() => {
-      // The timeline item description translation fallback combines strings
-      expect(screen.getByText(/deviceDetail.timeline.statusOnly/)).toBeTruthy();
+      // TimelineItemCard renders: deviceName on first line, "Trạng thái: {eventKey}" on second line
+      expect(screen.getByText('Light Bulb 1')).toBeTruthy();
+      // event 'on' → translate returns the key itself in test env
+      expect(screen.getByText(/Trạng thái:/)).toBeTruthy();
       expect(screen.getByText('deviceDetail.timeline.viewAll')).toBeTruthy();
     });
   });

@@ -165,7 +165,11 @@
   },
   "device": {
     "info": {
+      "addShortcut": "Thêm ra Gọi nhanh (Intent)",
       "entitiesTitle": "Danh sách tính năng",
+      "generalSettings": "Cài đặt chung",
+      "latestVersion": "Mới nhất",
+      "notFound": "Thiết bị không tồn tại.",
       "notifyOffline": "Cảnh báo khi mất kết nối",
       "notifyOfflineDesc": "Gửi thông báo khi thiết bị bị mất điện hoặc ngoại tuyến quá 5 phút.",
       "notifyOnline": "Cảnh báo khi kết nối lại",
@@ -175,7 +179,9 @@
       "notifyThresholdAlert": "Cảnh báo ngưỡng",
       "notifyThresholdAlertDesc": "Gửi thông báo khi vượt ngưỡng (năng lượng, nhiệt độ...).",
       "notifyTitle": "Cài đặt cảnh báo",
-      "title": "Thông tin thiết bị"
+      "partnerIntegration": "Cổng kết nối Partner",
+      "title": "Thông tin thiết bị",
+      "updateFirmware": "Cập nhật Firmware"
     },
     "notify": {
       "permissionDesc": "Vui lòng mở Cài đặt thiết bị và cấp quyền Thông báo cho ứng dụng.",
@@ -188,6 +194,10 @@
       "error": "Lỗi khi gỡ bỏ thiết bị",
       "success": "Thiết bị đã được gỡ bỏ",
       "title": "Gỡ bỏ thiết bị"
+    },
+    "signal": {
+      "dBm": "dBm",
+      "lqi": "{{pct}}% ({{lqi}})"
     }
   },
   "deviceDetail": {
@@ -235,6 +245,7 @@
       "childLockOff": "Khoá trẻ em: TẮT",
       "childLockOn": "Khoá trẻ em: BẬT",
       "close": "Đóng",
+      "configInfo": "Thông tin cài đặt",
       "defaultName": "Cửa cuốn",
       "deviceInfo": "Thông tin thiết bị",
       "deviceType": "Loại thiết bị",

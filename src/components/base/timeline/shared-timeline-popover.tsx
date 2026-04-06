@@ -2,17 +2,16 @@ import type { TDeviceTimelineItem } from '@/lib/api/devices/device.service';
 import type { TxKeyPath } from '@/lib/i18n';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import dayjs from 'dayjs';
-import { Image } from 'expo-image';
 import * as React from 'react';
 import { ActivityIndicator, Dimensions, TouchableOpacity } from 'react-native';
 import Popover, { PopoverPlacement } from 'react-native-popover-view';
 
 import { useUniwind } from 'uniwind';
 import { List, Text, View } from '@/components/ui';
-import { EDeviceTimelineEvent, EDeviceTimelineType } from '@/lib/api/devices/device.service';
 import { translate } from '@/lib/i18n';
-
 import { ETheme } from '@/types/base';
+
+import { TimelineItemCard } from './TimelineItemCard';
 import 'dayjs/locale/vi';
 
 dayjs.locale('vi');
@@ -59,87 +58,6 @@ export function SharedTimelinePopover({
     setTimeout(() => {
       onViewAll();
     }, 150);
-  };
-
-  const renderIcon = (type: string, event: string, avatarUrl?: string | null) => {
-    if (type === EDeviceTimelineType.Connection) {
-      const isOnline = event === EDeviceTimelineEvent.Online;
-      return (
-        <View className={`size-8 shrink-0 items-center justify-center rounded-full ${isOnline ? 'bg-green-500/20' : 'bg-red-500/20'}`}>
-          <MaterialCommunityIcons
-            name={isOnline ? 'wifi' : 'wifi-off'}
-            size={16}
-            color={isOnline ? '#10B981' : '#EF4444'}
-          />
-        </View>
-      );
-    }
-
-    if (avatarUrl) {
-      return (
-        <Image
-          source={{ uri: avatarUrl }}
-          className="size-8 shrink-0 items-center justify-center rounded-full bg-neutral-200 dark:bg-neutral-800"
-          contentFit="cover"
-        />
-      );
-    }
-
-    return (
-      <View className="size-8 shrink-0 items-center justify-center rounded-full bg-blue-500/20">
-        <MaterialCommunityIcons name="history" size={16} color="#3B82F6" />
-      </View>
-    );
-  };
-
-  const renderDescription = (item: TDeviceTimelineItem) => {
-    const isMain = item.entityCode === 'main';
-    const deviceNameStr = item.deviceName || fallbackDeviceName;
-
-    let finalPrefixName = '';
-    if (isMain && deviceNameStr) {
-      finalPrefixName = deviceNameStr; // Prefer Device Name for 'main' entity
-    }
-    else {
-      finalPrefixName = item.entityName || deviceNameStr || '';
-    }
-
-    const namePrefix = finalPrefixName ? `[${finalPrefixName}] ` : '';
-
-    if (item.type === EDeviceTimelineType.Connection) {
-      const connEvent = item.event === EDeviceTimelineEvent.Online
-        ? (translate('deviceDetail.timeline.deviceOnline' as TxKeyPath) as string)
-        : (translate('deviceDetail.timeline.deviceOffline' as TxKeyPath) as string);
-      return `${namePrefix}${connEvent}`;
-    }
-
-    // Translation fallback mapping
-    const eventKey = `deviceDetail.timeline.events.${item.event.toLowerCase()}`;
-    const transEvent = translate(eventKey as TxKeyPath);
-    const i18nEvent = transEvent !== eventKey ? transEvent : item.event;
-
-    let i18nSource = null;
-    if (item.source) {
-      const sourceKey = `deviceDetail.timeline.sources.${item.source.toLowerCase()}`;
-      const transSource = translate(sourceKey as TxKeyPath);
-      i18nSource = transSource !== sourceKey ? transSource : item.source;
-    }
-
-    const authorName = item.actionBy?.userName;
-    if (i18nSource) {
-      const statusText = translate('deviceDetail.timeline.statusVia' as TxKeyPath, {
-        name: namePrefix,
-        event: i18nEvent,
-        source: i18nSource,
-      }) as string;
-      return authorName ? `${statusText} — ${authorName}` : statusText;
-    }
-
-    const statusText = translate('deviceDetail.timeline.statusOnly' as TxKeyPath, {
-      name: namePrefix,
-      event: i18nEvent,
-    }) as string;
-    return authorName ? `${statusText} — ${authorName}` : statusText;
   };
 
   return (
@@ -202,17 +120,13 @@ export function SharedTimelinePopover({
                 onEndReachedThreshold={0.5}
                 showsVerticalScrollIndicator={false}
                 renderItem={({ item, index }: { item: TDeviceTimelineItem; index: number }) => (
-                  <View className="mb-3 flex-row items-start gap-3">
-                    {renderIcon(item.type, item.event, item.actionBy?.userAvatar)}
-                    <View className={`flex-1 shrink ${index !== items.length - 1 ? 'border-b border-black/5 pb-3 dark:border-neutral-800' : ''}`}>
-                      <Text className="text-sm/5 font-medium text-neutral-800 dark:text-neutral-200">
-                        {renderDescription(item)}
-                      </Text>
-                      <Text className="mt-1 text-xs text-neutral-500 dark:text-neutral-500">
-                        {dayjs(item.createdAt).format('HH:mm:ss')}
-                      </Text>
-                    </View>
-                  </View>
+                  <TimelineItemCard
+                    item={item}
+                    isDark={isDark}
+                    isLast={index === items.length - 1}
+                    fallbackDeviceName={fallbackDeviceName}
+                    isModal={true}
+                  />
                 )}
                 ListFooterComponent={() => (
                   <View className="h-10 items-center justify-center">
