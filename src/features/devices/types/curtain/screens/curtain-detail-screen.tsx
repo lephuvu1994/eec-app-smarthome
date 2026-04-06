@@ -6,7 +6,6 @@ import { useNavigation, useRouter } from 'expo-router';
 import * as React from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 import { CustomHeader, HeaderIconButton, useHeaderOffset } from '@/components/base/header/CustomHeader';
 import { BaseLayout } from '@/components/layout/BaseLayout';
@@ -102,7 +101,9 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
     setRfLearnStatus,
     handleConfig,
     handlePosition,
+    handleMotorDirection,
     motorConfig,
+    isMotorReversed,
     isOnline,
     childLockEntity,
   } = useShutterControl(device, primaryEntity);
@@ -180,13 +181,16 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
 
   const iconColor = isDark ? '#FFF' : '#1B1B1B';
 
-  // State dot color
-  const stateColor
-    = doorState === EDoorState.Open
-      ? '#A3E635'
-      : doorState === EDoorState.Close
-        ? '#EF4444'
-        : '#F59E0B';
+  // State dot color — 5 màu cho 5 trạng thái
+  const stateColor = (() => {
+    switch (doorState) {
+      case EDoorState.Opened: return '#A3E635'; // Xanh lá
+      case EDoorState.Closed: return '#EF4444'; // Đỏ
+      case EDoorState.Opening: return '#60A5FA'; // Xanh dương (đang mở)
+      case EDoorState.Closing: return '#F97316'; // Cam (đang đóng)
+      default: return '#F59E0B'; // Vàng (stopped)
+    }
+  })();
 
   return (
     <BaseLayout>
@@ -268,22 +272,40 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
             </View>
 
             {/* ── Child Lock Toggle ──────────────────────────────── */}
-            <View className="mt-8 mb-2">
+            <View className="mt-8 flex-row gap-3">
               <TouchableOpacity
-                className={`flex-row items-center justify-center gap-2 rounded-2xl py-3.5 shadow-sm ${childLock ? 'bg-red-500 dark:bg-red-500/80' : 'bg-white dark:border dark:border-[#292929] dark:bg-[#FFFFFF0D]'}`}
+                className={`flex-1 flex-row items-center justify-center gap-2 rounded-2xl py-3.5 shadow-sm ${childLock ? 'bg-red-500 dark:bg-red-500/80' : 'bg-white dark:border dark:border-[#292929] dark:bg-[#FFFFFF0D]'}`}
                 onPress={() => handleChildLock(!childLock)}
                 disabled={isControlling || !isOnline}
                 activeOpacity={0.8}
               >
                 <FontAwesome5
                   name={childLock ? 'lock' : 'lock-open'}
-                  size={15}
+                  size={14}
                   color={childLock ? '#fff' : (isDark ? '#FFF' : '#1B1B1B')}
                 />
                 <Text className={`text-sm font-semibold ${childLock ? 'text-white' : 'text-[#1B1B1B] dark:text-white'}`}>
                   {childLock
                     ? translate('deviceDetail.shutter.childLockOn')
                     : translate('deviceDetail.shutter.childLockOff')}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                className={`flex-1 flex-row items-center justify-center gap-2 rounded-2xl py-3.5 shadow-sm ${isMotorReversed ? 'bg-orange-500 dark:bg-orange-500/80' : 'bg-white dark:border dark:border-[#292929] dark:bg-[#FFFFFF0D]'}`}
+                onPress={() => handleMotorDirection(!isMotorReversed)}
+                disabled={isControlling || !isOnline}
+                activeOpacity={0.8}
+              >
+                <MaterialCommunityIcons
+                  name="swap-vertical"
+                  size={16}
+                  color={isMotorReversed ? '#fff' : (isDark ? '#FFF' : '#1B1B1B')}
+                />
+                <Text className={`text-sm font-semibold ${isMotorReversed ? 'text-white' : 'text-[#1B1B1B] dark:text-white'}`}>
+                  {isMotorReversed
+                    ? translate('deviceDetail.shutter.motorReversed')
+                    : translate('deviceDetail.shutter.motorForward')}
                 </Text>
               </TouchableOpacity>
             </View>

@@ -249,11 +249,20 @@
       "defaultName": "Roller Shutter",
       "deviceInfo": "Device Information",
       "deviceType": "Device Type",
+      "motorForward": "Motor: Forward",
+      "motorReversed": "Motor: Reversed",
       "open": "Open",
       "operations": "Operations",
       "position": "Position",
       "rename": "Rename",
       "settings": "Settings",
+      "state": {
+        "closed": "Closed",
+        "closing": "Closing...",
+        "opened": "Opened",
+        "opening": "Opening...",
+        "stopped": "Stopped"
+      },
       "stop": "Stop",
       "travelTime": "Travel Time",
       "workingHours": "Working Hours"

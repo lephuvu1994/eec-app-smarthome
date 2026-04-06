@@ -11,17 +11,18 @@ import { useConfigManager } from '@/stores/config/config';
 import { useDeviceStore } from '@/stores/device/device-store';
 
 // ─── Chip firmware schema (app_door_controller_core.c) ───────────────────────
-// Status published: { "online":true, "state":"OPEN|CLOSE|STOP",
-//                    "position":0-100, "child_lock":"LOCKED|UNLOCKED",
-//                    "travel":20000 }
-// Note: firmware maps OPENING→OPEN, CLOSING→CLOSE in status messages.
+// Commands (App → Chip): OPEN, CLOSE, STOP
+// States   (Chip → App): OPENING, CLOSING, OPENED, CLOSED, STOPPED
+// Position (Chip → App): 0-100 (gửi kèm state, app tự animate)
 // ─────────────────────────────────────────────────────────────────────────────
 
 /** Movement state reported by chip */
 export enum EDoorState {
-  Open = 'OPEN',
-  Close = 'CLOSE',
-  Stop = 'STOP',
+  Opened = 'OPENED',
+  Closed = 'CLOSED',
+  Stopped = 'STOPPED',
+  Opening = 'OPENING',
+  Closing = 'CLOSING',
 }
 
 /** Commands accepted by chip via `state` / `cmd` field (curtain domain) */
@@ -38,7 +39,7 @@ export function useShutterControl(
   const allowHaptics = useConfigManager(s => s.allowHaptics);
 
   /** Movement state from chip (Derived from global store) */
-  const doorState = (primaryEntity?.currentState as EDoorState) || EDoorState.Stop;
+  const doorState = (primaryEntity?.currentState as EDoorState) || EDoorState.Stopped;
   const doorStateRef = useRef<EDoorState>(doorState);
   useEffect(() => {
     doorStateRef.current = doorState;
@@ -54,10 +55,10 @@ export function useShutterControl(
       initialPos = parsed;
     }
   }
-  else if (doorState === EDoorState.Open) {
+  else if (doorState === EDoorState.Opened) {
     initialPos = 100;
   }
-  else if (doorState === EDoorState.Close) {
+  else if (doorState === EDoorState.Closed) {
     initialPos = 0;
   }
 
@@ -91,6 +92,10 @@ export function useShutterControl(
   /** RF Learning tracking string */
   const rfLearnAttr = primaryEntity?.attributes?.find(a => a.key === 'rf_learn_status') || learnEntity?.attributes?.find(a => a.key === 'rf_learn_status');
   const rfLearnStatus = (rfLearnAttr?.currentValue as string) || (rfLearnAttr?.strValue as string) || '';
+
+  /** Motor Direction */
+  const motorDirAttr = primaryEntity?.attributes?.find(a => a.key === 'motor_direction') || configEntity?.attributes?.find(a => a.key === 'motor_direction');
+  const isMotorReversed = ((motorDirAttr?.currentValue as string) || (motorDirAttr?.strValue as string) || '') === 'REVERSE';
 
   /** Motor config */
   let motorConfig: { clicks?: number; start_time?: string; end_time?: string } | undefined;
@@ -154,18 +159,19 @@ export function useShutterControl(
           return;
         }
 
-        // Primary entity state (commandKey = 'state')
+        // Primary entity state — parse with backward compat map
         const val = data.state ?? data.value;
-        let newState = doorStateRef.current;
-        if (val === EDoorState.Open) {
-          newState = EDoorState.Open;
-        }
-        else if (val === EDoorState.Close) {
-          newState = EDoorState.Close;
-        }
-        else if (val === EDoorState.Stop) {
-          newState = EDoorState.Stop;
-        }
+        const stateMap: Record<string, EDoorState> = {
+          OPEN: EDoorState.Opened,
+          OPENED: EDoorState.Opened,
+          CLOSE: EDoorState.Closed,
+          CLOSED: EDoorState.Closed,
+          STOP: EDoorState.Stopped,
+          STOPPED: EDoorState.Stopped,
+          OPENING: EDoorState.Opening,
+          CLOSING: EDoorState.Closing,
+        };
+        const newState = (typeof val === 'string' ? stateMap[val] : undefined) ?? doorStateRef.current;
 
         const isStateChanged = newState !== doorStateRef.current;
 
@@ -206,34 +212,47 @@ export function useShutterControl(
           updateDeviceEntity(device.id, 'learn', { attributes: [{ key: 'rf_learn_status', value: data.rf_learn_status }] });
           updateDeviceEntity(device.id, primaryEntity?.code || 'main', { attributes: [{ key: 'rf_learn_status', value: data.rf_learn_status }] });
         }
+
+        const incomingDir = data.dir || data.config?.dir;
+        if (incomingDir !== undefined && device?.id) {
+          updateDeviceEntity(device.id, 'config', { attributes: [{ key: 'motor_direction', value: incomingDir }] });
+          updateDeviceEntity(device.id, primaryEntity?.code || 'main', { attributes: [{ key: 'motor_direction', value: incomingDir }] });
+        }
         if (data.config && typeof data.config === 'object' && device?.id) {
           updateDeviceEntity(device.id, 'config', { state: data.config });
         }
 
-        // --- Fake Position Animation Logic ---
-        // Vì C-code đang "hack" mqtt_position = 50 khi di chuyển,
-        // ta bỏ qua incomingPosition nếu rèm đang chạy. Tự nội suy phần trăm theo thời gian!
-        // Only trigger animations when state actually changes
+        // --- Position Animation Logic ---
+        // Vị trí động cơ tính toán liên tục, animate theo EDoorState
         if (isStateChanged) {
           const durationMs = travelMsRef.current > 0 ? travelMsRef.current : 20000;
 
-          if (newState === EDoorState.Open) {
+          if (newState === EDoorState.Opening) {
             cancelAnimation(position);
             const remain = ((100 - position.value) / 100) * durationMs;
             position.value = withTiming(100, { duration: Math.max(remain, 100), easing: Easing.linear });
           }
-          else if (newState === EDoorState.Close) {
+          else if (newState === EDoorState.Closing) {
             cancelAnimation(position);
             const remain = (position.value / 100) * durationMs;
             position.value = withTiming(0, { duration: Math.max(remain, 100), easing: Easing.linear });
           }
-          else if (newState === EDoorState.Stop) {
+          else if (newState === EDoorState.Stopped || newState === EDoorState.Opened || newState === EDoorState.Closed) {
             cancelAnimation(position);
-            // Mới dừng: lỡ đâu chip đang gửi % thật lúc STOP? Cập nhật theo chip (nhưng bỏ qua 50% rác)
-            if (incomingPosition !== null && incomingPosition !== 50) {
+            if (incomingPosition !== null) {
               position.value = withTiming(incomingPosition, { duration: 300 });
             }
+            else if (newState === EDoorState.Opened) {
+              position.value = withTiming(100, { duration: 300 });
+            }
+            else if (newState === EDoorState.Closed) {
+              position.value = withTiming(0, { duration: 300 });
+            }
           }
+        }
+        else if (incomingPosition !== null && newState !== EDoorState.Opening && newState !== EDoorState.Closing) {
+          // Nếu rèm không chạy mà chip tự đổi position, update ngay
+          position.value = withTiming(incomingPosition, { duration: 300 });
         }
       },
       [primaryEntity, position, device?.id, updateDeviceEntity],
@@ -276,6 +295,8 @@ export function useShutterControl(
     handleStop: useCallback(() => sendCommand(mainCode, EShutterCmd.Stop), [sendCommand, mainCode]),
     // Position control (0-100)
     handlePosition: useCallback((val: number) => sendCommand(mainCode, val), [sendCommand, mainCode]),
+    // Motor Direction control
+    handleMotorDirection: useCallback((isReversed: boolean) => sendCommand(mainCode, isReversed ? 'DIR_REV' : 'DIR_FWD'), [sendCommand, mainCode]),
     // Child lock — entity `child_lock` (lock domain), value: 0 | 1
     handleChildLock: useCallback((lock: boolean) => sendCommand('child_lock', lock ? 1 : 0), [sendCommand]),
     // BLE mode — entity `ble_mode` (switch domain), value: "on" | "off"
@@ -310,6 +331,7 @@ export function useShutterControl(
     handleOta: useCallback((url: string) => sendCommand('update', url), [sendCommand]),
     sendCommand,
     motorConfig,
+    isMotorReversed,
     isOnline,
     childLockEntity,
   };

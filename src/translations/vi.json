@@ -249,11 +249,20 @@
       "defaultName": "Cửa cuốn",
       "deviceInfo": "Thông tin thiết bị",
       "deviceType": "Loại thiết bị",
+      "motorForward": "Motor: Chiều thuận",
+      "motorReversed": "Motor: Đảo chiều",
       "open": "Mở",
       "operations": "Lượt thao tác",
       "position": "Vị trí",
       "rename": "Đổi tên",
       "settings": "Cài đặt",
+      "state": {
+        "closed": "Đã đóng",
+        "closing": "Đang đóng...",
+        "opened": "Đã mở",
+        "opening": "Đang mở...",
+        "stopped": "Dừng"
+      },
       "stop": "Dừng",
       "travelTime": "Hành trình",
       "workingHours": "Giờ làm việc"

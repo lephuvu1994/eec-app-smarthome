@@ -12,6 +12,7 @@ import Animated, {
 
 import { Text, View } from '@/components/ui';
 import { NetworkSignalIndicator } from '@/features/devices/common/components/network-signal-indicator';
+import { EDoorState } from '@/features/devices/types/curtain/hooks/use-shutter-control';
 import { translate } from '@/lib/i18n';
 
 type TProps = {
@@ -89,7 +90,15 @@ export function ShutterVisualizer({ position, doorState, stateColor, isOnline, p
       {/* 3. Overlay pills — nằm trong container nên responsive theo ảnh */}
       <View className="absolute top-3 right-3 flex-row items-center gap-2 rounded-full bg-white/60 px-3 py-1.5 shadow-sm dark:bg-black/60">
         <View className="size-2 rounded-full" style={{ backgroundColor: stateColor }} />
-        <Text className="text-xs font-semibold text-black uppercase dark:text-white">{doorState}</Text>
+        <Text className="text-xs font-semibold text-black uppercase dark:text-white">
+          {{
+            [EDoorState.Opened]: translate('deviceDetail.shutter.state.opened'),
+            [EDoorState.Closed]: translate('deviceDetail.shutter.state.closed'),
+            [EDoorState.Stopped]: translate('deviceDetail.shutter.state.stopped'),
+            [EDoorState.Opening]: translate('deviceDetail.shutter.state.opening'),
+            [EDoorState.Closing]: translate('deviceDetail.shutter.state.closing'),
+          }[doorState as EDoorState] ?? doorState}
+        </Text>
       </View>
 
       <View className="absolute top-3 left-3 flex-row items-center gap-1.5 rounded-full bg-black/60 px-2.5 py-1.5 shadow-sm">
