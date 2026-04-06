@@ -4,7 +4,6 @@ import { useNavigation } from 'expo-router';
 import * as React from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 import { CustomHeader, HeaderIconButton, useHeaderOffset } from '@/components/base/header/CustomHeader';
 import { BaseLayout } from '@/components/layout/BaseLayout';

@@ -6,7 +6,7 @@ import { EDeviceProtocol } from '@/lib/api/devices/device.service';
 
 function WifiSignalIcon({ level, size = 20, activeColor = '#10B981', inactiveColor = '#3F3F46' }: { level: number; size?: number; activeColor?: string; inactiveColor?: string }) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <Svg width={size * 1.3} height={size * 1.15} viewBox="0 0 24 22" fill="none" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
       {/* 5 bars (4 arcs + 1 dot) */}
       <Path d="M1 5.5a16 16 0 0 1 22 0" stroke={level >= 5 ? activeColor : inactiveColor} />
       <Path d="M3.5 9a12 12 0 0 1 17 0" stroke={level >= 4 ? activeColor : inactiveColor} />

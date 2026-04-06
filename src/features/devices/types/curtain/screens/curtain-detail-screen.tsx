@@ -72,7 +72,6 @@ function CtrlButton({ icon, label, onPress, disabled, primary = false }: TCtrlBt
 export function CurtainDetailScreen({ deviceId, entityId }: Props) {
   const devices = useDeviceStore(s => s.devices);
   const device = devices.find(d => d.id === deviceId);
-  const insets = useSafeAreaInsets();
   const router = useRouter();
   const { theme } = useUniwind();
   const navigation = useNavigation();

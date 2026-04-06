@@ -96,6 +96,7 @@ export function ShutterVisualizer({ position, doorState, stateColor, isOnline, p
         {protocol && (
           <NetworkSignalIndicator
             protocol={protocol}
+            isOnline={isOnline}
             rssi={rssi}
             linkquality={linkquality}
             size={12}

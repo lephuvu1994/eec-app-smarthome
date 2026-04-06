@@ -1,6 +1,7 @@
 import type { TDeviceTimer } from '@/lib/api/automation/automation.service';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 import * as React from 'react';
@@ -11,7 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 import { CustomHeader, HeaderIconButton, useHeaderOffset } from '@/components/base/header/CustomHeader';
 import { BaseLayout } from '@/components/layout/BaseLayout';
-import { ScrollView, Text, View } from '@/components/ui';
+import { IS_IOS, ScrollView, Text, View } from '@/components/ui';
 import { useModal } from '@/components/ui/modal';
 import { translate } from '@/lib/i18n';
 import { useDeviceStore } from '@/stores/device/device-store';
@@ -194,13 +195,27 @@ export function TimerListScreen() {
           </View>
         </ScrollView>
       </View>
-      <CountdownEditorSheet
-        modalRef={editorModal.ref}
-        device={device as any}
-        entity={entity as any}
-        existingTimer={selectedTimer}
-        onSuccess={() => {}}
-      />
+      {IS_IOS
+        ? (
+            <BottomSheetModalProvider>
+              <CountdownEditorSheet
+                modalRef={editorModal.ref}
+                device={device as any}
+                entity={entity as any}
+                existingTimer={selectedTimer}
+                onSuccess={() => {}}
+              />
+            </BottomSheetModalProvider>
+          )
+        : (
+            <CountdownEditorSheet
+              modalRef={editorModal.ref}
+              device={device as any}
+              entity={entity as any}
+              existingTimer={selectedTimer}
+              onSuccess={() => {}}
+            />
+          )}
     </BaseLayout>
   );
 }
