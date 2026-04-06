@@ -1,5 +1,8 @@
 node_modules/
 .env
+.env.development
+.env.preview
+.env.production
 .expo/
 dist/
 npm-debug.*
