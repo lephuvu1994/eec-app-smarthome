@@ -1,11 +1,11 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useHeaderHeight } from '@react-navigation/elements';
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
 import { Alert, TextInput } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
+import { CustomHeader, HeaderIconButton, useHeaderOffset } from '@/components/base/header/CustomHeader';
 
 import { BaseLayout } from '@/components/layout/BaseLayout';
 import { ScrollView, Text, TouchableOpacity, View } from '@/components/ui';
@@ -40,7 +40,8 @@ function Divider() {
 // ─── Main Screen ──────────────────────────
 export function RoomDetailScreen() {
   const { roomId, roomName } = useLocalSearchParams<{ roomId: string; roomName: string }>();
-  const headerHeight = useHeaderHeight();
+  const headerOffset = useHeaderOffset();
+  const params = useLocalSearchParams();
   const { theme } = useUniwind();
   const isDark = theme === ETheme.Dark;
   const insets = useSafeAreaInsets();
@@ -87,6 +88,16 @@ export function RoomDetailScreen() {
   return (
     <BaseLayout>
       <View className="relative w-full flex-1">
+        <CustomHeader
+          title={(params.roomName as string) || translate('home.roomName' as any) || 'Room'}
+          tintColor={theme === 'dark' ? '#FFF' : '#1B1B1B'}
+          leftContent={(
+            <HeaderIconButton onPress={() => router.back()}>
+              <MaterialCommunityIcons name="chevron-left" size={28} color={theme === 'dark' ? '#FFF' : '#1B1B1B'} />
+            </HeaderIconButton>
+          )}
+        />
+
         <Image
           source={
             isDark
@@ -107,7 +118,7 @@ export function RoomDetailScreen() {
 
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingTop: headerHeight + 8, paddingBottom: insets.bottom + 32 }}
+          contentContainerStyle={{ paddingTop: headerOffset + 8, paddingBottom: insets.bottom + 32 }}
         >
           {/* ─── Room name ─── */}
           <View className="mx-4 mb-4 overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-neutral-800">

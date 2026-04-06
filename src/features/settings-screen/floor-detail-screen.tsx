@@ -1,13 +1,13 @@
 import type { TRoom } from '@/lib/api/homes/home.service';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useHeaderHeight } from '@react-navigation/elements';
 import { Image } from 'expo-image';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Alert, TextInput } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
+import { CustomHeader, HeaderIconButton, useHeaderOffset } from '@/components/base/header/CustomHeader';
 
 import { BaseLayout } from '@/components/layout/BaseLayout';
 import { ScrollView, Text, TouchableOpacity, View } from '@/components/ui';
@@ -58,7 +58,8 @@ function RoomRow({ room, isLast }: { room: TRoom; isLast: boolean }) {
 
 export function FloorDetailScreen() {
   const { floorId, floorName } = useLocalSearchParams<{ floorId: string; floorName: string }>();
-  const headerHeight = useHeaderHeight();
+  const headerOffset = useHeaderOffset();
+  const params = useLocalSearchParams();
   const { theme } = useUniwind();
   const isDark = theme === ETheme.Dark;
   const insets = useSafeAreaInsets();
@@ -109,6 +110,16 @@ export function FloorDetailScreen() {
     <BaseLayout>
       <Stack.Screen />
       <View className="relative w-full flex-1">
+        <CustomHeader
+          title={(params.floorName as string) || translate('home.floorName' as any) || 'Floor'}
+          tintColor={theme === 'dark' ? '#FFF' : '#1B1B1B'}
+          leftContent={(
+            <HeaderIconButton onPress={() => router.back()}>
+              <MaterialCommunityIcons name="chevron-left" size={28} color={theme === 'dark' ? '#FFF' : '#1B1B1B'} />
+            </HeaderIconButton>
+          )}
+        />
+
         <Image
           source={
             isDark
@@ -129,7 +140,7 @@ export function FloorDetailScreen() {
 
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingTop: headerHeight + 8, paddingBottom: insets.bottom + 32 }}
+          contentContainerStyle={{ paddingTop: headerOffset + 8, paddingBottom: insets.bottom + 32 }}
         >
           {/* ─── Floor name ─── */}
           <Text className="mx-6 mb-2 text-[13px] font-medium tracking-wider text-neutral-500 uppercase dark:text-neutral-400">

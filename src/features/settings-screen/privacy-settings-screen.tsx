@@ -1,11 +1,12 @@
 import type { TxKeyPath } from '@/lib/i18n';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useHeaderHeight } from '@react-navigation/elements';
 import { Image } from 'expo-image';
 import * as Linking from 'expo-linking';
+import { router } from 'expo-router';
 import { Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
+import { CustomHeader, HeaderIconButton, useHeaderOffset } from '@/components/base/header/CustomHeader';
 import { BaseLayout } from '@/components/layout/BaseLayout';
 import { ScrollView, Text, TouchableOpacity, View } from '@/components/ui';
 import { translate } from '@/lib/i18n';
@@ -74,7 +75,7 @@ const permissions: PermissionItem[] = [
 export function PrivacySettingsScreen() {
   const { theme } = useUniwind();
   const insets = useSafeAreaInsets();
-  const headerHeight = useHeaderHeight();
+  const headerOffset = useHeaderOffset();
 
   const openAppSettings = () => {
     if (Platform.OS === 'ios') {
@@ -88,6 +89,16 @@ export function PrivacySettingsScreen() {
   return (
     <BaseLayout>
       <View className="relative w-full flex-1">
+        <CustomHeader
+          title={translate('settings.general.privacySettings')}
+          tintColor={theme === 'dark' ? '#FFF' : '#1B1B1B'}
+          leftContent={(
+            <HeaderIconButton onPress={() => router.back()}>
+              <MaterialCommunityIcons name="chevron-left" size={28} color={theme === 'dark' ? '#FFF' : '#1B1B1B'} />
+            </HeaderIconButton>
+          )}
+        />
+
         <Image
           source={
             theme === ETheme.Dark
@@ -99,7 +110,7 @@ export function PrivacySettingsScreen() {
         />
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingTop: headerHeight + 16, paddingBottom: insets.bottom + 32 }}
+          contentContainerStyle={{ paddingTop: headerOffset + 16, paddingBottom: insets.bottom + 32 }}
         >
           {/* Header description */}
           <View className="mx-4 mb-4 rounded-2xl bg-white p-4 shadow-sm dark:bg-neutral-800">

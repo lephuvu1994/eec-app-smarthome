@@ -33,10 +33,9 @@ import type {
   BottomSheetBackdropProps,
   BottomSheetModalProps,
 } from '@gorhom/bottom-sheet';
-import { BottomSheetModal, useBottomSheet } from '@gorhom/bottom-sheet';
+import { BottomSheetBackdrop, BottomSheetModal } from '@gorhom/bottom-sheet';
 import * as React from 'react';
 import { Pressable, View } from 'react-native';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { Path, Svg } from 'react-native-svg';
 import { useUniwind } from 'uniwind';
 
@@ -114,26 +113,17 @@ export function Modal({ ref, snapPoints: _snapPoints = ['60%'] as (string | numb
   );
 }
 
-/**
- * Custom Backdrop
- */
 
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
-
-function CustomBackdrop({ style }: BottomSheetBackdropProps) {
-  const { close } = useBottomSheet();
-  return (
-    <AnimatedPressable
-      onPress={() => close()}
-      entering={FadeIn.duration(50)}
-      exiting={FadeOut.duration(20)}
-      style={[style, { backgroundColor: 'rgba(0, 0, 0, 0.4)' }]}
-    />
-  );
-}
 
 export function renderBackdrop(props: BottomSheetBackdropProps) {
-  return <CustomBackdrop {...props} />;
+  return (
+    <BottomSheetBackdrop
+      {...props}
+      appearsOnIndex={0}
+      disappearsOnIndex={-1}
+      opacity={0.4}
+    />
+  );
 }
 
 /**

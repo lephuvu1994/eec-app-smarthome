@@ -1,14 +1,14 @@
 import type { TRoom } from '@/lib/api/homes/home.service';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useHeaderHeight } from '@react-navigation/elements';
-import { useLocalSearchParams, useNavigation } from 'expo-router';
-import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator } from 'react-native';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 
+import { CustomHeader, HeaderIconButton, SpringButton, useHeaderOffset } from '@/components/base/header/CustomHeader';
 import { ScrollView, Text, TouchableOpacity, View } from '@/components/ui';
 import { useAssignRooms } from '@/hooks/use-homes';
 import { translate } from '@/lib/i18n';
@@ -62,8 +62,7 @@ export function AssignRoomsScreen() {
   const { theme } = useUniwind();
   const isDark = theme === ETheme.Dark;
   const insets = useSafeAreaInsets();
-  const navigation = useNavigation();
-  const headerHeight = useHeaderHeight();
+  const headerOffset = useHeaderOffset();
 
   const floors = useHomeDataStore(s => s.floors);
   const allRooms = useHomeDataStore(s => s.rooms);
@@ -95,7 +94,7 @@ export function AssignRoomsScreen() {
   const hasChanges = useMemo(() => {
     if (localAssignedIds.size !== originalRoomIds.size)
       return true;
-    for (const id of localAssignedIds) {
+    for (const id of Array.from(localAssignedIds)) {
       if (!originalRoomIds.has(id))
         return true;
     }
@@ -125,7 +124,11 @@ export function AssignRoomsScreen() {
 
   // Local add/remove
   const handleAdd = useCallback((room: TRoom) => {
-    setLocalAssignedIds(prev => new Set([...prev, room.id]));
+    setLocalAssignedIds((prev) => {
+      const next = new Set(prev);
+      next.add(room.id);
+      return next;
+    });
   }, []);
 
   const handleRemove = useCallback((room: TRoom) => {
@@ -158,7 +161,7 @@ export function AssignRoomsScreen() {
       if (selectedHomeId)
         await syncFromAPI(selectedHomeId);
 
-      navigation.goBack();
+      router.back();
     }
     catch {
       // Error handled by mutation hook
@@ -166,44 +169,40 @@ export function AssignRoomsScreen() {
     finally {
       setIsSaving(false);
     }
-  }, [hasChanges, isSaving, localAssignedIds, floorId, assignRooms, syncFromAPI, selectedHomeId, navigation]);
+  }, [hasChanges, isSaving, localAssignedIds, floorId, assignRooms, syncFromAPI, selectedHomeId]);
 
-  // Header right: confirm button
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          activeOpacity={0.7}
-          className="size-9 items-center justify-center"
-        >
-          <MaterialCommunityIcons name="close" size={24} color={isDark ? '#FFF' : '#1B1B1B'} />
-        </TouchableOpacity>
-      ),
-      headerRight: () => (
-        <TouchableOpacity
-          onPress={handleSave}
-          disabled={!hasChanges || isSaving}
-          activeOpacity={0.7}
-          className="h-9 w-12 items-center justify-center"
-        >
-          {isSaving
-            ? <ActivityIndicator size="small" color="#6366F1" />
-            : (
-                <Text className={`text-[16px] font-semibold ${hasChanges ? 'text-indigo-500' : 'text-neutral-300 dark:text-neutral-600'}`}>
-                  {translate('base.saveButton')}
-                </Text>
-              )}
-        </TouchableOpacity>
-      ),
-    });
-  }, [navigation, handleSave, hasChanges, isSaving, isDark]);
+  const iconColor = isDark ? '#FFF' : '#1B1B1B';
 
   return (
     <View className="flex-1 bg-neutral-100 dark:bg-neutral-900">
+      <CustomHeader
+        title={translate('roomManagement.addRoomToFloor')}
+        tintColor={iconColor}
+        leftContent={(
+          <HeaderIconButton onPress={() => router.back()}>
+            <MaterialCommunityIcons name="close" size={24} color={iconColor} />
+          </HeaderIconButton>
+        )}
+        rightContent={(
+          <SpringButton
+            onPress={handleSave}
+            disabled={!hasChanges || isSaving}
+            style={{ paddingHorizontal: 8, height: 36, borderRadius: 8 }}
+          >
+            {isSaving
+              ? <ActivityIndicator size="small" color="#6366F1" />
+              : (
+                  <Text className={`text-[15px] font-semibold ${hasChanges ? 'text-indigo-500' : 'text-neutral-300 dark:text-neutral-600'}`}>
+                    {translate('base.saveButton')}
+                  </Text>
+                )}
+          </SpringButton>
+        )}
+      />
+
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: insets.bottom + 24, paddingTop: headerHeight + 16 }}
+        contentContainerStyle={{ paddingBottom: insets.bottom + 24, paddingTop: headerOffset + 16 }}
       >
         {/* ─── Assigned Rooms ─── */}
         <View className="mx-4 mb-5">
