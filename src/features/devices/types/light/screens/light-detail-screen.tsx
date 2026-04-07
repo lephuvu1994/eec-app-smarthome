@@ -1,13 +1,13 @@
-import { FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useNavigation, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { useUniwind } from 'uniwind';
 
 import { CustomHeader, HeaderIconButton, useHeaderOffset } from '@/components/base/header/CustomHeader';
 import { BaseLayout } from '@/components/layout/BaseLayout';
-import { Text, View } from '@/components/ui';
+import { Text, TouchableOpacity, View } from '@/components/ui';
 import { DeviceActionBar } from '@/features/devices/common/components/device-action-bar';
 import { ColorTab } from '@/features/devices/types/light/components/color-tab';
 import { WhiteTab } from '@/features/devices/types/light/components/white-tab';

@@ -3,13 +3,13 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import * as React from 'react';
-import { StyleSheet, Switch, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useUniwind } from 'uniwind';
 
 import { CustomHeader, HeaderBackButton, useHeaderOffset } from '@/components/base/header/CustomHeader';
 import { BaseLayout } from '@/components/layout/BaseLayout';
-import { ScrollView, Text } from '@/components/ui';
+import { ScrollView, Switch, Text, View } from '@/components/ui';
 import { ZeegoNativeMenu } from '@/components/ui/zeego-native-menu';
 import { deviceService } from '@/lib/api/devices/device.service';
 import { translate } from '@/lib/i18n';
@@ -127,7 +127,7 @@ export function SwitchSettingsScreen({ deviceId }: Props) {
           </View>
           <Text className="text-base font-medium text-black dark:text-white">{label}</Text>
         </View>
-        <Switch value={value} onValueChange={onToggle} />
+        <Switch accessibilityLabel={label} checked={value} onChange={onToggle} activeColor="#A3E635" />
       </View>
     );
   };

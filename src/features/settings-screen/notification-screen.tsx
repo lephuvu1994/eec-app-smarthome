@@ -2,13 +2,13 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Alert, Linking, Platform, Switch, TouchableOpacity } from 'react-native';
+import { Alert, Linking } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 import { CustomHeader, HeaderIconButton, useHeaderOffset } from '@/components/base/header/CustomHeader';
 
 import { BaseLayout } from '@/components/layout/BaseLayout';
-import { ScrollView, showSuccessMessage, Text, View } from '@/components/ui';
+import { colors, IS_IOS, ScrollView, showSuccessMessage, Switch, Text, TouchableOpacity, View } from '@/components/ui';
 import { translate } from '@/lib/i18n';
 import { useDeviceStore } from '@/stores/device/device-store';
 import { useNotificationStore } from '@/stores/notification';
@@ -35,7 +35,7 @@ export function NotificationScreen() {
   });
 
   const openSystemSettings = () => {
-    if (Platform.OS === 'ios') {
+    if (IS_IOS) {
       Linking.openURL('app-settings:');
     }
     else {
@@ -154,10 +154,11 @@ export function NotificationScreen() {
                   </View>
                 </View>
                 <Switch
-                  value={hasPermission}
-                  onValueChange={toggleGlobalPermission}
+                  accessibilityLabel={translate('settings.notification.permissionSection')}
+                  checked={hasPermission}
+                  onChange={toggleGlobalPermission}
                   disabled={isUpdatingGlobal}
-                  trackColor={{ false: isDark ? '#3A3A3C' : '#E5E5EA', true: '#34C759' }}
+                  activeColor={colors.neon}
                 />
               </View>
             </View>
