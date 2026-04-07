@@ -48,7 +48,7 @@ export function WhiteTab({ isOn, colorTemp, brightness, onToggle, onChangeColorT
         {/* Lamp Icon (Image is large, so beam should be behind or positioned correctly) */}
         <View className="w-full items-center justify-center px-4">
           <View className="relative w-full">
-            <Image source={isOn ? require('@@/assets/device/light/light-2-on.png') : require('@@/assets/device/light/light-2.png')} style={{ width, height: 5 * width / 6 }} />
+            <Image source={isOn ? require('@@/assets/device/light/light-2-on.webp') : require('@@/assets/device/light/light-2.webp')} style={{ width, height: 5 * width / 6 }} />
             {(() => {
               const svgWidth = width * 72 / 100;
               const svgHeight = width * 72 / 200; // strictly proportional height

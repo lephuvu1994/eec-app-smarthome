@@ -6,10 +6,9 @@ import { FontAwesome5, FontAwesome6 } from '@expo/vector-icons';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { ScrollView, TouchableOpacity } from 'react-native';
 
 import { useUniwind } from 'uniwind';
-import { Button, IS_IOS, Modal, Switch, Text, View, WheelPicker } from '@/components/ui';
+import { Button, IS_IOS, Modal, ScrollView, Switch, Text, TouchableOpacity, View, WheelPicker } from '@/components/ui';
 import { translate } from '@/lib/i18n';
 import { ETheme } from '@/types/base';
 import { useScheduleEditor } from './use-schedule-editor';

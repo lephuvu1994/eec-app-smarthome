@@ -15,10 +15,10 @@ import { translate } from '@/lib/i18n';
 import { useHomeStore } from '@/stores/home/home-store';
 import { ETheme } from '@/types/base';
 import { PulseDot } from '../PulseDot';
+import { CustomHeader } from './CustomHeader';
 
 export const PrimaryHeaderHome: React.FC = memo(() => {
   const { theme } = useUniwind();
-  const insets = useSafeAreaInsets();
 
   // ─── Home data ─────────────────────────────
   const homes = useHomeStore(s => s.homes);
@@ -73,64 +73,61 @@ export const PrimaryHeaderHome: React.FC = memo(() => {
   ], []);
 
   return (
-    <View
-      className="w-full flex-row gap-2 px-4"
-      style={{
-        paddingTop: insets.top,
-      }}
-    >
-      <View className="flex-1 flex-col">
-        {/* Home selector */}
-        <ZeegoNativeMenu
-          triggerComponent={(
-            <TouchableOpacity className="flex-row items-center gap-2.5">
-              <AntDesign name="home" size={18} color={theme === ETheme.Light ? '#1B1B1B' : '#FFFFFF'} />
-              <Text className="text-[#1B1B1B] dark:text-white">
-                {selectedHome?.name ?? translate('base.home')}
-              </Text>
-              <AntDesign className="mt-1" name="caret-down" size={16} color={theme === ETheme.Light ? '#1B1B1B' : '#FFFFFF'} />
-            </TouchableOpacity>
-          )}
-          elements={homeMenuItems}
-        />
-        <View className="flex-row items-center gap-1">
-          <SnownyIcon />
-          <Text className="text-sm text-[#06B6D4] dark:text-[#06B6D4]">20°C</Text>
+    <CustomHeader
+      leftContent={(
+        <View className="flex-1 flex-col">
+          {/* Home selector */}
+          <ZeegoNativeMenu
+            triggerComponent={(
+              <TouchableOpacity className="flex-row items-center gap-2.5">
+                <AntDesign name="home" size={18} color={theme === ETheme.Light ? '#1B1B1B' : '#FFFFFF'} />
+                <Text className="text-[#1B1B1B] dark:text-white">
+                  {selectedHome?.name ?? translate('base.home')}
+                </Text>
+                <AntDesign className="mt-1" name="caret-down" size={16} color={theme === ETheme.Light ? '#1B1B1B' : '#FFFFFF'} />
+              </TouchableOpacity>
+            )}
+            elements={homeMenuItems}
+          />
+          <View className="flex-row items-center gap-1">
+            <SnownyIcon />
+            <Text className="text-sm text-[#06B6D4] dark:text-[#06B6D4]">20°C</Text>
+          </View>
         </View>
-      </View>
-      <View className="flex-1 flex-row justify-end gap-2">
-        <HomeTimelinePopover
-          homeId={selectedHomeId ?? ''}
-          renderTrigger={(sourceRef, openPopover) => (
-            <TouchableOpacity
-              ref={sourceRef}
-              onPress={openPopover}
-              className="relative size-10 items-center justify-center rounded-full bg-white/40 shadow-sm dark:bg-black/40"
-            >
-              <BellIcon color={theme === ETheme.Light ? '#737373' : '#FFFFFF'} />
-              <PulseDot
-                color="#22C55E"
-                size={8}
-                duration={1200}
-                style={{
-                  position: 'absolute',
-                  top: 6,
-                  right: 6,
-                }}
-              />
-            </TouchableOpacity>
-          )}
-        />
+      )}
+      rightContent={(
+        <View className="flex-1 flex-row justify-end gap-2">
+          <HomeTimelinePopover
+            homeId={selectedHomeId ?? ''}
+            trigger={(
+              <TouchableOpacity
+                className="relative size-10 items-center justify-center rounded-full bg-white/40 shadow-sm dark:bg-black/40"
+              >
+                <BellIcon color={theme === ETheme.Light ? '#737373' : '#FFFFFF'} />
+                <PulseDot
+                  color="#22C55E"
+                  size={8}
+                  duration={1200}
+                  style={{
+                    position: 'absolute',
+                    top: 6,
+                    right: 6,
+                  }}
+                />
+              </TouchableOpacity>
+            )}
+          />
 
-        <ZeegoNativeMenu
-          triggerComponent={(
-            <View pointerEvents="none" className="size-10 items-center justify-center rounded-full bg-white/40 shadow-sm dark:bg-black/40">
-              <AntDesign name="plus" size={16} color={theme === ETheme.Light ? '#737373' : '#FFFFFF'} />
-            </View>
-          )}
-          elements={headerRightMenu}
-        />
-      </View>
-    </View>
+          <ZeegoNativeMenu
+            triggerComponent={(
+              <View pointerEvents="none" className="size-10 items-center justify-center rounded-full bg-white/40 shadow-sm dark:bg-black/40">
+                <AntDesign name="plus" size={16} color={theme === ETheme.Light ? '#737373' : '#FFFFFF'} />
+              </View>
+            )}
+            elements={headerRightMenu}
+          />
+        </View>
+      )}
+    />
   );
 });

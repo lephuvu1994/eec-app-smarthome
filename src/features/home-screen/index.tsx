@@ -1,6 +1,7 @@
 import { Image } from 'expo-image';
 import { StyleSheet } from 'react-native';
 import { useUniwind } from 'uniwind';
+import { useHeaderOffset } from '@/components/base/header/CustomHeader';
 import { PrimaryHeaderHome } from '@/components/base/header/PrimaryHomeHeader';
 import { BaseLayout } from '@/components/layout/BaseLayout';
 import { View } from '@/components/ui';
@@ -9,6 +10,7 @@ import { HomeScreenWrapper } from './wrapper/home-screen-wrapper';
 
 export function HomeScreen() {
   const { theme } = useUniwind();
+  const headerOffset = useHeaderOffset();
 
   return (
     <BaseLayout>
@@ -27,7 +29,9 @@ export function HomeScreen() {
           contentFit="cover"
         />
         <PrimaryHeaderHome />
-        <HomeScreenWrapper className="flex-1 pt-2" />
+        <View className="relative w-full flex-1" style={{ paddingTop: headerOffset }}>
+          <HomeScreenWrapper className="flex-1" />
+        </View>
       </View>
     </BaseLayout>
   );

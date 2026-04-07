@@ -68,7 +68,7 @@ export function SignIn() {
         <View className="gap-6 px-4" style={{ paddingTop: headerHeight }}>
 
           <Image
-            source={require('@@/assets/short_logo.webp')}
+            source={require('@@/assets/short_logo.png')}
             style={{
               width: 120,
               height: 120,

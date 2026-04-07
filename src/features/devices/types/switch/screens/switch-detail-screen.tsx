@@ -94,8 +94,8 @@ export function SwitchDetailScreen({ deviceId, entityId }: Props) {
             <View className="flex-row items-center gap-2">
               <TimelinePopover
                 deviceId={deviceId}
-                renderTrigger={(sourceRef, openPopover) => (
-                  <HeaderIconButton onPress={openPopover}>
+                trigger={(
+                  <HeaderIconButton onPress={() => {}}>
                     <BellIcon color={iconColor} />
                   </HeaderIconButton>
                 )}

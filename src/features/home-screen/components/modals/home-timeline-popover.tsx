@@ -8,10 +8,10 @@ import { translate } from '@/lib/i18n';
 
 type Props = {
   homeId: string;
-  renderTrigger: (sourceRef: React.RefObject<any>, openPopover: () => void) => React.ReactNode;
+  trigger: React.ReactNode;
 };
 
-export function HomeTimelinePopover({ homeId, renderTrigger }: Props) {
+export function HomeTimelinePopover({ homeId, trigger }: Props) {
   const router = useRouter();
   const { data, isLoading, isError, hasNextPage, isFetchingNextPage, fetchNextPage } = useHomeTimelineInfinite(homeId, { limit: 10 });
   const items = data?.pages.flatMap(page => page.data) || [];
@@ -29,7 +29,7 @@ export function HomeTimelinePopover({ homeId, renderTrigger }: Props) {
       onViewAll={() => {
         router.push('/(home)/home-activity');
       }}
-      renderTrigger={renderTrigger}
+      trigger={trigger}
     />
   );
 }

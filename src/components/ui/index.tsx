@@ -11,6 +11,7 @@ export * from './image';
 export * from './input';
 export * from './list';
 export * from './modal';
+export * from './popover';
 export * from './progress-bar';
 export * from './select';
 export * from './skeleton';

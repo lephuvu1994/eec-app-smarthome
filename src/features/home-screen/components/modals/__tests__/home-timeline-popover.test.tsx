@@ -25,23 +25,26 @@ jest.mock('@expo/vector-icons', () => ({
   MaterialCommunityIcons: 'MaterialCommunityIcons',
 }));
 
-// Mock Popover since react-native-popover-view is hard to test in JSDOM
-jest.mock('react-native-popover-view', () => {
+// Mock Popover since @rn-primitives/popover is hard to test in JSDOM
+jest.mock('@rn-primitives/popover', () => {
   const React = require('react');
   const { View } = require('react-native');
+  const PopoverContext = React.createContext(false);
   return {
     __esModule: true,
-    PopoverPlacement: { BOTTOM: 'BOTTOM' },
-    default: ({ isVisible, children, from, onRequestClose }: any) => {
-      return (
-        <View testID="popover-wrapper">
-          {/* Render trigger */}
-          {from && typeof from === 'function' && from(React.createRef(), () => {})}
-          {/* Render children only if visible */}
-          {isVisible && <View testID="popover-content">{children}</View>}
-        </View>
-      );
+    Root: ({ children, open }: any) => (
+      <PopoverContext.Provider value={open}>
+        <View testID="popover-wrapper">{children}</View>
+      </PopoverContext.Provider>
+    ),
+    Trigger: ({ children }: any) => <>{children}</>,
+    Portal: ({ children }: any) => {
+      const open = React.useContext(PopoverContext);
+      return open ? <>{children}</> : null;
     },
+    Overlay: () => null,
+    Content: ({ children }: any) => <View testID="popover-content">{children}</View>,
+    Close: ({ children }: any) => <>{children}</>,
   };
 });
 
