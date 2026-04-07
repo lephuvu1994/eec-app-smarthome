@@ -1,38 +1,35 @@
-import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { TouchableOpacity } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, {
-  Extrapolation,
-  interpolate,
-  interpolateColor,
-  useAnimatedStyle,
-  useDerivedValue,
-  useSharedValue,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { runOnJS } from 'react-native-worklets';
+import { FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
+import { useNavigation, useRouter } from 'expo-router';
+import { useState } from 'react';
+import { StyleSheet, TouchableOpacity } from 'react-native';
+import { useUniwind } from 'uniwind';
 
+import { CustomHeader, HeaderIconButton, useHeaderOffset } from '@/components/base/header/CustomHeader';
+import { BaseLayout } from '@/components/layout/BaseLayout';
 import { Text, View } from '@/components/ui';
 import { DeviceActionBar } from '@/features/devices/common/components/device-action-bar';
+import { ColorTab } from '@/features/devices/types/light/components/color-tab';
+import { WhiteTab } from '@/features/devices/types/light/components/white-tab';
 import { useLightControl } from '@/features/devices/types/light/hooks/use-light-control';
 import { translate } from '@/lib/i18n';
 import { getPrimaryEntities } from '@/lib/utils/device-entity-helper';
 import { useDeviceStore } from '@/stores/device/device-store';
+import { ETheme } from '@/types/base';
 
 type Props = {
   deviceId: string;
   entityId?: string;
 };
 
-const SLIDER_HEIGHT = 280;
-const SLIDER_WIDTH = 100;
-
 export function LightDetailScreen({ deviceId, entityId }: Props) {
   const router = useRouter();
+  const navigation = useNavigation();
+  const headerOffset = useHeaderOffset();
+  const { theme } = useUniwind();
+  const isDark = theme === ETheme.Dark;
+  const iconColor = isDark ? '#FFF' : '#1B1B1B';
+
   const devices = useDeviceStore(s => s.devices);
   const device = Array.isArray(devices) ? devices.find(d => d.id === deviceId) : undefined;
 
@@ -40,136 +37,106 @@ export function LightDetailScreen({ deviceId, entityId }: Props) {
     ? device?.entities.find(e => e.id === entityId)
     : device ? getPrimaryEntities(device)[0] : undefined;
 
-  const { isOn, isLoading, brightness, handleToggle, handleChangeBrightness } = useLightControl(device as any, primaryEntity as any);
+  const { isOn, brightness, colorTemp, color, handleToggle, handleChangeBrightness, handleChangeColorTemp, handleChangeColor } = useLightControl(device as any, primaryEntity as any);
 
-  // Background and slider animations
-  const powerProgress = useDerivedValue(() => {
-    return withTiming(isOn ? 1 : 0, { duration: 500 });
-  });
+  const [activeTab, setActiveTab] = useState<'white' | 'color'>('white');
 
-  const animatedBgStyle = useAnimatedStyle(() => ({
-    backgroundColor: interpolateColor(
-      powerProgress.value,
-      [0, 1],
-      ['#121212', '#FEF08A'], // from neutral-900 to yellow-200
-    ),
-  }));
-
-  const animatedTextStyle = useAnimatedStyle(() => ({
-    color: interpolateColor(
-      powerProgress.value,
-      [0, 1],
-      ['#FFFFFF', '#1F2937'], // white when dark, gray-800 when light
-    ),
-  }));
-
-  // Slider State
-  const sliderProgress = useSharedValue(brightness / 100);
-
-  useEffect(() => {
-    // Sync slider when external brightness changes
-    sliderProgress.value = withSpring(brightness / 100);
-  }, [brightness, sliderProgress]);
-
-  const [tempBright, setTempBright] = useState(brightness);
-
-  const updateUI = (val: number) => {
-    setTempBright(Math.round(val * 100));
-  };
-
-  const commitChange = (val: number) => {
-    handleChangeBrightness(Math.round(val * 100));
-  };
-
-  const panGesture = Gesture.Pan()
-    .onUpdate((e) => {
-      // e.y is from top to bottom (0 to SLIDER_HEIGHT)
-      let nextPos = 1 - (e.y / SLIDER_HEIGHT);
-      nextPos = Math.max(0, Math.min(1, nextPos));
-      sliderProgress.value = nextPos;
-      runOnJS(updateUI)(nextPos);
-    })
-    .onEnd(() => {
-      runOnJS(commitChange)(sliderProgress.value);
-    });
-
-  const animatedSliderFillStyle = useAnimatedStyle(() => {
-    return {
-      height: interpolate(sliderProgress.value, [0, 1], [0, SLIDER_HEIGHT], Extrapolation.CLAMP),
-    };
-  });
+  // If this device model doesn't support color (e.g. LIGHT_CCT), we can force white tab only
+  const hasColor = primaryEntity?.attributes?.some(a => a.key === 'color');
 
   if (!device || !primaryEntity) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-black">
+      <View className="flex-1 items-center justify-center bg-black">
         <Text className="text-white">{translate('base.somethingWentWrong')}</Text>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <Animated.View style={[animatedBgStyle]} className="flex-1">
-      <SafeAreaView className="flex-1">
-
-        {/* Header */}
-        <View className="flex-row items-center justify-between px-5 py-3">
-          <TouchableOpacity
-            onPress={() => router.back()}
-            className="h-11 w-11 items-center justify-center rounded-full bg-white/20"
-          >
-            <Animated.Text style={animatedTextStyle}>
-              <FontAwesome name="chevron-left" size={18} color="inherit" />
-            </Animated.Text>
-          </TouchableOpacity>
-          <Animated.Text style={animatedTextStyle} className="text-xl font-bold tracking-wide">
-            {device.name}
-          </Animated.Text>
-          <View className="h-11 w-11" />
-          {' '}
-          {/* Placeholder for balance */}
-        </View>
-
-        {/* Content */}
-        <View className="flex-1 items-center justify-center pt-8">
-
-          <Animated.Text style={animatedTextStyle} className="mb-2 text-6xl font-bold tracking-tighter">
-            {isOn ? `${tempBright}%` : translate('base.off')}
-          </Animated.Text>
-          <Animated.Text style={animatedTextStyle} className="mb-12 text-lg font-medium opacity-70">
-            {translate('deviceDetail.light.brightness', { defaultValue: 'Brightness' })}
-          </Animated.Text>
-
-          {/* Vertical Slider */}
-          <GestureDetector gesture={panGesture}>
-            <View
-              className="justify-end overflow-hidden rounded-[50px] bg-white/20"
-              style={{ width: SLIDER_WIDTH, height: SLIDER_HEIGHT }}
-            >
-              <Animated.View
-                className="w-full items-center bg-white pt-4 shadow-lg"
-                style={animatedSliderFillStyle}
-              >
-                <View className="h-1.5 w-12 rounded-full bg-black/20" />
-              </Animated.View>
+    <BaseLayout>
+      <View className="relative w-full flex-1">
+        <CustomHeader
+          title={!hasColor ? device.name : undefined}
+          titleComponent={
+            hasColor
+              ? (
+                  <View className="flex-row rounded-full bg-black/10 p-1 dark:bg-white/10">
+                    <TouchableOpacity
+                      onPress={() => setActiveTab('white')}
+                      className={`rounded-full px-4 py-1.5 ${activeTab === 'white' ? 'bg-white shadow-sm dark:bg-[#FFFFFF33]' : ''}`}
+                    >
+                      <Text className={`font-semibold ${activeTab === 'white' ? 'text-black dark:text-white' : 'text-neutral-500 dark:text-neutral-400'}`}>White</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => setActiveTab('color')}
+                      className={`rounded-full px-4 py-1.5 ${activeTab === 'color' ? 'bg-white shadow-sm dark:bg-[#FFFFFF33]' : ''}`}
+                    >
+                      <Text className={`font-semibold ${activeTab === 'color' ? 'text-black dark:text-white' : 'text-neutral-500 dark:text-neutral-400'}`}>Color</Text>
+                    </TouchableOpacity>
+                  </View>
+                )
+              : undefined
+          }
+          tintColor={iconColor}
+          leftContent={(
+            <HeaderIconButton onPress={() => navigation.goBack()}>
+              <MaterialCommunityIcons name="chevron-left" size={28} color={iconColor} />
+            </HeaderIconButton>
+          )}
+          rightContent={(
+            <View className="flex-row items-center gap-2 pr-1">
+              <HeaderIconButton onPress={() => router.push(`/device/${device.id}/settings`)}>
+                <View pointerEvents="none" className="size-10 items-center justify-center rounded-full bg-white/40 shadow-sm dark:bg-black/40">
+                  <MaterialCommunityIcons name="cog-outline" size={20} color={iconColor} />
+                </View>
+              </HeaderIconButton>
             </View>
-          </GestureDetector>
+          )}
+        />
+        <Image
+          source={
+            theme === ETheme.Dark
+              ? require('@@/assets/base/background-dark.webp')
+              : require('@@/assets/base/background-light.webp')
+          }
+          style={[
+            {
+              width: '100%',
+              height: '100%',
+              position: 'absolute',
+            },
+            StyleSheet.absoluteFillObject,
+          ]}
+          contentFit="cover"
+        />
 
+        <View style={{ flex: 1, paddingTop: headerOffset + 16 }}>
+          {/* Content Tabs */}
+          {activeTab === 'white'
+            ? (
+                <WhiteTab
+                  isOn={isOn}
+                  brightness={brightness}
+                  colorTemp={colorTemp}
+                  onToggle={handleToggle}
+                  onChangeBrightness={handleChangeBrightness}
+                  onChangeColorTemp={handleChangeColorTemp}
+                />
+              )
+            : (
+                <ColorTab
+                  isOn={isOn}
+                  brightness={brightness}
+                  color={color}
+                  onToggle={handleToggle}
+                  onChangeBrightness={handleChangeBrightness}
+                  onChangeColor={handleChangeColor}
+                />
+              )}
+
+          <DeviceActionBar device={device} entities={primaryEntity ? [primaryEntity] : []} />
         </View>
-
-        {/* Bottom Controls */}
-        <View className="mt-auto mb-12 items-center">
-          <TouchableOpacity
-            className={`flex h-20 w-20 items-center justify-center rounded-full shadow-lg ${isOn ? 'bg-white' : 'bg-neutral-800'}`}
-            onPress={handleToggle}
-            activeOpacity={0.8}
-            disabled={isLoading}
-          >
-            <FontAwesome5 name="power-off" size={28} color={isOn ? '#FBBF24' : '#fff'} />
-          </TouchableOpacity>
-        </View>
-
-        <DeviceActionBar device={device} entities={primaryEntity ? [primaryEntity] : []} />
-      </SafeAreaView>
-    </Animated.View>
+      </View>
+    </BaseLayout>
   );
 }
