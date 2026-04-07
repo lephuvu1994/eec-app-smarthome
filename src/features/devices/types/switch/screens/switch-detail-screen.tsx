@@ -2,12 +2,12 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useNavigation, useRouter } from 'expo-router';
 import * as React from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import { useUniwind } from 'uniwind';
 import { CustomHeader, HeaderIconButton, useHeaderOffset } from '@/components/base/header/CustomHeader';
 import { BaseLayout } from '@/components/layout/BaseLayout';
-import { showErrorMessage, Text, View } from '@/components/ui';
+import { ScrollView, showErrorMessage, Text, View } from '@/components/ui';
 import { BellIcon } from '@/components/ui/icons';
 import { TimelinePopover } from '@/features/devices/automation/timeline/timeline-popover';
 import { DeviceActionBar } from '@/features/devices/common/components/device-action-bar';
