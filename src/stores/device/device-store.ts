@@ -21,7 +21,7 @@ type TDeviceStoreState = {
   updateDeviceEntity: (
     id: string,
     entityCode: string,
-    updates: { name?: string; state?: any; attributes?: Array<{ key: string; value: string | number }> },
+    updates: { name?: string; state?: any; attributes?: Array<{ key: string; value: any }> },
   ) => void;
   reorderInRoom: (roomId: string, orderedIds: string[]) => void;
   clear: () => void;

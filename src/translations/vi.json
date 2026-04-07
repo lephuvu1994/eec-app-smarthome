@@ -221,7 +221,30 @@
       "targetTemp": "Nhiệt độ"
     },
     "light": {
-      "brightness": "Độ sáng"
+      "brightness": "Độ sáng",
+      "colorHue": "Màu sắc (Hue)",
+      "colorSaturation": "Độ bão hoà (Saturation)",
+      "colorTemp": "Nhiệt độ màu (CCT)"
+    },
+    "settings": {
+      "deviceConfig": "Cấu hình thiết bị",
+      "doNotDisturb": "Không làm phiền",
+      "entityConfig": "Cấu hình - {{name}}",
+      "indicatorMode": "Đèn nền cảnh báo",
+      "indicatorOptions": {
+        "none": "Tắt",
+        "pos": "Chỉ báo ban đêm",
+        "relay": "Chỉ báo Relay"
+      },
+      "lightTitle": "Cài đặt đèn",
+      "options": {
+        "powerOff": "Tắt (Off)",
+        "powerOn": "Bật (On)",
+        "powerPrevious": "Trạng thái cũ"
+      },
+      "powerOnBehavior": "Trạng thái khi có điện",
+      "powerOnBehaviorLight": "Mất điện",
+      "switchTitle": "Cài đặt công tắc"
     },
     "shutter": {
       "advanced": {

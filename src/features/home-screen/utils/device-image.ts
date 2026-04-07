@@ -2,7 +2,7 @@
 // Currently using .png, will be converted to .webp later
 const DEVICE_IMAGES: Record<string, any> = {
   camera: require('@@/assets/device/camera.png'),
-  light: require('@@/assets/device/light.png'),
+  light: require('@@/assets/device/light/light.png'),
   alexa: require('@@/assets/device/alexa.png'),
   assistant: require('@@/assets/device/alexa.png'),
 };
