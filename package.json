@@ -59,6 +59,7 @@
     "@expo/metro-runtime": "~55.0.6",
     "@expo/vector-icons": "^15.0.3",
     "@gorhom/bottom-sheet": "^5.2.8",
+    "@quidone/react-native-wheel-picker": "^1.6.4",
     "@react-native-community/datetimepicker": "8.6.0",
     "@react-native-menu/menu": "^2.0.0",
     "@react-navigation/drawer": "7.9.4",

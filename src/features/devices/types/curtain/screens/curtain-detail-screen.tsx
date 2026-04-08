@@ -72,7 +72,6 @@ function CtrlButton({ icon, label, onPress, disabled, primary = false }: TCtrlBt
 export function CurtainDetailScreen({ deviceId, entityId }: Props) {
   const devices = useDeviceStore(s => s.devices);
   const device = devices.find(d => d.id === deviceId);
-  const insets = useSafeAreaInsets();
   const router = useRouter();
   const { theme } = useUniwind();
   const navigation = useNavigation();
@@ -204,14 +203,10 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
             <View className="flex-row items-center gap-2 pr-1">
               <TimelinePopover
                 deviceId={deviceId}
-                renderTrigger={(sourceRef, openPopover) => (
-                  <TouchableOpacity
-                    ref={sourceRef}
-                    onPress={openPopover}
-                    className="relative size-10 items-center justify-center rounded-full bg-white/40 shadow-sm dark:bg-black/40"
-                  >
+                trigger={(
+                  <View className="relative size-10 items-center justify-center rounded-full bg-white/40 shadow-sm dark:bg-black/40">
                     <BellIcon color={iconColor} />
-                  </TouchableOpacity>
+                  </View>
                 )}
               />
               <ZeegoNativeMenu
