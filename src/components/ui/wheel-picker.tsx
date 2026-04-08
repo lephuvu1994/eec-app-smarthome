@@ -1,165 +1,164 @@
-/* eslint-disable react-compiler/react-compiler */
-import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
-import * as React from 'react';
-import { useEffect, useRef, useState } from 'react';
-import {
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import type { PickerItem } from '@quidone/react-native-wheel-picker';
+
+import QWheelPicker, { usePickerItemHeight, useScrollContentOffset } from '@quidone/react-native-wheel-picker';
+import { memo, useMemo } from 'react';
+import { Animated, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import { useUniwind } from 'uniwind';
 import { ETheme } from '@/types/base';
-import { Text } from './text';
 
 const ITEM_HEIGHT = 44;
+const VISIBLE_ITEMS = 5;
 
-type WheelPickerProps = {
+export type WheelPickerProps = {
   data: number[];
   value: number;
   onValueChange: (value: number) => void;
-  renderItem?: (value: number) => React.ReactNode;
   formatLabel?: (value: number) => string;
+  /** Optional width override (default: 80) */
+  width?: number;
+  /**
+   * @deprecated No longer needed — the library handles nested scrolling natively.
+   */
+  ScrollViewComponent?: React.ElementType;
 };
+
+// Custom item container that adds scale transform on top of the library's
+// built-in rotateX, translateY, opacity animations.
+const ScaledPickerItemContainer = memo(({
+  listRef,
+  item,
+  index,
+  faces,
+  renderItem,
+  itemTextStyle,
+  enableScrollByTapOnItem,
+  readOnly,
+}: any) => {
+  const offset = useScrollContentOffset();
+  const height = usePickerItemHeight();
+
+  const { opacity, rotateX, translateY, scale } = useMemo(() => {
+    const inputRange = faces.map((f: any) => height * (index + f.index));
+    return {
+      opacity: offset.interpolate({
+        inputRange,
+        outputRange: faces.map((x: any) => x.opacity),
+        extrapolate: 'clamp',
+      }),
+      rotateX: offset.interpolate({
+        inputRange,
+        outputRange: faces.map((x: any) => `${x.deg}deg`),
+        extrapolate: 'extend',
+      }),
+      translateY: offset.interpolate({
+        inputRange,
+        outputRange: faces.map((x: any) => x.offsetY),
+        extrapolate: 'extend',
+      }),
+      // Scale: center item = 1.15, items further away = smaller
+      scale: offset.interpolate({
+        inputRange: [
+          (index - 2) * height,
+          (index - 1) * height,
+          index * height,
+          (index + 1) * height,
+          (index + 2) * height,
+        ],
+        outputRange: [0.75, 0.85, 1.15, 0.85, 0.75],
+        extrapolate: 'clamp',
+      }),
+    };
+  }, [faces, height, index, offset]);
+
+  const animatedView = (
+    <Animated.View
+      style={{
+        height,
+        opacity,
+        transform: [
+          { translateY },
+          { rotateX },
+          { scale },
+          { perspective: 1000 },
+        ],
+      }}
+    >
+      {renderItem({ item, index, itemTextStyle })}
+    </Animated.View>
+  );
+
+  if (!enableScrollByTapOnItem || readOnly) {
+    return animatedView;
+  }
+
+  return (
+    <TouchableWithoutFeedback
+      onPress={() => listRef.current?.scrollToIndex({ index, animated: true })}
+    >
+      {animatedView}
+    </TouchableWithoutFeedback>
+  );
+});
 
 export function WheelPicker({
   data,
   value,
   onValueChange,
   formatLabel,
+  width = 80,
 }: WheelPickerProps) {
   const { theme } = useUniwind();
   const isDark = theme === ETheme.Dark;
-  const scrollViewRef = useRef<ScrollView>(null);
-  const [internalValue, setInternalValue] = useState(value);
 
-  const halfHeight = ITEM_HEIGHT * 1.5;
-
-  // Scroll to initial value
-  useEffect(() => {
-    const index = data.indexOf(value);
-    let timeoutId: NodeJS.Timeout;
-    if (index >= 0 && scrollViewRef.current) {
-      timeoutId = setTimeout(() => {
-        scrollViewRef.current?.scrollTo({
-          y: index * ITEM_HEIGHT,
-          animated: false,
-        });
-      }, 100);
-    }
-    return () => {
-      if (timeoutId)
-        clearTimeout(timeoutId);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const offsetY = event.nativeEvent.contentOffset.y;
-    let index = Math.round(offsetY / ITEM_HEIGHT);
-
-    // clamp
-    if (index < 0)
-      index = 0;
-    if (index >= data.length)
-      index = data.length - 1;
-
-    const selectedVal = data[index];
-    if (selectedVal !== internalValue) {
-      setInternalValue(selectedVal);
-    }
-  };
-
-  const handleMomentumScrollEnd = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const offsetY = event.nativeEvent.contentOffset.y;
-    let index = Math.round(offsetY / ITEM_HEIGHT);
-
-    if (index < 0)
-      index = 0;
-    if (index >= data.length)
-      index = data.length - 1;
-
-    const selectedVal = data[index];
-    onValueChange(selectedVal);
-  };
+  // Transform number[] into PickerItem[] for @quidone format
+  const pickerData: PickerItem<number>[] = useMemo(
+    () =>
+      data.map(num => ({
+        value: num,
+        label: formatLabel ? formatLabel(num) : String(num),
+      })),
+    [data, formatLabel],
+  );
 
   return (
-    <View style={styles.container}>
-      {/* Highlight bar in the middle */}
-      <View
-        style={[
-          styles.highlight,
-          {
-            backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)',
-          },
-        ]}
-        pointerEvents="none"
-      />
-
-      <ScrollView
-        ref={scrollViewRef}
-        showsVerticalScrollIndicator={false}
-        snapToInterval={ITEM_HEIGHT}
-        snapToAlignment="center"
-        decelerationRate="fast"
-        onScroll={handleScroll}
-        onMomentumScrollEnd={handleMomentumScrollEnd}
-        scrollEventThrottle={16}
-        contentContainerStyle={{
-          paddingVertical: halfHeight,
+    <View style={styles.wrapper}>
+      <QWheelPicker
+        data={pickerData}
+        value={value}
+        onValueChanged={({ item: { value: v } }: { item: PickerItem<number> }) => onValueChange(v)}
+        itemHeight={ITEM_HEIGHT}
+        visibleItemCount={VISIBLE_ITEMS}
+        width={width}
+        enableScrollByTapOnItem
+        itemTextStyle={{
+          fontSize: 20,
+          fontWeight: '500',
+          color: isDark ? '#FFFFFF' : '#000000',
+          fontVariant: ['tabular-nums'],
         }}
-      >
-        {data.map((item) => {
-          const isSelected = item === internalValue;
-          return (
-            <View key={String(item)} style={styles.itemContainer}>
-              <Text
-                style={[
-                  styles.itemText,
-                  {
-                    color: isSelected
-                      ? isDark
-                        ? '#FFFFFF'
-                        : '#000000'
-                      : isDark
-                        ? '#525252'
-                        : '#A3A3A3',
-                    fontSize: isSelected ? 24 : 20,
-                    fontWeight: isSelected ? '600' : '400',
-                  },
-                ]}
-              >
-                {formatLabel ? formatLabel(item) : item}
-              </Text>
-            </View>
-          );
-        })}
-      </ScrollView>
+        overlayItemStyle={{
+          backgroundColor: isDark
+            ? 'rgba(255, 255, 255, 0.5)'
+            : 'rgba(80, 80, 90, 1)',
+          borderRadius: 12,
+          elevation: 6,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.25,
+          shadowRadius: 5,
+        }}
+        // Override the item container to add animated scale
+        renderItemContainer={({ key, ...props }: any) => (
+          <ScaledPickerItemContainer key={key} {...props} />
+        )}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    height: ITEM_HEIGHT * 4,
-    width: 80,
-    overflow: 'hidden',
-    position: 'relative',
+  wrapper: {
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  highlight: {
-    position: 'absolute',
-    top: ITEM_HEIGHT * 1.5,
-    width: '100%',
-    height: ITEM_HEIGHT,
-    borderRadius: 8,
-  },
-  itemContainer: {
-    height: ITEM_HEIGHT,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  itemText: {
-    textAlign: 'center',
   },
 });

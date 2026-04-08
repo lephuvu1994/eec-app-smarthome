@@ -2,7 +2,7 @@ import type { PressableProps, StyleProp, ViewStyle } from 'react-native';
 
 import * as Haptics from 'expo-haptics';
 import * as React from 'react';
-import { Platform, Pressable, View } from 'react-native';
+import { Platform, Pressable, StatusBar, View } from 'react-native';
 import Animated, {
   FadeIn,
   useAnimatedStyle,
@@ -20,7 +20,7 @@ export const HEADER_CONTENT_HEIGHT = Platform.OS === 'ios' ? 44 : 56;
 /** Total header height = status bar + content */
 export function useHeaderOffset() {
   const insets = useSafeAreaInsets();
-  return insets.top + HEADER_CONTENT_HEIGHT;
+  return (insets.top > 0 ? insets.top : (StatusBar.currentHeight || 0)) + HEADER_CONTENT_HEIGHT;
 }
 
 // ─── SpringButton ──────────────────────────────────────────────────────────
@@ -217,7 +217,7 @@ export function HeaderIconButton({
   children,
   disabled,
 }: {
-  onPress: () => void;
+  onPress?: () => void;
   children: React.ReactNode;
   disabled?: boolean;
 }) {

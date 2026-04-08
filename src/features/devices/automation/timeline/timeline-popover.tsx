@@ -10,11 +10,10 @@ import { useDeviceStore } from '@/stores/device/device-store';
 
 type Props = {
   deviceId: string;
-  renderTrigger: (sourceRef: React.RefObject<any>, openPopover: () => void) => React.ReactNode;
-  fromRect?: any;
+  trigger: React.ReactElement;
 };
 
-export function TimelinePopover({ deviceId, renderTrigger, fromRect }: Props) {
+export function TimelinePopover({ deviceId, trigger }: Props) {
   const router = useRouter();
   const { data, isLoading, isError, hasNextPage, isFetchingNextPage, fetchNextPage } = useDeviceTimelineInfinite(deviceId, { limit: 10 });
   const items = data?.pages.flatMap((page: any) => page.data) || [];
@@ -34,8 +33,7 @@ export function TimelinePopover({ deviceId, renderTrigger, fromRect }: Props) {
       onViewAll={() => {
         router.push(`/device/${deviceId}/timeline`);
       }}
-      renderTrigger={renderTrigger}
-      fromRect={fromRect}
+      trigger={trigger}
     />
   );
 }

@@ -1,16 +1,16 @@
-import type { BottomSheetModal } from '@gorhom/bottom-sheet';
+import type { BottomSheetBackdropProps, BottomSheetModal } from '@gorhom/bottom-sheet';
 import type { TDeviceTimer } from '@/lib/api/automation/automation.service';
 import type { TDevice, TDeviceEntity } from '@/lib/api/devices/device.service';
 
 import { FontAwesome5, FontAwesome6 } from '@expo/vector-icons';
+import { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as React from 'react';
-import { useEffect, useState } from 'react';
-import { ScrollView, TouchableOpacity } from 'react-native';
 
+import { useCallback, useEffect, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
-import { Button, IS_IOS, Modal, Text, View, WheelPicker } from '@/components/ui';
+import { Button, IS_IOS, Modal, Text, TouchableOpacity, View, WheelPicker } from '@/components/ui';
 import { translate } from '@/lib/i18n';
 import { ETheme } from '@/types/base';
 import { useTimerEditor } from './use-timer-editor';
@@ -60,9 +60,13 @@ export function CountdownEditorSheet({ modalRef, device, entity, existingTimer, 
         }
       }
       else {
-        const d = new Date();
-        d.setHours(0, 5, 0, 0);
-        setDurationDate(d);
+        setDurationDate((prevDate) => {
+          if (prevDate.getHours() === 0 && prevDate.getMinutes() === 5)
+            return prevDate;
+          const d = new Date();
+          d.setHours(0, 5, 0, 0);
+          return d;
+        });
         setTargetValue(isCurtainMotor ? 'OPEN' : 1);
       }
     });
@@ -83,8 +87,17 @@ export function CountdownEditorSheet({ modalRef, device, entity, existingTimer, 
     },
   });
 
+  // Backdrop that does NOT dismiss on press — prevents Android RNGH
+  // Gesture.Tap() on backdrop from intercepting content taps.
+  const renderBackdrop = useCallback(
+    (props: BottomSheetBackdropProps) => (
+      <BottomSheetBackdrop {...props} appearsOnIndex={0} disappearsOnIndex={-1} opacity={0.4} pressBehavior="none" />
+    ),
+    [],
+  );
+
   return (
-    <Modal ref={modalRef} snapPoints={[insets.bottom + 420]}>
+    <Modal ref={modalRef} snapPoints={[insets.bottom + 540]} enableContentPanningGesture={IS_IOS} backdropComponent={!IS_IOS ? renderBackdrop : undefined}>
       <View className="flex-1 pb-4">
         {/* Header */}
         <View className="mb-4 flex-row items-center justify-between px-4">
@@ -99,7 +112,7 @@ export function CountdownEditorSheet({ modalRef, device, entity, existingTimer, 
           </TouchableOpacity>
         </View>
 
-        <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
+        <View className="flex-1 px-4">
           {/* Target state toggle */}
           <View className="mb-5 flex-row gap-2">
             {isCurtainMotor
@@ -164,7 +177,7 @@ export function CountdownEditorSheet({ modalRef, device, entity, existingTimer, 
           </View>
 
           {/* Time Wheel / Picker */}
-          <View className="mb-6 h-48 items-center justify-center py-2">
+          <View className="mb-4 w-full items-center justify-center">
             {IS_IOS
               ? (
                   <DateTimePicker
@@ -177,7 +190,7 @@ export function CountdownEditorSheet({ modalRef, device, entity, existingTimer, 
                     }}
                     textColor={isDark ? '#FFFFFF' : '#000000'}
                     themeVariant={isDark ? 'dark' : 'light'}
-                    style={{ width: '100%', height: 140, flex: 1 }}
+                    style={{ height: 180 }}
                   />
                 )
               : (
@@ -225,7 +238,7 @@ export function CountdownEditorSheet({ modalRef, device, entity, existingTimer, 
               })}
             </Text>
           </View>
-        </ScrollView>
+        </View>
 
         <View className="flex-row gap-3 px-4 pt-2">
           {existingTimer
