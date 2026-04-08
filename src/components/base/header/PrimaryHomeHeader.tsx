@@ -3,6 +3,7 @@ import type { TMenuElement } from '@/components/ui/zeego-native-menu';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { router } from 'expo-router';
 import { memo, useMemo } from 'react';
+import { StatusBar } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 import { Text, TouchableOpacity, View } from '@/components/ui';
@@ -76,7 +77,7 @@ export const PrimaryHeaderHome: React.FC = memo(() => {
     <View
       className="w-full flex-row gap-2 px-4"
       style={{
-        paddingTop: insets.top,
+        paddingTop: insets.top > 0 ? insets.top : StatusBar.currentHeight,
       }}
     >
       <View className="flex-1 flex-col">
@@ -101,12 +102,8 @@ export const PrimaryHeaderHome: React.FC = memo(() => {
       <View className="flex-1 flex-row justify-end gap-2">
         <HomeTimelinePopover
           homeId={selectedHomeId ?? ''}
-          renderTrigger={(sourceRef, openPopover) => (
-            <TouchableOpacity
-              ref={sourceRef}
-              onPress={openPopover}
-              className="relative size-10 items-center justify-center rounded-full bg-white/40 shadow-sm dark:bg-black/40"
-            >
+          trigger={(
+            <View className="relative size-10 items-center justify-center rounded-full bg-white/40 shadow-sm dark:bg-black/40">
               <BellIcon color={theme === ETheme.Light ? '#737373' : '#FFFFFF'} />
               <PulseDot
                 color="#22C55E"
@@ -118,7 +115,7 @@ export const PrimaryHeaderHome: React.FC = memo(() => {
                   right: 6,
                 }}
               />
-            </TouchableOpacity>
+            </View>
           )}
         />
 

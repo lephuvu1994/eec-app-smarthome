@@ -25,11 +25,11 @@ type Props = {
   title: string;
   emptyText: string;
   onViewAll: () => void;
-  renderTrigger: (sourceRef: React.RefObject<any>, openPopover: () => void) => React.ReactNode;
+  /** Trigger element — wrapped in a measured container automatically. */
+  trigger: React.ReactElement;
   hasNextPage?: boolean;
   isFetchingNextPage?: boolean;
   onLoadMore?: () => void;
-  fromRect?: any;
   fallbackDeviceName?: string;
 };
 
@@ -40,40 +40,47 @@ export function SharedTimelinePopover({
   title,
   emptyText,
   onViewAll,
-  renderTrigger,
+  trigger,
   hasNextPage,
   isFetchingNextPage,
   onLoadMore,
-  fromRect,
   fallbackDeviceName,
 }: Props) {
   const { theme } = useUniwind();
   const isDark = theme === ETheme.Dark;
   const [isVisible, setIsVisible] = React.useState(false);
   const triggerRef = React.useRef<any>(null);
-  const dummyRef = React.useRef<any>(null);
 
-  const handleViewAll = () => {
-    setIsVisible(false);
-    setTimeout(() => {
-      onViewAll();
-    }, 150);
-  };
+  // Safety: only open if the native view is still mounted
+  const openPopover = React.useCallback(() => {
+    if (triggerRef.current) {
+      setIsVisible(true);
+    }
+  }, []);
 
   return (
-    <View collapsable={false}>
-      <View ref={triggerRef} collapsable={false}>
-        {renderTrigger(dummyRef, () => setIsVisible(true))}
-      </View>
+    <>
+      <TouchableOpacity
+        ref={triggerRef}
+        onPress={openPopover}
+        activeOpacity={0.7}
+      >
+        {trigger}
+      </TouchableOpacity>
+
       <Popover
         isVisible={isVisible}
         onRequestClose={() => setIsVisible(false)}
         placement={PopoverPlacement.BOTTOM}
-        from={fromRect || triggerRef}
+        from={triggerRef}
         popoverStyle={{
           borderRadius: 16,
           backgroundColor: isDark ? '#1C1C1E' : '#F2F2F7',
           width: SCREEN_WIDTH * 0.75,
+        }}
+        onCloseComplete={() => {
+          // Ensure state is clean after close animation finishes
+          setIsVisible(false);
         }}
       >
         <View className="w-full rounded-2xl p-5">
@@ -139,7 +146,10 @@ export function SharedTimelinePopover({
 
           {!isLoading && !isError && items.length > 0 && (
             <TouchableOpacity
-              onPress={handleViewAll}
+              onPress={() => {
+                setIsVisible(false);
+                setTimeout(onViewAll, 150);
+              }}
               className="mt-2 items-center justify-center py-2"
             >
               <Text className="text-sm font-semibold text-blue-500">
@@ -149,6 +159,6 @@ export function SharedTimelinePopover({
           )}
         </View>
       </Popover>
-    </View>
+    </>
   );
 }

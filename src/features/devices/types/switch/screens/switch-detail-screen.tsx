@@ -94,10 +94,10 @@ export function SwitchDetailScreen({ deviceId, entityId }: Props) {
             <View className="flex-row items-center gap-2">
               <TimelinePopover
                 deviceId={deviceId}
-                renderTrigger={(sourceRef, openPopover) => (
-                  <HeaderIconButton onPress={openPopover}>
+                trigger={(
+                  <View className="size-10 items-center justify-center rounded-full bg-white/10">
                     <BellIcon color={iconColor} />
-                  </HeaderIconButton>
+                  </View>
                 )}
               />
               <HeaderIconButton onPress={() => router.push({ pathname: '/device/[id]/settings', params: { id: deviceId } })}>
