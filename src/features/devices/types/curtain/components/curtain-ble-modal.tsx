@@ -2,9 +2,8 @@ import type { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { FontAwesome5 } from '@expo/vector-icons';
 import * as React from 'react';
 import { useState } from 'react';
-import { ScrollView, Switch } from 'react-native';
 
-import { Modal, Text, View } from '@/components/ui';
+import { colors, Modal, ScrollView, Switch, Text, View } from '@/components/ui';
 import { translate } from '@/lib/i18n';
 
 type Props = {
@@ -36,7 +35,7 @@ export function CurtainBleModal({
             <Text className="text-base font-bold text-[#1B1B1B] dark:text-white">{translate('deviceDetail.shutter.advanced.bleMode')}</Text>
             <Text className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">{translate('deviceDetail.shutter.advanced.bleModeDesc')}</Text>
           </View>
-          <Switch value={bleEnabled} onValueChange={handleToggleBle} disabled={isControlling} />
+          <Switch activeColor={colors.neon} accessibilityLabel={translate('deviceDetail.shutter.advanced.bleMode')} checked={bleEnabled} onChange={handleToggleBle} disabled={isControlling} />
         </View>
       </ScrollView>
     </Modal>
