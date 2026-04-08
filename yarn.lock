@@ -4019,6 +4019,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@quidone/react-native-wheel-picker@npm:^1.6.4":
+  version: 1.6.4
+  resolution: "@quidone/react-native-wheel-picker@npm:1.6.4"
+  dependencies:
+    "@rozhkov/react-useful-hooks": "npm:^1.0.10"
+    date-fns: "npm:^4.1.0"
+  peerDependencies:
+    react: ">=16.8"
+    react-native: ">=0.71.6"
+  checksum: 10c0/dc8b3547de13221d7f719f303227518e68ac42602a497663720ee5c688d22d5d4fd00b1c29f7cddcba5e44b94df61024cd508cc8b3aeb197c6ff776975d13d14
+  languageName: node
+  linkType: hard
+
 "@radix-ui/primitive@npm:1.1.3":
   version: 1.1.3
   resolution: "@radix-ui/primitive@npm:1.1.3"
@@ -4952,6 +4965,17 @@ __metadata:
   dependencies:
     nanoid: "npm:^3.3.11"
   checksum: 10c0/85f6cb9ac71e0492845aa87637c7c745d85aa15e4ad7e71a8d910080f5d5a469dd348f59ffaaed8c488cb92708fae56350a0bfc7bc5750c65e12da1f0d4eca70
+  languageName: node
+  linkType: hard
+
+"@rozhkov/react-useful-hooks@npm:^1.0.10":
+  version: 1.0.10
+  resolution: "@rozhkov/react-useful-hooks@npm:1.0.10"
+  dependencies:
+    default-values: "npm:^1.0.2"
+  peerDependencies:
+    react: ^16.8 || ^17 || ^18 || ^19
+  checksum: 10c0/943022d5b900cd400ca42a0ff7a828b1ef91ca76d86bcd5c078ea4b0e43cd7b827706b2caa5513d4656598144a50479db0c88d332c01cb39a67208f6686c45c5
   languageName: node
   linkType: hard
 
@@ -8168,6 +8192,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"date-fns@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "date-fns@npm:4.1.0"
+  checksum: 10c0/b79ff32830e6b7faa009590af6ae0fb8c3fd9ffad46d930548fbb5acf473773b4712ae887e156ba91a7b3dc30591ce0f517d69fd83bd9c38650fdc03b4e0bac8
+  languageName: node
+  linkType: hard
+
 "dayjs@npm:^1.11.20":
   version: 1.11.20
   resolution: "dayjs@npm:1.11.20"
@@ -8282,6 +8313,13 @@ __metadata:
     bundle-name: "npm:^4.1.0"
     default-browser-id: "npm:^5.0.0"
   checksum: 10c0/576593b617b17a7223014b4571bfe1c06a2581a4eb8b130985d90d253afa3f40999caec70eb0e5776e80d4af6a41cce91018cd3f86e57ad578bf59e46fb19abe
+  languageName: node
+  linkType: hard
+
+"default-values@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "default-values@npm:1.0.2"
+  checksum: 10c0/f785452cdbb9ef81fd8660e0001f0bd22a6692a63b8b8fb515d5757fe59bfe9af26910c3239d7693d5bc992afcb2431f55da5cc4c8b78651ed179d81125edc08
   languageName: node
   linkType: hard
 
@@ -18383,6 +18421,7 @@ __metadata:
     "@expo/metro-runtime": "npm:~55.0.6"
     "@expo/vector-icons": "npm:^15.0.3"
     "@gorhom/bottom-sheet": "npm:^5.2.8"
+    "@quidone/react-native-wheel-picker": "npm:^1.6.4"
     "@react-native-community/datetimepicker": "npm:8.6.0"
     "@react-native-menu/menu": "npm:^2.0.0"
     "@react-navigation/drawer": "npm:7.9.4"

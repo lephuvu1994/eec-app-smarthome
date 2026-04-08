@@ -1,12 +1,13 @@
-import type { BottomSheetModal } from '@gorhom/bottom-sheet';
+import type { BottomSheetBackdropProps, BottomSheetModal } from '@gorhom/bottom-sheet';
 import type { TDeviceSchedule } from '@/lib/api/automation/automation.service';
 import type { TDevice, TDeviceEntity } from '@/lib/api/devices/device.service';
 
 import { FontAwesome5, FontAwesome6 } from '@expo/vector-icons';
+import { BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 import * as React from 'react';
-import { useEffect, useState } from 'react';
-import { ScrollView, TouchableOpacity } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { TouchableOpacity } from 'react-native';
 
 import { useUniwind } from 'uniwind';
 import { Button, IS_IOS, Modal, Switch, Text, View, WheelPicker } from '@/components/ui';
@@ -94,8 +95,17 @@ export function ScheduleEditorSheet({ modalRef, device, entity, existingSchedule
     },
   });
 
+  // Backdrop that does NOT dismiss on press — prevents Android RNGH
+  // Gesture.Tap() on backdrop from intercepting content taps.
+  const renderBackdrop = useCallback(
+    (props: BottomSheetBackdropProps) => (
+      <BottomSheetBackdrop {...props} appearsOnIndex={0} disappearsOnIndex={-1} opacity={0.4} pressBehavior="none" />
+    ),
+    [],
+  );
+
   return (
-    <Modal ref={modalRef} snapPoints={['80%']}>
+    <Modal ref={modalRef} snapPoints={['80%']} enableContentPanningGesture={false} backdropComponent={renderBackdrop}>
       <View className="flex-1 pb-4">
         {/* Header */}
         <View className="mb-4 flex-row items-center justify-between px-4">
@@ -110,48 +120,7 @@ export function ScheduleEditorSheet({ modalRef, device, entity, existingSchedule
           </TouchableOpacity>
         </View>
 
-        <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
-          {/* Time Picker */}
-          <View className="mb-6 items-center justify-center py-2">
-            {IS_IOS
-              ? (
-                  <RNDateTimePicker
-                    value={time}
-                    mode="time"
-                    display="spinner"
-                    onChange={(_, date) => date && setTime(date)}
-                    textColor={isDark ? '#FFFFFF' : '#000000'}
-                    themeVariant={isDark ? 'dark' : 'light'}
-                    style={{ height: 140 }}
-                  />
-                )
-              : (
-                  <View className="flex-row items-center justify-center gap-4 rounded-2xl bg-neutral-50 px-6 py-4 dark:bg-neutral-800/80">
-                    <WheelPicker
-                      data={Array.from({ length: 24 }, (_, i) => i)}
-                      value={time.getHours()}
-                      onValueChange={(val: number) => {
-                        const newTime = new Date(time);
-                        newTime.setHours(val);
-                        setTime(newTime);
-                      }}
-                      formatLabel={val => val.toString().padStart(2, '0')}
-                    />
-                    <Text className="text-3xl font-bold text-[#1B1B1B] dark:text-white">:</Text>
-                    <WheelPicker
-                      data={Array.from({ length: 60 }, (_, i) => i)}
-                      value={time.getMinutes()}
-                      onValueChange={(val: number) => {
-                        const newTime = new Date(time);
-                        newTime.setMinutes(val);
-                        setTime(newTime);
-                      }}
-                      formatLabel={val => val.toString().padStart(2, '0')}
-                    />
-                  </View>
-                )}
-          </View>
-
+        <BottomSheetScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
           {/* Target Value */}
           <View className="mb-6 flex-row gap-2">
             {isCurtain
@@ -215,6 +184,47 @@ export function ScheduleEditorSheet({ modalRef, device, entity, existingSchedule
                 )}
           </View>
 
+          {/* Time Picker */}
+          <View className="mb-6 items-center justify-center py-2">
+            {IS_IOS
+              ? (
+                  <RNDateTimePicker
+                    value={time}
+                    mode="time"
+                    display="spinner"
+                    onChange={(_, date) => date && setTime(date)}
+                    textColor={isDark ? '#FFFFFF' : '#000000'}
+                    themeVariant={isDark ? 'dark' : 'light'}
+                    style={{ height: 140 }}
+                  />
+                )
+              : (
+                  <View className="flex-row items-center justify-center gap-4 py-4">
+                    <WheelPicker
+                      data={Array.from({ length: 24 }, (_, i) => i)}
+                      value={time.getHours()}
+                      onValueChange={(val: number) => {
+                        const newTime = new Date(time);
+                        newTime.setHours(val);
+                        setTime(newTime);
+                      }}
+                      formatLabel={val => val.toString().padStart(2, '0')}
+                    />
+                    <Text className="text-3xl font-bold text-[#1B1B1B] dark:text-white">:</Text>
+                    <WheelPicker
+                      data={Array.from({ length: 60 }, (_, i) => i)}
+                      value={time.getMinutes()}
+                      onValueChange={(val: number) => {
+                        const newTime = new Date(time);
+                        newTime.setMinutes(val);
+                        setTime(newTime);
+                      }}
+                      formatLabel={val => val.toString().padStart(2, '0')}
+                    />
+                  </View>
+                )}
+          </View>
+
           {/* Days of Week */}
           <View className="mb-6">
             <Text className="mb-3 text-sm font-medium text-neutral-500 dark:text-neutral-400">
@@ -253,7 +263,7 @@ export function ScheduleEditorSheet({ modalRef, device, entity, existingSchedule
               <Switch checked={enableNotification} onChange={setEnableNotification} accessibilityLabel="enable notification" />
             </View>
           </View>
-        </ScrollView>
+        </BottomSheetScrollView>
 
         <View className="flex-row gap-3 px-4 pt-2">
           {existingSchedule
