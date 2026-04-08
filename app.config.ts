@@ -56,7 +56,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   android: {
     adaptiveIcon: {
-      foregroundImage: './assets/logo.png',
+      foregroundImage: './assets/adaptive-icon.png',
       backgroundColor: '#2E3C4B',
     },
     permissions: ['WAKE_LOCK', 'RECORD_AUDIO'],
