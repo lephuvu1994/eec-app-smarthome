@@ -105,7 +105,7 @@ export function ScheduleEditorSheet({ modalRef, device, entity, existingSchedule
   );
 
   return (
-    <Modal ref={modalRef} snapPoints={['80%']} enableContentPanningGesture={false} backdropComponent={renderBackdrop}>
+    <Modal ref={modalRef} snapPoints={['80%']} enableContentPanningGesture={IS_IOS} backdropComponent={!IS_IOS ? renderBackdrop : undefined}>
       <View className="flex-1 pb-4">
         {/* Header */}
         <View className="mb-4 flex-row items-center justify-between px-4">
@@ -195,7 +195,7 @@ export function ScheduleEditorSheet({ modalRef, device, entity, existingSchedule
                     onChange={(_, date) => date && setTime(date)}
                     textColor={isDark ? '#FFFFFF' : '#000000'}
                     themeVariant={isDark ? 'dark' : 'light'}
-                    style={{ height: 140 }}
+                    style={{ height: 180 }}
                   />
                 )
               : (

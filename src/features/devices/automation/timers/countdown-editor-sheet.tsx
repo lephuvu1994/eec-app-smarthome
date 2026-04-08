@@ -97,7 +97,7 @@ export function CountdownEditorSheet({ modalRef, device, entity, existingTimer, 
   );
 
   return (
-    <Modal ref={modalRef} snapPoints={[insets.bottom + 540]} enableContentPanningGesture={false} backdropComponent={renderBackdrop}>
+    <Modal ref={modalRef} snapPoints={[insets.bottom + 540]} enableContentPanningGesture={IS_IOS} backdropComponent={!IS_IOS ? renderBackdrop : undefined}>
       <View className="flex-1 pb-4">
         {/* Header */}
         <View className="mb-4 flex-row items-center justify-between px-4">
@@ -177,7 +177,7 @@ export function CountdownEditorSheet({ modalRef, device, entity, existingTimer, 
           </View>
 
           {/* Time Wheel / Picker */}
-          <View className="mb-4 items-center justify-center">
+          <View className="mb-4 w-full items-center justify-center">
             {IS_IOS
               ? (
                   <DateTimePicker
@@ -190,7 +190,7 @@ export function CountdownEditorSheet({ modalRef, device, entity, existingTimer, 
                     }}
                     textColor={isDark ? '#FFFFFF' : '#000000'}
                     themeVariant={isDark ? 'dark' : 'light'}
-                    style={{ width: '100%', height: 140, flex: 1 }}
+                    style={{ height: 180 }}
                   />
                 )
               : (
