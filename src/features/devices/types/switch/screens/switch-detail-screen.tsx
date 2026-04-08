@@ -1,14 +1,13 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
-import { useNavigation } from 'expo-router';
+import { useNavigation, useRouter } from 'expo-router';
 import * as React from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 import { CustomHeader, HeaderIconButton, useHeaderOffset } from '@/components/base/header/CustomHeader';
 import { BaseLayout } from '@/components/layout/BaseLayout';
-import { showErrorMessage, Text, View } from '@/components/ui';
+import { ScrollView, showErrorMessage, Text, View } from '@/components/ui';
 import { BellIcon } from '@/components/ui/icons';
 import { TimelinePopover } from '@/features/devices/automation/timeline/timeline-popover';
 import { DeviceActionBar } from '@/features/devices/common/components/device-action-bar';
@@ -29,6 +28,7 @@ type Props = {
 
 export function SwitchDetailScreen({ deviceId, entityId }: Props) {
   const navigation = useNavigation();
+  const router = useRouter();
   const headerOffset = useHeaderOffset();
   const { theme } = useUniwind();
   const isDark = theme === ETheme.Dark;
@@ -91,14 +91,19 @@ export function SwitchDetailScreen({ deviceId, entityId }: Props) {
             </HeaderIconButton>
           )}
           rightContent={(
-            <TimelinePopover
-              deviceId={deviceId}
-              renderTrigger={(sourceRef, openPopover) => (
-                <HeaderIconButton onPress={openPopover}>
-                  <BellIcon color={iconColor} />
-                </HeaderIconButton>
-              )}
-            />
+            <View className="flex-row items-center gap-2">
+              <TimelinePopover
+                deviceId={deviceId}
+                renderTrigger={(sourceRef, openPopover) => (
+                  <HeaderIconButton onPress={openPopover}>
+                    <BellIcon color={iconColor} />
+                  </HeaderIconButton>
+                )}
+              />
+              <HeaderIconButton onPress={() => router.push({ pathname: '/device/[id]/settings', params: { id: deviceId } })}>
+                <MaterialCommunityIcons name="cog-outline" size={24} color={iconColor} />
+              </HeaderIconButton>
+            </View>
           )}
         />
 
@@ -124,7 +129,7 @@ export function SwitchDetailScreen({ deviceId, entityId }: Props) {
           contentContainerStyle={{ paddingHorizontal: 16, paddingTop: headerOffset + 24, paddingBottom: 32 }}
           showsVerticalScrollIndicator={false}
         >
-          <Text className="mb-6 px-2 text-2xl font-bold text-[#1B1B1B] dark:text-white">
+          <Text className="mb-4 px-2 text-[28px] font-bold text-black dark:text-white">
             {translate('base.device')}
           </Text>
 

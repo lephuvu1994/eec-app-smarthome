@@ -221,7 +221,30 @@
       "targetTemp": "Target"
     },
     "light": {
-      "brightness": "Brightness"
+      "brightness": "Brightness",
+      "colorHue": "Color (Hue)",
+      "colorSaturation": "Saturation",
+      "colorTemp": "Color Temp (CCT)"
+    },
+    "settings": {
+      "deviceConfig": "Device Configuration",
+      "doNotDisturb": "Do Not Disturb",
+      "entityConfig": "Configuration - {{name}}",
+      "indicatorMode": "Indicator Mode",
+      "indicatorOptions": {
+        "none": "Off",
+        "pos": "Night Mode",
+        "relay": "Relay Mode"
+      },
+      "lightTitle": "Light Settings",
+      "options": {
+        "powerOff": "Off",
+        "powerOn": "On",
+        "powerPrevious": "Previous State"
+      },
+      "powerOnBehavior": "Power On Behavior",
+      "powerOnBehaviorLight": "Power Loss Recovery",
+      "switchTitle": "Switch Settings"
     },
     "shutter": {
       "advanced": {

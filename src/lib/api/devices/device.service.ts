@@ -49,6 +49,7 @@ export type TEntityAttribute = {
   unit?: string | null;
   readOnly: boolean;
   enumValues?: string[];
+  commandKey?: string | null;
 };
 
 export type TDeviceEntity = {
@@ -239,6 +240,12 @@ export const deviceService = {
 
   setEntityValue: async (deviceToken: string, entityCode: string, value: any): Promise<void> => {
     await client.post(`/devices/${deviceToken}/entities/${entityCode}/setValue`, { value });
+  },
+
+  setMultipleEntityValues: async (deviceToken: string, entityCode: string, values: any): Promise<void> => {
+    // values is an object like { brightness: 50, color_temp: 4000 }
+    // send as the 'value' of the entity so backend routes to iot-gateway
+    await client.post(`/devices/${deviceToken}/entities/${entityCode}/setValue`, { value: values });
   },
 
   renameDevice: async (deviceId: string, name: string): Promise<TDevice> => {

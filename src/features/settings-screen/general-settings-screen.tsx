@@ -5,12 +5,11 @@ import * as Haptics from 'expo-haptics';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import * as React from 'react';
-import { Switch } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 import { CustomHeader, HeaderIconButton, useHeaderOffset } from '@/components/base/header/CustomHeader';
 import { BaseLayout } from '@/components/layout/BaseLayout';
-import { ScrollView, Text, TouchableOpacity, View } from '@/components/ui';
+import { ScrollView, Switch, Text, TouchableOpacity, View } from '@/components/ui';
 import { Modal, useModal } from '@/components/ui/modal';
 import { useSelectedTheme } from '@/lib/hooks/use-selected-theme';
 import { translate, useSelectedLanguage } from '@/lib/i18n';
@@ -128,10 +127,10 @@ export function GeneralSettingsScreen() {
           ),
           right: (
             <Switch
-              value={allowHaptics}
-              onValueChange={toggleHaptics}
-              trackColor={{ false: '#D4D4D4', true: '#A3E635' }}
-              thumbColor="#fff"
+              accessibilityLabel={translate('settings.general.haptics') as string}
+              checked={allowHaptics}
+              onChange={toggleHaptics}
+              activeColor="#A3E635"
             />
           ),
         },
@@ -145,10 +144,10 @@ export function GeneralSettingsScreen() {
           ),
           right: (
             <Switch
-              value={!showCameraPreview}
-              onValueChange={() => setShowCameraPreview(!showCameraPreview)}
-              trackColor={{ false: '#D4D4D4', true: '#A3E635' }}
-              thumbColor="#fff"
+              accessibilityLabel={translate('settings.general.cameraView') as string}
+              checked={!showCameraPreview}
+              onChange={() => setShowCameraPreview(!showCameraPreview)}
+              activeColor="#A3E635"
             />
           ),
         },
@@ -162,10 +161,10 @@ export function GeneralSettingsScreen() {
           ),
           right: (
             <Switch
-              value={showRoomViewExpand}
-              onValueChange={() => setShowRoomViewExpand(!showRoomViewExpand)}
-              trackColor={{ false: '#D4D4D4', true: '#A3E635' }}
-              thumbColor="#fff"
+              accessibilityLabel={translate('settings.general.roomView') as string}
+              checked={showRoomViewExpand}
+              onChange={() => setShowRoomViewExpand(!showRoomViewExpand)}
+              activeColor="#A3E635"
             />
           ),
         },

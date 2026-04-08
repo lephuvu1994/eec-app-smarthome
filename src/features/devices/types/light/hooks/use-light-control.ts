@@ -11,9 +11,13 @@ export function useLightControl(device: TDevice, entity: TDeviceEntity) {
   const allowHaptics = useConfigManager(state => state.allowHaptics);
   const serverIsOn = entity?.currentState === 1 || entity?.state === 1;
   const serverBrightness = entity?.attributes?.find(attr => attr.key === 'brightness')?.currentValue || 100;
+  const serverColorTemp = entity?.attributes?.find(attr => attr.key === 'color_temp')?.currentValue || 4000;
+  const serverColor = entity?.attributes?.find(attr => attr.key === 'color')?.currentValue || { h: 0, s: 0, b: 100 };
 
   const [isOn, setIsOn] = useState(serverIsOn);
   const [brightness, setBrightness] = useState<number>(Number(serverBrightness));
+  const [colorTemp, setColorTemp] = useState<number>(Number(serverColorTemp));
+  const [color, setColor] = useState<{ h: number; s: number; b: number }>(typeof serverColor === 'string' ? JSON.parse(serverColor) : serverColor);
   const [isLoading, setIsLoading] = useState(false);
 
   // Sync state from WS
@@ -34,7 +38,6 @@ export function useLightControl(device: TDevice, entity: TDeviceEntity) {
     if (allowHaptics) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
-
     setIsOn(nextState);
     setIsLoading(true);
 
@@ -46,9 +49,8 @@ export function useLightControl(device: TDevice, entity: TDeviceEntity) {
     catch (e) {
       console.log('Failed to toggle light entity:', e);
       setIsOn(!nextState);
-      if (allowHaptics) {
+      if (allowHaptics)
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      }
     }
     finally {
       setIsLoading(false);
@@ -57,21 +59,33 @@ export function useLightControl(device: TDevice, entity: TDeviceEntity) {
 
   const handleChangeBrightness = async (value: number) => {
     setBrightness(value);
-    // Ideally debounced or sent onChangeComplete if using a slider
     try {
-      // Assuming setting brightness also turns the light on if it's off
-      if (!isOn && value > 0) {
+      if (!isOn && value > 0)
         setIsOn(true);
-      }
-
-      // We would need a specific API for brightness or send it as attribute.
-      // For Tuya/HomeAssistant it's usually setting the value of a brightness entity or passing attributes to the main entity.
-      // E.g: deviceService.setEntityValue(device.token, entity.code, value, { brightness: value });
-      // Stub for now based on standard implementation:
-      console.log(`Setting brightness to ${value} for ${entity.code}`);
+      await deviceService.setMultipleEntityValues(device.token, entity.code, { brightness: value });
     }
     catch (e) {
       console.log('Failed to set brightness:', e);
+    }
+  };
+
+  const handleChangeColorTemp = async (value: number) => {
+    setColorTemp(value);
+    try {
+      await deviceService.setMultipleEntityValues(device.token, entity.code, { color_temp: value });
+    }
+    catch (e) {
+      console.log('Failed to set color_temp:', e);
+    }
+  };
+
+  const handleChangeColor = async (value: { h: number; s: number; b: number }) => {
+    setColor(value);
+    try {
+      await deviceService.setMultipleEntityValues(device.token, entity.code, { color: value });
+    }
+    catch (e) {
+      console.log('Failed to set color:', e);
     }
   };
 
@@ -79,7 +93,11 @@ export function useLightControl(device: TDevice, entity: TDeviceEntity) {
     isOn,
     isLoading,
     brightness,
+    colorTemp,
+    color,
     handleToggle,
     handleChangeBrightness,
+    handleChangeColorTemp,
+    handleChangeColor,
   };
 }
