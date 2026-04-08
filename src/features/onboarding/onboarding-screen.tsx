@@ -145,12 +145,12 @@ export function OnboardingScreen() {
       <FocusAwareStatusBar />
       <View className="px-4" style={{ paddingTop: insets.top + 16 }}>
         <Image
-          source={require('@@/assets/short_logo.webp')}
+          source={require('@@/assets/short_logo.png')}
           style={{
-            width: 120,
-            height: 120,
+            width: 96,
+            height: 96,
           }}
-          contentFit="cover"
+          contentFit="contain"
         />
       </View>
       {/* LIST */}
