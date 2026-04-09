@@ -15,7 +15,8 @@ type Props = {
 
 export function TimelinePopover({ deviceId, trigger }: Props) {
   const router = useRouter();
-  const { data, isLoading, isError, hasNextPage, isFetchingNextPage, fetchNextPage } = useDeviceTimelineInfinite(deviceId, { limit: 10 });
+  const [filterType, setFilterType] = React.useState<'state' | 'connection'>('state');
+  const { data, isLoading, isError, hasNextPage, isFetchingNextPage, fetchNextPage } = useDeviceTimelineInfinite(deviceId, { limit: 10, type: filterType });
   const items = data?.pages.flatMap((page: any) => page.data) || [];
   const device = useDeviceStore(s => s.devices.find(d => d.id === deviceId));
 
@@ -34,6 +35,8 @@ export function TimelinePopover({ deviceId, trigger }: Props) {
         router.push(`/device/${deviceId}/timeline`);
       }}
       trigger={trigger}
+      filterType={filterType}
+      onFilterChange={setFilterType}
     />
   );
 }

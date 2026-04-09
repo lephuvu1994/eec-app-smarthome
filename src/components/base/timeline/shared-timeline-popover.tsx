@@ -3,7 +3,7 @@ import type { TxKeyPath } from '@/lib/i18n';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import dayjs from 'dayjs';
 import * as React from 'react';
-import { ActivityIndicator, Dimensions, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, Dimensions, TouchableOpacity, ScrollView } from 'react-native';
 import Popover, { PopoverPlacement } from 'react-native-popover-view';
 
 import { useUniwind } from 'uniwind';
@@ -31,6 +31,8 @@ type Props = {
   isFetchingNextPage?: boolean;
   onLoadMore?: () => void;
   fallbackDeviceName?: string;
+  filterType?: 'connection' | 'state';
+  onFilterChange?: (type: 'connection' | 'state') => void;
 };
 
 export function SharedTimelinePopover({
@@ -45,6 +47,8 @@ export function SharedTimelinePopover({
   isFetchingNextPage,
   onLoadMore,
   fallbackDeviceName,
+  filterType,
+  onFilterChange,
 }: Props) {
   const { theme } = useUniwind();
   const isDark = theme === ETheme.Dark;
@@ -92,6 +96,29 @@ export function SharedTimelinePopover({
               <MaterialCommunityIcons name="close" size={20} color={isDark ? '#FFF' : '#111'} />
             </TouchableOpacity>
           </View>
+
+          {onFilterChange && filterType && (
+            <View className="mb-4">
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row gap-2">
+                <TouchableOpacity
+                  onPress={() => onFilterChange('state')}
+                  className={`rounded-full px-4 py-2 mr-2 ${filterType === 'state' ? 'bg-blue-500' : 'bg-neutral-100 dark:bg-neutral-800'}`}
+                >
+                  <Text className={`text-sm font-medium ${filterType === 'state' ? 'text-white' : 'text-neutral-600 dark:text-neutral-300'}`}>
+                    {(translate('deviceDetail.timeline.filterState' as TxKeyPath) || 'Điều khiển') as string}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => onFilterChange('connection')}
+                  className={`rounded-full px-4 py-2 ${filterType === 'connection' ? 'bg-blue-500' : 'bg-neutral-100 dark:bg-neutral-800'}`}
+                >
+                  <Text className={`text-sm font-medium ${filterType === 'connection' ? 'text-white' : 'text-neutral-600 dark:text-neutral-300'}`}>
+                    {(translate('deviceDetail.timeline.filterConnection' as TxKeyPath) || 'Kết nối mạng') as string}
+                  </Text>
+                </TouchableOpacity>
+              </ScrollView>
+            </View>
+          )}
 
           <View className={items.length > 0 ? 'h-[350px] max-h-[60vh] w-full' : 'min-h-[100px] w-full'}>
             {isLoading && items.length === 0 && (
