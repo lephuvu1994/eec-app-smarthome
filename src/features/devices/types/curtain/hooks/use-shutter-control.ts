@@ -319,6 +319,18 @@ export function useShutterControl(
       return;
     }
 
+    // ── Position limit guard ─────────────────────────────────────────────────
+    // Block redundant commands when curtain is already at limit position.
+    // position.value is a Reanimated SharedValue — safe to read on JS thread.
+    if (value === EShutterCmd.Close && position.value <= 0) {
+      showErrorMessage(translate('deviceDetail.shutter.alreadyClosed' as TxKeyPath));
+      return;
+    }
+    if (value === EShutterCmd.Open && position.value >= 100) {
+      showErrorMessage(translate('deviceDetail.shutter.alreadyOpen' as TxKeyPath));
+      return;
+    }
+
     if (allowHaptics) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
@@ -334,7 +346,8 @@ export function useShutterControl(
     finally {
       setIsControlling(false);
     }
-  }, [device, allowHaptics, isOnline]);
+  }, [device, allowHaptics, isOnline, position]);
+
 
   const mainCode = primaryEntity?.code ?? 'main';
 
