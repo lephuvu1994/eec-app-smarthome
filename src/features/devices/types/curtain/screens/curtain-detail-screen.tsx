@@ -22,6 +22,7 @@ import { useDeviceStore } from '@/stores/device/device-store';
 import { ETheme } from '@/types/base';
 import { CurtainBleModal } from '../components/curtain-ble-modal';
 import { CurtainMotorConfigModal } from '../components/curtain-motor-config-modal';
+import { CurtainMotorDirModal } from '../components/curtain-motor-dir-modal';
 import { CurtainRfLearnModal } from '../components/curtain-rf-learn-modal';
 import { CurtainSlider } from '../components/curtain-slider';
 import { ShutterBackgroundModal } from '../components/shutter-background-modal';
@@ -100,6 +101,7 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
     rfLearnStatus,
     setRfLearnStatus,
     handleConfig,
+    handleMotorDir,
     handlePosition,
     motorConfig,
     isOnline,
@@ -113,6 +115,7 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
   const bleModal = useModal();
   const rfLearnModal = useModal();
   const motorConfigModal = useModal();
+  const motorDirModal = useModal();
 
   const menuElements: TMenuElement[] = React.useMemo(() => [
     {
@@ -156,8 +159,14 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
                 {
                   key: 'motor_config',
                   title: translate('deviceDetail.shutter.advanced.motorConfig'),
-                  icon: { ios: 'gear' },
+                  icon: { ios: 'slider.horizontal.below.rectangle' },
                   onPress: motorConfigModal.present,
+                },
+                {
+                  key: 'motor_dir',
+                  title: translate('deviceDetail.shutter.advanced.motorDir'),
+                  icon: { ios: 'arrow.triangle.2.circlepath' },
+                  onPress: motorDirModal.present,
                 },
               ],
             },
@@ -194,8 +203,14 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
                     {
                       key: 'motor_config',
                       title: translate('deviceDetail.shutter.advanced.motorConfig'),
-                      icon: { ios: 'gear' },
+                      icon: { ios: 'slider.horizontal.below.rectangle' },
                       onPress: motorConfigModal.present,
+                    },
+                    {
+                      key: 'motor_dir',
+                      title: translate('deviceDetail.shutter.advanced.motorDir'),
+                      icon: { ios: 'arrow.triangle.2.circlepath' },
+                      onPress: motorDirModal.present,
                     },
                   ],
                 },
@@ -209,7 +224,7 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
             },
           ],
     },
-  ], [deviceId, router, bleModal, rfLearnModal, motorConfigModal, modal]);
+  ], [deviceId, router, bleModal, rfLearnModal, motorConfigModal, motorDirModal, modal]);
 
   const iconColor = isDark ? '#FFF' : '#1B1B1B';
 
@@ -362,6 +377,11 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
             isControlling={isControlling}
             onConfig={handleConfig}
             initialConfig={motorConfig}
+          />
+          <CurtainMotorDirModal
+            modalRef={motorDirModal.ref}
+            isControlling={isControlling}
+            onSelectDir={handleMotorDir}
           />
 
           <DeviceActionBar device={device!} entities={[primaryEntity, childLockEntity].filter(Boolean) as any} />

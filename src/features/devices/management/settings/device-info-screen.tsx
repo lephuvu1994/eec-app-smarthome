@@ -330,21 +330,6 @@ export function DeviceInfoScreen({ deviceId }: Props) {
                 </View>
               </TouchableOpacity>
 
-              {/* Thông tin Partner/Kết nối */}
-              <TouchableOpacity
-                className="flex-row items-center justify-between p-4"
-                activeOpacity={0.7}
-              >
-                <View className="flex-row items-center gap-3">
-                  <View className="rounded-lg bg-warning-500/10 p-2 dark:bg-warning-500/20">
-                    <MaterialCommunityIcons name="lan" size={20} color="#F59E0B" />
-                  </View>
-                  <Text className="text-base font-medium text-[#1B1B1B] dark:text-white">
-                    {translate('device.info.partnerIntegration') || 'Cổng kết nối Partner'}
-                  </Text>
-                </View>
-                <MaterialCommunityIcons name="chevron-right" size={20} color={isDark ? '#A1A1AA' : '#6B7280'} />
-              </TouchableOpacity>
             </View>
           </View>
         </ScrollView>
