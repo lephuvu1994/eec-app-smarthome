@@ -22,6 +22,12 @@ export enum EOwnership {
   SHARED = 'SHARED',
 }
 
+export enum ESharePermission {
+  VIEWER = 'VIEWER',
+  EDITOR = 'EDITOR',
+  OWNER = 'OWNER',
+}
+
 export enum EEntityDomain {
   LIGHT = 'light',
   SWITCH = 'switch_',
@@ -113,6 +119,28 @@ export type TSiriSyncScene = {
 export type TSiriSyncData = {
   devices: TSiriSyncDevice[];
   scenes: TSiriSyncScene[];
+};
+
+export type TDeviceShare = {
+  id: string;
+  deviceId: string;
+  userId: string;
+  permission: ESharePermission;
+  createdAt: string;
+  user: {
+    id: string;
+    firstName: string | null;
+    lastName: string | null;
+    email: string | null;
+    phone: string | null;
+    avatar: string | null;
+  };
+};
+
+export type TDeviceShareTokenPreview = {
+  deviceName: string;
+  ownerName: string;
+  permission: ESharePermission;
 };
 
 export type TRegisterDeviceVariables = {
@@ -269,5 +297,34 @@ export const deviceService = {
 
   updateNotifyConfig: async (deviceId: string, notify: Record<string, boolean>): Promise<void> => {
     await client.patch(`/devices/${deviceId}/notify-config`, { notify });
+  },
+
+  getDeviceShares: async (deviceId: string): Promise<TDeviceShare[]> => {
+    const { data } = await client.get(`/devices/${deviceId}/shares`);
+    return data?.data || data;
+  },
+
+  addDeviceShare: async (deviceId: string, targetUser: string, permission: ESharePermission = ESharePermission.EDITOR): Promise<TDeviceShare> => {
+    const { data } = await client.post(`/devices/${deviceId}/shares`, { targetUser, permission });
+    return data?.data || data;
+  },
+
+  removeDeviceShare: async (deviceId: string, targetUserId: string): Promise<void> => {
+    await client.delete(`/devices/${deviceId}/shares/${targetUserId}`);
+  },
+
+  createShareToken: async (deviceId: string, permission: ESharePermission = ESharePermission.EDITOR): Promise<{ token: string; expiresAt: string }> => {
+    const { data } = await client.post(`/devices/${deviceId}/shares/tokens`, { permission });
+    return data?.data || data;
+  },
+
+  getShareTokenPreview: async (token: string): Promise<TDeviceShareTokenPreview> => {
+    const { data } = await client.get(`/devices/shares/tokens/${token}`);
+    return data?.data || data;
+  },
+
+  acceptShareToken: async (token: string): Promise<{ success: boolean }> => {
+    const { data } = await client.post(`/devices/shares/tokens/${token}/accept`);
+    return data?.data || data;
   },
 };
