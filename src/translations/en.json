@@ -299,6 +299,8 @@
         "pause": "Pause",
         "stop": "Stop"
       },
+      "filterConnection": "Network",
+      "filterState": "Control",
       "noActivity": "No activity yet",
       "sources": {
         "app": "App",
