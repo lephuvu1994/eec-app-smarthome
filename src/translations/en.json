@@ -255,7 +255,7 @@
         "motorDir": "Motor Direction",
         "otaUpdate": "Firmware Update (OTA)",
         "otaUrl": "Firmware URL",
-        "rfLearning": "RF Learning",
+        "rfLearning": "Configuration RF",
         "saveConfig": "Save Configuration",
         "title": "Advanced Settings",
         "travelMsPlaceholder": "Travel time (ms) ex: 22000",

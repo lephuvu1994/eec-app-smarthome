@@ -98,6 +98,7 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
     handleRfLearnStart,
     handleRfLearnCancel,
     handleRfLearnSave,
+    handleRfLearnClear,
     rfLearnStatus,
     setRfLearnStatus,
     handleConfig,
@@ -374,6 +375,7 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
             onStartLearn={handleRfLearnStart}
             onCancelLearn={handleRfLearnCancel}
             onSaveLearn={handleRfLearnSave}
+            onClearLearn={handleRfLearnClear}
           />
           <CurtainMotorConfigModal
             modalRef={motorConfigModal.ref}

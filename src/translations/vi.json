@@ -255,7 +255,7 @@
         "motorDir": "Đảo chiều động cơ",
         "otaUpdate": "Cập nhật Firmware (OTA)",
         "otaUrl": "URL Firmware",
-        "rfLearning": "Học lệnh RF",
+        "rfLearning": "Cấu hình RF",
         "saveConfig": "Lưu cấu hình",
         "title": "Cài đặt Nâng cao",
         "travelMsPlaceholder": "Hành trình (ms) vd: 22000",
