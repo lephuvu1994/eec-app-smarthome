@@ -11,10 +11,10 @@ export const homeTimelineKeys = {
 /**
  * Hook to fetch the latest N timeline items (for popover preview)
  */
-export function useHomeTimelinePreview(homeId: string, limit = 5) {
+export function useHomeTimelinePreview(homeId: string, limit = 5, type?: 'connection' | 'state') {
   return useQuery({
-    queryKey: homeTimelineKeys.list(homeId, { preview: true, limit }),
-    queryFn: () => homeService.getHomeActivity(homeId, 1, limit),
+    queryKey: homeTimelineKeys.list(homeId, { preview: true, limit, type }),
+    queryFn: () => homeService.getHomeActivity(homeId, { page: 1, limit, type }),
     enabled: !!homeId,
     refetchInterval: 10000,
   });
@@ -25,14 +25,14 @@ export function useHomeTimelinePreview(homeId: string, limit = 5) {
  */
 export function useHomeTimelineInfinite(
   homeId: string,
-  options?: { limit?: number },
+  options?: { limit?: number; type?: 'connection' | 'state' },
 ) {
   const limit = options?.limit ?? 30;
 
   return useInfiniteQuery({
     queryKey: homeTimelineKeys.list(homeId, { infinite: true, ...options }),
     queryFn: async ({ pageParam = 1 }) => {
-      return homeService.getHomeActivity(homeId, pageParam as number, limit);
+      return homeService.getHomeActivity(homeId, { page: pageParam as number, limit, type: options?.type });
     },
     getNextPageParam: (lastPage) => {
       const { page, lastPage: maxPage } = lastPage.meta;

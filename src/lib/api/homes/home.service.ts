@@ -96,10 +96,11 @@ export const homeService = {
   },
 
   /** Lịch sử hoạt động toàn bộ thiết bị trong nhà */
-  getHomeActivity: async (homeId: string, page = 1, limit = 30): Promise<TDeviceTimelineResponse> => {
-    const { data } = await client.get(`/homes/${homeId}/activity`, {
-      params: { page, limit },
-    });
+  getHomeActivity: async (
+    homeId: string,
+    params?: { page?: number; limit?: number; type?: 'connection' | 'state' },
+  ): Promise<TDeviceTimelineResponse> => {
+    const { data } = await client.get(`/homes/${homeId}/activity`, { params });
     return data;
   },
 

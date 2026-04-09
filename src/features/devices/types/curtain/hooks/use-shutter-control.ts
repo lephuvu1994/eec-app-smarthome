@@ -1,4 +1,5 @@
 import type { TDevice, TDeviceEntity } from '@/lib/api/devices/device.service';
+import type { TxKeyPath } from '@/lib/i18n';
 import * as Haptics from 'expo-haptics';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
@@ -313,6 +314,11 @@ export function useShutterControl(
     if (!device)
       return;
 
+    if (!isOnline) {
+      showErrorMessage((translate('deviceDetail.shutter.offlineWarning' as TxKeyPath)));
+      return;
+    }
+
     if (allowHaptics) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
@@ -328,7 +334,7 @@ export function useShutterControl(
     finally {
       setIsControlling(false);
     }
-  }, [device, allowHaptics]);
+  }, [device, allowHaptics, isOnline]);
 
   const mainCode = primaryEntity?.code ?? 'main';
 
