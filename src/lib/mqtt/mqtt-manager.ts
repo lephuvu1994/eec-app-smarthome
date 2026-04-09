@@ -249,6 +249,28 @@ export class MqttManager {
     try {
       const data = JSON.parse(payload.toString());
 
+      // Global intercept: Track device status and connection quality automatically
+      if (data.online !== undefined || data.rssi !== undefined || data.linkquality !== undefined) {
+        try {
+          const { useDeviceStore } = require('@/stores/device/device-store');
+          const store = useDeviceStore.getState();
+
+          if (data.online !== undefined) {
+            // EDeviceStatus.ONLINE === 'online', .OFFLINE === 'offline'
+            store.updateDeviceStatus(deviceId, data.online ? 'online' : 'offline');
+          }
+          if (data.rssi !== undefined || data.linkquality !== undefined) {
+            store.updateDevice(deviceId, {
+              ...(data.rssi !== undefined && { rssi: Number(data.rssi) }),
+              ...(data.linkquality !== undefined && { linkquality: Number(data.linkquality) }),
+            });
+          }
+        }
+        catch (e) {
+          console.warn('📡 MQTT: failed to update global device store', e);
+        }
+      }
+
       // Format 1: Batch updates from iot-gateway handleStateMessage
       // { deviceId, token, updates: [{ entityCode, state, attributes }], timestamp }
       if (Array.isArray(data.updates)) {

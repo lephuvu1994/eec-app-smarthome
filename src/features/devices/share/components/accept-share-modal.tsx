@@ -1,12 +1,9 @@
 import type { BottomSheetModal } from '@gorhom/bottom-sheet';
 import * as React from 'react';
 import { useEffect, useRef } from 'react';
-import { ActivityIndicator, Text, View } from 'react-native';
 
 import { useUniwind } from 'uniwind';
-import { Button } from '@/components/ui';
-import { Modal } from '@/components/ui/modal';
-import { showErrorMessage, showSuccessMessage } from '@/components/ui/utils';
+import { ActivityIndicator, Button, Modal, showErrorMessage, showSuccessMessage, Text, View } from '@/components/ui';
 import { useAcceptDeviceShareToken, useDevices, useShareTokenPreview } from '@/hooks/use-devices';
 import { translate } from '@/lib/i18n';
 

@@ -100,6 +100,8 @@ type CustomHeaderProps = {
   style?: StyleProp<ViewStyle>;
   /** Override tint color for default text */
   tintColor?: string;
+  /** Disable top safe area insets (useful for iOS pageSheet modals) */
+  disableSafeArea?: boolean;
 };
 
 /**
@@ -115,8 +117,10 @@ export function CustomHeader({
   rightContent,
   style,
   tintColor = '#1B1B1B',
+  disableSafeArea = false,
 }: CustomHeaderProps) {
   const insets = useSafeAreaInsets();
+  const paddingTopOffset = disableSafeArea && Platform.OS === 'ios' ? 16 : insets.top;
 
   return (
     <Animated.View
@@ -128,7 +132,7 @@ export function CustomHeader({
           left: 0,
           right: 0,
           zIndex: 100,
-          paddingTop: insets.top,
+          paddingTop: paddingTopOffset,
         },
         style,
       ]}

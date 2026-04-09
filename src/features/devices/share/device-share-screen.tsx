@@ -1,15 +1,13 @@
-import type { CreateShareModalRef } from '@/features/devices/share/components/create-share-modal';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import { useCallback, useRef } from 'react';
-import { ActivityIndicator, Alert, ScrollView, Text, View } from 'react-native';
+import { useCallback } from 'react';
+import { Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 import { CustomHeader, HeaderIconButton } from '@/components/base/header/CustomHeader';
 import { BaseLayout } from '@/components/layout/BaseLayout';
-import { Button } from '@/components/ui';
-import { CreateShareModal } from '@/features/devices/share/components/create-share-modal';
+import { ActivityIndicator, Button, ScrollView, Text, View } from '@/components/ui';
 import { useDeviceShares, useRemoveDeviceShare } from '@/hooks/use-devices';
 import { translate } from '@/lib/i18n';
 
@@ -34,14 +32,12 @@ export function DeviceShareScreen({ deviceId }: { deviceId: string }) {
   const { theme } = useUniwind();
   const isDark = theme === 'dark';
 
-  const modalRef = useRef<CreateShareModalRef>(null);
-
   const { data: shares, isLoading, refetch } = useDeviceShares(deviceId);
   const removeShare = useRemoveDeviceShare(deviceId);
 
   const handleAddPress = useCallback(() => {
-    modalRef.current?.present();
-  }, []);
+    router.push({ pathname: '/device/[id]/create-share', params: { id: deviceId } });
+  }, [router, deviceId]);
 
   const handleDelete = useCallback((userId: string, _targetName: string) => {
     Alert.alert(
@@ -92,7 +88,7 @@ export function DeviceShareScreen({ deviceId }: { deviceId: string }) {
 
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingTop: 108, paddingBottom: insets.bottom + 32 }}
+          contentContainerStyle={{ paddingTop: insets.top + 16, paddingBottom: insets.bottom + 32 }}
         >
           {isLoading
             ? (
@@ -160,7 +156,6 @@ export function DeviceShareScreen({ deviceId }: { deviceId: string }) {
                 )}
         </ScrollView>
       </View>
-      <CreateShareModal ref={modalRef} deviceId={deviceId} onSuccess={refetch} />
     </BaseLayout>
   );
 }
