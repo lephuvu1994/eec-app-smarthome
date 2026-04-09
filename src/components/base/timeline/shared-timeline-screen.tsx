@@ -5,7 +5,7 @@ import dayjs from 'dayjs';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import * as React from 'react';
-import { StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { useUniwind } from 'uniwind';
 
 import { CustomHeader, HeaderIconButton, useHeaderOffset } from '@/components/base/header/CustomHeader';
@@ -135,7 +135,7 @@ export function SharedTimelineScreen({
               <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row gap-2">
                 <TouchableOpacity
                   onPress={() => onFilterChange('state')}
-                  className={`rounded-full px-4 py-2 mr-2 ${filterType === 'state' ? 'bg-blue-500' : 'bg-white/70 dark:bg-[#1C1C1E]/80 backdrop-blur-md'}`}
+                  className={`mr-2 rounded-full px-4 py-2 ${filterType === 'state' ? 'bg-blue-500' : 'bg-white/70 backdrop-blur-md dark:bg-[#1C1C1E]/80'}`}
                 >
                   <Text className={`text-sm font-medium ${filterType === 'state' ? 'text-white' : 'text-neutral-600 dark:text-neutral-300'}`}>
                     {(translate('deviceDetail.timeline.filterState' as TxKeyPath) || 'Điều khiển') as string}
@@ -143,7 +143,7 @@ export function SharedTimelineScreen({
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => onFilterChange('connection')}
-                  className={`rounded-full px-4 py-2 mr-2 ${filterType === 'connection' ? 'bg-blue-500' : 'bg-white/70 dark:bg-[#1C1C1E]/80 backdrop-blur-md'}`}
+                  className={`mr-2 rounded-full px-4 py-2 ${filterType === 'connection' ? 'bg-blue-500' : 'bg-white/70 backdrop-blur-md dark:bg-[#1C1C1E]/80'}`}
                 >
                   <Text className={`text-sm font-medium ${filterType === 'connection' ? 'text-white' : 'text-neutral-600 dark:text-neutral-300'}`}>
                     {(translate('deviceDetail.timeline.filterConnection' as TxKeyPath) || 'Kết nối mạng') as string}

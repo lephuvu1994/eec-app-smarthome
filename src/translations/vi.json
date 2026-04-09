@@ -299,6 +299,8 @@
         "pause": "Dừng",
         "stop": "Dừng"
       },
+      "filterConnection": "Kết nối mạng",
+      "filterState": "Điều khiển",
       "noActivity": "Chưa có hoạt động",
       "sources": {
         "app": "Từ ứng dụng",
