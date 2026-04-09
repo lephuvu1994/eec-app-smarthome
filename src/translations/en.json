@@ -272,6 +272,7 @@
       "defaultName": "Roller Shutter",
       "deviceInfo": "Device Information",
       "deviceType": "Device Type",
+      "offlineWarning": "Device is offline, command cannot be executed",
       "open": "Open",
       "operations": "Operations",
       "position": "Position",

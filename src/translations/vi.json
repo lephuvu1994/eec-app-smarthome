@@ -272,6 +272,7 @@
       "defaultName": "Cửa cuốn",
       "deviceInfo": "Thông tin thiết bị",
       "deviceType": "Loại thiết bị",
+      "offlineWarning": "Thiết bị đang ngoại tuyến, không thể thực thi",
       "open": "Mở",
       "operations": "Lượt thao tác",
       "position": "Vị trí",

@@ -17,6 +17,17 @@ jest.mock('@/features/home-screen/hooks/use-home-timeline', () => ({
   useHomeTimelineInfinite: jest.fn(),
 }));
 
+jest.mock('@/features/devices/automation/timeline/use-device-timeline', () => ({
+  useDeviceTimelineInfinite: jest.fn(() => ({
+    data: { pages: [{ data: [] }] },
+    isLoading: false,
+    isError: false,
+    hasNextPage: false,
+    isFetchingNextPage: false,
+    fetchNextPage: jest.fn(),
+  })),
+}));
+
 jest.mock('@/lib/i18n', () => ({
   translate: jest.fn((key) => key), // return the key itself
 }));
@@ -35,8 +46,6 @@ jest.mock('react-native-popover-view', () => {
     default: ({ isVisible, children, from, onRequestClose }: any) => {
       return (
         <View testID="popover-wrapper">
-          {/* Render trigger */}
-          {from && typeof from === 'function' && from(React.createRef(), () => {})}
           {/* Render children only if visible */}
           {isVisible && <View testID="popover-content">{children}</View>}
         </View>
@@ -63,8 +72,8 @@ describe('HomeTimelinePopover', () => {
     render(
       <HomeTimelinePopover
         homeId="home1"
-        renderTrigger={(_r, openPopover) => (
-          <TouchableOpacity testID="trigger-btn" onPress={openPopover}>
+        trigger={(
+          <TouchableOpacity testID="trigger-btn">
             <Text>Open</Text>
           </TouchableOpacity>
         )}
@@ -86,8 +95,8 @@ describe('HomeTimelinePopover', () => {
     render(
       <HomeTimelinePopover
         homeId="home1"
-        renderTrigger={(_r, openPopover) => (
-          <TouchableOpacity testID="trigger-btn" onPress={openPopover}>
+        trigger={(
+          <TouchableOpacity testID="trigger-btn">
             <Text>Open</Text>
           </TouchableOpacity>
         )}
@@ -114,8 +123,8 @@ describe('HomeTimelinePopover', () => {
     render(
       <HomeTimelinePopover
         homeId="home1"
-        renderTrigger={(_r, openPopover) => (
-          <TouchableOpacity testID="trigger-btn" onPress={openPopover}>
+        trigger={(
+          <TouchableOpacity testID="trigger-btn">
             <Text>Open</Text>
           </TouchableOpacity>
         )}
@@ -152,8 +161,8 @@ describe('HomeTimelinePopover', () => {
     render(
       <HomeTimelinePopover
         homeId="home1"
-        renderTrigger={(_r, openPopover) => (
-          <TouchableOpacity testID="trigger-btn" onPress={openPopover}>
+        trigger={(
+          <TouchableOpacity testID="trigger-btn">
             <Text>Open</Text>
           </TouchableOpacity>
         )}

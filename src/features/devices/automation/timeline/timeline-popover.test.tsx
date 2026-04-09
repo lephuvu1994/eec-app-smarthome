@@ -19,6 +19,17 @@ jest.mock('@/features/devices/automation/timeline/use-device-timeline', () => ({
   }),
 }));
 
+jest.mock('@/features/home-screen/hooks/use-home-timeline', () => ({
+  useHomeTimelineInfinite: () => ({
+    data: { pages: [{ data: [] }] },
+    isLoading: false,
+    isError: false,
+    hasNextPage: false,
+    isFetchingNextPage: false,
+    fetchNextPage: jest.fn(),
+  }),
+}));
+
 jest.mock('expo-router', () => ({
   useRouter: () => ({ push: jest.fn() }),
 }));
@@ -48,8 +59,8 @@ describe('TimelinePopover', () => {
     const { getByText } = render(
       <TimelinePopover
         deviceId="dev-1"
-        renderTrigger={(sourceRef, open) => (
-          <TouchableOpacity ref={sourceRef} onPress={open}>
+        trigger={(
+          <TouchableOpacity>
             Trigger
           </TouchableOpacity>
         )}

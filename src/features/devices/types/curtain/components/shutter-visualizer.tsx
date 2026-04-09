@@ -99,6 +99,7 @@ export function ShutterVisualizer({ position, doorState, stateColor, isOnline, p
             rssi={rssi}
             linkquality={linkquality}
             size={12}
+            isOnline={isOnline}
           />
         )}
         <Text

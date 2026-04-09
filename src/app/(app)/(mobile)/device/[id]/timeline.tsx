@@ -1,12 +1,10 @@
-import type { TDeviceTimelineItem } from '@/lib/api/devices/device.service';
 import type { TxKeyPath } from '@/lib/i18n';
 
 import dayjs from 'dayjs';
 import { useLocalSearchParams } from 'expo-router';
-import * as React from 'react';
 
 import { SharedTimelineScreen } from '@/components/base/timeline/shared-timeline-screen';
-import { useDeviceTimelineInfinite } from '@/features/devices/automation/timeline/use-device-timeline';
+import { TimelineTabView } from '@/components/base/timeline/timeline-tab-view';
 import { translate } from '@/lib/i18n';
 import { useDeviceStore } from '@/stores/device/device-store';
 
@@ -18,54 +16,16 @@ export default function DeviceTimelineScreen() {
   const { id: deviceId } = useLocalSearchParams<{ id: string }>();
   const device = useDeviceStore((s: any) => s.devices.find((d: any) => d.id === deviceId));
 
-  const [filterType, setFilterType] = React.useState<'state' | 'connection'>('state');
-
-  const {
-    data,
-    isLoading,
-    isRefetching,
-    isError,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useDeviceTimelineInfinite(deviceId as string, { type: filterType });
-
-  // Flatten and group the data
-  const flattenedData = React.useMemo(() => data?.pages.flatMap(page => page.data) || [], [data?.pages]);
-
-  const sections = React.useMemo(() => {
-    const grouped = flattenedData.reduce((acc, item) => {
-      const dateStr = dayjs(item.createdAt).format('DD/MM/YYYY');
-      if (!acc[dateStr]) {
-        acc[dateStr] = [];
-      }
-      acc[dateStr].push(item);
-      return acc;
-    }, {} as Record<string, TDeviceTimelineItem[]>);
-
-    return Object.keys(grouped).map(dateStr => ({
-      title: dateStr,
-      data: grouped[dateStr],
-    }));
-  }, [flattenedData]);
-
   return (
-    <>
-      <SharedTimelineScreen
-        title={translate('base.timelineTitle' as TxKeyPath) || 'Lịch sử hoạt động'}
-        showBackButton={true}
+    <SharedTimelineScreen
+      title={translate('base.timelineTitle' as TxKeyPath)}
+      showBackButton={true}
+    >
+      <TimelineTabView
+        contextType="device"
+        targetId={deviceId as string}
         fallbackDeviceName={device?.name}
-        sections={sections}
-        isLoading={isLoading}
-        isRefetching={isRefetching}
-        isError={isError}
-        isFetchingNextPage={isFetchingNextPage}
-        hasNextPage={hasNextPage || false}
-        emptyText={(translate('deviceDetail.timeline.noActivity' as TxKeyPath) || 'Chưa có hoạt động') as string}
-        onLoadMore={() => fetchNextPage()}
-        filterType={filterType}
-        onFilterChange={setFilterType}
       />
-    </>
+    </SharedTimelineScreen>
   );
 }
