@@ -11,12 +11,12 @@ export const timelineKeys = {
 /**
  * Hook to fetch the latest N timeline items (for popover preview)
  */
-export function useDeviceTimelinePreview(deviceId: string, limit = 5) {
+export function useDeviceTimelinePreview(deviceId: string, limit = 5, type?: 'connection' | 'state') {
   return useQuery({
-    queryKey: timelineKeys.list(deviceId, { preview: true, limit }),
-    queryFn: () => deviceService.getDeviceTimeline(deviceId, { page: 1, limit }),
+    queryKey: timelineKeys.list(deviceId, { preview: true, limit, type }),
+    queryFn: () => deviceService.getDeviceTimeline(deviceId, { page: 1, limit, type }),
     enabled: !!deviceId,
-    refetchInterval: 10000, // optionally refetch every 10s if kept open
+    refetchInterval: 10000,
   });
 }
 
@@ -25,7 +25,7 @@ export function useDeviceTimelinePreview(deviceId: string, limit = 5) {
  */
 export function useDeviceTimelineInfinite(
   deviceId: string,
-  options?: { limit?: number; entityCode?: string; from?: string; to?: string },
+  options?: { limit?: number; entityCode?: string; from?: string; to?: string; type?: 'connection' | 'state' },
 ) {
   const limit = options?.limit ?? 30;
 
@@ -38,6 +38,7 @@ export function useDeviceTimelineInfinite(
         entityCode: options?.entityCode,
         from: options?.from,
         to: options?.to,
+        type: options?.type,
       });
     },
     // The meta.lastPage determines if there's more data

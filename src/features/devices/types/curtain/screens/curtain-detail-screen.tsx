@@ -98,6 +98,7 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
     handleRfLearnStart,
     handleRfLearnCancel,
     handleRfLearnSave,
+    handleRfLearnClear,
     rfLearnStatus,
     setRfLearnStatus,
     handleConfig,
@@ -229,12 +230,15 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
   const iconColor = isDark ? '#FFF' : '#1B1B1B';
 
   // State dot color
-  const stateColor
-    = doorState === EDoorState.Open
-      ? '#A3E635'
-      : doorState === EDoorState.Close
-        ? '#EF4444'
-        : '#F59E0B';
+  const stateColor = (() => {
+    switch (doorState) {
+      case EDoorState.Opened: return '#A3E635'; // Xanh lá
+      case EDoorState.Closed: return '#EF4444'; // Đỏ
+      case EDoorState.Opening: return '#60A5FA'; // Xanh dương
+      case EDoorState.Closing: return '#F97316'; // Cam
+      default: return '#F59E0B'; // Vàng (stopped)
+    }
+  })();
 
   return (
     <BaseLayout>
@@ -371,6 +375,7 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
             onStartLearn={handleRfLearnStart}
             onCancelLearn={handleRfLearnCancel}
             onSaveLearn={handleRfLearnSave}
+            onClearLearn={handleRfLearnClear}
           />
           <CurtainMotorConfigModal
             modalRef={motorConfigModal.ref}

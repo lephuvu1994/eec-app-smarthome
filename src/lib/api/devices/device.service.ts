@@ -222,7 +222,7 @@ export const deviceService = {
 
   getDeviceTimeline: async (
     deviceId: string,
-    params?: { page?: number; limit?: number; entityCode?: string; from?: string; to?: string },
+    params?: { page?: number; limit?: number; entityCode?: string; from?: string; to?: string; type?: 'connection' | 'state' },
   ): Promise<TDeviceTimelineResponse> => {
     const { data } = await client.get(`/devices/${deviceId}/timeline`, { params });
     return data;
