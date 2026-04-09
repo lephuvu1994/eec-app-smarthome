@@ -179,7 +179,6 @@
       "notifyThresholdAlert": "Cảnh báo ngưỡng",
       "notifyThresholdAlertDesc": "Gửi thông báo khi vượt ngưỡng (năng lượng, nhiệt độ...).",
       "notifyTitle": "Cài đặt cảnh báo",
-      "partnerIntegration": "Cổng kết nối Partner",
       "title": "Thông tin thiết bị",
       "updateFirmware": "Cập nhật Firmware"
     },
@@ -252,7 +251,8 @@
         "bleModeDesc": "Bật hiển thị Bluetooth",
         "clicks": "Số lần click",
         "lock": "Khoá",
-        "motorConfig": "Cấu hình Motor",
+        "motorConfig": "Cấu hình nút ấn",
+        "motorDir": "Đảo chiều động cơ",
         "otaUpdate": "Cập nhật Firmware (OTA)",
         "otaUrl": "URL Firmware",
         "rfLearning": "Học lệnh RF",

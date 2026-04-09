@@ -179,7 +179,6 @@
       "notifyThresholdAlert": "Threshold Alert",
       "notifyThresholdAlertDesc": "Get notified when values exceed thresholds (energy, temperature...).",
       "notifyTitle": "Alert Settings",
-      "partnerIntegration": "Partner Integration",
       "title": "Device Information",
       "updateFirmware": "Firmware Update"
     },
@@ -252,7 +251,8 @@
         "bleModeDesc": "Enable Bluetooth visibility",
         "clicks": "Clicks count",
         "lock": "Lock",
-        "motorConfig": "Motor Configuration",
+        "motorConfig": "Button Config",
+        "motorDir": "Motor Direction",
         "otaUpdate": "Firmware Update (OTA)",
         "otaUrl": "Firmware URL",
         "rfLearning": "RF Learning",
