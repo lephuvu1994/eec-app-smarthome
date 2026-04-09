@@ -44,7 +44,7 @@ Thay vì điều khiển thủ công, hệ thống tự động nhận diện **
 
 ## Tính năng 2: Device Sharing (Chia sẻ thiết bị)
 
-**Trạng thái**: Đang chờ (Hiện tại chưa có cả UI và API).
+**Trạng thái**: ✅ Đã hoàn thành (Mức cơ bản cả UI và API).
 
 ### 1. Mô tả tổng quan
 
@@ -54,18 +54,25 @@ Tính năng cho phép chủ sở hữu thiết bị (Owner) có thể chia sẻ 
 
 **A. Phía Server (Backend: core-api)**
 
-- [ ] Phát triển API tạo lời mời chia sẻ (Share Invitation): Sinh mã token hoặc QR code có thời hạn.
-- [ ] Phát triển API chấp nhận chia sẻ: Người được chia sẻ xác nhận và lưu vào bảng `DeviceShare`.
-- [ ] Quản lý phân quyền (Permissions): Xây dựng logic kiểm tra quyền (Guard/Interceptor) để đảm bảo Viewer không thể đổi tên thiết bị hay Editor không thể xóa thiết bị.
-- [ ] Logic thu hồi (Revoke): Chủ sở hữu có thể ngắt kết nối bất kỳ người dùng nào đang được chia sẻ.
-- [ ] Notification: Gửi thông báo cho người nhận khi có lời mời mới và thông báo cho chủ sở hữu khi lời mời được chấp nhận.
+- [x] Phát triển API tạo lời mời chia sẻ (Share Invitation): (Đã làm API add trực tiếp qua email/phone).
+- [x] Phát triển API chấp nhận chia sẻ: Tự động lưu thẳng vào bảng `DeviceShare` V1.
+- [x] Quản lý phân quyền (Permissions): Xây dựng logic kiểm tra quyền (Guard/Interceptor) để đảm bảo Viewer không thể đổi tên thiết bị hay Editor không thể xóa thiết bị.
+- [x] Logic thu hồi (Revoke): Chủ sở hữu có thể ngắt kết nối bất kỳ người dùng nào đang được chia sẻ.
+- [x] Notification: Gửi thông báo cho người nhận khi có lời mời mới và thông báo cho chủ sở hữu khi có thay đổi.
 
-**B. Phía Mobile App (App: new-app)**
+**B1. Khởi tạo Deep Link / Mã QR (Tính năng mở rộng - Đang tiến hành)**
 
-- [ ] Thiết kế UI trang "Quản lý thành viên/Chia sẻ": Hiển thị danh sách những người đang có quyền truy cập thiết bị.
-- [ ] Thiết kế UI trang "Mời thành viên": Nhập ID, Email hoặc quét mã QR của người nhận.
-- [ ] Tích hợp API chia sẻ: Gọi các endpoint mới để thực hiện luồng mời và chấp nhận.
-- [ ] Xử lý Trạng thái hiển thị (UI logic): Ẩn các nút "Setting" hoặc "Delete" nếu người dùng hiện tại chỉ có quyền Viewer/Editor.
+- [ ] Thiết lập Expo Linking / App Scheme để hứng link `smarthome://share?token=...`.
+- [ ] Xây dựng Hook `useDeepLink` ở Root Component để capture token và điều hướng/popup accept.
+- [ ] Giao diện **Quét QR Code / Mời qua Link**: Mở rộng `create-share-modal.tsx` thêm tab quét và lấy link chia sẻ.
+- [ ] Cửa sổ `AcceptShareModal`: Popup hiển thị tóm tắt thông tin thư mời ("X muốn chia sẻ Y") với 2 nút Đồng ý/Từ chối.
+
+**B2. Phía Mobile App (App: new-app)**
+
+- [x] Thiết kế UI trang "Quản lý thành viên/Chia sẻ": Hiển thị danh sách những người đang có quyền truy cập thiết bị.
+- [x] Thiết kế UI trang "Mời thành viên": Nhập ID, Email hoặc quét mã QR của người nhận. (Phần Bottom Sheet Modal cho App).
+- [x] Tích hợp API chia sẻ: Gọi các endpoint mới để thực hiện luồng cấp quyền.
+- [x] Xử lý Trạng thái hiển thị (UI logic): Ẩn chức năng "Chia sẻ thiết bị" đối với User thuộc nhóm Share.
 
 ### 3. Những câu hỏi Mở / Thảo luận kiến trúc (Open Issues)
 
