@@ -4,13 +4,12 @@ import { FontAwesome5, FontAwesome6, MaterialCommunityIcons } from '@expo/vector
 import { Image } from 'expo-image';
 import { useNavigation, useRouter } from 'expo-router';
 import * as React from 'react';
-import { ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 import { CustomHeader, HeaderIconButton, useHeaderOffset } from '@/components/base/header/CustomHeader';
 import { BaseLayout } from '@/components/layout/BaseLayout';
-import { Text, View } from '@/components/ui';
+import { IS_ANDROID, Text, TouchableOpacity, View } from '@/components/ui';
 import { BellIcon } from '@/components/ui/icons';
 import { useModal } from '@/components/ui/modal';
 import { ZeegoNativeMenu } from '@/components/ui/zeego-native-menu';
@@ -135,12 +134,8 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
     {
       type: 'group',
       key: 'group_settings',
-      items: [
-        {
-          key: 'settings',
-          title: translate('deviceDetail.shutter.settings'),
-          icon: { ios: 'gearshape' },
-          children: [
+      items: IS_ANDROID
+        ? [
             {
               key: 'advanced',
               title: translate('deviceDetail.shutter.advancedMode'),
@@ -172,9 +167,47 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
               icon: { ios: 'cube.box' },
               onPress: modal.present,
             },
+          ]
+        : [
+            {
+              key: 'settings',
+              title: translate('deviceDetail.shutter.settings'),
+              icon: { ios: 'gearshape' },
+              children: [
+                {
+                  key: 'advanced',
+                  title: translate('deviceDetail.shutter.advancedMode'),
+                  icon: { ios: 'slider.horizontal.3' },
+                  children: [
+                    {
+                      key: 'ble',
+                      title: translate('deviceDetail.shutter.advanced.bleMode'),
+                      icon: { ios: 'point.3.connected.trianglepath.dotted' },
+                      onPress: bleModal.present,
+                    },
+                    {
+                      key: 'rf_learn',
+                      title: translate('deviceDetail.shutter.advanced.rfLearning'),
+                      icon: { ios: 'wave.3.left.circle' },
+                      onPress: rfLearnModal.present,
+                    },
+                    {
+                      key: 'motor_config',
+                      title: translate('deviceDetail.shutter.advanced.motorConfig'),
+                      icon: { ios: 'gear' },
+                      onPress: motorConfigModal.present,
+                    },
+                  ],
+                },
+                {
+                  key: 'device_type',
+                  title: translate('deviceDetail.shutter.deviceType'),
+                  icon: { ios: 'cube.box' },
+                  onPress: modal.present,
+                },
+              ],
+            },
           ],
-        },
-      ],
     },
   ], [deviceId, router, bleModal, rfLearnModal, motorConfigModal, modal]);
 
