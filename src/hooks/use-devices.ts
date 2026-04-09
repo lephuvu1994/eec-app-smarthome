@@ -1,8 +1,8 @@
 import type { TDevice, TDeviceListResponse, TSiriSyncData } from '@/lib/api/devices/device.service';
 
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
-import { deviceService } from '@/lib/api/devices/device.service';
+import { deviceService, ESharePermission } from '@/lib/api/devices/device.service';
 import { useDeviceStore } from '@/stores/device/device-store';
 
 // ============================================================
@@ -14,6 +14,8 @@ export const deviceKeys = {
     ['devices', 'list', params] as const,
   detail: (id: string) => ['devices', 'detail', id] as const,
   siriSync: ['devices', 'siri-sync'] as const,
+  shares: (id: string) => ['devices', 'shares', id] as const,
+  tokenPreview: (token: string) => ['devices', 'shares', 'token', token] as const,
 };
 
 // ============================================================
@@ -87,5 +89,54 @@ export function useSiriSync() {
   return useQuery<TSiriSyncData>({
     queryKey: deviceKeys.siriSync,
     queryFn: deviceService.getSiriSync,
+  });
+}
+
+/** Get list of users the device is shared with */
+export function useDeviceShares(deviceId: string) {
+  return useQuery({
+    queryKey: deviceKeys.shares(deviceId),
+    queryFn: () => deviceService.getDeviceShares(deviceId),
+    enabled: !!deviceId,
+  });
+}
+
+/** Share device with a target user */
+export function useAddDeviceShare(deviceId: string) {
+  return useMutation({
+    mutationFn: (variables: { targetUser: string; permission?: ESharePermission }) =>
+      deviceService.addDeviceShare(deviceId, variables.targetUser, variables.permission),
+  });
+}
+
+/** Remove sharing access for a target user */
+export function useRemoveDeviceShare(deviceId: string) {
+  return useMutation({
+    mutationFn: (targetUserId: string) =>
+      deviceService.removeDeviceShare(deviceId, targetUserId),
+  });
+}
+
+// --- TOKEN-BASED SHARING HOOKS ---
+
+export function useCreateDeviceShareToken(deviceId: string) {
+  return useMutation({
+    mutationFn: (permission: ESharePermission = ESharePermission.EDITOR) =>
+      deviceService.createShareToken(deviceId, permission),
+  });
+}
+
+export function useShareTokenPreview(token: string, enabled: boolean = true) {
+  return useQuery({
+    queryKey: deviceKeys.tokenPreview(token),
+    queryFn: () => deviceService.getShareTokenPreview(token),
+    enabled: !!token && enabled,
+    retry: 1, // Only retry once as token might naturally be invalid
+  });
+}
+
+export function useAcceptDeviceShareToken() {
+  return useMutation({
+    mutationFn: (token: string) => deviceService.acceptShareToken(token),
   });
 }

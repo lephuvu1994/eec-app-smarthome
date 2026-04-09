@@ -56,6 +56,7 @@ src/
 - **Timeline & History**: Tính năng nhật ký sử dụng hiển thị bằng Timeline và phân loại cụ thể Nguồn sự kiện (Từ công tắc vật lý, MQTT, Automation).
 - **Offline / Local Control**: Xử lý fallback rẽ nhánh lệnh. Khi Online, gửi qua Server → MQTT; Khi Offline mạng trễ, chuyển mode BLE Local Control để đảm bảo tính an toàn liên tục.
 - **Automation / Scene**: (Đang dần hoàn thiện) - Chuỗi thiết lập If/Then phức hợp cho ngôi nhà thông minh.
+- **Chia sẻ thiết bị (Device Sharing)**: Thiết lập phân quyền điều khiển (Editor / Viewer) cho các thành viên qua Username hoặc thông qua **Universal Linking / Deep Link** cấp phép 1 lần.
 
 ## 5. Đặc điểm và Quy định Project (Rules & Fixes)
 1. **Kiểm soát Package**: Bắt buộc sử dụng `yarn` (tránh xung đột sinh bộ đệm từ pnpm/npm).

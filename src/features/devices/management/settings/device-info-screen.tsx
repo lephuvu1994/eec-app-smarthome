@@ -13,7 +13,7 @@ import { PrimarySceneCard } from '@/components/base/scene/PrimarySceneCard';
 import { BaseLayout } from '@/components/layout/BaseLayout';
 import { ScrollView, showErrorMessage, showSuccessMessage, Text, TouchableOpacity, View } from '@/components/ui';
 import { RenameDeviceModal } from '@/features/devices/common/modals/rename-device-modal';
-import { deviceService } from '@/lib/api/devices/device.service';
+import { deviceService, EOwnership } from '@/lib/api/devices/device.service';
 import { translate } from '@/lib/i18n';
 import { getPrimaryEntities } from '@/lib/utils/device-entity-helper';
 import { useDeviceStore } from '@/stores/device/device-store';
@@ -274,17 +274,19 @@ export function DeviceInfoScreen({ deviceId }: Props) {
                 onPress={() => {}}
               />
             </View>
-            <View className="w-[48%]">
-              <PrimarySceneCard
-                title="Chia sẻ thiết bị"
-                containerStyle={{ minHeight: 110, height: 'auto' }}
-                cardColor={isDark ? '#1C1C1E' : '#FFFFFF'}
-                textColor={isDark ? '#FFFFFF' : '#1B1B1B'}
-                iconBgColor={isDark ? '#2C2C2E' : '#F3F4F6'}
-                icon={<MaterialCommunityIcons name="share-variant-outline" size={24} color={isDark ? '#A1A1AA' : '#6B7280'} />}
-                onPress={() => {}}
-              />
-            </View>
+            {device.ownership === EOwnership.OWNER && (
+              <View className="w-[48%]">
+                <PrimarySceneCard
+                  title="Chia sẻ thiết bị"
+                  containerStyle={{ minHeight: 110, height: 'auto' }}
+                  cardColor={isDark ? '#1C1C1E' : '#FFFFFF'}
+                  textColor={isDark ? '#FFFFFF' : '#1B1B1B'}
+                  iconBgColor={isDark ? '#2C2C2E' : '#F3F4F6'}
+                  icon={<MaterialCommunityIcons name="share-variant-outline" size={24} color={isDark ? '#A1A1AA' : '#6B7280'} />}
+                  onPress={() => router.push(`/device/${device.id}/share`)}
+                />
+              </View>
+            )}
           </View>
 
           {/* ── General Settings ── */}
