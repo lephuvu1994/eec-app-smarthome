@@ -361,6 +361,7 @@ export function useShutterControl(
     handleRfLearnStart: useCallback(() => sendCommand('learn', 'start'), [sendCommand]),
     handleRfLearnCancel: useCallback(() => sendCommand('learn', 'cancel'), [sendCommand]),
     handleRfLearnSave: useCallback(() => sendCommand('learn', 'save'), [sendCommand]),
+    handleRfLearnClear: useCallback(() => sendCommand('learn', 'clear'), [sendCommand]),
     rfLearnStatus,
     setRfLearnStatus: useCallback((status: string) => {
       // Expose to manually clear status in modal on close

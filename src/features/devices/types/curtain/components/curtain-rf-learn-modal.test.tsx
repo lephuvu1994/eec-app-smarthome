@@ -21,6 +21,7 @@ describe('CurtainRfLearnModal', () => {
   const mockOnStartLearn = jest.fn();
   const mockOnCancelLearn = jest.fn();
   const mockOnSaveLearn = jest.fn();
+  const mockOnClearLearn = jest.fn();
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -37,6 +38,7 @@ describe('CurtainRfLearnModal', () => {
         onStartLearn={mockOnStartLearn}
         onCancelLearn={mockOnCancelLearn}
         onSaveLearn={mockOnSaveLearn}
+        onClearLearn={mockOnClearLearn}
       />
     );
   };

@@ -15,6 +15,7 @@ type Props = {
   onStartLearn: () => Promise<void>;
   onCancelLearn: () => Promise<void>;
   onSaveLearn: () => Promise<void>;
+  onClearLearn: () => Promise<void>;
 };
 
 export function CurtainRfLearnModal({
@@ -25,6 +26,7 @@ export function CurtainRfLearnModal({
   onStartLearn,
   onCancelLearn,
   onSaveLearn,
+  onClearLearn,
 }: Props) {
   const { theme } = useUniwind();
   const isDark = theme === ETheme.Dark;
@@ -98,6 +100,16 @@ export function CurtainRfLearnModal({
                 textClassName="text-[#1B1B1B] font-bold text-base"
                 label="Bắt đầu Học RF"
                 onPress={() => onStartLearn()}
+                disabled={isControlling}
+              />
+              <Button
+                className="mt-4 h-14 w-full bg-red-100 dark:bg-red-900/40"
+                textClassName="text-red-600 dark:text-red-400 font-bold text-base"
+                label="Xoá dữ liệu RF"
+                onPress={() => {
+                  onClearLearn();
+                  modalRef.current?.dismiss();
+                }}
                 disabled={isControlling}
               />
             </View>
