@@ -5,7 +5,7 @@ import dayjs from 'dayjs';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import * as React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useUniwind } from 'uniwind';
 
 import { CustomHeader, HeaderIconButton, useHeaderOffset } from '@/components/base/header/CustomHeader';
@@ -30,6 +30,8 @@ type Props = {
   fallbackDeviceName?: string;
   title?: string;
   showBackButton?: boolean;
+  filterType?: 'connection' | 'state';
+  onFilterChange?: (type: 'connection' | 'state') => void;
 };
 
 export function SharedTimelineScreen({
@@ -44,6 +46,8 @@ export function SharedTimelineScreen({
   fallbackDeviceName,
   title,
   showBackButton = false,
+  filterType,
+  onFilterChange,
 }: Props) {
   const { theme } = useUniwind();
   const router = useRouter();
@@ -126,6 +130,29 @@ export function SharedTimelineScreen({
         )}
 
         <View className="flex-1">
+          {onFilterChange && filterType && (
+            <View className="z-20 px-4 pb-2" style={{ paddingTop: title ? headerHeight + 8 : 24 }}>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row gap-2">
+                <TouchableOpacity
+                  onPress={() => onFilterChange('state')}
+                  className={`rounded-full px-4 py-2 mr-2 ${filterType === 'state' ? 'bg-blue-500' : 'bg-white/70 dark:bg-[#1C1C1E]/80 backdrop-blur-md'}`}
+                >
+                  <Text className={`text-sm font-medium ${filterType === 'state' ? 'text-white' : 'text-neutral-600 dark:text-neutral-300'}`}>
+                    {(translate('deviceDetail.timeline.filterState' as TxKeyPath) || 'Điều khiển') as string}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => onFilterChange('connection')}
+                  className={`rounded-full px-4 py-2 mr-2 ${filterType === 'connection' ? 'bg-blue-500' : 'bg-white/70 dark:bg-[#1C1C1E]/80 backdrop-blur-md'}`}
+                >
+                  <Text className={`text-sm font-medium ${filterType === 'connection' ? 'text-white' : 'text-neutral-600 dark:text-neutral-300'}`}>
+                    {(translate('deviceDetail.timeline.filterConnection' as TxKeyPath) || 'Kết nối mạng') as string}
+                  </Text>
+                </TouchableOpacity>
+              </ScrollView>
+            </View>
+          )}
+
           {isLoading && !isRefetching
             ? (
                 <View className="flex-1 items-center justify-center" style={{ paddingTop: headerHeight }}>
@@ -134,7 +161,7 @@ export function SharedTimelineScreen({
               )
             : isError
               ? (
-                  <View className="flex-1 items-center justify-center px-6" style={{ paddingTop: headerHeight }}>
+                  <View className="flex-1 items-center justify-center px-6" style={{ paddingTop: (!onFilterChange ? headerHeight : 0) }}>
                     <MaterialCommunityIcons name="alert-circle-outline" size={48} color="#EF4444" />
                     <Text className="mt-4 text-center font-medium text-red-500">
                       {(translate('deviceDetail.timeline.errorLoadData' as TxKeyPath) || 'Lỗi tải dữ liệu. Thử lại sau.') as string}
@@ -143,7 +170,7 @@ export function SharedTimelineScreen({
                 )
               : sections.length === 0
                 ? (
-                    <View className="flex-1 items-center justify-center px-6" style={{ paddingTop: headerHeight }}>
+                    <View className="flex-1 items-center justify-center px-6" style={{ paddingTop: (!onFilterChange ? headerHeight : 0) }}>
                       <MaterialCommunityIcons name="clipboard-text-outline" size={64} color="#888" />
                       <Text className="mt-4 text-center font-medium text-neutral-500 dark:text-neutral-400">
                         {emptyText}
@@ -156,7 +183,7 @@ export function SharedTimelineScreen({
                       keyExtractor={(item: any, index: number) => item.type === 'header' ? item.id : (item.item.id || `timeline-${index}`)}
                       renderItem={renderFlashItem}
                       getItemType={(item: any) => item.type}
-                      contentContainerStyle={{ paddingTop: title ? headerHeight : 24, paddingBottom: 150 }}
+                      contentContainerStyle={{ paddingTop: title && !onFilterChange ? headerHeight : 8, paddingBottom: 150 }}
                       showsVerticalScrollIndicator={false}
                       className="w-full flex-1"
                       onEndReached={loadMore}

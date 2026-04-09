@@ -18,6 +18,8 @@ export default function DeviceTimelineScreen() {
   const { id: deviceId } = useLocalSearchParams<{ id: string }>();
   const device = useDeviceStore((s: any) => s.devices.find((d: any) => d.id === deviceId));
 
+  const [filterType, setFilterType] = React.useState<'state' | 'connection'>('state');
+
   const {
     data,
     isLoading,
@@ -26,7 +28,7 @@ export default function DeviceTimelineScreen() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useDeviceTimelineInfinite(deviceId as string);
+  } = useDeviceTimelineInfinite(deviceId as string, { type: filterType });
 
   // Flatten and group the data
   const flattenedData = React.useMemo(() => data?.pages.flatMap(page => page.data) || [], [data?.pages]);
@@ -61,6 +63,8 @@ export default function DeviceTimelineScreen() {
         hasNextPage={hasNextPage || false}
         emptyText={(translate('deviceDetail.timeline.noActivity' as TxKeyPath) || 'Chưa có hoạt động') as string}
         onLoadMore={() => fetchNextPage()}
+        filterType={filterType}
+        onFilterChange={setFilterType}
       />
     </>
   );
