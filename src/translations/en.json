@@ -322,6 +322,30 @@
       "viewAll": "View All History"
     }
   },
+  "deviceShare": {
+    "accept": "Accept",
+    "addFirstShare": "Share with someone",
+    "addShare": "Add Share",
+    "cancel": "Cancel",
+    "confirmDelete": "Are you sure you want to remove access for this user?",
+    "copyLink": "Copy Share Link",
+    "linkExpiredOrInvalid": "Link has expired or is invalid",
+    "noShares": "No users have access to this device.",
+    "qrExpiryNotice": "This QR Code expires in 24 hours.",
+    "remove": "Remove Access",
+    "shareMethod": "How would you like to share?",
+    "shareTitle": "Share Invitation",
+    "sharedWith": "Shared with",
+    "submit": "Share",
+    "successAdd": "Device shared successfully!",
+    "successRemove": "User access removed.",
+    "targetUserInput": "Enter Email, Phone or Device ID",
+    "title": "Device Sharing",
+    "viaAccount": "Via Account (Email/Phone)",
+    "viaDeviceId": "Copy Device ID",
+    "viaQrCode": "Scan QR Code",
+    "wantsToShare": "Wants to share device with you:"
+  },
   "formAuth": {
     "accountAlreadyExists": "This account is already registered. Please sign in!",
     "accountNotFound": "Account does not exist in the system!",

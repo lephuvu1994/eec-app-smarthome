@@ -18,7 +18,9 @@ import { useThemeConfig } from '@/components/ui/use-theme-config';
 import { EAuthStatus } from '@/features/auth/types/enum';
 import { EHomeRole } from '@/features/auth/types/response';
 import { hydrateAuth, useUserManager } from '@/features/auth/user-store';
+import { AcceptShareModal } from '@/features/devices/share/components/accept-share-modal';
 import CustomSplashScreen from '@/features/splash-screen';
+import { useDeepLink } from '@/hooks/use-deep-link';
 import { useVoiceControl } from '@/hooks/use-voice-control';
 import { APIProvider } from '@/lib/api';
 import { authService } from '@/lib/api/auth/auth.service';
@@ -55,6 +57,7 @@ function RootRender() {
   const { status } = useUserManager();
 
   useVoiceControl();
+  const { shareToken, clearShareToken } = useDeepLink();
 
   const hideSplash = useCallback(async () => {
     setIsLoading(false);
@@ -155,19 +158,26 @@ function RootRender() {
   return isLoading
     ? <CustomSplashScreen />
     : (
-        <Stack screenOptions={{
-          contentStyle: { backgroundColor: colors.screenBackground[theme as ETheme] },
-        }}
-        >
-          <Stack.Screen name="(app)" options={{ headerShown: false }} />
-          <Stack.Screen name="onboarding" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="(welcome)"
-            options={{
-              headerShown: false,
-            }}
-          />
-        </Stack>
+        <>
+          <Stack screenOptions={{
+            contentStyle: { backgroundColor: colors.screenBackground[theme as ETheme] },
+          }}
+          >
+            <Stack.Screen name="(app)" options={{ headerShown: false }} />
+            <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="(welcome)"
+              options={{
+                headerShown: false,
+              }}
+            />
+          </Stack>
+
+          {/* Global Modal for accepting shares via Deep Link */}
+          {status === EAuthStatus.signIn && (
+            <AcceptShareModal token={shareToken} onClose={clearShareToken} />
+          )}
+        </>
       );
 }
 
