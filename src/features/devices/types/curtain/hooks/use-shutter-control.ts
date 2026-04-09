@@ -306,6 +306,10 @@ export function useShutterControl(
       };
       return sendCommand('config', chipConfig);
     }, [sendCommand]),
+    // Motor Direction — entity `main`
+    handleMotorDir: useCallback((dir: 'forward' | 'reverse') => {
+      return sendCommand(mainCode, dir === 'forward' ? 'DIR_FWD' : 'DIR_REV');
+    }, [sendCommand, mainCode]),
     // OTA Update — entity `update` (update domain)
     handleOta: useCallback((url: string) => sendCommand('update', url), [sendCommand]),
     sendCommand,
