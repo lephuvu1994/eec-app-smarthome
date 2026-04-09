@@ -376,6 +376,7 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
             onCancelLearn={handleRfLearnCancel}
             onSaveLearn={handleRfLearnSave}
             onClearLearn={handleRfLearnClear}
+            isOnline={isOnline}
           />
           <CurtainMotorConfigModal
             modalRef={motorConfigModal.ref}

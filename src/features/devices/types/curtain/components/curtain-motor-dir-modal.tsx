@@ -2,11 +2,9 @@ import type { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as React from 'react';
 
-import { TouchableOpacity } from 'react-native';
-
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
-import { HEIGHT, Modal, Text, View } from '@/components/ui';
+import { HEIGHT, Modal, Text, TouchableOpacity, View } from '@/components/ui';
 import { translate } from '@/lib/i18n';
 import { ETheme } from '@/types/base';
 

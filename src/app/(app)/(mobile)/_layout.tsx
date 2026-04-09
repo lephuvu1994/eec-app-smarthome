@@ -45,6 +45,13 @@ export default function MobileLayout() {
         }}
       />
       <Stack.Screen
+        name="device/[id]/create-share"
+        options={{
+          presentation: 'modal',
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
         name="home-management"
         options={{
           headerShown: false,

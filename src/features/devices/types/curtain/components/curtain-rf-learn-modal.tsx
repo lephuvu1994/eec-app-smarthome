@@ -1,6 +1,8 @@
 import type { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { FontAwesome5 } from '@expo/vector-icons';
 import * as React from 'react';
+import { Alert } from 'react-native';
+
 import { useUniwind } from 'uniwind';
 
 import { Button, Modal, ScrollView, Text, View } from '@/components/ui';
@@ -16,6 +18,7 @@ type Props = {
   onCancelLearn: () => Promise<void>;
   onSaveLearn: () => Promise<void>;
   onClearLearn: () => Promise<void>;
+  isOnline: boolean;
 };
 
 export function CurtainRfLearnModal({
@@ -27,6 +30,7 @@ export function CurtainRfLearnModal({
   onCancelLearn,
   onSaveLearn,
   onClearLearn,
+  isOnline,
 }: Props) {
   const { theme } = useUniwind();
   const isDark = theme === ETheme.Dark;
@@ -93,24 +97,46 @@ export function CurtainRfLearnModal({
           {!hasStarted && (
             <View className="items-center py-4">
               <Text className="mb-6 text-center text-sm text-neutral-500 dark:text-neutral-400">
-                Lưu ý: Quá trình học lệnh RF được kiểm soát tự động bởi thiết bị. Nhấn Bắt Đầu, sau đó lần lượt nhấn từng nút tương ứng trên Remote.
+                {translate('deviceDetail.shutter.advanced.rf.note')}
               </Text>
               <Button
                 className="h-14 w-full bg-[#A3E635]"
                 textClassName="text-[#1B1B1B] font-bold text-base"
-                label="Bắt đầu Học RF"
-                onPress={() => onStartLearn()}
-                disabled={isControlling}
+                label={translate('deviceDetail.shutter.advanced.rf.startStudy')}
+                onPress={() => {
+                  Alert.alert(
+                    translate('deviceDetail.shutter.advanced.rf.startStudyAlertTitle'),
+                    translate('deviceDetail.shutter.advanced.rf.startStudyAlertMsg'),
+                    [
+                      { text: translate('deviceDetail.shutter.advanced.rf.cancel'), style: 'cancel' },
+                      { text: translate('deviceDetail.shutter.advanced.rf.start'), onPress: () => onStartLearn() },
+                    ],
+                  );
+                }}
+                disabled={isControlling || !isOnline}
               />
               <Button
                 className="mt-4 h-14 w-full bg-red-100 dark:bg-red-900/40"
                 textClassName="text-red-600 dark:text-red-400 font-bold text-base"
-                label="Xoá dữ liệu RF"
+                label={translate('deviceDetail.shutter.advanced.rf.clearData')}
                 onPress={() => {
-                  onClearLearn();
-                  modalRef.current?.dismiss();
+                  Alert.alert(
+                    translate('deviceDetail.shutter.advanced.rf.clearDataAlertTitle'),
+                    translate('deviceDetail.shutter.advanced.rf.clearDataAlertMsg'),
+                    [
+                      { text: translate('deviceDetail.shutter.advanced.rf.cancel'), style: 'cancel' },
+                      {
+                        text: translate('deviceDetail.shutter.advanced.rf.delete'),
+                        style: 'destructive',
+                        onPress: () => {
+                          onClearLearn();
+                          modalRef.current?.dismiss();
+                        },
+                      },
+                    ],
+                  );
                 }}
-                disabled={isControlling}
+                disabled={isControlling || !isOnline}
               />
             </View>
           )}
@@ -118,21 +144,21 @@ export function CurtainRfLearnModal({
           {hasStarted && !isCanceledOrTimeout && !isSuccess && (
             <View className="py-2">
               <Text className="mb-4 text-sm font-semibold text-[#1B1B1B] dark:text-white">
-                Tiến trình học lệnh:
+                {translate('deviceDetail.shutter.advanced.rf.progressTitle')}
               </Text>
 
               <View className="ml-2 gap-2 border-l border-neutral-200 pl-4 dark:border-neutral-700">
-                {renderStep('1. Bấm nút MỞ trên Remote', isStep1Done, !isStep1Done)}
-                {renderStep('2. Bấm nút ĐÓNG trên Remote', isStep2Done, isStep1Done && !isStep2Done)}
-                {renderStep('3. Bấm nút DỪNG trên Remote', isStep3Done, isStep2Done && !isStep3Done)}
-                {renderStep('4. Bấm nút KHOÁ trên Remote', isSuccess, isStep3Done && !isSuccess)}
+                {renderStep(translate('deviceDetail.shutter.advanced.rf.step1'), isStep1Done, !isStep1Done)}
+                {renderStep(translate('deviceDetail.shutter.advanced.rf.step2'), isStep2Done, isStep1Done && !isStep2Done)}
+                {renderStep(translate('deviceDetail.shutter.advanced.rf.step3'), isStep3Done, isStep2Done && !isStep3Done)}
+                {renderStep(translate('deviceDetail.shutter.advanced.rf.step4'), isSuccess, isStep3Done && !isSuccess)}
               </View>
 
               <View className="mt-8 flex-row items-center justify-between gap-3">
                 <Button
                   className="h-[52px] flex-1 bg-neutral-100 dark:bg-neutral-700"
                   textClassName="text-red-500 font-semibold"
-                  label="Hủy quá trình"
+                  label={translate('deviceDetail.shutter.advanced.rf.cancelProcess')}
                   onPress={() => onCancelLearn()}
                   disabled={isControlling}
                 />
@@ -141,7 +167,7 @@ export function CurtainRfLearnModal({
                   <Button
                     className="h-[52px] flex-1 bg-[#A3E635]"
                     textClassName="text-[#1B1B1B] font-semibold"
-                    label="Hoàn tất & Lưu"
+                    label={translate('deviceDetail.shutter.advanced.rf.saveFinish')}
                     onPress={() => onSaveLearn()}
                     disabled={isControlling}
                   />
@@ -154,15 +180,15 @@ export function CurtainRfLearnModal({
             <View className="items-center py-6">
               <FontAwesome5 name="check-circle" size={48} color="#A3E635" solid />
               <Text className="mt-4 text-center text-lg font-bold text-[#1B1B1B] dark:text-white">
-                Đã Lưu Thành Công
+                {translate('deviceDetail.shutter.advanced.rf.successTitle')}
               </Text>
               <Text className="mt-2 text-center text-sm text-neutral-500 dark:text-neutral-400">
-                Bộ lệnh từ Remote đã được thiết bị ghi nhận.
+                {translate('deviceDetail.shutter.advanced.rf.successMsg')}
               </Text>
               <Button
                 className="mt-4 h-14 w-full bg-[#A3E635]"
                 textClassName="text-[#1B1B1B] font-bold text-base"
-                label="Hoàn tất"
+                label={translate('deviceDetail.shutter.advanced.rf.finish')}
                 onPress={() => modalRef.current?.dismiss()}
               />
             </View>
@@ -172,15 +198,15 @@ export function CurtainRfLearnModal({
             <View className="items-center py-6">
               <FontAwesome5 name="times-circle" size={48} color="#EF4444" solid />
               <Text className="mt-4 text-center text-lg font-bold text-[#1B1B1B] dark:text-white">
-                Đã Hủy Học / Hết Hạn
+                {translate('deviceDetail.shutter.advanced.rf.failedTitle')}
               </Text>
               <Text className="mt-2 text-center text-sm text-neutral-500 dark:text-neutral-400">
-                Bạn đã hủy quá trình học hoặc hết 30 giây rảnh tay. Vui lòng học lại từ đầu.
+                {translate('deviceDetail.shutter.advanced.rf.failedMsg')}
               </Text>
               <Button
                 className="mt-6 h-14 w-full bg-neutral-100 dark:bg-neutral-700"
                 textClassName="text-[#1B1B1B] font-bold text-base dark:text-white"
-                label="Thử lại"
+                label={translate('deviceDetail.shutter.advanced.rf.retry')}
                 onPress={() => {
                   setRfLearnStatus('');
                 }}
