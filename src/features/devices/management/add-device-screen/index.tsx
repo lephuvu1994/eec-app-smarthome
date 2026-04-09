@@ -4,11 +4,9 @@ import { router, Stack } from 'expo-router';
 import { StyleSheet } from 'react-native';
 import Animated, { FadeIn, FadeOut, useAnimatedStyle } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useQueryClient } from '@tanstack/react-query';
 import { useUniwind } from 'uniwind';
 import { BaseLayout } from '@/components/layout/BaseLayout';
-import { Text, TouchableOpacity, View } from '@/components/ui';
-import { translate } from '@/lib/i18n';
-import { ETheme } from '@/types/base';
 
 import { ApConnectGuide } from './components/ap-connect-guide';
 import { ConfiguringView } from './components/configuring-view';
@@ -20,10 +18,14 @@ import { SetupForm } from './components/setup-form';
 import { RADAR_SIZE } from './constants';
 import { useAddDevice } from './hooks/use-add-device';
 import { EAddDeviceStep, EPairingMode } from './types';
+import { Text, TouchableOpacity, View } from '@/components/ui';
+import { translate } from '@/lib/i18n';
+import { ETheme } from '@/types/base';
 
 export function AddDeviceScreen() {
   const insets = useSafeAreaInsets();
   const { theme } = useUniwind();
+  const queryClient = useQueryClient();
 
   const {
     step,
@@ -153,7 +155,10 @@ export function AddDeviceScreen() {
           <RoomAssignment
             devices={devices}
             isRegistering={false}
-            onFinish={() => router.back()}
+            onFinish={() => {
+              queryClient.invalidateQueries({ queryKey: ['devices'] });
+              router.back();
+            }}
           />
         );
 
