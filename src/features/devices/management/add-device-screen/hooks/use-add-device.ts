@@ -214,15 +214,15 @@ export function useAddDevice() {
       setDevices(prev => prev.map(d => d.id === device.id ? { ...d, status: 'connecting' } : d));
       await bleService.connect(device.id);
       await bleService.retrieveServices(device.id);
-      
+
       // Request 247 (standard max for most ESP/BL602 chips without extended lengths)
       // Requesting 512 can cause buffer overflows and chip reboots ("tít tiếp")
       await bleService.requestMTU(device.id, 247);
-      
+
       // Delay to ensure MTU exchange completes before CCC notification is enabled.
       // If CCC is enabled too early, MTU is still 23, and the ~100-byte Handshake is dropped/crashed.
       await new Promise(resolve => setTimeout(resolve, 500));
-      
+
       await bleService.startNotification(device.id);
       connectedDeviceIdRef.current = device.id;
       // Step transition happens in handlerValueUpdate after handshake
