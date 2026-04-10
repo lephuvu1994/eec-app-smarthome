@@ -62,10 +62,10 @@ Tính năng cho phép chủ sở hữu thiết bị (Owner) có thể chia sẻ 
 
 **B1. Khởi tạo Deep Link / Mã QR (Tính năng mở rộng - Đang tiến hành)**
 
-- [ ] Thiết lập Expo Linking / App Scheme để hứng link `smarthome://share?token=...`.
-- [ ] Xây dựng Hook `useDeepLink` ở Root Component để capture token và điều hướng/popup accept.
-- [ ] Giao diện **Quét QR Code / Mời qua Link**: Mở rộng `create-share-modal.tsx` thêm tab quét và lấy link chia sẻ.
-- [ ] Cửa sổ `AcceptShareModal`: Popup hiển thị tóm tắt thông tin thư mời ("X muốn chia sẻ Y") với 2 nút Đồng ý/Từ chối.
+- [x] Thiết lập Expo Linking / App Scheme để hứng link `smarthome://share?token=...`.
+- [x] Xây dựng Hook `useDeepLink` ở Root Component để capture token và điều hướng/popup accept.
+- [x] Giao diện **Quét QR Code / Mời qua Link**: Mở rộng `create-share-modal.tsx` thêm tab quét và lấy link chia sẻ.
+- [x] Cửa sổ `AcceptShareModal`: Popup hiển thị tóm tắt thông tin thư mời ("X muốn chia sẻ Y") với 2 nút Đồng ý/Từ chối.
 
 **B2. Phía Mobile App (App: new-app)**
 
@@ -94,9 +94,9 @@ Cho phép người dùng đặt lịch bật/tắt thiết bị theo thời gian
 
 **A. Phía Server (Backend: worker-service)**
 
-- [ ] Xây dựng bảng `DeviceTimer` và `DeviceSchedule`.
-- [ ] Tích hợp BullMQ để quản lý các Jobs đếm ngược (Countdown).
-- [ ] Xây dựng Scheduler (Cron) để quét và thực thi các lịch trình lặp lại hàng ngày/hàng tuần.
+- [x] Xây dựng bảng `DeviceTimer` và `DeviceSchedule`.
+- [x] Tích hợp BullMQ để quản lý các Jobs đếm ngược (Countdown).
+- [x] Xây dựng Scheduler (Cron) để quét và thực thi các lịch trình lặp lại hàng ngày/hàng tuần.
 
 **B. Phía Mobile App (eec-app-smarthome)**
 
@@ -109,7 +109,7 @@ Cho phép người dùng đặt lịch bật/tắt thiết bị theo thời gian
 
 ## Tính năng 5: Update User Profile (Cập nhật thông tin cá nhân)
 
-**Trạng thái**: Đang triển khai (BE đã có API cơ bản).
+**Trạng thái**: ✅ Đã hoàn thành.
 
 ### 1. Mô tả tổng quan
 Cho phép người dùng thay đổi thông tin định danh cá nhân như Tên (First Name), Họ (Last Name) và ảnh đại diện (Avatar). Đây là bước cơ bản để cá nhân hóa trải nghiệm người dùng trong hệ thống nhà thông minh.

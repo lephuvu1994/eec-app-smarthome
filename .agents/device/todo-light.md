@@ -12,13 +12,13 @@
 ## 2. Giao diện Mobile App (new-app)
 - [x] **Khởi tạo Domain:** Tạo folder `src/features/devices/types/light`.
 - [ ] **Home Dashboard:**
-  - Logic Group Mode (Thiết bị hợp nhất, entity `main`).
-  - Quick Toggle On/Off.
-  - Vuốt thanh trượt Mini-slider để chỉnh sáng trực tiếp bằng `onSlidingComplete` gọi Mqtt.
+  - [x] Logic Group Mode (Thiết bị hợp nhất, entity `main`).
+  - [x] Quick Toggle On/Off.
+  - [ ] Vuốt thanh trượt Mini-slider để chỉnh sáng trực tiếp bằng `onSlidingComplete` gọi Mqtt.
 - [ ] **Detail Screen:**
   - [x] Tab 1: Ánh sáng trắng (White CCT) - Giao diện Color Wheel từ Vàng sang Trắng + Độ sáng.
   - [x] Tab 2: Màu sắc (RGB) - Giao diện Color Wheel Vô cực (HSV).
-  - Chức năng Automation: Đếm ngược, Lịch trình.
+  - [x] Chức năng Automation: Đếm ngược, Lịch trình.
 - [ ] **Settings Screen:**
   - Chế độ Mờ dần (Fade in/out Transition timer).
   - Rhythm / Music Sync (tùy chọn UI nếu có API).

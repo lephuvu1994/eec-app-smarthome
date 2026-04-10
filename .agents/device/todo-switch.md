@@ -10,11 +10,11 @@
 ## 2. Giao diện Mobile App (new-app)
 - [x] **Khởi tạo Domain:** Tạo folder `src/features/devices/types/switch`.
 - [ ] **Home Dashboard:**
-  - Logic Flat Mode qua `activeEntity` (Tách riêng N công tắc thành N Card).
-  - Power / Quick Toggle trên Card.
+  - [x] Logic Flat Mode qua `activeEntity` (Tách riêng N công tắc thành N Card).
+  - [x] Power / Quick Toggle trên Card.
 - [ ] **Detail Screen:**
   - [x] Giao diện dạng Group (Hiển thị tất cả phím bấm công tắc).
-  - [ ] Chức năng: Đếm ngược, Lịch trình (mở BottomSheet `DeviceActionBar` chuẩn).
+  - [x] Chức năng: Đếm ngược, Lịch trình (mở BottomSheet `DeviceActionBar` chuẩn).
   - [x] Đổi tên nhánh (Long Press to rename Entity).
 - [ ] **Settings Screen:**
   - UI Option chọn `Power-on behavior` (Khôi phục trạng thái nguồn).
