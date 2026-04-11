@@ -4,45 +4,23 @@ Tài liệu này dùng để theo dõi, phân tích và lên kế hoạch (To-Do
 
 ---
 
-## Tính năng 1: Smart Scene (Ngữ cảnh / Tự động hóa)
+## Tính năng 1: Smart Scene (Kịch bản / Tự động hóa)
 
-**Trạng thái**: Chuẩn bị triển khai / Đang lên kế hoạch.
+**Trạng thái**: 🚧 Đang triển khai — Skeleton có sẵn, cần hoàn thiện Engine + UI Builder.
 
-### 1. Mô tả tổng quan
+📄 **Chi tiết → [scene_todo.md](./scene_todo.md)**
 
-Tính năng "Scene" cho phép người dùng nhóm nhiều hành động điều khiển thiết bị lại với nhau và tự động hóa chúng dựa trên các sự kiện hoặc thời gian (If - Then).
-Thay vì điều khiển thủ công, hệ thống tự động nhận diện **Nguồn kích hoạt (Trigger)** và phát lệnh đồng thời hàng loạt **Hành động (Action)** xuống mạch phần cứng.
-
-### 2. Checklist Triển khai (To-Do)
-
-**A. Phía Server (Backend: core-api & worker-service)**
-
-- [ ] Cấu trúc lại Database Schema cho `Scene`: Cần làm rõ cấu trúc lưu trữ `triggers (JSON)` và `actions (JSON)`. Hệ thống cần parse JSON này một cách sạch nhất và dễ mở rộng các phép logic (AND / OR).
-- [ ] Phát triển **Scene Rule Engine**: Service đọc các điều kiện từ Database (ví dụ "Nhiệt độ > 30°C") liên tục mỗi khi `Device-Status Processor` nhận telemetry mới từ MQTT.
-- [ ] Phát triển Scheduler Worker: Tích hợp Node-cron hoặc BullMQ Repeatable Jobs trong `worker-service` để xử lý các Trigger hẹn giờ thời gian thực (Time-based triggers).
-- [ ] Phát triển **Action Executor**: Dịch JSON các hành động cần làm thành các bản payload MQTT (Ví dụ: `{"state": 1}`, `{"position": 100}`) và bắn xuống các device cụ thể.
-
-**B. Phía Mobile App (App: new-app)**
-
-- [ ] Khởi tạo thư mục và Route mới: `src/features/scene` hoặc mở rộng trên trang Smart-Screen hiện thời.
-- [ ] Thiết kế UI/UX "Danh sách ngữ cảnh": Hiển thị các Scene cơ bản (Ra khỏi nhà, Về nhà, Đi ngủ...), có nút Kích hoạt nhanh bằng tay.
-- [ ] Thiết kế UI/UX "Trình tạo Builder ngữ cảnh": Trải nghiệm kéo-thả hoặc danh sách luồng công việc chọn **IF** (Time, Device changes, Cảnh báo) và **THEN** (On/Off công tắc, Delay n phút).
-- [ ] Tích hợp API và State Management (Zustand + React Query) để đồng bộ thông tin cấu hình này lên Server.
-
-**C. Phía Thiết bị Nhúng (Firmware: switch_door)**
-
-- [ ] Tối ưu hóa MQTT Receiver: Khi một Scene kích hoạt nhiều thiết bị cùng lúc trong 1 khoảng thời gian cực ngắn (Milliseconds), thiết bị nhận cần chịu tải và đáp ứng lập tức không bị miss (rơi bản tin).
-- [ ] Tối ưu hóa hiệu năng đo báo trạng thái: Rút ngắn thời gian trễ khi công tắc chuyển trạng thái để báo về Server làm Trigger mồi (Event Trigger) cho các Scene tiếp theo.
-
-### 3. Những câu hỏi Mở / Thảo luận kiến trúc (Open Issues)
-
-- Engine chạy trên đám mây (Cloud) hoàn toàn hay hỗ trợ Local Scene (Offline)? Nếu offline thì Gateway cục bộ hay Tự thân các MQTT Device liên lạc được với nhau qua mạng LAN (LAN Broadcasting)?
-- Việc thực thi Scene Actions có hỗ trợ Delay không? (VD: Đóng rèm, 10 giây sau tắt đèn). Nếu có, backend BullMQ sẽ phải vận hành tiến trình Queue bị tạm ngưng (Delayed jobs).
-- Xử lý xung đột (Collision): Chuyện gì xảy ra khi Scene 1 ra lệnh mở công tắc, trùng thời điểm Scene 2 ra lệnh tắt công tắc? Ràng buộc tính ưu tiên ra sao?
+**Tóm tắt việc cần làm:**
+- **Server:** DB migration (icon/color/roomId) + Action Executor (`RUN_SCENE` Processor) + DEVICE_STATE trigger evaluation
+- **App:** Kết nối API thay mock → Scene Builder UI (3 bước: Trigger → Actions → Customize) → Scene Detail/Edit screen
 
 ---
 
+
+
+
 ## Tính năng 2: Device Sharing (Chia sẻ thiết bị)
+
 
 **Trạng thái**: ✅ Đã hoàn thành (Mức cơ bản cả UI và API).
 

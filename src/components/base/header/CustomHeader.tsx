@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import type { PressableProps, StyleProp, ViewStyle } from 'react-native';
 
 import * as Haptics from 'expo-haptics';
@@ -146,12 +147,12 @@ export function CustomHeader({
         }}
       >
         {/* Left slot */}
-        <View style={{ width: 48, alignItems: 'flex-start' }}>
+        <View style={{ flex: 1, alignItems: 'flex-start', justifyContent: 'center' }}>
           {leftContent}
         </View>
 
         {/* Centre title */}
-        <View style={{ flex: 1, alignItems: 'center' }}>
+        <View style={{ flex: 2, alignItems: 'center', justifyContent: 'center' }}>
           {titleComponent ?? (
             title
               ? (
@@ -171,7 +172,7 @@ export function CustomHeader({
         </View>
 
         {/* Right slot */}
-        <View style={{ width: 48, alignItems: 'flex-end' }}>
+        <View style={{ flex: 1, alignItems: 'flex-end', justifyContent: 'center' }}>
           {rightContent}
         </View>
       </View>
