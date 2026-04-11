@@ -43,11 +43,11 @@ Tính năng "Kịch bản" cho phép người dùng nhóm nhiều hành động 
 
 ---
 
-## Phase 1.5 — Server: Remaining items
+## Phase 1.5 — Server: Remaining items ✅ DONE
 
-- [ ] **delayMs execution** — actions with `delayMs > 0` nên được queue dạng BullMQ delayed job. Hiện DTO chấp nhận nhưng executor chưa xử lý.
-- [ ] **SceneScheduleService** — fix import cron-parser: `const cronParser = require(...)` → `import { CronExpressionParser } from 'cron-parser'`
-- [ ] **LOCATION trigger executor** + geofence integration
+- [x] **delayMs execution** — actions with `delayMs > 0` queued as BullMQ delayed jobs. Group by `(deviceToken, delayMs)` tuple.
+- [x] **SceneScheduleService** — fix import cron-parser v5: `CronExpressionParser.parse()` + `.toDate().getTime()`
+- [ ] **LOCATION trigger executor** + geofence integration (Phase 3+ scope)
 
 ---
 
@@ -115,8 +115,9 @@ Tính năng "Kịch bản" cho phép người dùng nhóm nhiều hành động 
 | 2 | DTO + Service update | Server | S | ✅ |
 | 3 | Anti-loop engine (v2: HA + Tuya) | Server | L | ✅ |
 | 4 | Unit tests (anti-loop) | Server | S | ✅ |
-| 5 | delayMs support trong Executor | Server | S | ⬜ |
-| 6 | Kết nối API trên 2 màn hình Smart Screen | App | S | ⬜ |
+| 5 | delayMs execution (BullMQ delayed jobs) | Server | S | ✅ |
+| 6 | cron-parser v5 migration | Server | XS | ✅ |
+| 7 | Kết nối API trên 2 màn hình Smart Screen | App | S | ⬜ |
 | 7 | Scene Builder UI (3 bước) | App | XL | ⬜ |
 | 8 | Scene Detail / Edit | App | M | ⬜ |
 | 9 | LOCATION trigger executor | Server | M | ⬜ |
