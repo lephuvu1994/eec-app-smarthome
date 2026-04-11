@@ -44,7 +44,7 @@ export function useHomeDevices(homeId: string) {
 
       return result;
     },
-    staleTime: 30_000,
+    staleTime: 5_000, // Short stale time: on app foreground, React Query refetches to get latest device state from backend
     enabled: !!homeId,
   });
 }
