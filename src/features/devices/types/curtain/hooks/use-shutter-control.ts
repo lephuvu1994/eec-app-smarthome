@@ -193,12 +193,22 @@ export function useShutterControl(
         state?: string | number;
         value?: string | number;
         attributes?: Array<{ key: string; value: string | number }>;
+        isRetained?: boolean;
         [key: string]: any;
       }) => {
-        // Online status (from flat LWT or heartbeat)
+        // Online status (from flat LWT or heartbeat) — always process, even for retained
         if (data.online !== undefined && device?.id) {
           useDeviceStore.getState().updateDeviceStatus(device.id, data.online ? EDeviceStatus.ONLINE : EDeviceStatus.OFFLINE);
         }
+
+        // ── Retained message guard ────────────────────────────────────────────
+        // Retained messages are "birth" snapshots published by chip on connect.
+        // Position in retained may be stale (e.g. chip defaults to pos=50 on cold boot).
+        // We only trust `online` from retained — all other state/position updates are skipped.
+        if (data.isRetained) {
+          return;
+        }
+        // ─────────────────────────────────────────────────────────────────────
 
         const matchesEntity = data.entityCode === primaryEntity?.code || (!data.entityCode && primaryEntity);
         if (!matchesEntity && data.state === undefined) {
