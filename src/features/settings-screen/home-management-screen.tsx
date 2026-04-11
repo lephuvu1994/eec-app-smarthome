@@ -1,15 +1,13 @@
 import type { BottomSheetModal } from '@gorhom/bottom-sheet';
-import type { Ref } from 'react';
 import type { TFloor, TRoom } from '@/lib/api/homes/home.service';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
-import { router } from 'expo-router';
-import { useCallback, useImperativeHandle, useMemo, useRef } from 'react';
+import { router, useNavigation } from 'expo-router';
+import { useCallback, useMemo, useRef } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
-import { useHeaderOffset } from '@/components/base/header/CustomHeader';
-
+import { CustomHeader, HeaderIconButton, useHeaderOffset } from '@/components/base/header/CustomHeader';
 import { BaseLayout } from '@/components/layout/BaseLayout';
 import { ScrollView, Text, TouchableOpacity, View } from '@/components/ui';
 import { translate } from '@/lib/i18n';
@@ -21,12 +19,7 @@ import { ETheme } from '@/types/base';
 import { CreateFloorModal } from './components/create-floor-modal';
 import { CreateRoomModal } from './components/create-room-modal';
 
-// ─── Public handle for the route file ─────
-export type THomeManagementHandle = {
-  addRoom: () => void;
-  addFloor: () => void;
-  edit: () => void;
-};
+// Remove THomeManagementHandle
 
 // ─── Room Item ────────────────────────────
 function RoomItem({ room }: { room: TRoom }) {
@@ -117,11 +110,13 @@ function FloorSection({ floor }: { floor: TFloor }) {
 }
 
 // ─── Main Screen ──────────────────────────
-export function HomeManagement({ ref }: { ref?: Ref<THomeManagementHandle> }) {
+export function HomeManagementScreen() {
   const headerOffset = useHeaderOffset();
   const { theme } = useUniwind();
   const insets = useSafeAreaInsets();
   const isDark = theme === ETheme.Dark;
+  const navigation = useNavigation();
+  const iconColor = isDark ? '#FFF' : '#1B1B1B';
   const selectedHomeId = useHomeStore(s => s.selectedHomeId) ?? '';
 
   const floors = useHomeDataStore(s => s.floors);
@@ -138,18 +133,33 @@ export function HomeManagement({ ref }: { ref?: Ref<THomeManagementHandle> }) {
 
   const hasFloors = (floors ?? []).length > 0;
 
-  // Expose actions to the route file via ref
-  useImperativeHandle(ref, () => ({
-    addRoom: () => createRoomRef.current?.present(),
-    addFloor: () => createFloorRef.current?.present(),
-    edit: () => {
-      // TODO: open full-screen edit modal
-    },
-  }));
+  // No longer exporting actions via ref, handled directly
 
   return (
     <BaseLayout>
       <View className="relative w-full flex-1">
+        <CustomHeader
+          title={translate('base.roomManagement')}
+          tintColor={iconColor}
+          leftContent={(
+            <HeaderIconButton onPress={() => navigation.goBack()}>
+              <MaterialCommunityIcons name="chevron-left" size={28} color={iconColor} />
+            </HeaderIconButton>
+          )}
+          rightContent={(
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+              <HeaderIconButton onPress={() => createRoomRef.current?.present()}>
+                <MaterialCommunityIcons name="door-open" size={22} color={iconColor} />
+              </HeaderIconButton>
+              <HeaderIconButton onPress={() => createFloorRef.current?.present()}>
+                <MaterialCommunityIcons name="layers-plus" size={22} color={iconColor} />
+              </HeaderIconButton>
+              <HeaderIconButton onPress={() => {}}>
+                <MaterialCommunityIcons name="pencil-outline" size={20} color={iconColor} />
+              </HeaderIconButton>
+            </View>
+          )}
+        />
         <Image
           source={
             isDark

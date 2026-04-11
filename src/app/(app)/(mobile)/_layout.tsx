@@ -11,6 +11,13 @@ export default function MobileLayout() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="(tabs)" />
+      <Stack.Screen
+        name="(scene)"
+        options={{
+          headerShown: false,
+          presentation: 'fullScreenModal',
+        }}
+      />
       <Stack.Screen name="add-device" />
       <Stack.Screen
         name="device/[id]"

@@ -358,7 +358,6 @@ export function useShutterControl(
     }
   }, [device, allowHaptics, isOnline, position]);
 
-
   const mainCode = primaryEntity?.code ?? 'main';
 
   return {

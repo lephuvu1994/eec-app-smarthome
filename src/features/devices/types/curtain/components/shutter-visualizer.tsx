@@ -32,10 +32,10 @@ const config: {
   bgImage: any;
   doorImage: any;
 } = {
-  top: '41%',
+  top: '33.8%',
   left: '26.3%',
   width: '47.8%',
-  height: '51.5%',
+  height: '59%',
   bgImage: require('@@/assets/device/cuacuon/anh1.png'),
   doorImage: require('@@/assets/device/cuacuon/anh-cua1.png'),
 };
