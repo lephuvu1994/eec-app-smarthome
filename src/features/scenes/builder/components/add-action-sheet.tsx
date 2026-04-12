@@ -17,7 +17,7 @@ type TActionOption = {
 
 const ACTION_OPTIONS: TActionOption[] = [
   {
-    type: ESceneActionType.DeviceControl,
+    type: 'DEVICE_CONTROL' as ESceneActionType,
     icon: 'lightning-bolt',
     iconColor: '#10B981',
     iconBg: '#D1FAE5',
@@ -25,7 +25,7 @@ const ACTION_OPTIONS: TActionOption[] = [
     descKey: 'scenes.builder.actionTypeDeviceDesc',
   },
   {
-    type: ESceneActionType.RunScene,
+    type: 'RUN_SCENE' as ESceneActionType,
     icon: 'check-circle-outline',
     iconColor: '#6366F1',
     iconBg: '#EDE9FE',
@@ -33,7 +33,7 @@ const ACTION_OPTIONS: TActionOption[] = [
     descKey: 'scenes.builder.actionTypeSceneDesc',
   },
   {
-    type: ESceneActionType.Delay,
+    type: 'DELAY' as ESceneActionType,
     icon: 'timer-outline',
     iconColor: '#F59E0B',
     iconBg: '#FEF3C7',
@@ -41,7 +41,7 @@ const ACTION_OPTIONS: TActionOption[] = [
     descKey: 'scenes.builder.actionTypeDelayDesc',
   },
   {
-    type: ESceneActionType.Notification,
+    type: 'NOTIFICATION' as ESceneActionType,
     icon: 'bell-outline',
     iconColor: '#3B82F6',
     iconBg: '#DBEAFE',
