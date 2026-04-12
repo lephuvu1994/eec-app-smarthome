@@ -1,8 +1,7 @@
-import type { DimensionValue } from 'react-native';
 import type { SharedValue } from 'react-native-reanimated';
 
-import type { EDeviceProtocol } from '@/types/device';
 import type { TCurtainDeviceType } from '../utils/shutter-constants';
+import type { EDeviceProtocol } from '@/types/device';
 import { Image } from 'expo-image';
 import * as React from 'react';
 import { StyleSheet } from 'react-native';
@@ -51,6 +50,7 @@ export function ShutterVisualizer({
   linkquality,
 }: TProps) {
   const doorHoleHeight = useSharedValue(0);
+  const doorHoleWidth = useSharedValue(0);
   const fadeAnim = useSharedValue(1);
   const prevTypeId = React.useRef(deviceType.id);
 
@@ -58,7 +58,7 @@ export function ShutterVisualizer({
   React.useEffect(() => {
     if (prevTypeId.current !== deviceType.id) {
       prevTypeId.current = deviceType.id;
-      // eslint-disable-next-line react-hooks/immutability
+
       fadeAnim.value = withSequence(
         withTiming(0, { duration: 150 }),
         withTiming(1, { duration: 300 }),
@@ -67,14 +67,36 @@ export function ShutterVisualizer({
   }, [deviceType.id, fadeAnim]);
 
   const animatedDoorStyle = useAnimatedStyle(() => {
-    // position: 0 (Closed, door covers hole) → 100 (Open, door slides up)
-    // translateY: 0 → -doorHoleHeight
-    const translateY = doorHoleHeight.value > 0
-      ? -(position.value / 100) * doorHoleHeight.value
-      : 0;
+    // position: 0 (Closed, door covers hole) → 100 (Open, door slides away)
+    let translateX = 0;
+    let translateY = 0;
+
+    const progress = position.value / 100;
+
+    switch (deviceType.animationType) {
+      case 'slide_vertical':
+        // Cửa cuốn trượt lên trên
+        translateY = doorHoleHeight.value > 0 ? -progress * doorHoleHeight.value : 0;
+        break;
+      case 'slide_horizontal':
+        // Rèm kéo sang bên trái
+        translateX = doorHoleWidth.value > 0 ? -progress * doorHoleWidth.value : 0;
+        break;
+      case 'roll':
+        // Roll = Cuộn lên, ta thu dọc lại thay vì chỉ translateX/Y (tùy ý tưởng)
+        // Hiện tại xử lý roll giống slide_vertical
+        translateY = doorHoleHeight.value > 0 ? -progress * doorHoleHeight.value : 0;
+        break;
+      case 'fold':
+        // Fold = Gập hai biên (tạm thời slide sang trái)
+        translateX = doorHoleWidth.value > 0 ? -progress * doorHoleWidth.value : 0;
+        break;
+      default:
+        translateY = doorHoleHeight.value > 0 ? -progress * doorHoleHeight.value : 0;
+    }
 
     return {
-      transform: [{ translateY }],
+      transform: [{ translateX }, { translateY }],
     };
   });
 
@@ -104,6 +126,7 @@ export function ShutterVisualizer({
         ]}
         onLayout={(e) => {
           doorHoleHeight.value = e.nativeEvent.layout.height;
+          doorHoleWidth.value = e.nativeEvent.layout.width;
         }}
       >
         <Animated.View className="size-full" style={animatedDoorStyle}>

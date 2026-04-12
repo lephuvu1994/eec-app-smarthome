@@ -1,20 +1,23 @@
 import type { BottomSheetModal } from '@gorhom/bottom-sheet';
 
+import type { SharedValue } from 'react-native-reanimated';
 import { Image } from 'expo-image';
 import * as React from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, {
   Extrapolation,
   interpolate,
+
   useAnimatedScrollHandler,
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Modal, Text, View, WIDTH } from '@/components/ui';
 import { translate } from '@/lib/i18n';
 import { useConfigManager } from '@/stores/config/config';
-import { CURTAIN_DEVICE_TYPES, DEFAULT_CURTAIN_TYPE_ID } from '../utils/shutter-constants';
+import { CURTAIN_DEVICE_TYPES } from '../utils/shutter-constants';
 
 // ── Layout constants ───────────────────────────────────────────────────────
 const CARD_WIDTH = WIDTH * 0.55;
@@ -36,7 +39,7 @@ function DeviceTypeCard({
 }: {
   thumbnail: any;
   index: number;
-  scrollX: Animated.SharedValue<number>;
+  scrollX: SharedValue<number>;
   isSelected: boolean;
 }) {
   // ★ All animations run on UI thread worklet — guaranteed 60fps
@@ -108,18 +111,18 @@ function DotIndicator({
   scrollX,
 }: {
   count: number;
-  scrollX: Animated.SharedValue<number>;
+  scrollX: SharedValue<number>;
 }) {
   return (
     <View className="mt-4 flex-row items-center justify-center gap-2">
       {Array.from({ length: count }).map((_, i) => (
-        <DotItem key={i} index={i} scrollX={scrollX} />
+        <DotItem key={_ as number} index={i} scrollX={scrollX} />
       ))}
     </View>
   );
 }
 
-function DotItem({ index, scrollX }: { index: number; scrollX: Animated.SharedValue<number> }) {
+function DotItem({ index, scrollX }: { index: number; scrollX: SharedValue<number> }) {
   const dotStyle = useAnimatedStyle(() => {
     const inputRange = [
       (index - 1) * (CARD_WIDTH + CARD_GAP),
@@ -164,6 +167,7 @@ export function DeviceTypePickerModal({
   deviceId,
   currentTypeId,
 }: DeviceTypePickerModalProps) {
+  const insets = useSafeAreaInsets();
   const setDeviceType = useConfigManager(s => s.setShutterDeviceType);
   const scrollX = useSharedValue(0);
   const scrollRef = React.useRef<Animated.ScrollView>(null);
@@ -216,10 +220,13 @@ export function DeviceTypePickerModal({
   return (
     <Modal
       ref={modalRef}
-      snapPoints={['45%']}
+      snapPoints={['55%']}
       title={translate('deviceDetail.shutter.deviceType' as any, { defaultValue: 'Device Type' })}
     >
-      <View className="flex-1 pt-2">
+      <View
+        className="flex-1 pt-2"
+        style={{ paddingBottom: Math.max(insets.bottom, 16) }}
+      >
         {/* ── Carousel ─────────────────────────────────────────── */}
         <Animated.ScrollView
           ref={scrollRef}
