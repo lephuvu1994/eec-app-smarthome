@@ -14,11 +14,11 @@ import { RenameDeviceModal } from '@/features/devices/common/modals/rename-devic
 import { SwitchModalItem } from '@/features/devices/types/switch/components/switch-modal-item';
 
 import { deviceService } from '@/lib/api/devices/device.service';
-import { EDeviceStatus } from '@/types/device';
 import { translate } from '@/lib/i18n';
 import { isPrimaryEntity } from '@/lib/utils/device-entity-helper';
 import { useDeviceStore } from '@/stores/device/device-store';
 import { ETheme } from '@/types/base';
+import { EDeviceStatus } from '@/types/device';
 
 type Props = {
   deviceId: string;

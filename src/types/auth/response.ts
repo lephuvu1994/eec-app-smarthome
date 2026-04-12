@@ -23,4 +23,3 @@ export type TAuthMeResponse = {
 export type TCheckExistsResponse = {
   exists: boolean;
 };
-

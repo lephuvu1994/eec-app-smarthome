@@ -9,4 +9,3 @@ export type TRegisterDeviceVariables = {
 };
 
 // Response from the server containing the device and MQTT config
-

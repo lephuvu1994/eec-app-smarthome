@@ -1,6 +1,6 @@
 import type { BottomSheetBackdropProps, BottomSheetModal } from '@gorhom/bottom-sheet';
-import { TDeviceSchedule } from '@/types/automation';
-import { TDevice, TDeviceEntity } from '@/types/device';
+import type { TDeviceSchedule } from '@/types/automation';
+import type { TDevice, TDeviceEntity } from '@/types/device';
 
 import { FontAwesome5, FontAwesome6 } from '@expo/vector-icons';
 import { BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet';

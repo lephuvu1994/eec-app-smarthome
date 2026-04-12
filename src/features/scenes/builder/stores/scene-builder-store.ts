@@ -1,5 +1,5 @@
 import type { ESceneTriggerHubType } from '@/features/scenes/builder/types/scene-trigger-hub';
-import { TSceneAction, TSceneTrigger } from '@/types/scene';
+import type { TSceneAction, TSceneTrigger } from '@/types/scene';
 import { create } from 'zustand';
 
 export type TSceneBuilderState = {

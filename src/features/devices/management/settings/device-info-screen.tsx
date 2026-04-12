@@ -13,12 +13,12 @@ import { BaseLayout } from '@/components/layout/BaseLayout';
 import { ScrollView, showErrorMessage, showSuccessMessage, Text, TouchableOpacity, View } from '@/components/ui';
 import { RenameDeviceModal } from '@/features/devices/common/modals/rename-device-modal';
 import { deviceService } from '@/lib/api/devices/device.service';
-import { EOwnership } from '@/types/device';
 import { translate } from '@/lib/i18n';
 import { getPrimaryEntities } from '@/lib/utils/device-entity-helper';
 import { useDeviceStore } from '@/stores/device/device-store';
 import { useHomeDataStore } from '@/stores/home/home-data-store';
 import { ETheme } from '@/types/base';
+import { EOwnership } from '@/types/device';
 
 type Props = {
   deviceId: string;

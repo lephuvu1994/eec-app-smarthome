@@ -3,4 +3,3 @@ export type UserUpdateDto = {
   lastName?: string;
   avatar?: string;
 };
-

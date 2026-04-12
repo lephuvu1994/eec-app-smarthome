@@ -1,4 +1,4 @@
-import { TScene } from '@/types/scene';
+import type { TScene } from '@/types/scene';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { showErrorMessage } from '@/components/ui';
 import { sceneService } from '@/lib/api/scenes/scene.service';

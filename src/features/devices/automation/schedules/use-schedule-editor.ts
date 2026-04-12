@@ -1,10 +1,10 @@
-import { TDeviceSchedule } from '@/types/automation';
-import { TDeviceEntity } from '@/types/device';
+import type { TDeviceSchedule } from '@/types/automation';
+import type { TDeviceEntity } from '@/types/device';
 import { useQueryClient } from '@tanstack/react-query';
 import { showErrorMessage, showSuccessMessage } from '@/components/ui';
 import { useCreateSchedule, useDeleteSchedule } from '@/lib/api/automation/automation.query';
-import { EAutomationTargetType } from '@/types/automation';
 import { translate } from '@/lib/i18n';
+import { EAutomationTargetType } from '@/types/automation';
 
 type UseScheduleEditorProps = {
   entity: TDeviceEntity;

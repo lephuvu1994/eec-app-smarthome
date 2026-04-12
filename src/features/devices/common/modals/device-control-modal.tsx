@@ -1,5 +1,5 @@
 import type { TDeviceConfig } from '@/features/devices/common/types';
-import { TDevice, TDeviceEntity } from '@/types/device';
+import type { TDevice, TDeviceEntity } from '@/types/device';
 
 import * as React from 'react';
 

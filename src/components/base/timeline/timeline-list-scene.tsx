@@ -1,5 +1,5 @@
-import { TDeviceTimelineItem } from '@/types/device';
 import type { TxKeyPath } from '@/lib/i18n';
+import type { TDeviceTimelineItem } from '@/types/device';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import dayjs from 'dayjs';
 import * as React from 'react';

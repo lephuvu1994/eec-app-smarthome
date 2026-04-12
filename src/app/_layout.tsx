@@ -1,6 +1,6 @@
-import { THome } from '@/types/home';
-
 import type { ETheme } from '@/types/base';
+
+import type { THome } from '@/types/home';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';

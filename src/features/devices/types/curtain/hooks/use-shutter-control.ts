@@ -1,5 +1,5 @@
-import { TDevice, TDeviceEntity } from '@/types/device';
 import type { TxKeyPath } from '@/lib/i18n';
+import type { TDevice, TDeviceEntity } from '@/types/device';
 import * as Haptics from 'expo-haptics';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
@@ -7,11 +7,11 @@ import { cancelAnimation, Easing, useSharedValue, withTiming } from 'react-nativ
 import { showErrorMessage } from '@/components/ui';
 import { useDeviceEvent } from '@/hooks/use-device-event';
 import { deviceService } from '@/lib/api/devices/device.service';
-import { EDeviceStatus } from '@/types/device';
 import { translate } from '@/lib/i18n';
-
 import { useConfigManager } from '@/stores/config/config';
+
 import { useDeviceStore } from '@/stores/device/device-store';
+import { EDeviceStatus } from '@/types/device';
 
 // ─── Chip firmware schema (app_door_controller_core.c) ───────────────────────
 // Commands (App → Chip): OPEN, CLOSE, STOP

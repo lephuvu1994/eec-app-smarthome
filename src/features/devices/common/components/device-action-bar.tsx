@@ -1,4 +1,4 @@
-import { TDevice, TDeviceEntity } from '@/types/device';
+import type { TDevice, TDeviceEntity } from '@/types/device';
 
 import { FontAwesome5, FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';

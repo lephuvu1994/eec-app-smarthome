@@ -1,4 +1,4 @@
-import { TDevice, TDeviceEntity } from '@/types/device';
+import type { TDevice, TDeviceEntity } from '@/types/device';
 
 import { useMemo } from 'react';
 

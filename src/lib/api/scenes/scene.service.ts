@@ -1,4 +1,4 @@
-import type { TScene, TSceneAction, TSceneTrigger } from '@/types/scene';
+import type { TScene } from '@/types/scene';
 import { client } from '../common';
 
 export const sceneService = {

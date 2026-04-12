@@ -16,8 +16,8 @@ import { BaseLayout } from '@/components/layout/BaseLayout';
 
 import { ActivityIndicator, Button, IS_IOS, showErrorMessage, showSuccessMessage, Text, TouchableOpacity, View } from '@/components/ui';
 import { useAddDeviceShare, useCreateDeviceShareToken } from '@/hooks/use-devices';
-import { ESharePermission } from '@/types/device';
 import { translate } from '@/lib/i18n';
+import { ESharePermission } from '@/types/device';
 
 type Props = {
   deviceId: string;

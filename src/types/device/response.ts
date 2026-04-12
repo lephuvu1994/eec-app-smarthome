@@ -26,4 +26,3 @@ export type TDeviceTimelineResponse = {
     lastPage: number;
   };
 };
-

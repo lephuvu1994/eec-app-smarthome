@@ -1,4 +1,4 @@
-import { TRoom } from '@/types/home';
+import type { TRoom } from '@/types/home';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';

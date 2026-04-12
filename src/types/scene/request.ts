@@ -10,4 +10,3 @@ export type TCreateSceneDto = {
 };
 
 export type TUpdateSceneDto = Partial<Omit<TCreateSceneDto, 'homeId'>>;
-

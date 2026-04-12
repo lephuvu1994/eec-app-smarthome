@@ -1,5 +1,5 @@
 import type { BottomSheetModal } from '@gorhom/bottom-sheet';
-import { TDevice, TDeviceEntity } from '@/types/device';
+import type { TDevice, TDeviceEntity } from '@/types/device';
 
 import { FontAwesome6 } from '@expo/vector-icons';
 import * as React from 'react';

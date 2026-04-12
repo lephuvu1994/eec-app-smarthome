@@ -1,4 +1,4 @@
-import { TRoom } from '@/types/home';
+import type { TRoom } from '@/types/home';
 import { FlashList } from '@shopify/flash-list';
 import { memo } from 'react';
 
