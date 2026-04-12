@@ -1,6 +1,6 @@
 import type { TRoom } from '@/types/home';
 
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Alert, TextInput } from 'react-native';
@@ -114,7 +114,7 @@ export function FloorDetailScreen() {
           tintColor={theme === 'dark' ? '#FFF' : '#1B1B1B'}
           leftContent={(
             <HeaderIconButton onPress={() => router.back()}>
-              <MaterialCommunityIcons name="chevron-left" size={28} color={theme === 'dark' ? '#FFF' : '#1B1B1B'} />
+              <Feather name="arrow-left" size={24} color={theme === 'dark' ? '#FFF' : '#1B1B1B'} />
             </HeaderIconButton>
           )}
         />

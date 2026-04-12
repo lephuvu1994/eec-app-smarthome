@@ -1,6 +1,6 @@
 import type { TMenuElement } from '@/components/ui/zeego-native-menu';
 
-import { FontAwesome5, FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather, FontAwesome5, FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation, useRouter } from 'expo-router';
 import * as React from 'react';
 import { ScrollView } from 'react-native';
@@ -247,7 +247,7 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
           tintColor={iconColor}
           leftContent={(
             <HeaderIconButton onPress={() => navigation.goBack()}>
-              <MaterialCommunityIcons name="chevron-left" size={28} color={iconColor} />
+              <Feather name="arrow-left" size={24} color={iconColor} />
             </HeaderIconButton>
           )}
           rightContent={(

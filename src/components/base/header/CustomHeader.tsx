@@ -192,14 +192,14 @@ export function HeaderBackButton({
   icon?: React.ReactNode;
 }) {
   // Dynamic import to avoid adding heavy dep here; callers bring their own icon if needed
-  const [MCIcon, setMCIcon] = React.useState<React.ReactElement | null>(null);
+  const [BackIcon, setBackIcon] = React.useState<React.ReactElement | null>(null);
 
   React.useEffect(() => {
     if (!icon) {
       // Dynamically grab the icon lib to keep this file dep-free
-      import('@expo/vector-icons').then(({ MaterialCommunityIcons }) => {
-        setMCIcon(
-          <MaterialCommunityIcons name="chevron-left" size={28} color={color} />,
+      import('@expo/vector-icons').then(({ Feather }) => {
+        setBackIcon(
+          <Feather name="arrow-left" size={24} color={color} />,
         );
       }).catch(() => null);
     }
@@ -208,10 +208,15 @@ export function HeaderBackButton({
   return (
     <SpringButton
       onPress={onPress}
-      style={{ width: 40, height: 40, borderRadius: 20 }}
+      style={{
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        backgroundColor: 'rgba(120, 120, 128, 0.12)',
+      }}
       accessibilityLabel="Go back"
     >
-      {icon ?? MCIcon}
+      {icon ?? BackIcon}
     </SpringButton>
   );
 }
@@ -230,7 +235,12 @@ export function HeaderIconButton({
     <SpringButton
       onPress={onPress}
       disabled={disabled}
-      style={{ width: 40, height: 40, borderRadius: 20 }}
+      style={{
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        backgroundColor: 'rgba(120, 120, 128, 0.12)',
+      }}
     >
       {children}
     </SpringButton>

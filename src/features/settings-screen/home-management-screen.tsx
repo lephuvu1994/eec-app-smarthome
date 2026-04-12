@@ -1,7 +1,7 @@
 import type { BottomSheetModal } from '@gorhom/bottom-sheet';
 import type { TFloor, TRoom } from '@/types/home';
 
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { router, useNavigation } from 'expo-router';
 import { useCallback, useMemo, useRef } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -142,7 +142,7 @@ export function HomeManagementScreen() {
           tintColor={iconColor}
           leftContent={(
             <HeaderIconButton onPress={() => navigation.goBack()}>
-              <MaterialCommunityIcons name="chevron-left" size={28} color={iconColor} />
+              <Feather name="arrow-left" size={24} color={iconColor} />
             </HeaderIconButton>
           )}
           rightContent={(
