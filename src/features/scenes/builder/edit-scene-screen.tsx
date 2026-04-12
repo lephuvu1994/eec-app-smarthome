@@ -16,7 +16,7 @@ import { AddActionSheet } from '@/features/scenes/builder/components/add-action-
 import { SaveSceneSheet } from '@/features/scenes/builder/components/save-scene-sheet';
 import { useSceneBuilderStore } from '@/features/scenes/builder/stores/scene-builder-store';
 import { useDeleteScene, useSceneDetail, useUpdateScene } from '@/features/scenes/common/use-scenes';
-import { ESceneActionType } from '@/lib/api/scenes/scene.service';
+import { ESceneActionType } from '@/types/scene';
 import { translate } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 import { useHomeStore } from '@/stores/home/home-store';

@@ -8,7 +8,7 @@ import { BaseLayout } from '@/components/layout/BaseLayout';
 import { Text, View } from '@/components/ui';
 import { useSceneBuilderStore } from '@/features/scenes/builder/stores/scene-builder-store';
 import { useDevices } from '@/hooks/use-devices';
-import { ESceneActionType } from '@/lib/api/scenes/scene.service';
+import { ESceneActionType } from '@/types/scene';
 import { translate } from '@/lib/i18n';
 import { useHomeStore } from '@/stores/home/home-store';
 

@@ -1,16 +1,16 @@
 import type { TSceneAction } from '../hooks/use-scene-builder';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Pressable, Text, View } from '@/components/ui';
-import { ESceneActionType } from '@/lib/api/scenes/scene.service';
 import { translate } from '@/lib/i18n';
+import { ESceneActionType } from '@/types/scene';
 
 // ─── ICON MAP ──────────────────────────────────────────────────────────────────
 
-const ACTION_ICON_MAP: Record<string, { name: string; color: string; bg: string }> = {
-  DEVICE_CONTROL: { name: 'lightning-bolt', color: '#10B981', bg: '#D1FAE5' },
-  RUN_SCENE: { name: 'check-circle-outline', color: '#6366F1', bg: '#EDE9FE' },
-  DELAY: { name: 'timer-outline', color: '#F59E0B', bg: '#FEF3C7' },
-  NOTIFICATION: { name: 'bell-outline', color: '#3B82F6', bg: '#DBEAFE' },
+const ACTION_ICON_MAP: Record<ESceneActionType, { name: string; color: string; bg: string }> = {
+  [ESceneActionType.DeviceControl]: { name: 'lightning-bolt', color: '#10B981', bg: '#D1FAE5' },
+  [ESceneActionType.RunScene]: { name: 'check-circle-outline', color: '#6366F1', bg: '#EDE9FE' },
+  [ESceneActionType.Delay]: { name: 'timer-outline', color: '#F59E0B', bg: '#FEF3C7' },
+  [ESceneActionType.Notification]: { name: 'bell-outline', color: '#3B82F6', bg: '#DBEAFE' },
 };
 
 // ─── Labels ────────────────────────────────────────────────────────────────────
