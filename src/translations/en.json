@@ -309,6 +309,13 @@
       "position": "Position",
       "rename": "Rename",
       "settings": "Settings",
+      "states": {
+        "CLOSED": "Closed",
+        "CLOSING": "Closing",
+        "OPENED": "Opened",
+        "OPENING": "Opening",
+        "STOPPED": "Stopped"
+      },
       "stop": "Stop",
       "travelTime": "Travel Time",
       "workingHours": "Working Hours"

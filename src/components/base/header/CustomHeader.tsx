@@ -143,7 +143,7 @@ export function CustomHeader({
           height: HEADER_CONTENT_HEIGHT,
           flexDirection: 'row',
           alignItems: 'center',
-          paddingHorizontal: 4,
+          paddingHorizontal: 12,
         }}
       >
         {/* Left slot */}

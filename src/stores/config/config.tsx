@@ -9,7 +9,7 @@ const initialConfigState: TConfig = {
   showRoomViewExpand: true,
   allowHaptics: true,
   deviceViewMode: 'grouped',
-  shutterBackgrounds: {},
+  shutterDeviceTypes: {},
 };
 
 const _useConfig = create<TConfigState>()(
@@ -28,11 +28,11 @@ const _useConfig = create<TConfigState>()(
       setDeviceViewMode: (deviceViewMode: 'grouped' | 'split') => {
         set({ deviceViewMode });
       },
-      setShutterBackground: (deviceId: string, backgroundId: string) => {
+      setShutterDeviceType: (deviceId: string, typeId: string) => {
         set({
-          shutterBackgrounds: {
-            ...get().shutterBackgrounds,
-            [deviceId]: backgroundId,
+          shutterDeviceTypes: {
+            ...get().shutterDeviceTypes,
+            [deviceId]: typeId,
           },
         });
       },
@@ -40,6 +40,15 @@ const _useConfig = create<TConfigState>()(
     {
       name: 'config-storage',
       storage: createJSONStorage(() => mmkvStorage),
+      // Migrate old shutterBackgrounds → shutterDeviceTypes
+      migrate: (persistedState: any, _: number) => {
+        if (persistedState?.shutterBackgrounds && !persistedState?.shutterDeviceTypes) {
+          persistedState.shutterDeviceTypes = persistedState.shutterBackgrounds;
+          delete persistedState.shutterBackgrounds;
+        }
+        return persistedState;
+      },
+      version: 1,
     },
   ),
 );
