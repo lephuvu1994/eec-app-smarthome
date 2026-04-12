@@ -1,4 +1,4 @@
-import type { TScene } from '@/types/scene';
+import type { TCreateSceneDto, TRunSceneResponse, TScene, TUpdateSceneDto } from '@/types/scene';
 import { client } from '../common';
 
 export const sceneService = {

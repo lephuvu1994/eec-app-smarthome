@@ -1,3 +1,4 @@
+import type { TCreateSchedulePayload, TCreateTimerPayload, TDeviceSchedule, TDeviceTimer } from '@/types/automation';
 import { client } from '../common';
 
 export const automationService = {
