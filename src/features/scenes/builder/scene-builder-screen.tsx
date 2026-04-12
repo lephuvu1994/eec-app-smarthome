@@ -9,7 +9,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BaseLayout } from '@/components/layout/BaseLayout';
 import { Button, IS_IOS, Text, View } from '@/components/ui';
 import { useModal } from '@/components/ui/modal';
-import { ESceneActionType } from '@/lib/api/scenes/scene.service';
+import { ESceneActionType } from '@/types/scene';
 import { translate } from '@/lib/i18n';
 
 import { ActionList } from './components/action-list';

@@ -1,7 +1,7 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Pressable, Text, View } from '@/components/ui';
 import { Modal } from '@/components/ui/modal';
-import { ESceneActionType } from '@/lib/api/scenes/scene.service';
+import { ESceneActionType } from '@/types/scene';
 import { translate } from '@/lib/i18n';
 
 // ─── Action options definition ─────────────────────────────────────────────────
@@ -17,7 +17,7 @@ type TActionOption = {
 
 const ACTION_OPTIONS: TActionOption[] = [
   {
-    type: 'DEVICE_CONTROL' as ESceneActionType,
+    type: ESceneActionType.DeviceControl,
     icon: 'lightning-bolt',
     iconColor: '#10B981',
     iconBg: '#D1FAE5',
@@ -25,7 +25,7 @@ const ACTION_OPTIONS: TActionOption[] = [
     descKey: 'scenes.builder.actionTypeDeviceDesc',
   },
   {
-    type: 'RUN_SCENE' as ESceneActionType,
+    type: ESceneActionType.RunScene,
     icon: 'check-circle-outline',
     iconColor: '#6366F1',
     iconBg: '#EDE9FE',
@@ -33,7 +33,7 @@ const ACTION_OPTIONS: TActionOption[] = [
     descKey: 'scenes.builder.actionTypeSceneDesc',
   },
   {
-    type: 'DELAY' as ESceneActionType,
+    type: ESceneActionType.Delay,
     icon: 'timer-outline',
     iconColor: '#F59E0B',
     iconBg: '#FEF3C7',
@@ -41,7 +41,7 @@ const ACTION_OPTIONS: TActionOption[] = [
     descKey: 'scenes.builder.actionTypeDelayDesc',
   },
   {
-    type: 'NOTIFICATION' as ESceneActionType,
+    type: ESceneActionType.Notification,
     icon: 'bell-outline',
     iconColor: '#3B82F6',
     iconBg: '#DBEAFE',
