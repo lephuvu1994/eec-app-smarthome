@@ -1,9 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import dayjs from 'dayjs';
-import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import * as React from 'react';
-import { StyleSheet } from 'react-native';
 import { useUniwind } from 'uniwind';
 
 import { CustomHeader, HeaderIconButton, useHeaderOffset } from '@/components/base/header/CustomHeader';
@@ -32,15 +30,6 @@ export function SharedTimelineScreen({
   return (
     <BaseLayout>
       <View className="relative w-full flex-1">
-        <Image
-          source={theme === ETheme.Dark ? require('@@/assets/base/background-dark.webp') : require('@@/assets/base/background-light.webp')}
-          style={[{
-            width: '100%',
-            height: '100%',
-            position: 'absolute',
-          }, StyleSheet.absoluteFillObject]}
-          contentFit="cover"
-        />
 
         {title && (
           <View className="z-10">

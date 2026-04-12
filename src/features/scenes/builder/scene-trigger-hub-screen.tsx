@@ -6,6 +6,7 @@ import Animated, { FadeInUp } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 import { CustomHeader, HeaderBackButton, useHeaderOffset } from '@/components/base/header/CustomHeader';
+import { BaseLayout } from '@/components/layout/BaseLayout';
 import { colors, Text, View } from '@/components/ui';
 import { translate } from '@/lib/i18n';
 import { ETheme } from '@/types/base';
@@ -146,7 +147,7 @@ export function SceneTriggerHubScreen() {
   );
 
   return (
-    <View className="flex-1 bg-[#F9FAFB] dark:bg-charcoal-950">
+    <BaseLayout>
       <CustomHeader
         title={translate('scenes.builder.hubCreateTitle')}
         leftContent={<HeaderBackButton onPress={() => router.back()} />}
@@ -206,6 +207,6 @@ export function SceneTriggerHubScreen() {
           </TouchableOpacity>
         </View>
       </Animated.View>
-    </View>
+    </BaseLayout>
   );
 }

@@ -1,6 +1,5 @@
 import type { TxKeyPath } from '@/lib/i18n';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Image } from 'expo-image';
 import * as Linking from 'expo-linking';
 import { router } from 'expo-router';
 import { Platform } from 'react-native';
@@ -10,7 +9,6 @@ import { CustomHeader, HeaderIconButton, useHeaderOffset } from '@/components/ba
 import { BaseLayout } from '@/components/layout/BaseLayout';
 import { ScrollView, Text, TouchableOpacity, View } from '@/components/ui';
 import { translate } from '@/lib/i18n';
-import { ETheme } from '@/types/base';
 
 type PermissionItem = {
   key: string;
@@ -97,16 +95,6 @@ export function PrivacySettingsScreen() {
               <MaterialCommunityIcons name="chevron-left" size={28} color={theme === 'dark' ? '#FFF' : '#1B1B1B'} />
             </HeaderIconButton>
           )}
-        />
-
-        <Image
-          source={
-            theme === ETheme.Dark
-              ? require('@@/assets/base/background-dark.webp')
-              : require('@@/assets/base/background-light.webp')
-          }
-          style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
-          contentFit="contain"
         />
         <ScrollView
           showsVerticalScrollIndicator={false}

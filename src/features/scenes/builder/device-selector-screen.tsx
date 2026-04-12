@@ -4,6 +4,7 @@ import { FlatList, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CustomHeader, HeaderBackButton } from '@/components/base/header/CustomHeader';
+import { BaseLayout } from '@/components/layout/BaseLayout';
 import { Text, View } from '@/components/ui';
 import { useSceneBuilderStore } from '@/features/scenes/builder/stores/scene-builder-store';
 import { useDevices } from '@/hooks/use-devices';
@@ -31,7 +32,7 @@ export function DeviceSelectorScreen() {
   }, [addAction, router]);
 
   return (
-    <View className="flex-1 bg-[#F9FAFB] dark:bg-charcoal-950">
+    <BaseLayout>
       <CustomHeader
         title={translate('scenes.builder.selectDevice')}
         leftContent={<HeaderBackButton onPress={() => router.back()} />}
@@ -64,6 +65,6 @@ export function DeviceSelectorScreen() {
           </View>
         )}
       />
-    </View>
+    </BaseLayout>
   );
 }

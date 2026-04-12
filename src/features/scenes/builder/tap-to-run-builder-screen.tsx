@@ -8,6 +8,7 @@ import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 import { CustomHeader, useHeaderOffset } from '@/components/base/header/CustomHeader';
+import { BaseLayout } from '@/components/layout/BaseLayout';
 
 import {
   Button,
@@ -90,7 +91,7 @@ export function TapToRunBuilderScreen() {
   );
 
   return (
-    <View className="flex-1 bg-[#F9FAFB] dark:bg-[#09090B]">
+    <BaseLayout>
       <CustomHeader
         leftContent={(
           <Button
@@ -236,6 +237,6 @@ export function TapToRunBuilderScreen() {
               <SaveSceneSheet ref={saveSheetRef} onSave={handleConfirmSave} isCreating={isCreating} />
             </>
           )}
-    </View>
+    </BaseLayout>
   );
 }

@@ -2,7 +2,6 @@ import type { BottomSheetModal } from '@gorhom/bottom-sheet';
 import type { TFloor, TRoom } from '@/lib/api/homes/home.service';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Image } from 'expo-image';
 import { router, useNavigation } from 'expo-router';
 import { useCallback, useMemo, useRef } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -159,23 +158,6 @@ export function HomeManagementScreen() {
               </HeaderIconButton>
             </View>
           )}
-        />
-        <Image
-          source={
-            isDark
-              ? require('@@/assets/base/background-dark.webp')
-              : require('@@/assets/base/background-light.webp')
-          }
-          style={{
-            width: '100%',
-            height: '100%',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-          }}
-          contentFit="contain"
         />
 
         <ScrollView

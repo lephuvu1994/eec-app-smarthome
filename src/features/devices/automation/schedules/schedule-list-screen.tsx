@@ -2,11 +2,10 @@ import type { TDeviceSchedule } from '@/lib/api/automation/automation.service';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import { Image } from 'expo-image';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 
 import * as React from 'react';
-import { ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, TouchableOpacity } from 'react-native';
 import Animated, { FadeIn, FadeInDown, LinearTransition } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
@@ -76,22 +75,6 @@ export function ScheduleListScreen() {
               <MaterialCommunityIcons name="plus" size={28} color={isDark ? '#FFF' : '#1B1B1B'} />
             </HeaderIconButton>
           )}
-        />
-        <Image
-          source={
-            theme === ETheme.Dark
-              ? require('@@/assets/base/background-dark.webp')
-              : require('@@/assets/base/background-light.webp')
-          }
-          style={[
-            {
-              width: '100%',
-              height: '100%',
-              position: 'absolute',
-            },
-            StyleSheet.absoluteFillObject,
-          ]}
-          contentFit="cover"
         />
         <ScrollView
           className="flex-1"

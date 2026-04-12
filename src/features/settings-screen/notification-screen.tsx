@@ -1,5 +1,4 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Alert, Linking } from 'react-native';
@@ -104,15 +103,6 @@ export function NotificationScreen() {
   return (
     <BaseLayout>
       <View className="relative w-full flex-1">
-        <Image
-          source={
-            isDark
-              ? require('@@/assets/base/background-dark.webp')
-              : require('@@/assets/base/background-light.webp')
-          }
-          style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
-          contentFit="cover"
-        />
         <CustomHeader
           title={translate('settings.menu.notification')}
           tintColor={theme === 'dark' ? '#FFF' : '#1B1B1B'}

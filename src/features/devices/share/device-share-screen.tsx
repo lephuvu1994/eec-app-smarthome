@@ -76,16 +76,6 @@ export function DeviceShareScreen({ deviceId }: { deviceId: string }) {
           )}
         />
 
-        <Image
-          source={
-            isDark
-              ? require('@@/assets/base/background-dark.webp')
-              : require('@@/assets/base/background-light.webp')
-          }
-          style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }}
-          contentFit="contain"
-        />
-
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingTop: insets.top + 16, paddingBottom: insets.bottom + 32 }}

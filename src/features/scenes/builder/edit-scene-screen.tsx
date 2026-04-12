@@ -9,6 +9,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 
 import { CustomHeader, useHeaderOffset } from '@/components/base/header/CustomHeader';
+import { BaseLayout } from '@/components/layout/BaseLayout';
 import { Button, colors, showSuccessMessage, Text, TouchableOpacity, View } from '@/components/ui';
 import { ActionList } from '@/features/scenes/builder/components/action-list';
 import { AddActionSheet } from '@/features/scenes/builder/components/add-action-sheet';
@@ -145,7 +146,7 @@ export function EditSceneScreen() {
 
   if (!hasInitedRef.current && isFetching) {
     return (
-      <View className="flex-1 items-center justify-center bg-[#F9FAFB] dark:bg-[#09090B]">
+      <View className="flex-1 items-center justify-center">
         <ActivityIndicator size="large" color={colors.primaryActive} />
       </View>
     );
@@ -158,7 +159,7 @@ export function EditSceneScreen() {
   const topIconName = isAutomation ? 'robot-outline' : 'gesture-tap';
 
   return (
-    <View className="flex-1 bg-[#F9FAFB] dark:bg-[#09090B]">
+    <BaseLayout>
       <CustomHeader
         leftContent={(
           <Button
@@ -325,6 +326,6 @@ export function EditSceneScreen() {
         isCreating={false}
         initialName={sceneDetail?.name}
       />
-    </View>
+    </BaseLayout>
   );
 }
