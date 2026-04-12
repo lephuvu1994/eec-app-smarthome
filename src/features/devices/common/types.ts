@@ -1,7 +1,7 @@
 import type { ImageSource } from 'expo-image';
 import type { StyleProp, ViewStyle } from 'react-native';
 
-import type { TDevice, TDeviceEntity } from '@/lib/api/devices/device.service';
+import { TDevice, TDeviceEntity } from '@/types/device';
 import { colors } from '@/components/ui';
 import { ETypeViewDevice } from '@/types/device';
 

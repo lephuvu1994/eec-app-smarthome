@@ -2,7 +2,7 @@ import * as React from 'react';
 import { View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
-import { EDeviceProtocol } from '@/lib/api/devices/device.service';
+import { EDeviceProtocol } from '@/types/device';
 
 function WifiSignalIcon({ level, size = 20, activeColor = '#10B981', inactiveColor = '#3F3F46' }: { level: number; size?: number; activeColor?: string; inactiveColor?: string }) {
   return (

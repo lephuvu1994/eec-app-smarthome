@@ -2,51 +2,6 @@ import type { EHomeRole } from '@/features/auth/types/response';
 import * as Device from 'expo-device';
 import { client } from '../common';
 
-// ============================================================
-// TYPES
-// ============================================================
-export type TAuthHome = {
-  id: string;
-  name: string;
-  role: EHomeRole;
-};
-
-export type TAuthResponse = {
-  accessToken: string;
-  refreshToken: string;
-  user: {
-    id: string;
-    email: string | null;
-    phone: string | null;
-    firstName: string | null;
-    lastName: string | null;
-    role: string;
-    avatar: string | null;
-    createdAt: string;
-    updatedAt: string;
-  };
-  homes: TAuthHome[];
-};
-
-export type TAuthMeResponse = {
-  user: TAuthResponse['user'];
-  homes: TAuthHome[];
-};
-
-export type TCheckExistsResponse = {
-  exists: boolean;
-};
-
-export type TSignupVariables = {
-  identifier: string;
-  password: string;
-  firstName?: string;
-  lastName?: string;
-};
-
-// ============================================================
-// API SERVICE
-// ============================================================
 export const authService = {
   checkExists: async (identifier: string): Promise<TCheckExistsResponse> => {
     const { data } = await client.post('/auth/check-exists', { identifier });

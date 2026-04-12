@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react-native';
-import { EAutomationTargetType } from '@/lib/api/automation/automation.service';
+import { EAutomationTargetType } from '@/types/automation';
 import { useScheduleEditor } from './use-schedule-editor';
 import * as queryApi from '@/lib/api/automation/automation.query';
 import { useQueryClient } from '@tanstack/react-query';

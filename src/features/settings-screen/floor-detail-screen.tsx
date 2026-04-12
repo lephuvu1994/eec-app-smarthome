@@ -1,4 +1,4 @@
-import type { TRoom } from '@/lib/api/homes/home.service';
+import { TRoom } from '@/types/home';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router, Stack, useLocalSearchParams } from 'expo-router';

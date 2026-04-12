@@ -1,4 +1,4 @@
-import type { TFloor, TRoom } from '@/lib/api/homes/home.service';
+import { TFloor, TRoom } from '@/types/home';
 
 import { create } from 'zustand';
 

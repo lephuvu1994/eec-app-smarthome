@@ -1,4 +1,4 @@
-import type { TDeviceTimelineItem } from '@/lib/api/devices/device.service';
+import { TDeviceTimelineItem } from '@/types/device';
 import type { TxKeyPath } from '@/lib/i18n';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import dayjs from 'dayjs';

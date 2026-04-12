@@ -1,4 +1,4 @@
-import type { TRunSceneResponse, TScene } from '@/lib/api/scenes/scene.service';
+import { TRunSceneResponse, TScene } from '@/types/scene';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 

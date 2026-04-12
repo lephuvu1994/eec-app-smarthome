@@ -1,14 +1,4 @@
-import type {
-  TAssignEntitiesBody,
-  TAssignRoomsBody,
-  TAssignScenesBody,
-  TCreateFloorBody,
-  TCreateRoomBody,
-  TFloor,
-  TRoom,
-  TUpdateFloorBody,
-  TUpdateRoomBody,
-} from '@/lib/api/homes/home.service';
+import { TAssignEntitiesBody, TAssignRoomsBody, TAssignScenesBody, TCreateFloorBody, TCreateRoomBody, TFloor, TRoom, TUpdateFloorBody, TUpdateRoomBody } from '@/types/home';
 
 import { useMutation, useQuery } from '@tanstack/react-query';
 

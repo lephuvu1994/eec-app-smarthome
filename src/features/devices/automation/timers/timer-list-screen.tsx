@@ -1,4 +1,4 @@
-import type { TDeviceTimer } from '@/lib/api/automation/automation.service';
+import { TDeviceTimer } from '@/types/automation';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';

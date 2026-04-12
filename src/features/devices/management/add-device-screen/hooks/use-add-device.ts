@@ -7,7 +7,7 @@ import { Easing, useSharedValue, withRepeat, withTiming } from 'react-native-rea
 import { showErrorMessage } from '@/components/ui';
 import { EAddDeviceStep, EPairingMode } from '@/features/devices/management/add-device-screen/types';
 import { useRegisterDevice } from '@/hooks/use-register-device';
-import { EDeviceProtocol } from '@/lib/api/devices/device.service';
+import { EDeviceProtocol } from '@/types/device';
 import { bleService, CHIP_TX_CHAR_UUID } from '@/lib/ble';
 import { cryptoService } from '@/lib/crypto';
 import { translate } from '@/lib/i18n';

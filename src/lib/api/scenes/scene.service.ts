@@ -1,28 +1,6 @@
-import { client } from '../common';
 import type { TScene, TSceneAction, TSceneTrigger } from '@/types/scene';
-import { ESceneActionType, ESceneTriggerType } from '@/types/scene';
+import { client } from '../common';
 
-export type TCreateSceneDto = {
-  name: string;
-  homeId: string;
-  icon?: string;
-  color?: string;
-  roomId?: string;
-  triggers?: TSceneTrigger[];
-  actions: TSceneAction[];
-  minIntervalSeconds?: number;
-};
-
-export type TUpdateSceneDto = Partial<Omit<TCreateSceneDto, 'homeId'>>;
-
-export type TRunSceneResponse = {
-  jobId: string;
-  message: string;
-};
-
-// ============================================================
-// API SERVICE
-// ============================================================
 export const sceneService = {
   getScenes: async (homeId: string): Promise<TScene[]> => {
     const { data } = await client.get('/scenes', { params: { homeId } });
