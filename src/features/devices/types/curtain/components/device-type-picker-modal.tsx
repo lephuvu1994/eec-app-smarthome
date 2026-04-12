@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks-extra/no-direct-set-state-in-use-effect */
 import type { BottomSheetModal } from '@gorhom/bottom-sheet';
 
 import type { SharedValue } from 'react-native-reanimated';
@@ -107,16 +108,16 @@ function DeviceTypeCard({
 
 // ── Dot indicator ──────────────────────────────────────────────────────────
 function DotIndicator({
-  count,
+  types,
   scrollX,
 }: {
-  count: number;
-  scrollX: SharedValue<number>;
+  types: typeof CURTAIN_DEVICE_TYPES;
+  scrollX: Animated.SharedValue<number>;
 }) {
   return (
     <View className="mt-4 flex-row items-center justify-center gap-2">
-      {Array.from({ length: count }).map((_, i) => (
-        <DotItem key={_ as number} index={i} scrollX={scrollX} />
+      {types.map((type, i) => (
+        <DotItem key={type.id} index={i} scrollX={scrollX} />
       ))}
     </View>
   );
@@ -189,12 +190,13 @@ export function DeviceTypePickerModal({
     if (idx >= 0) {
       setActiveIndex(idx);
       // Delay scroll to after modal layout
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         scrollRef.current?.scrollTo({
           x: idx * (CARD_WIDTH + CARD_GAP),
           animated: false,
         });
       }, 100);
+      return () => clearTimeout(timer);
     }
   }, [currentTypeId]);
 
@@ -255,7 +257,7 @@ export function DeviceTypePickerModal({
         </Animated.ScrollView>
 
         {/* ── Dot indicator ────────────────────────────────────── */}
-        <DotIndicator count={CURTAIN_DEVICE_TYPES.length} scrollX={scrollX} />
+        <DotIndicator types={CURTAIN_DEVICE_TYPES} scrollX={scrollX} />
 
         {/* ── Selected name ────────────────────────────────────── */}
         {selectedName && (
