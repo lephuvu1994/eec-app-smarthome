@@ -1,5 +1,6 @@
 import type { ETheme } from '@/types/base';
 
+import type { TDeviceListResponse } from '@/types/device';
 import type { THome } from '@/types/home';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { ThemeProvider } from '@react-navigation/native';
@@ -8,8 +9,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import FlashMessage from 'react-native-flash-message';
 
+import FlashMessage from 'react-native-flash-message';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { useUniwind } from 'uniwind';
@@ -68,7 +69,7 @@ function RootRender() {
 
   useEffect(() => {
     let isMounted = true;
-    let fallbackTimer: any;
+    let fallbackTimer: NodeJS.Timeout;
 
     const performBootHydration = async () => {
       if (status === EAuthStatus.signIn) {
@@ -103,7 +104,7 @@ function RootRender() {
               const syncPromise = Promise.allSettled([
                 authPromise,
                 useHomeDataStore.getState().syncFromAPI(homeId),
-                deviceService.getDevices({ homeId, limit: 50 }).then((res: any) => {
+                deviceService.getDevices({ homeId, limit: 50 }).then((res: TDeviceListResponse) => {
                   useDeviceStore.getState().setDevices(res.data);
                 }),
               ]);
