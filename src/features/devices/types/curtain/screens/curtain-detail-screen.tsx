@@ -16,7 +16,9 @@ import { TimelinePopover } from '@/features/devices/automation/timeline/timeline
 import { DeviceActionBar } from '@/features/devices/common/components/device-action-bar';
 import { EDoorState, useShutterControl } from '@/features/devices/types/curtain/hooks/use-shutter-control';
 import { translate } from '@/lib/i18n';
+import { cn } from '@/lib/utils';
 import { getPrimaryEntities } from '@/lib/utils/device-entity-helper';
+import { useConfigManager } from '@/stores/config/config';
 import { useDeviceStore } from '@/stores/device/device-store';
 import { ETheme } from '@/types/base';
 import { CurtainBleModal } from '../components/curtain-ble-modal';
@@ -24,10 +26,11 @@ import { CurtainMotorConfigModal } from '../components/curtain-motor-config-moda
 import { CurtainMotorDirModal } from '../components/curtain-motor-dir-modal';
 import { CurtainRfLearnModal } from '../components/curtain-rf-learn-modal';
 import { CurtainSlider } from '../components/curtain-slider';
-import { ShutterBackgroundModal } from '../components/shutter-background-modal';
+import { DeviceTypePickerModal } from '../components/device-type-picker-modal';
 import { ShutterVisualizer } from '../components/shutter-visualizer';
+import { DEFAULT_CURTAIN_TYPE_ID, getCurtainDeviceType } from '../utils/shutter-constants';
 
-type Props = {
+type TProps = {
   deviceId: string;
   entityId?: string;
 };
@@ -68,7 +71,7 @@ function CtrlButton({ icon, label, onPress, disabled, primary = false }: TCtrlBt
 // ─────────────────────────────────────────────────────────────────────────────
 // Main Screen
 // ─────────────────────────────────────────────────────────────────────────────
-export function CurtainDetailScreen({ deviceId, entityId }: Props) {
+export function CurtainDetailScreen({ deviceId, entityId }: TProps) {
   const devices = useDeviceStore(s => s.devices);
   const device = devices.find(d => d.id === deviceId);
   const router = useRouter();
@@ -110,12 +113,16 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
 
   // Note: Position is rendered by CurtainSlider directly.
 
-  // Background image & background picker modal
+  // Background image & device type picker modal
   const modal = useModal();
   const bleModal = useModal();
   const rfLearnModal = useModal();
   const motorConfigModal = useModal();
   const motorDirModal = useModal();
+
+  // ★ Device type from local config (Tuya pattern — purely local, not synced)
+  const curtainTypeId = useConfigManager(s => s.shutterDeviceTypes[deviceId]) || DEFAULT_CURTAIN_TYPE_ID;
+  const deviceType = getCurtainDeviceType(curtainTypeId);
 
   const menuElements: TMenuElement[] = React.useMemo(() => [
     {
@@ -275,6 +282,7 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
         <View style={{ flex: 1, paddingTop: headerOffset + 16 }}>
           {/* ── Door Visualization ─────────────────────────────────── */}
           <ShutterVisualizer
+            deviceType={deviceType}
             position={position}
             doorState={doorState}
             stateColor={stateColor}
@@ -299,9 +307,9 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
             </View>
 
             {/* ── Child Lock Toggle ──────────────────────────────── */}
-            <View className="mt-8 mb-2">
+            <View className="my-1 mt-2 flex-row items-center justify-center">
               <TouchableOpacity
-                className={`flex-row items-center justify-center gap-2 rounded-2xl py-3.5 shadow-sm ${childLock ? 'bg-red-500 dark:bg-red-500/80' : 'bg-white dark:border dark:border-[#292929] dark:bg-[#FFFFFF0D]'}`}
+                className={cn('w-1/3 flex-row items-center justify-center gap-2 rounded-2xl py-3.5 shadow-sm', childLock ? 'bg-red-500 dark:bg-red-500/80' : 'bg-white dark:border dark:border-[#292929] dark:bg-[#FFFFFF0D]')}
                 onPress={() => handleChildLock(!childLock)}
                 disabled={isControlling || !isOnline}
                 activeOpacity={0.8}
@@ -320,11 +328,11 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
             </View>
 
             {/* ── Control Buttons ────────────────────────────────── */}
-            <View className="mt-6 flex-row items-end justify-between">
+            <View className="mt-6 flex-row items-end justify-between px-2">
               <CtrlButton
-                icon={<FontAwesome6 name="chevron-down" size={22} color={isDark ? '#fff' : '#1B1B1B'} />}
-                label={translate('deviceDetail.shutter.close')}
-                onPress={handleClose}
+                icon={<FontAwesome6 name="chevron-up" size={22} color={isDark ? '#fff' : '#1B1B1B'} />}
+                label={translate('deviceDetail.shutter.open')}
+                onPress={handleOpen}
                 disabled={isControlling || !isOnline}
               />
               <CtrlButton
@@ -335,16 +343,20 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
                 primary
               />
               <CtrlButton
-                icon={<FontAwesome6 name="chevron-up" size={22} color={isDark ? '#fff' : '#1B1B1B'} />}
-                label={translate('deviceDetail.shutter.open')}
-                onPress={handleOpen}
+                icon={<FontAwesome6 name="chevron-down" size={22} color={isDark ? '#fff' : '#1B1B1B'} />}
+                label={translate('deviceDetail.shutter.close')}
+                onPress={handleClose}
                 disabled={isControlling || !isOnline}
               />
             </View>
 
           </ScrollView>
 
-          <ShutterBackgroundModal modalRef={modal.ref} deviceId={deviceId} />
+          <DeviceTypePickerModal
+            modalRef={modal.ref}
+            deviceId={deviceId}
+            currentTypeId={curtainTypeId}
+          />
           <CurtainBleModal
             modalRef={bleModal.ref}
             isControlling={isControlling}
