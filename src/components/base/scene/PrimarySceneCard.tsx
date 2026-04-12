@@ -70,21 +70,17 @@ export const PrimarySceneCard: React.FC<TSceneCardProps> = ({
   const pendingActionRef = React.useRef<(() => void) | null>(null);
 
   const openMenu = () => {
-    console.log('[SceneCard] openMenu called, menuRef.current:', !!menuRef.current, 'title:', title);
     setMenuMounted(true);
     requestAnimationFrame(() => {
-      console.log('[SceneCard] rAF: setting menuVisible=true, menuRef.current:', !!menuRef.current);
       setMenuVisible(true);
     });
   };
 
   const closeMenu = () => {
-    console.log('[SceneCard] closeMenu called, title:', title);
     setMenuVisible(false);
   };
 
   const handleMenuPress = () => {
-    console.log('[SceneCard] handleMenuPress, title:', title, 'menuRef.current:', !!menuRef.current);
     if (onMenuPress) {
       onMenuPress();
     }
@@ -165,7 +161,6 @@ export const PrimarySceneCard: React.FC<TSceneCardProps> = ({
             isVisible={menuVisible}
             onRequestClose={closeMenu}
             onCloseComplete={() => {
-              console.log('[SceneCard] onCloseComplete fired, title:', title, 'pendingAction:', !!pendingActionRef.current);
               setMenuMounted(false);
               if (pendingActionRef.current) {
                 const action = pendingActionRef.current;

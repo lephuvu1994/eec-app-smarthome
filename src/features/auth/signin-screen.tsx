@@ -4,7 +4,7 @@ import type { EHomeRole, UserResponse } from '@/features/auth/types/response';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import { BaseLayout } from '@/components/layout/BaseLayout';
+import { FullLayout } from '@/components/layout/FullLayout';
 import { showErrorMessage, Text, View } from '@/components/ui';
 import { LoginForm } from '@/features/auth/components/login-form';
 import { useUserManager } from '@/features/auth/user-store';
@@ -50,7 +50,7 @@ export function SignIn() {
   };
 
   return (
-    <BaseLayout hasTabBar={false}>
+    <FullLayout hasTabBar={false}>
       <View className="relative w-full flex-1">
         <Image
           source={require('@@/assets/sign-in/background-signIn.webp')}
@@ -79,6 +79,6 @@ export function SignIn() {
         </View>
         <LoginForm onSubmit={onSubmit} />
       </View>
-    </BaseLayout>
+    </FullLayout>
   );
 }

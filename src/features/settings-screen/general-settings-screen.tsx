@@ -2,7 +2,6 @@ import type { TxKeyPath } from '@/lib/i18n';
 import type { TLanguage } from '@/lib/i18n/resources';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import * as React from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -14,7 +13,6 @@ import { Modal, useModal } from '@/components/ui/modal';
 import { useSelectedTheme } from '@/lib/hooks/use-selected-theme';
 import { translate, useSelectedLanguage } from '@/lib/i18n';
 import { useConfigManager } from '@/stores/config/config';
-import { ETheme } from '@/types/base';
 
 type SectionItem = {
   key: string;
@@ -272,24 +270,6 @@ export function GeneralSettingsScreen() {
           )}
         />
 
-        {/* Background */}
-        <Image
-          source={
-            theme === ETheme.Dark
-              ? require('@@/assets/base/background-dark.webp')
-              : require('@@/assets/base/background-light.webp')
-          }
-          style={{
-            width: '100%',
-            height: '100%',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-          }}
-          contentFit="contain"
-        />
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingTop: headerOffset, paddingBottom: insets.bottom + 32 }}
