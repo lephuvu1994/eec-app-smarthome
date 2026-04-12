@@ -18,14 +18,16 @@ import { EDoorState, useShutterControl } from '@/features/devices/types/curtain/
 import { translate } from '@/lib/i18n';
 import { getPrimaryEntities } from '@/lib/utils/device-entity-helper';
 import { useDeviceStore } from '@/stores/device/device-store';
+import { useConfigManager } from '@/stores/config/config';
 import { ETheme } from '@/types/base';
 import { CurtainBleModal } from '../components/curtain-ble-modal';
 import { CurtainMotorConfigModal } from '../components/curtain-motor-config-modal';
 import { CurtainMotorDirModal } from '../components/curtain-motor-dir-modal';
 import { CurtainRfLearnModal } from '../components/curtain-rf-learn-modal';
 import { CurtainSlider } from '../components/curtain-slider';
-import { ShutterBackgroundModal } from '../components/shutter-background-modal';
+import { DeviceTypePickerModal } from '../components/device-type-picker-modal';
 import { ShutterVisualizer } from '../components/shutter-visualizer';
+import { DEFAULT_CURTAIN_TYPE_ID, getCurtainDeviceType } from '../utils/shutter-constants';
 
 type Props = {
   deviceId: string;
@@ -110,12 +112,16 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
 
   // Note: Position is rendered by CurtainSlider directly.
 
-  // Background image & background picker modal
+  // Background image & device type picker modal
   const modal = useModal();
   const bleModal = useModal();
   const rfLearnModal = useModal();
   const motorConfigModal = useModal();
   const motorDirModal = useModal();
+
+  // ★ Device type from local config (Tuya pattern — purely local, not synced)
+  const curtainTypeId = useConfigManager(s => s.shutterDeviceTypes[deviceId]) || DEFAULT_CURTAIN_TYPE_ID;
+  const deviceType = getCurtainDeviceType(curtainTypeId);
 
   const menuElements: TMenuElement[] = React.useMemo(() => [
     {
@@ -275,6 +281,7 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
         <View style={{ flex: 1, paddingTop: headerOffset + 16 }}>
           {/* ── Door Visualization ─────────────────────────────────── */}
           <ShutterVisualizer
+            deviceType={deviceType}
             position={position}
             doorState={doorState}
             stateColor={stateColor}
@@ -344,7 +351,11 @@ export function CurtainDetailScreen({ deviceId, entityId }: Props) {
 
           </ScrollView>
 
-          <ShutterBackgroundModal modalRef={modal.ref} deviceId={deviceId} />
+          <DeviceTypePickerModal
+            modalRef={modal.ref}
+            deviceId={deviceId}
+            currentTypeId={curtainTypeId}
+          />
           <CurtainBleModal
             modalRef={bleModal.ref}
             isControlling={isControlling}

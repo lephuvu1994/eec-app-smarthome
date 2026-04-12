@@ -1,13 +1,100 @@
-export const SHUTTER_BACKGROUNDS = [
-  { id: '1', source: require('@@/assets/device/cuacuon/anh2.png') },
-  { id: '2', source: require('@@/assets/device/cuacuon/webp/anh2.webp') },
-  { id: '3', source: require('@@/assets/device/cuacuon/webp/anh3.webp') },
-  { id: '4', source: require('@@/assets/device/cuacuon/webp/anh4.webp') },
-  { id: '5', source: require('@@/assets/device/cuacuon/webp/anh5.webp') },
-  { id: '6', source: require('@@/assets/device/cuacuon/webp/anh6.webp') },
+import type { DimensionValue, ImageSourcePropType } from 'react-native';
+
+// ── Animation Types ────────────────────────────────────────────────────────
+/** How the door panel animates in the visualizer */
+export type TCurtainAnimationType = 'slide_vertical' | 'slide_horizontal' | 'fold' | 'roll';
+
+// ── Device Type Config ─────────────────────────────────────────────────────
+/**
+ * Each curtain "device type" bundles everything needed to render:
+ * background image, door overlay image, door frame position, and animation.
+ *
+ * Add new types by adding entries to CURTAIN_DEVICE_TYPES below.
+ */
+export type TCurtainDeviceType = {
+  /** Unique key, e.g. 'roller_shutter', 'garage_door' */
+  id: string;
+  /** i18n translation key for the display name */
+  name: string;
+  /** Thumbnail image for the picker carousel */
+  thumbnail: ImageSourcePropType;
+  /** Full background image (house with empty door hole) */
+  bgImage: ImageSourcePropType;
+  /** Door panel overlay image (slides over the door hole) */
+  doorImage: ImageSourcePropType;
+  /** Door hole position on the background (percentage-based for responsiveness) */
+  doorFrame: {
+    top: DimensionValue;
+    left: DimensionValue;
+    width: DimensionValue;
+    height: DimensionValue;
+  };
+  /** Animation style for the door panel */
+  animationType: TCurtainAnimationType;
+};
+
+// ── Registry ───────────────────────────────────────────────────────────────
+export const CURTAIN_DEVICE_TYPES: TCurtainDeviceType[] = [
+  {
+    id: 'roller_shutter_1',
+    name: 'deviceDetail.shutter.types.rollerShutter',
+    thumbnail: require('@@/assets/device/cuacuon/anh1.png'),
+    bgImage: require('@@/assets/device/cuacuon/anh1.png'),
+    doorImage: require('@@/assets/device/cuacuon/anh-cua1.png'),
+    doorFrame: { top: '33.8%', left: '26.3%', width: '47.8%', height: '59%' },
+    animationType: 'slide_vertical',
+  },
+  {
+    id: 'roller_shutter_2',
+    name: 'deviceDetail.shutter.types.rollerShutter',
+    thumbnail: require('@@/assets/device/cuacuon/anh2.png'),
+    bgImage: require('@@/assets/device/cuacuon/anh2.png'),
+    doorImage: require('@@/assets/device/cuacuon/anh-cua1.png'),
+    doorFrame: { top: '33.8%', left: '26.3%', width: '47.8%', height: '59%' },
+    animationType: 'slide_vertical',
+  },
+  {
+    id: 'roller_shutter_3',
+    name: 'deviceDetail.shutter.types.rollerShutter',
+    thumbnail: require('@@/assets/device/cuacuon/webp/anh3.webp'),
+    bgImage: require('@@/assets/device/cuacuon/webp/anh3.webp'),
+    doorImage: require('@@/assets/device/cuacuon/anh-cua1.png'),
+    doorFrame: { top: '33.8%', left: '26.3%', width: '47.8%', height: '59%' },
+    animationType: 'slide_vertical',
+  },
+  {
+    id: 'roller_shutter_4',
+    name: 'deviceDetail.shutter.types.rollerShutter',
+    thumbnail: require('@@/assets/device/cuacuon/webp/anh4.webp'),
+    bgImage: require('@@/assets/device/cuacuon/webp/anh4.webp'),
+    doorImage: require('@@/assets/device/cuacuon/anh-cua1.png'),
+    doorFrame: { top: '33.8%', left: '26.3%', width: '47.8%', height: '59%' },
+    animationType: 'slide_vertical',
+  },
+  {
+    id: 'roller_shutter_5',
+    name: 'deviceDetail.shutter.types.rollerShutter',
+    thumbnail: require('@@/assets/device/cuacuon/webp/anh5.webp'),
+    bgImage: require('@@/assets/device/cuacuon/webp/anh5.webp'),
+    doorImage: require('@@/assets/device/cuacuon/anh-cua1.png'),
+    doorFrame: { top: '33.8%', left: '26.3%', width: '47.8%', height: '59%' },
+    animationType: 'slide_vertical',
+  },
+  {
+    id: 'roller_shutter_6',
+    name: 'deviceDetail.shutter.types.rollerShutter',
+    thumbnail: require('@@/assets/device/cuacuon/webp/anh6.webp'),
+    bgImage: require('@@/assets/device/cuacuon/webp/anh6.webp'),
+    doorImage: require('@@/assets/device/cuacuon/anh-cua1.png'),
+    doorFrame: { top: '33.8%', left: '26.3%', width: '47.8%', height: '59%' },
+    animationType: 'slide_vertical',
+  },
 ];
 
-export function getShutterBackgroundSource(id: string) {
-  const bg = SHUTTER_BACKGROUNDS.find(b => b.id === id);
-  return bg ? bg.source : SHUTTER_BACKGROUNDS[0].source;
+/** Default device type when none is selected */
+export const DEFAULT_CURTAIN_TYPE_ID = 'roller_shutter_1';
+
+/** Lookup a device type by ID, returns first entry if not found */
+export function getCurtainDeviceType(id: string): TCurtainDeviceType {
+  return CURTAIN_DEVICE_TYPES.find(t => t.id === id) ?? CURTAIN_DEVICE_TYPES[0];
 }
