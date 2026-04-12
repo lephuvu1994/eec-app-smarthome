@@ -1,4 +1,4 @@
-import type { TSceneTrigger, TSceneAction } from './base';
+import type { TSceneAction, TSceneTrigger } from './base';
 
 export type TCreateSceneDto = {
   name: string;
