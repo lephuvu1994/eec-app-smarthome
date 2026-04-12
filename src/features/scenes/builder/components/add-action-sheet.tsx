@@ -1,8 +1,8 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Pressable, Text, View } from '@/components/ui';
 import { Modal } from '@/components/ui/modal';
-import { ESceneActionType } from '@/lib/api/scenes/scene.service';
 import { translate } from '@/lib/i18n';
+import { ESceneActionType } from '@/types/scene';
 
 // ─── Action options definition ─────────────────────────────────────────────────
 

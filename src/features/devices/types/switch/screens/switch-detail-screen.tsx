@@ -13,11 +13,12 @@ import { NetworkSignalIndicator } from '@/features/devices/common/components/net
 import { RenameDeviceModal } from '@/features/devices/common/modals/rename-device-modal';
 import { SwitchModalItem } from '@/features/devices/types/switch/components/switch-modal-item';
 
-import { deviceService, EDeviceStatus } from '@/lib/api/devices/device.service';
+import { deviceService } from '@/lib/api/devices/device.service';
 import { translate } from '@/lib/i18n';
 import { isPrimaryEntity } from '@/lib/utils/device-entity-helper';
 import { useDeviceStore } from '@/stores/device/device-store';
 import { ETheme } from '@/types/base';
+import { EDeviceStatus } from '@/types/device';
 
 type Props = {
   deviceId: string;

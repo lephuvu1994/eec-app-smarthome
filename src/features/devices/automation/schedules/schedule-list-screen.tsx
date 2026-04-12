@@ -1,4 +1,4 @@
-import type { TDeviceSchedule } from '@/lib/api/automation/automation.service';
+import type { TDeviceSchedule } from '@/types/automation';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';

@@ -24,9 +24,9 @@ import { SaveSceneSheet } from '@/features/scenes/builder/components/save-scene-
 import { useSceneBuilder } from '@/features/scenes/builder/hooks/use-scene-builder';
 
 import { useSceneBuilderStore } from '@/features/scenes/builder/stores/scene-builder-store';
-import { ESceneActionType } from '@/lib/api/scenes/scene.service';
 import { translate } from '@/lib/i18n';
 import { ETheme } from '@/types/base';
+import { ESceneActionType } from '@/types/scene';
 
 export function TapToRunBuilderScreen() {
   const router = useRouter();

@@ -1,4 +1,4 @@
-import type { EDeviceStatus, TDevice } from '@/lib/api/devices/device.service';
+import type { EDeviceStatus, TDevice } from '@/types/device';
 import isEqual from 'lodash.isequal';
 
 import { create } from 'zustand';

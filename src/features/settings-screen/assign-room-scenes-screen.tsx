@@ -1,4 +1,4 @@
-import type { TScene } from '@/lib/api/scenes/scene.service';
+import type { TScene } from '@/types/scene';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';

@@ -1,7 +1,7 @@
 import type { DimensionValue } from 'react-native';
 import type { SharedValue } from 'react-native-reanimated';
 
-import type { EDeviceProtocol } from '@/lib/api/devices/device.service';
+import type { EDeviceProtocol } from '@/types/device';
 import { Image } from 'expo-image';
 import { StyleSheet } from 'react-native';
 
