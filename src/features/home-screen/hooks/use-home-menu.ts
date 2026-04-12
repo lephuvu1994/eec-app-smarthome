@@ -1,5 +1,5 @@
 import type { TMenuElement } from '@/components/ui/zeego-native-menu';
-import type { TFloor, TRoom } from '@/lib/api/homes/home.service';
+import type { TFloor, TRoom } from '@/types/home';
 
 import { router } from 'expo-router';
 import { useMemo } from 'react';

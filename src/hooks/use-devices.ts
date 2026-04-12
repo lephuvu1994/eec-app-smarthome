@@ -1,9 +1,10 @@
-import type { TDevice, TDeviceListResponse, TSiriSyncData } from '@/lib/api/devices/device.service';
+import type { TDevice, TDeviceListResponse, TSiriSyncData } from '@/types/device';
 
 import { useMutation, useQuery } from '@tanstack/react-query';
 
-import { deviceService, ESharePermission } from '@/lib/api/devices/device.service';
+import { deviceService } from '@/lib/api/devices/device.service';
 import { useDeviceStore } from '@/stores/device/device-store';
+import { ESharePermission } from '@/types/device';
 
 // ============================================================
 // QUERY KEYS

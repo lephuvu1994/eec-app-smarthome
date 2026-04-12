@@ -1,4 +1,4 @@
-import type { TDevice, TDeviceEntity } from '@/lib/api/devices/device.service';
+import type { TDevice, TDeviceEntity } from '@/types/device';
 
 import { FontAwesome5 } from '@expo/vector-icons';
 import { ActivityIndicator, View as RNView, TouchableOpacity } from 'react-native';

@@ -1,12 +1,12 @@
-import type { TDeviceTimelineItem } from '@/lib/api/devices/device.service';
 import type { TxKeyPath } from '@/lib/i18n';
+import type { TDeviceTimelineItem } from '@/types/device';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import dayjs from 'dayjs';
 import { Image } from 'expo-image';
 import * as React from 'react';
 import { Text, View } from 'react-native';
-import { EDeviceTimelineEvent, EDeviceTimelineSource, EDeviceTimelineType } from '@/lib/api/devices/device.service';
 import { translate } from '@/lib/i18n';
+import { EDeviceTimelineEvent, EDeviceTimelineSource, EDeviceTimelineType } from '@/types/device';
 
 type TimelineItemCardProps = {
   item: TDeviceTimelineItem;
@@ -26,6 +26,11 @@ export const TimelineItemCard: React.FC<TimelineItemCardProps> = ({ item, isLast
   }
   else {
     finalPrefixName = item.entityName || deviceNameStr || '';
+  }
+
+  // Optimize text string for "Khoá trẻ em" to just "Khoá" using common translation
+  if (item.entityCode?.toLowerCase() === 'child_lock' || item.entityCode?.toLowerCase().includes('lock')) {
+    finalPrefixName = translate('deviceDetail.shutter.childLock' as TxKeyPath) as string || 'Khoá';
   }
 
   // Get localized Action Event Name
@@ -162,17 +167,17 @@ export const TimelineItemCard: React.FC<TimelineItemCardProps> = ({ item, isLast
       iconColor = '#EF4444';
       bgClass = 'bg-red-500/20';
     }
-    else if (evt === 'open') {
+    else if (evt.includes('open') || evt.includes('mở') || evt === 'up') {
       iconName = 'door-open';
       iconColor = '#10B981';
       bgClass = 'bg-green-500/20';
     }
-    else if (evt === 'close') {
+    else if (evt.includes('clos') || evt.includes('đóng') || evt === 'down') {
       iconName = 'door-closed';
       iconColor = '#EF4444';
       bgClass = 'bg-red-500/20';
     }
-    else if (evt === 'pause' || evt === 'stop') {
+    else if (evt === 'pause' || evt === 'stop' || evt.includes('dừng')) {
       iconName = 'pause';
       iconColor = '#F59E0B';
       bgClass = 'bg-amber-500/20';

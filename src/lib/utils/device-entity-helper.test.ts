@@ -4,7 +4,7 @@ import {
   getPrimaryEntities,
   isPrimaryEntity,
 } from './device-entity-helper';
-import type { TDevice, TDeviceEntity } from '../api/devices/device.service';
+import { TDevice, TDeviceEntity } from '@/types/device';
 
 const mockEntity = (domain: string, code: string, attributes: any[] = []): TDeviceEntity => ({
   id: `entity-${code}`,

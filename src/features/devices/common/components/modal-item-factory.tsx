@@ -1,4 +1,4 @@
-import type { TDevice, TDeviceEntity } from '@/lib/api/devices/device.service';
+import type { TDevice, TDeviceEntity } from '@/types/device';
 
 import * as React from 'react';
 
@@ -7,7 +7,7 @@ import { ClimateModalItem } from '@/features/devices/types/climate/components/cl
 import { CurtainModalItem } from '@/features/devices/types/curtain/components/curtain-modal-item';
 import { LightModalItem } from '@/features/devices/types/light/components/light-modal-item';
 import { SwitchModalItem } from '@/features/devices/types/switch/components/switch-modal-item';
-import { EEntityDomain } from '@/lib/api/devices/device.service';
+import { EEntityDomain } from '@/types/device';
 
 /**
  * Factory component that routes the display of Modal mini-controls based on entity domain.

@@ -12,7 +12,7 @@
  *    Việc request permission chỉ xảy ra ở màn điều khiển BLE khi user chủ động.
  */
 
-import type { TDevice } from '@/lib/api/devices/device.service';
+import type { TDevice } from '@/types/device';
 import { useEffect, useRef, useState } from 'react';
 import BleManager from 'react-native-ble-manager';
 import { bleService } from '@/lib/ble';

@@ -1,5 +1,5 @@
 import { renderHook } from '@testing-library/react-native';
-import { EAutomationTargetType } from '@/lib/api/automation/automation.service';
+import { EAutomationTargetType } from '@/types/automation';
 import { useTimers } from './use-timers';
 import * as queryApi from '@/lib/api/automation/automation.query';
 

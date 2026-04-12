@@ -1,4 +1,4 @@
-import type { TRoom } from '@/lib/api/homes/home.service';
+import type { TRoom } from '@/types/home';
 import { FlashList } from '@shopify/flash-list';
 import { memo } from 'react';
 

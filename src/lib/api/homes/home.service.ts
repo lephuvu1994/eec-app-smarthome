@@ -1,86 +1,8 @@
-import type { TDeviceEntity, TDeviceTimelineResponse } from '../devices/device.service';
-import type { TScene } from '../scenes/scene.service';
+import type { TAssignRoomsBody, TCreateFloorBody, TCreateRoomBody, TFloor, THomeDetail, THomeWithFloors, TRoom, TUpdateFloorBody, TUpdateRoomBody } from '@/types/home';
+import type { TDeviceTimelineResponse } from '@/types/device';
 
 import { client } from '../common';
 
-// ============================================================
-// TYPES
-// ============================================================
-export type THome = {
-  id: string;
-  name: string;
-  ownerId: string;
-  latitude?: number;
-  longitude?: number;
-  radius?: number;
-};
-
-export type TFloor = {
-  id: string;
-  name: string;
-  homeId: string;
-  sortOrder: number;
-  rooms?: TRoom[];
-};
-
-export type TRoom = {
-  id: string;
-  name: string;
-  sortOrder: number;
-  homeId: string;
-  floorId?: string;
-  entities?: TDeviceEntity[];
-  scenes?: TScene[];
-};
-
-/** GET /homes trả về home kèm floors + rooms */
-export type THomeWithFloors = THome & {
-  floors: TFloor[];
-  rooms: TRoom[];
-};
-
-/** GET /homes/:id/detail */
-export type THomeDetail = {
-  home: THome;
-  floors: TFloor[];
-  rooms: TRoom[];
-};
-
-export type TCreateRoomBody = {
-  name: string;
-  floorId?: string;
-};
-
-export type TUpdateRoomBody = {
-  name?: string;
-  floorId?: string | null;
-};
-
-export type TCreateFloorBody = {
-  name: string;
-  sortOrder?: number;
-};
-
-export type TUpdateFloorBody = {
-  name?: string;
-  sortOrder?: number;
-};
-
-export type TAssignRoomsBody = {
-  roomIds: string[];
-};
-
-export type TAssignEntitiesBody = {
-  entityIds: string[];
-};
-
-export type TAssignScenesBody = {
-  sceneIds: string[];
-};
-
-// ============================================================
-// API SERVICE
-// ============================================================
 export const homeService = {
   // ─── Home ───────────────────────────
   /** Lấy danh sách nhà (kèm floors + rooms nested) */

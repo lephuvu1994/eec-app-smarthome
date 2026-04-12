@@ -1,5 +1,5 @@
 import type { EHomeRole } from '@/features/auth/types/response';
-import type { THome } from '@/lib/api/homes/home.service';
+import type { THome } from '@/types/home';
 
 export type THomeManagerStore = {
   /** Danh sách tất cả nhà của user */
