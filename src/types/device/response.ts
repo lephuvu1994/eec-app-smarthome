@@ -1,3 +1,4 @@
+import type { TDevice, TDeviceTimelineItem } from './base';
 export type TDeviceListResponse = {
   statusCode: number;
   data: TDevice[];

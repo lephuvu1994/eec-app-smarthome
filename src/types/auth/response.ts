@@ -1,3 +1,4 @@
+import type { TAuthHome } from './base';
 export type TAuthResponse = {
   accessToken: string;
   refreshToken: string;

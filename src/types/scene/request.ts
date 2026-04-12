@@ -1,3 +1,5 @@
+import type { TSceneTrigger, TSceneAction } from './base';
+
 export type TCreateSceneDto = {
   name: string;
   homeId: string;

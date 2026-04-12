@@ -1,3 +1,4 @@
+import type { EDeviceProtocol } from './base';
 export type TRegisterDeviceVariables = {
   protocol: EDeviceProtocol;
   identifier: string;
