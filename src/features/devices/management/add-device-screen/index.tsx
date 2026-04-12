@@ -1,8 +1,6 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useQueryClient } from '@tanstack/react-query';
-import { Image } from 'expo-image';
 import { router, Stack } from 'expo-router';
-import { StyleSheet } from 'react-native';
 import Animated, { FadeIn, FadeOut, useAnimatedStyle } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
@@ -171,19 +169,6 @@ export function AddDeviceScreen() {
     <BaseLayout>
       <Stack.Screen options={{ headerShown: false }} />
       <View className="relative w-full flex-1">
-        <Image
-          source={theme === ETheme.Dark ? require('@@/assets/base/background-dark.webp') : require('@@/assets/base/background-light.webp')}
-          style={[{
-            width: '100%',
-            height: '100%',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-          }, StyleSheet.absoluteFillObject]}
-          contentFit="cover"
-        />
         <View style={{ paddingTop: insets.top, flex: 1 }}>
           <View className="relative h-14 flex-row items-center justify-center px-5">
             <TouchableOpacity

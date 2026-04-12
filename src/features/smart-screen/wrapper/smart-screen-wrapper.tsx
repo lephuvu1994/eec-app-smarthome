@@ -10,8 +10,7 @@ import { BASE_SPACE_HORIZONTAL } from '@/constants';
 import { translate } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 import { ETabSmart, ETabSmartKey } from '../types/types';
-import { AutomationListSceneWrapper } from './automation-scene-screen';
-import { TapToRunSceneWrapper } from './tab-to-run-scene-screen';
+import { SceneListWrapper } from './scene-list-wrapper';
 
 const ROUTES = [
   { key: ETabSmartKey.tapToRun, title: translate('scene.tapToRun') },
@@ -26,11 +25,11 @@ export function SmartScreenWrapper({ className }: { className?: string }) {
     switch (route.key) {
       case ETabSmartKey.automation:
         return (
-          <AutomationListSceneWrapper className="pt-4" />
+          <SceneListWrapper type="automation" className="pt-2" />
         );
       case ETabSmartKey.tapToRun:
         return (
-          <TapToRunSceneWrapper className="pt-4" />);
+          <SceneListWrapper type="tapToRun" className="pt-2" />);
     }
   };
 

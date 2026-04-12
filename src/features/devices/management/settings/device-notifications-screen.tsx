@@ -1,10 +1,9 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import * as React from 'react';
 import { useState } from 'react';
-import { Alert, StyleSheet } from 'react-native';
+import { Alert } from 'react-native';
 import Animated, { FadeInDown, FadeInLeft } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
@@ -143,16 +142,6 @@ export function DeviceNotificationsScreen({ deviceId }: Props) {
   return (
     <BaseLayout>
       <View className="relative w-full flex-1" style={{ paddingBottom: insets.bottom }}>
-        {/* Background */}
-        <Image
-          source={theme === ETheme.Dark ? require('@@/assets/base/background-dark.webp') : require('@@/assets/base/background-light.webp')}
-          style={[{
-            width: '100%',
-            height: '100%',
-            position: 'absolute',
-          }, StyleSheet.absoluteFillObject]}
-          contentFit="cover"
-        />
 
         {/* ── Header ── */}
         <View

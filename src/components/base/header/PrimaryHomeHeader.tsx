@@ -58,7 +58,7 @@ export const PrimaryHeaderHome: React.FC = memo(() => {
       key: 'add scene',
       title: translate('base.addScene'),
       icon: { ios: 'plus' },
-      onPress: () => router.push('/(app)/(mobile)/add-scene' as Href),
+      onPress: () => router.push('/(app)/(mobile)/(scene)/hub' as Href),
     },
     {
       type: 'separator',

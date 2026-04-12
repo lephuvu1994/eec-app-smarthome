@@ -1,6 +1,6 @@
 import { useHeaderHeight } from '@react-navigation/elements';
 
-import { BaseLayout } from '@/components/layout/BaseLayout';
+import { FullLayout } from '@/components/layout/FullLayout';
 import {
   Image,
   Text,
@@ -12,7 +12,7 @@ export function SignUp() {
   const headerHeight = useHeaderHeight();
 
   return (
-    <BaseLayout>
+    <FullLayout>
       <View className="relative w-full flex-1">
         <Image
           source={require('@@/assets/sign-in/background-signIn.webp')}
@@ -40,6 +40,6 @@ export function SignUp() {
         </View>
         <SignUpForm />
       </View>
-    </BaseLayout>
+    </FullLayout>
   );
 }
