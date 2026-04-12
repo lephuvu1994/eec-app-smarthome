@@ -29,7 +29,7 @@ import { DeviceTypePickerModal } from '../components/device-type-picker-modal';
 import { ShutterVisualizer } from '../components/shutter-visualizer';
 import { DEFAULT_CURTAIN_TYPE_ID, getCurtainDeviceType } from '../utils/shutter-constants';
 
-type Props = {
+type TProps = {
   deviceId: string;
   entityId?: string;
 };
@@ -70,7 +70,7 @@ function CtrlButton({ icon, label, onPress, disabled, primary = false }: TCtrlBt
 // ─────────────────────────────────────────────────────────────────────────────
 // Main Screen
 // ─────────────────────────────────────────────────────────────────────────────
-export function CurtainDetailScreen({ deviceId, entityId }: Props) {
+export function CurtainDetailScreen({ deviceId, entityId }: TProps) {
   const devices = useDeviceStore(s => s.devices);
   const device = devices.find(d => d.id === deviceId);
   const router = useRouter();

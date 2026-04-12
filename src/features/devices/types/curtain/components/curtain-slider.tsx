@@ -12,13 +12,13 @@ import Animated, {
 } from 'react-native-reanimated';
 import { runOnJS } from 'react-native-worklets';
 
-type Props = {
+type TProps = {
   position: SharedValue<number>;
   onSlidingComplete: (value: number) => void;
   disabled?: boolean;
 };
 
-export function CurtainSlider({ position, onSlidingComplete, disabled }: Props) {
+export function CurtainSlider({ position, onSlidingComplete, disabled }: TProps) {
   const [width, setWidth] = useState(0);
   const isInteracting = useSharedValue(false);
   const sliderPosition = useSharedValue(0);

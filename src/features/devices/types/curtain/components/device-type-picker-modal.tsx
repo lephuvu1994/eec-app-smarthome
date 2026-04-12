@@ -25,7 +25,7 @@ const CARD_WIDTH = WIDTH * 0.55;
 const CARD_GAP = 12;
 const SIDE_PADDING = (WIDTH - CARD_WIDTH) / 2;
 
-type DeviceTypePickerModalProps = {
+type TDeviceTypePickerModalProps = {
   modalRef: React.RefObject<BottomSheetModal | null>;
   deviceId: string;
   currentTypeId: string;
@@ -167,7 +167,7 @@ export function DeviceTypePickerModal({
   modalRef,
   deviceId,
   currentTypeId,
-}: DeviceTypePickerModalProps) {
+}: TDeviceTypePickerModalProps) {
   const insets = useSafeAreaInsets();
   const setDeviceType = useConfigManager(s => s.setShutterDeviceType);
   const scrollX = useSharedValue(0);
