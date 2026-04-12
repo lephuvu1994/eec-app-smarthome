@@ -47,9 +47,9 @@ export const CURTAIN_DEVICE_TYPES: TCurtainDeviceType[] = [
   {
     id: 'roller_shutter_1',
     name: 'deviceDetail.shutter.types.rollerShutter',
-    thumbnail: require('@@/assets/device/cuacuon/anh1.png'),
-    bgImage: require('@@/assets/device/cuacuon/anh1.png'),
-    doorImage: require('@@/assets/device/cuacuon/anh-cua1.png'),
+    thumbnail: require('@@/assets/device/cuacuon/webp/anh1.webp'),
+    bgImage: require('@@/assets/device/cuacuon/webp/anh1.webp'),
+    doorImage: require('@@/assets/device/cuacuon/webp/anh-cua1.webp'),
     doorFrame: { top: '33.8%', left: '22.3%', width: '56%', height: '57.8%' },
     animationType: 'slide_vertical',
   },

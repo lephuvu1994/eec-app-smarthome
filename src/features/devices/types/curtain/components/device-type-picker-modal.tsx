@@ -184,20 +184,27 @@ export function DeviceTypePickerModal({
     },
   });
 
+  const initialOffset = React.useMemo(() => {
+    return activeIndex * (CARD_WIDTH + CARD_GAP);
+  }, [activeIndex]);
+
+  React.useEffect(() => {
+    // eslint-disable-next-line react-compiler/react-compiler
+    scrollX.value = initialOffset;
+  }, [initialOffset, scrollX]);
+
   // Snap to the currently selected card when modal opens
   const handleModalChange = React.useCallback((index: number) => {
     if (index >= 0) {
       const idx = CURTAIN_DEVICE_TYPES.findIndex(t => t.id === currentTypeId);
       if (idx >= 0) {
         setActiveIndex(idx);
-        // Delay scroll to after modal layout
-        setTimeout(() => {
-          scrollX.value = idx * (CARD_WIDTH + CARD_GAP);
-          scrollRef.current?.scrollTo({
-            x: idx * (CARD_WIDTH + CARD_GAP),
-            animated: false,
-          });
-        }, 100);
+        // eslint-disable-next-line react-compiler/react-compiler
+        scrollX.value = idx * (CARD_WIDTH + CARD_GAP);
+        scrollRef.current?.scrollTo({
+          x: idx * (CARD_WIDTH + CARD_GAP),
+          animated: false,
+        });
       }
     }
   }, [currentTypeId, scrollX]);
@@ -240,6 +247,7 @@ export function DeviceTypePickerModal({
           decelerationRate="fast"
           snapToInterval={CARD_WIDTH + CARD_GAP}
           snapToAlignment="start"
+          contentOffset={{ x: initialOffset, y: 0 }}
           contentContainerStyle={{
             paddingLeft: SIDE_PADDING,
             paddingRight: SIDE_PADDING - CARD_GAP,
