@@ -1,4 +1,4 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useUniwind } from 'uniwind';
@@ -78,7 +78,7 @@ export function LightDetailScreen({ deviceId, entityId }: Props) {
           tintColor={iconColor}
           leftContent={(
             <HeaderIconButton onPress={() => navigation.goBack()}>
-              <MaterialCommunityIcons name="chevron-left" size={28} color={iconColor} />
+              <Feather name="arrow-left" size={24} color={iconColor} />
             </HeaderIconButton>
           )}
           rightContent={(

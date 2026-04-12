@@ -1,4 +1,4 @@
-import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
+import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { ScrollView, TouchableOpacity } from 'react-native';
 import Animated, {
@@ -90,7 +90,7 @@ export function ClimateDetailScreen({ deviceId, entityId }: Props) {
             onPress={() => router.back()}
             className="h-11 w-11 items-center justify-center rounded-full bg-white/20"
           >
-            <FontAwesome name="chevron-left" size={18} color="#fff" />
+            <Feather name="arrow-left" size={24} color="#fff" />
           </TouchableOpacity>
           <Text className="text-xl font-bold tracking-wide text-white">
             {device.name}

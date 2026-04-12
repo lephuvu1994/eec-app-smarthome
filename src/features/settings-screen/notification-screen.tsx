@@ -1,4 +1,4 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Alert, Linking } from 'react-native';
@@ -108,7 +108,7 @@ export function NotificationScreen() {
           tintColor={theme === 'dark' ? '#FFF' : '#1B1B1B'}
           leftContent={(
             <HeaderIconButton onPress={() => router.back()}>
-              <MaterialCommunityIcons name="chevron-left" size={28} color={theme === 'dark' ? '#FFF' : '#1B1B1B'} />
+              <Feather name="arrow-left" size={24} color={theme === 'dark' ? '#FFF' : '#1B1B1B'} />
             </HeaderIconButton>
           )}
         />

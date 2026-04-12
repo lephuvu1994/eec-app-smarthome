@@ -1,5 +1,5 @@
 import type { TxKeyPath } from '@/lib/i18n';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
@@ -30,7 +30,7 @@ export function PrivacyPolicyScreen() {
           tintColor={theme === 'dark' ? '#FFF' : '#1B1B1B'}
           leftContent={(
             <HeaderIconButton onPress={() => router.back()}>
-              <MaterialCommunityIcons name="chevron-left" size={28} color={theme === 'dark' ? '#FFF' : '#1B1B1B'} />
+              <Feather name="arrow-left" size={24} color={theme === 'dark' ? '#FFF' : '#1B1B1B'} />
             </HeaderIconButton>
           )}
         />

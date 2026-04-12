@@ -1,4 +1,4 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ScrollView, StyleSheet } from 'react-native';
 import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
@@ -71,7 +71,7 @@ export function RoomDashboardScreen() {
             onPress={() => router.back()}
             className="size-10 items-center justify-center rounded-full bg-black/30 backdrop-blur-md"
           >
-            <MaterialCommunityIcons name="chevron-left" size={28} color="#FFFFFF" />
+            <Feather name="arrow-left" size={24} color="#FFFFFF" />
           </Pressable>
           <Text className="text-xl font-bold text-white shadow-sm">
             Room

@@ -1,4 +1,4 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import * as Linking from 'expo-linking';
 import { useRouter } from 'expo-router';
@@ -106,7 +106,7 @@ export function CreateShareScreen({ deviceId }: Props) {
           disableSafeArea={true}
           leftContent={(
             <HeaderIconButton onPress={handleCustomBackUrl}>
-              <MaterialCommunityIcons name="chevron-left" size={28} color={isDark ? '#FFF' : '#1B1B1B'} />
+              <Feather name="arrow-left" size={24} color={isDark ? '#FFF' : '#1B1B1B'} />
             </HeaderIconButton>
           )}
         />

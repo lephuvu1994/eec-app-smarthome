@@ -1,4 +1,4 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { useQueryClient } from '@tanstack/react-query';
 import { router, Stack } from 'expo-router';
 import Animated, { FadeIn, FadeOut, useAnimatedStyle } from 'react-native-reanimated';
@@ -198,7 +198,7 @@ export function AddDeviceScreen() {
                 elevation: 1,
               }}
             >
-              <MaterialCommunityIcons name="chevron-left" size={28} color={theme === ETheme.Dark ? '#FFFFFF' : '#1B1B1B'} />
+              <Feather name="arrow-left" size={24} color={theme === ETheme.Dark ? '#FFFFFF' : '#1B1B1B'} />
             </TouchableOpacity>
             <Text className="text-[18px] font-bold text-[#1B1B1B] dark:text-white">
               {translate('base.addDevice')}

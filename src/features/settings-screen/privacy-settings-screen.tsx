@@ -1,5 +1,5 @@
 import type { TxKeyPath } from '@/lib/i18n';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Linking from 'expo-linking';
 import { router } from 'expo-router';
 import { Platform } from 'react-native';
@@ -92,7 +92,7 @@ export function PrivacySettingsScreen() {
           tintColor={theme === 'dark' ? '#FFF' : '#1B1B1B'}
           leftContent={(
             <HeaderIconButton onPress={() => router.back()}>
-              <MaterialCommunityIcons name="chevron-left" size={28} color={theme === 'dark' ? '#FFF' : '#1B1B1B'} />
+              <Feather name="arrow-left" size={24} color={theme === 'dark' ? '#FFF' : '#1B1B1B'} />
             </HeaderIconButton>
           )}
         />

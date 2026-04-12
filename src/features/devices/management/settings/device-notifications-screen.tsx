@@ -1,4 +1,4 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import * as React from 'react';
@@ -153,7 +153,7 @@ export function DeviceNotificationsScreen({ deviceId }: Props) {
               className="size-10 items-center justify-center rounded-full bg-black/5 dark:bg-white/10"
               onTouchStart={() => router.back()} // simple touchable behavior
             >
-              <MaterialCommunityIcons name="chevron-left" size={28} color={isDark ? '#FFF' : '#1B1B1B'} />
+              <Feather name="arrow-left" size={24} color={isDark ? '#FFF' : '#1B1B1B'} />
             </View>
           </Animated.View>
           <Animated.View entering={FadeInDown.duration(300)} className="flex-2 items-center">

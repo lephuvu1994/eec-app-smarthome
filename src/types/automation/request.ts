@@ -1,4 +1,5 @@
 import type { EAutomationTargetType, TAutomationAction } from './base';
+
 export type TCreateTimerPayload = {
   name?: string;
   targetType: EAutomationTargetType;

@@ -1,4 +1,4 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation, useRouter } from 'expo-router';
 import * as React from 'react';
 
@@ -86,7 +86,7 @@ export function SwitchDetailScreen({ deviceId, entityId }: Props) {
           )}
           leftContent={(
             <HeaderIconButton onPress={() => navigation.goBack()}>
-              <MaterialCommunityIcons name="chevron-left" size={28} color={iconColor} />
+              <Feather name="arrow-left" size={24} color={iconColor} />
             </HeaderIconButton>
           )}
           rightContent={(
