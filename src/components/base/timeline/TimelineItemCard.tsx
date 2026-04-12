@@ -28,6 +28,11 @@ export const TimelineItemCard: React.FC<TimelineItemCardProps> = ({ item, isLast
     finalPrefixName = item.entityName || deviceNameStr || '';
   }
 
+  // Optimize text string for "Khoá trẻ em" to just "Khoá" using common translation
+  if (item.entityCode?.toLowerCase() === 'child_lock' || item.entityCode?.toLowerCase().includes('lock')) {
+    finalPrefixName = translate('deviceDetail.childLock' as TxKeyPath) as string || 'Khoá';
+  }
+
   // Get localized Action Event Name
   let actionStatusText = '';
   if (item.type === EDeviceTimelineType.Connection) {
