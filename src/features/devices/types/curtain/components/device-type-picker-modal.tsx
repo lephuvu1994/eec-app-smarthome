@@ -1,9 +1,9 @@
-/* eslint-disable react-hooks-extra/no-direct-set-state-in-use-effect */
 import type { BottomSheetModal } from '@gorhom/bottom-sheet';
 
 import type { SharedValue } from 'react-native-reanimated';
 import { Image } from 'expo-image';
 import * as React from 'react';
+import { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, {
   Extrapolation,
@@ -13,8 +13,8 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Modal, Text, View, WIDTH } from '@/components/ui';
 import { translate } from '@/lib/i18n';
 import { useConfigManager } from '@/stores/config/config';
@@ -188,26 +188,24 @@ export function DeviceTypePickerModal({
     return activeIndex * (CARD_WIDTH + CARD_GAP);
   }, [activeIndex]);
 
-  React.useEffect(() => {
-    // eslint-disable-next-line react-compiler/react-compiler
+  useEffect(() => {
     scrollX.value = initialOffset;
   }, [initialOffset, scrollX]);
 
-  // Snap to the currently selected card when modal opens
-  const handleModalChange = React.useCallback((index: number) => {
-    if (index >= 0) {
-      const idx = CURTAIN_DEVICE_TYPES.findIndex(t => t.id === currentTypeId);
-      if (idx >= 0) {
-        setActiveIndex(idx);
-        // eslint-disable-next-line react-compiler/react-compiler
-        scrollX.value = idx * (CARD_WIDTH + CARD_GAP);
-        scrollRef.current?.scrollTo({
-          x: idx * (CARD_WIDTH + CARD_GAP),
-          animated: false,
-        });
-      }
-    }
-  }, [currentTypeId, scrollX]);
+  // // Snap to the currently selected card when modal opens
+  // const handleModalChange = useCallback((index: number) => {
+  //   if (index >= 0) {
+  //     const idx = CURTAIN_DEVICE_TYPES.findIndex(t => t.id === currentTypeId);
+  //     if (idx >= 0) {
+  //       setActiveIndex(idx);
+  //       scrollX.value = idx * (CARD_WIDTH + CARD_GAP);
+  //       scrollRef.current?.scrollTo({
+  //         x: idx * (CARD_WIDTH + CARD_GAP),
+  //         animated: false,
+  //       });
+  //     }
+  //   }
+  // }, [currentTypeId, scrollX]);
 
   const handleMomentumEnd = React.useCallback(
     (event: { nativeEvent: { contentOffset: { x: number } } }) => {
@@ -233,7 +231,6 @@ export function DeviceTypePickerModal({
       ref={modalRef}
       snapPoints={[insets.bottom + 318]}
       title={translate('deviceDetail.shutter.deviceType' as any, { defaultValue: 'Device Type' })}
-      onChange={handleModalChange}
     >
       <View
         className="flex-1 pt-2"

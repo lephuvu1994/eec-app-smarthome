@@ -41,7 +41,7 @@ const _useConfig = create<TConfigState>()(
       name: 'config-storage',
       storage: createJSONStorage(() => mmkvStorage),
       // Migrate old shutterBackgrounds → shutterDeviceTypes
-      migrate: (persistedState: any, version: number) => {
+      migrate: (persistedState: any, _: number) => {
         if (persistedState?.shutterBackgrounds && !persistedState?.shutterDeviceTypes) {
           persistedState.shutterDeviceTypes = persistedState.shutterBackgrounds;
           delete persistedState.shutterBackgrounds;

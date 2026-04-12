@@ -1,9 +1,11 @@
 import type { SharedValue } from 'react-native-reanimated';
 
 import type { TCurtainDeviceType } from '../utils/shutter-constants';
+import type { TxKeyPath } from '@/lib/i18n';
 import type { EDeviceProtocol } from '@/types/device';
 import { Image } from 'expo-image';
 import * as React from 'react';
+
 import { StyleSheet } from 'react-native';
 
 import Animated, {
@@ -12,7 +14,6 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
-
 import { Text, View } from '@/components/ui';
 import { NetworkSignalIndicator } from '@/features/devices/common/components/network-signal-indicator';
 import { translate } from '@/lib/i18n';
@@ -137,7 +138,9 @@ export function ShutterVisualizer({
       {/* 3. Status pill overlay — top right */}
       <View className="absolute top-3 right-3 flex-row items-center gap-2 rounded-full bg-white/60 px-3 py-1.5 shadow-sm dark:bg-black/60">
         <View className="size-2 rounded-full" style={{ backgroundColor: stateColor }} />
-        <Text className="text-xs font-semibold text-black uppercase dark:text-white">{doorState}</Text>
+        <Text className="text-xs font-semibold text-black uppercase dark:text-white">
+          {translate(`deviceDetail.shutter.states.${doorState}` as TxKeyPath, { defaultValue: doorState })}
+        </Text>
       </View>
 
       {/* 4. Online status pill — top left */}

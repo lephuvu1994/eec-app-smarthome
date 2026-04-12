@@ -309,6 +309,13 @@
       "position": "Vị trí",
       "rename": "Đổi tên",
       "settings": "Cài đặt",
+      "states": {
+        "CLOSED": "Đóng",
+        "CLOSING": "Đang Đóng",
+        "OPENED": "Mở",
+        "OPENING": "Đang Mở",
+        "STOPPED": "Dừng"
+      },
       "stop": "Dừng",
       "travelTime": "Hành trình",
       "workingHours": "Giờ làm việc"
