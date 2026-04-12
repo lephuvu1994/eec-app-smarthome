@@ -1,4 +1,4 @@
-import { TDevice, TDeviceEntity } from '@/types/device';
+import type { TDevice, TDeviceEntity } from '@/types/device';
 
 import { ActivityIndicator, TouchableOpacity } from 'react-native';
 

@@ -1,5 +1,5 @@
 import type { BottomSheetModal } from '@gorhom/bottom-sheet';
-import { TFloor, TRoom } from '@/types/home';
+import type { TFloor, TRoom } from '@/types/home';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router, useNavigation } from 'expo-router';

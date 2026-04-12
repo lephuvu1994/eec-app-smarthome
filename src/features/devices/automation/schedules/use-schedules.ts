@@ -1,9 +1,9 @@
-import { TDeviceEntity } from '@/types/device';
+import type { TDeviceEntity } from '@/types/device';
 import { useQueryClient } from '@tanstack/react-query';
 import { showErrorMessage } from '@/components/ui';
 import { useSchedules as baseUseSchedules, useToggleSchedule } from '@/lib/api/automation/automation.query';
-import { EAutomationTargetType } from '@/types/automation';
 import { translate } from '@/lib/i18n';
+import { EAutomationTargetType } from '@/types/automation';
 
 export function useSchedules(entity?: TDeviceEntity | null) {
   const queryClient = useQueryClient();

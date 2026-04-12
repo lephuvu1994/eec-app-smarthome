@@ -1,4 +1,4 @@
-import { TDeviceEntity } from '@/types/device';
+import type { TDeviceEntity } from '@/types/device';
 import { useTimers as baseUseTimers } from '@/lib/api/automation/automation.query';
 import { EAutomationTargetType } from '@/types/automation';
 

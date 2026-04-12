@@ -1,4 +1,4 @@
-import { TDevice, TDeviceEntity } from '@/types/device';
+import type { TDevice, TDeviceEntity } from '@/types/device';
 
 import * as Haptics from 'expo-haptics';
 import { useCallback, useState } from 'react';

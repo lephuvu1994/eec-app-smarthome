@@ -1,4 +1,3 @@
-import type { EHomeRole } from '@/features/auth/types/response';
 import * as Device from 'expo-device';
 import { client } from '../common';
 

@@ -1,4 +1,4 @@
-import { EDeviceStatus, TDevice } from '@/types/device';
+import type { EDeviceStatus, TDevice } from '@/types/device';
 import isEqual from 'lodash.isequal';
 
 import { create } from 'zustand';

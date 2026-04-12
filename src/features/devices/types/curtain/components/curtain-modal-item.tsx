@@ -1,4 +1,4 @@
-import { TDevice, TDeviceEntity } from '@/types/device';
+import type { TDevice, TDeviceEntity } from '@/types/device';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native';
 import Animated, { useAnimatedProps, useDerivedValue } from 'react-native-reanimated';

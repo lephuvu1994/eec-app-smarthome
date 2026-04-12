@@ -1,5 +1,4 @@
-import { TCreateSceneDto } from '@/types/scene';
-import type { TSceneAction } from '@/types/scene';
+import type { TCreateSceneDto, TSceneAction } from '@/types/scene';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { showErrorMessage, showSuccessMessage } from '@/components/ui';

@@ -1,4 +1,4 @@
-import { TDeviceEntity } from '@/types/device';
+import type { TDeviceEntity } from '@/types/device';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';

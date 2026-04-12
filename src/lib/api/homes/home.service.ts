@@ -1,5 +1,4 @@
-import { TDeviceEntity, TDeviceTimelineResponse } from '@/types/device';
-import { TScene } from '@/types/scene';
+import type { TDeviceTimelineResponse } from '@/types/device';
 
 import { client } from '../common';
 

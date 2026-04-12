@@ -1,4 +1,4 @@
-import { TFloor, TRoom } from '@/types/home';
+import type { TFloor, TRoom } from '@/types/home';
 
 import { create } from 'zustand';
 
