@@ -192,6 +192,7 @@ export function DeviceTypePickerModal({
         setActiveIndex(idx);
         // Delay scroll to after modal layout
         setTimeout(() => {
+          scrollX.value = idx * (CARD_WIDTH + CARD_GAP);
           scrollRef.current?.scrollTo({
             x: idx * (CARD_WIDTH + CARD_GAP),
             animated: false,
@@ -199,7 +200,7 @@ export function DeviceTypePickerModal({
         }, 100);
       }
     }
-  }, [currentTypeId]);
+  }, [currentTypeId, scrollX]);
 
   const handleMomentumEnd = React.useCallback(
     (event: { nativeEvent: { contentOffset: { x: number } } }) => {
