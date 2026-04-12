@@ -16,9 +16,10 @@ import { TimelinePopover } from '@/features/devices/automation/timeline/timeline
 import { DeviceActionBar } from '@/features/devices/common/components/device-action-bar';
 import { EDoorState, useShutterControl } from '@/features/devices/types/curtain/hooks/use-shutter-control';
 import { translate } from '@/lib/i18n';
+import { cn } from '@/lib/utils';
 import { getPrimaryEntities } from '@/lib/utils/device-entity-helper';
-import { useDeviceStore } from '@/stores/device/device-store';
 import { useConfigManager } from '@/stores/config/config';
+import { useDeviceStore } from '@/stores/device/device-store';
 import { ETheme } from '@/types/base';
 import { CurtainBleModal } from '../components/curtain-ble-modal';
 import { CurtainMotorConfigModal } from '../components/curtain-motor-config-modal';
@@ -306,9 +307,9 @@ export function CurtainDetailScreen({ deviceId, entityId }: TProps) {
             </View>
 
             {/* ── Child Lock Toggle ──────────────────────────────── */}
-            <View className="mt-8 mb-2">
+            <View className="my-1 mt-2 flex-row items-center justify-center">
               <TouchableOpacity
-                className={`flex-row items-center justify-center gap-2 rounded-2xl py-3.5 shadow-sm ${childLock ? 'bg-red-500 dark:bg-red-500/80' : 'bg-white dark:border dark:border-[#292929] dark:bg-[#FFFFFF0D]'}`}
+                className={cn('w-1/3 flex-row items-center justify-center gap-2 rounded-2xl py-3.5 shadow-sm', childLock ? 'bg-red-500 dark:bg-red-500/80' : 'bg-white dark:border dark:border-[#292929] dark:bg-[#FFFFFF0D]')}
                 onPress={() => handleChildLock(!childLock)}
                 disabled={isControlling || !isOnline}
                 activeOpacity={0.8}
@@ -327,11 +328,11 @@ export function CurtainDetailScreen({ deviceId, entityId }: TProps) {
             </View>
 
             {/* ── Control Buttons ────────────────────────────────── */}
-            <View className="mt-6 flex-row items-end justify-between">
+            <View className="mt-6 flex-row items-end justify-between px-2">
               <CtrlButton
-                icon={<FontAwesome6 name="chevron-down" size={22} color={isDark ? '#fff' : '#1B1B1B'} />}
-                label={translate('deviceDetail.shutter.close')}
-                onPress={handleClose}
+                icon={<FontAwesome6 name="chevron-up" size={22} color={isDark ? '#fff' : '#1B1B1B'} />}
+                label={translate('deviceDetail.shutter.open')}
+                onPress={handleOpen}
                 disabled={isControlling || !isOnline}
               />
               <CtrlButton
@@ -342,9 +343,9 @@ export function CurtainDetailScreen({ deviceId, entityId }: TProps) {
                 primary
               />
               <CtrlButton
-                icon={<FontAwesome6 name="chevron-up" size={22} color={isDark ? '#fff' : '#1B1B1B'} />}
-                label={translate('deviceDetail.shutter.open')}
-                onPress={handleOpen}
+                icon={<FontAwesome6 name="chevron-down" size={22} color={isDark ? '#fff' : '#1B1B1B'} />}
+                label={translate('deviceDetail.shutter.close')}
+                onPress={handleClose}
                 disabled={isControlling || !isOnline}
               />
             </View>

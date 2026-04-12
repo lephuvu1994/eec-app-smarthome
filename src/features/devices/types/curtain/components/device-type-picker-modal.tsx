@@ -185,18 +185,19 @@ export function DeviceTypePickerModal({
   });
 
   // Snap to the currently selected card when modal opens
-  React.useEffect(() => {
-    const idx = CURTAIN_DEVICE_TYPES.findIndex(t => t.id === currentTypeId);
-    if (idx >= 0) {
-      setActiveIndex(idx);
-      // Delay scroll to after modal layout
-      const timer = setTimeout(() => {
-        scrollRef.current?.scrollTo({
-          x: idx * (CARD_WIDTH + CARD_GAP),
-          animated: false,
-        });
-      }, 100);
-      return () => clearTimeout(timer);
+  const handleModalChange = React.useCallback((index: number) => {
+    if (index >= 0) {
+      const idx = CURTAIN_DEVICE_TYPES.findIndex(t => t.id === currentTypeId);
+      if (idx >= 0) {
+        setActiveIndex(idx);
+        // Delay scroll to after modal layout
+        setTimeout(() => {
+          scrollRef.current?.scrollTo({
+            x: idx * (CARD_WIDTH + CARD_GAP),
+            animated: false,
+          });
+        }, 100);
+      }
     }
   }, [currentTypeId]);
 
@@ -224,6 +225,7 @@ export function DeviceTypePickerModal({
       ref={modalRef}
       snapPoints={[insets.bottom + 318]}
       title={translate('deviceDetail.shutter.deviceType' as any, { defaultValue: 'Device Type' })}
+      onChange={handleModalChange}
     >
       <View
         className="flex-1 pt-2"

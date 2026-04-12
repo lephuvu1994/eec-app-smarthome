@@ -1,4 +1,4 @@
-import { Feather, Ionicons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import dayjs from 'dayjs';
 import { useRouter } from 'expo-router';
 import * as React from 'react';
@@ -39,7 +39,7 @@ export function SharedTimelineScreen({
               leftContent={showBackButton
                 ? (
                     <HeaderIconButton onPress={() => router.canGoBack() && router.back()}>
-                     <Feather name="chevron-left" size={28} color={theme === ETheme.Dark ? '#FFF' : '#111'} />
+                      <Feather name="arrow-left" size={24} color={theme === ETheme.Dark ? '#FFF' : '#111'} />
                     </HeaderIconButton>
                   )
                 : undefined}

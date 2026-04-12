@@ -36,12 +36,21 @@ export type TCurtainDeviceType = {
 // ── Registry ───────────────────────────────────────────────────────────────
 export const CURTAIN_DEVICE_TYPES: TCurtainDeviceType[] = [
   {
+    id: 'roller_shutter_7',
+    name: 'deviceDetail.shutter.types.rollerShutter',
+    thumbnail: require('@@/assets/device/cuacuon/webp/anh-7.webp'),
+    bgImage: require('@@/assets/device/cuacuon/webp/anh-7.webp'),
+    doorImage: require('@@/assets/device/cuacuon/webp/anh-7-cua.webp'),
+    doorFrame: { top: '43.4%', left: '24%', width: '52%', height: '45.3%' },
+    animationType: 'slide_vertical',
+  },
+  {
     id: 'roller_shutter_1',
     name: 'deviceDetail.shutter.types.rollerShutter',
     thumbnail: require('@@/assets/device/cuacuon/anh1.png'),
     bgImage: require('@@/assets/device/cuacuon/anh1.png'),
     doorImage: require('@@/assets/device/cuacuon/anh-cua1.png'),
-    doorFrame: { top: '33.8%', left: '26.3%', width: '47.8%', height: '59%' },
+    doorFrame: { top: '33.8%', left: '22.3%', width: '56%', height: '57.8%' },
     animationType: 'slide_vertical',
   },
   {
@@ -92,7 +101,7 @@ export const CURTAIN_DEVICE_TYPES: TCurtainDeviceType[] = [
 ];
 
 /** Default device type when none is selected */
-export const DEFAULT_CURTAIN_TYPE_ID = 'roller_shutter_1';
+export const DEFAULT_CURTAIN_TYPE_ID = 'roller_shutter_7';
 
 /** Lookup a device type by ID, returns first entry if not found */
 export function getCurtainDeviceType(id: string): TCurtainDeviceType {

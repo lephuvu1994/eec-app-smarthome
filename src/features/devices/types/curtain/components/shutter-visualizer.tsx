@@ -52,12 +52,12 @@ export function ShutterVisualizer({
   const doorHoleHeight = useSharedValue(0);
   const doorHoleWidth = useSharedValue(0);
   const fadeAnim = useSharedValue(1);
-  const prevTypeId = React.useRef(deviceType.id);
+  const prevTypeIdRef = React.useRef(deviceType.id);
 
   // ★ Cross-fade when device type changes
   React.useEffect(() => {
-    if (prevTypeId.current !== deviceType.id) {
-      prevTypeId.current = deviceType.id;
+    if (prevTypeIdRef.current !== deviceType.id) {
+      prevTypeIdRef.current = deviceType.id;
 
       fadeAnim.value = withSequence(
         withTiming(0, { duration: 150 }),
@@ -105,7 +105,7 @@ export function ShutterVisualizer({
   }));
 
   return (
-    <View className="aspect-4/3 w-full overflow-hidden">
+    <View className="aspect-10/9 w-full overflow-hidden">
       {/* 1. Background layer — house with empty door hole */}
       <Animated.View style={[StyleSheet.absoluteFill, animatedFadeStyle]}>
         <Image source={deviceType.bgImage} style={StyleSheet.absoluteFill} contentFit="cover" />
