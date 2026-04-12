@@ -1,11 +1,11 @@
-import type { TDeviceTimelineItem } from '@/lib/api/devices/device.service';
+import { TDeviceTimelineItem } from '@/types/device';
 import type { TxKeyPath } from '@/lib/i18n';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import dayjs from 'dayjs';
 import { Image } from 'expo-image';
 import * as React from 'react';
 import { Text, View } from 'react-native';
-import { EDeviceTimelineEvent, EDeviceTimelineSource, EDeviceTimelineType } from '@/lib/api/devices/device.service';
+import { EDeviceTimelineEvent, EDeviceTimelineSource, EDeviceTimelineType } from '@/types/device';
 import { translate } from '@/lib/i18n';
 
 type TimelineItemCardProps = {

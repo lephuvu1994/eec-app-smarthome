@@ -1,4 +1,4 @@
-import type { TDevice, TDeviceEntity } from '@/lib/api/devices/device.service';
+import { TDevice, TDeviceEntity } from '@/types/device';
 import type { TxKeyPath } from '@/lib/i18n';
 import * as Haptics from 'expo-haptics';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -6,7 +6,8 @@ import { AppState } from 'react-native';
 import { cancelAnimation, Easing, useSharedValue, withTiming } from 'react-native-reanimated';
 import { showErrorMessage } from '@/components/ui';
 import { useDeviceEvent } from '@/hooks/use-device-event';
-import { deviceService, EDeviceStatus } from '@/lib/api/devices/device.service';
+import { deviceService } from '@/lib/api/devices/device.service';
+import { EDeviceStatus } from '@/types/device';
 import { translate } from '@/lib/i18n';
 
 import { useConfigManager } from '@/stores/config/config';

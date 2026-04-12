@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react-native';
 import { useDeviceControl } from './use-device-control';
 import type { TDeviceConfig } from '@/features/devices/common/types';
-import { EDeviceStatus, type TDevice, type TDeviceEntity } from '@/lib/api/devices/device.service';
+import { EDeviceStatus, TDevice, TDeviceEntity } from '@/types/device';
 import { useDeviceEvent } from '@/hooks/use-device-event';
 import * as Haptics from 'expo-haptics';
 

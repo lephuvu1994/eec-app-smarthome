@@ -2,7 +2,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { FallbackDeviceScreen } from '@/features/devices/management/settings/fallback-device-screen';
 import { LightSettingsScreen } from '@/features/devices/types/light/screens/light-settings-screen';
 import { SwitchSettingsScreen } from '@/features/devices/types/switch/screens/switch-settings-screen';
-import { EEntityDomain } from '@/lib/api/devices/device.service';
+import { EEntityDomain } from '@/types/device';
 import { getPrimaryEntities } from '@/lib/utils/device-entity-helper';
 import { useDeviceStore } from '@/stores/device/device-store';
 

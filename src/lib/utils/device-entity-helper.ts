@@ -1,6 +1,6 @@
-import type { TDevice, TDeviceEntity } from '../api/devices/device.service';
+import { TDevice, TDeviceEntity } from '@/types/device';
 
-import { EEntityDomain } from '../api/devices/device.service';
+import { EEntityDomain } from '@/types/device';
 
 /**
  * Determines if a given entity acts as a primary control point

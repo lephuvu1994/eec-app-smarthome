@@ -1,6 +1,6 @@
 import type { useModal } from '@/components/ui/modal';
 import type { TDeviceCardProps, TDeviceConfig } from '@/features/devices/common/types';
-import type { TDevice, TDeviceEntity } from '@/lib/api/devices/device.service';
+import { TDevice, TDeviceEntity } from '@/types/device';
 
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
@@ -18,7 +18,8 @@ import {
 import { getDeviceImage } from '@/features/home-screen/utils/device-image';
 
 import { useDeviceEvent } from '@/hooks/use-device-event';
-import { deviceService, EDeviceStatus, EEntityDomain } from '@/lib/api/devices/device.service';
+import { deviceService } from '@/lib/api/devices/device.service';
+import { EDeviceStatus, EEntityDomain } from '@/types/device';
 import { bleCommandQueue, buildBleCmd } from '@/lib/ble-control';
 import { translate } from '@/lib/i18n';
 import { useConfigManager } from '@/stores/config/config';

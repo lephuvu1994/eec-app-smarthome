@@ -1,4 +1,4 @@
-import type { THome } from '@/lib/api/homes/home.service';
+import { THome } from '@/types/home';
 
 import type { ETheme } from '@/types/base';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';

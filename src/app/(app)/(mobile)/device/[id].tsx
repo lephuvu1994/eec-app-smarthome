@@ -5,7 +5,7 @@ import { ClimateDetailScreen } from '@/features/devices/types/climate/screens/cl
 import { CurtainDetailScreen } from '@/features/devices/types/curtain/screens/curtain-detail-screen';
 import { LightDetailScreen } from '@/features/devices/types/light/screens/light-detail-screen';
 import { SwitchDetailScreen } from '@/features/devices/types/switch/screens/switch-detail-screen';
-import { EEntityDomain } from '@/lib/api/devices/device.service';
+import { EEntityDomain } from '@/types/device';
 import { getPrimaryEntities } from '@/lib/utils/device-entity-helper';
 import { useDeviceStore } from '@/stores/device/device-store';
 

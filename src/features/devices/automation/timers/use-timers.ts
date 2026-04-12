@@ -1,6 +1,6 @@
-import type { TDeviceEntity } from '@/lib/api/devices/device.service';
+import { TDeviceEntity } from '@/types/device';
 import { useTimers as baseUseTimers } from '@/lib/api/automation/automation.query';
-import { EAutomationTargetType } from '@/lib/api/automation/automation.service';
+import { EAutomationTargetType } from '@/types/automation';
 
 export function useTimers(entity?: TDeviceEntity | null) {
   const { data: allTimers, isLoading, refetch } = baseUseTimers();
