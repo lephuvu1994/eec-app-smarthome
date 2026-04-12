@@ -112,7 +112,7 @@ function DotIndicator({
   scrollX,
 }: {
   types: typeof CURTAIN_DEVICE_TYPES;
-  scrollX: Animated.SharedValue<number>;
+  scrollX: SharedValue<number>;
 }) {
   return (
     <View className="mt-4 flex-row items-center justify-center gap-2">
@@ -222,7 +222,7 @@ export function DeviceTypePickerModal({
   return (
     <Modal
       ref={modalRef}
-      snapPoints={['55%']}
+      snapPoints={[insets.bottom + 318]}
       title={translate('deviceDetail.shutter.deviceType' as any, { defaultValue: 'Device Type' })}
     >
       <View
