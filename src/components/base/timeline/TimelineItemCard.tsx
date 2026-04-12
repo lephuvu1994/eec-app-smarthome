@@ -162,17 +162,17 @@ export const TimelineItemCard: React.FC<TimelineItemCardProps> = ({ item, isLast
       iconColor = '#EF4444';
       bgClass = 'bg-red-500/20';
     }
-    else if (evt === 'open') {
+    else if (evt.includes('open') || evt.includes('mở') || evt === 'up') {
       iconName = 'door-open';
       iconColor = '#10B981';
       bgClass = 'bg-green-500/20';
     }
-    else if (evt === 'close') {
+    else if (evt.includes('clos') || evt.includes('đóng') || evt === 'down') {
       iconName = 'door-closed';
       iconColor = '#EF4444';
       bgClass = 'bg-red-500/20';
     }
-    else if (evt === 'pause' || evt === 'stop') {
+    else if (evt === 'pause' || evt === 'stop' || evt.includes('dừng')) {
       iconName = 'pause';
       iconColor = '#F59E0B';
       bgClass = 'bg-amber-500/20';
