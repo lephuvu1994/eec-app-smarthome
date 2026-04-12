@@ -40,7 +40,7 @@
     "build:preview:android": "eas build --profile preview --platform android",
     "build:production:ios": "eas build --profile production --platform ios",
     "build:production:android": "eas build --profile production --platform android",
-    "postinstall": "patch-package && node scripts/patch-vlc-for-prebuild.js",
+    "postinstall": "patch-package && node scripts/patch-vlc-for-prebuild.js && node patches/fix-popover-getRectForRef.js",
     "prepare": "husky",
     "app-release": "cross-env SKIP_BRANCH_PROTECTION=true np --no-publish --no-cleanup --no-release-draft",
     "lint": "eslint .",

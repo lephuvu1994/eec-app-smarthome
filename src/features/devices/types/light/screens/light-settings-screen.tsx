@@ -1,8 +1,6 @@
 import type { TMenuElement } from '@/components/ui/zeego-native-menu';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import { StyleSheet } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useUniwind } from 'uniwind';
 
@@ -122,22 +120,6 @@ export function LightSettingsScreen({ deviceId }: Props) {
           title={translate('deviceDetail.settings.lightTitle') as string}
           tintColor={isDark ? '#FFFFFF' : '#1B1B1B'}
           leftContent={<HeaderBackButton onPress={() => router.back()} color={isDark ? '#FFFFFF' : '#1B1B1B'} />}
-        />
-        <Image
-          source={
-            theme === ETheme.Dark
-              ? require('@@/assets/base/background-dark.webp')
-              : require('@@/assets/base/background-light.webp')
-          }
-          style={[
-            {
-              width: '100%',
-              height: '100%',
-              position: 'absolute',
-            },
-            StyleSheet.absoluteFillObject,
-          ]}
-          contentFit="cover"
         />
         <ScrollView contentContainerStyle={{ paddingTop: headerOffset + 16, paddingHorizontal: 16 }}>
           <Animated.View entering={FadeInDown.duration(400)} className="mb-6">

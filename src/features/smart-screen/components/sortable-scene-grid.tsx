@@ -1,12 +1,12 @@
 import type { ReactNode } from 'react';
 import type { ImageSourcePropType, ViewStyle } from 'react-native';
-import type { OrderChangeParams } from 'react-native-sortables';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { useWindowDimensions } from 'react-native';
 import Sortable from 'react-native-sortables';
 import { PrimarySceneCard } from '@/components/base/scene/PrimarySceneCard';
-import { colors, View } from '@/components/ui';
+import { colors, showErrorMessage, View } from '@/components/ui';
 import { BASE_SPACE_HORIZONTAL, GAP_DEVICE_VIEW_MOBILE } from '@/constants';
+import { translate } from '@/lib/i18n';
 
 // ─── Types (re-export để dùng ở cả 2 wrapper) ────────────────────────────────
 
@@ -28,22 +28,27 @@ export type TSceneCard = {
    * Nếu undefined → luôn hiển thị (không thuộc filter nào)
    */
   filterTags?: string[];
+  isDisabled?: boolean;
 };
 
 type TProps = {
-  initialCards: TSceneCard[];
+  /** Cards data — quản lý bởi wrapper, grid chỉ render */
+  cards: TSceneCard[];
   /** Set các filter đang được chọn. Nếu empty → show tất cả */
   activeFilters?: Set<string>;
   /** Nếu truyền vào → card có thể press được (tap-to-run). Nếu undefined → không press (automation) */
   onCardPress?: (card: TSceneCard) => void;
+  onCardAction?: (action: 'delay' | 'edit' | 'delete', card: TSceneCard) => void;
+  /** Callback khi user kéo thả xong → trả về mảng key[] theo thứ tự mới */
+  onReorder?: (orderedKeys: string[]) => void;
 };
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-export function SortableSceneGrid({ initialCards, activeFilters, onCardPress }: TProps) {
+export function SortableSceneGrid({ cards, activeFilters, onCardPress, onCardAction, onReorder }: TProps) {
   const layout = useWindowDimensions();
-  const [cards, setCards] = useState<TSceneCard[]>(initialCards);
 
+  // Ref giữ data latest cho callback
   const cardsRef = useRef(cards);
   cardsRef.current = cards;
 
@@ -54,24 +59,20 @@ export function SortableSceneGrid({ initialCards, activeFilters, onCardPress }: 
   const halfWidth = (fullWidth - GAP_DEVICE_VIEW_MOBILE) / 2;
 
   // ── Filter logic ──────────────────────────────────────────────────────────
-  // Nếu không có filter nào active → show tất cả
-  // Nếu có filter → show card không có filterTags (luôn show) + card match bất kỳ filter nào
   const visibleCards = useMemo(() => {
     if (!activeFilters || activeFilters.size === 0)
       return cards;
     return cards.filter(card =>
-      !card.filterTags // không có tag → luôn show
+      !card.filterTags
       || card.filterTags.some(tag => activeFilters.has(tag)),
     );
   }, [cards, activeFilters]);
 
-  const handleOrderChange = useCallback(({ indexToKey }: OrderChangeParams) => {
-    const currentKeyToCard = Object.fromEntries(cardsRef.current.map(c => [c.key, c]));
-    const reordered = indexToKey.map(k => currentKeyToCard[k]).filter(Boolean) as TSceneCard[];
-    if (reordered.length > 0) {
-      setCards(reordered);
+  const handleOrderChange = useCallback(({ indexToKey }: { indexToKey: string[] }) => {
+    if (onReorder && indexToKey.length > 0) {
+      onReorder(indexToKey);
     }
-  }, []);
+  }, [onReorder]);
 
   const handleDragStart = useCallback(() => {
     isDraggingRef.current = true;
@@ -83,12 +84,13 @@ export function SortableSceneGrid({ initialCards, activeFilters, onCardPress }: 
     }, 200);
   }, []);
 
-  const getCardStyle = useMemo(
-    () => (card: TSceneCard): ViewStyle => ({
-      width: card.colSpan === 2 ? fullWidth : halfWidth,
-    }),
-    [fullWidth, halfWidth],
-  );
+  // Memo 2 style objects riêng thay vì tạo closure mỗi render
+  const fullStyle = useMemo<ViewStyle>(() => ({ width: fullWidth }), [fullWidth]);
+  const halfStyle = useMemo<ViewStyle>(() => ({ width: halfWidth }), [halfWidth]);
+
+  const handleDisabledPress = useCallback(() => {
+    showErrorMessage(translate('scenes.builder.errors.noActionsConfigured' as any));
+  }, []);
 
   return (
     <View className="px-4">
@@ -116,7 +118,9 @@ export function SortableSceneGrid({ initialCards, activeFilters, onCardPress }: 
             textColor={card.textColor}
             menuIconColor={card.menuIconColor}
             showGlossyEffect={card.showGlossyEffect}
-            containerStyle={getCardStyle(card)}
+            containerStyle={card.colSpan === 2 ? fullStyle : halfStyle}
+            disabled={card.isDisabled}
+            onDisabledPress={handleDisabledPress}
             onPress={onCardPress
               ? () => {
                   if (!isDraggingRef.current) {
@@ -124,6 +128,9 @@ export function SortableSceneGrid({ initialCards, activeFilters, onCardPress }: 
                   }
                 }
               : undefined}
+            onDelayPress={onCardAction ? () => onCardAction('delay', card) : undefined}
+            onEditPress={onCardAction ? () => onCardAction('edit', card) : undefined}
+            onDeletePress={onCardAction ? () => onCardAction('delete', card) : undefined}
           />
         ))}
       </Sortable.Flex>

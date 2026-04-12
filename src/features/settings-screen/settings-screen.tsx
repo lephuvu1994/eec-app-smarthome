@@ -84,24 +84,6 @@ export function SettingsScreen() {
   return (
     <BaseLayout>
       <View className="relative w-full flex-1">
-        {/* Background */}
-        <Image
-          source={
-            theme === ETheme.Dark
-              ? require('@@/assets/base/background-dark.webp')
-              : require('@@/assets/base/background-light.webp')
-          }
-          style={{
-            width: '100%',
-            height: '100%',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-          }}
-          contentFit="contain"
-        />
 
         <CustomHeader
           title=""
