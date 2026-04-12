@@ -1,3 +1,4 @@
+import type { TAuthMeResponse, TAuthResponse, TCheckExistsResponse, TSignupVariables } from '@/types/auth';
 import * as Device from 'expo-device';
 import { client } from '../common';
 

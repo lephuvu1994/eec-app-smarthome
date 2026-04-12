@@ -1,3 +1,5 @@
+import type { TDevice, TDeviceListResponse, TDeviceShare, TDeviceShareTokenPreview, TDeviceTimelineResponse, TMqttCredentials, TRegisterDeviceResponse, TRegisterDeviceVariables, TSiriSyncData } from '@/types/device';
+import { ESharePermission } from '@/types/device';
 import { client } from '../common';
 
 export const deviceService = {

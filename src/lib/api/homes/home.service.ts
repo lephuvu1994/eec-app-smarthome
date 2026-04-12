@@ -1,3 +1,4 @@
+import type { TAssignRoomsBody, TCreateFloorBody, TCreateRoomBody, TFloor, THomeDetail, THomeWithFloors, TRoom, TUpdateFloorBody, TUpdateRoomBody } from '@/types/home';
 import type { TDeviceTimelineResponse } from '@/types/device';
 
 import { client } from '../common';

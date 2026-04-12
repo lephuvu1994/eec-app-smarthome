@@ -1,3 +1,6 @@
+import type { TDeviceEntity } from '../device';
+import type { TScene } from '../scene';
+
 export type THome = {
   id: string;
   name: string;
