@@ -7,9 +7,11 @@ import { Easing, useSharedValue, withRepeat, withTiming } from 'react-native-rea
 import { showErrorMessage } from '@/components/ui';
 import { EAddDeviceStep, EPairingMode } from '@/features/devices/management/add-device-screen/types';
 import { useRegisterDevice } from '@/hooks/use-register-device';
+import { deviceService } from '@/lib/api/devices/device.service';
 import { bleService, CHIP_TX_CHAR_UUID } from '@/lib/ble';
 import { cryptoService } from '@/lib/crypto';
 import { translate } from '@/lib/i18n';
+import { useDeviceStore } from '@/stores/device/device-store';
 import { useHomeStore } from '@/stores/home/home-store';
 import { EDeviceProtocol } from '@/types/device';
 import { BLE_ACK_TIMEOUT } from '../constants';
@@ -370,7 +372,15 @@ export function useAddDevice() {
         tcpClient.disconnect();
       }
 
-      // Success
+      // Success: Silently refresh the list to show the new device on UI immediately
+      try {
+        const res = await deviceService.getDevices({ homeId: selectedHomeId, limit: 50 });
+        useDeviceStore.getState().setDevices(res.data);
+      }
+      catch (e) {
+        console.warn('Failed to instantly refresh devices list', e);
+      }
+
       setStep(EAddDeviceStep.COMPLETE);
     }
     catch (error) {

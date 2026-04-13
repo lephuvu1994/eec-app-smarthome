@@ -158,12 +158,6 @@ export function CurtainDetailScreen({ deviceId, entityId }: TProps) {
                   onPress: bleModal.present,
                 },
                 {
-                  key: 'rf_learn',
-                  title: translate('deviceDetail.shutter.advanced.rfLearning'),
-                  icon: { ios: 'wave.3.left.circle' },
-                  onPress: rfLearnModal.present,
-                },
-                {
                   key: 'motor_config',
                   title: translate('deviceDetail.shutter.advanced.motorConfig'),
                   icon: { ios: 'slider.horizontal.below.rectangle' },
@@ -200,12 +194,6 @@ export function CurtainDetailScreen({ deviceId, entityId }: TProps) {
                       title: translate('deviceDetail.shutter.advanced.bleMode'),
                       icon: { ios: 'point.3.connected.trianglepath.dotted' },
                       onPress: bleModal.present,
-                    },
-                    {
-                      key: 'rf_learn',
-                      title: translate('deviceDetail.shutter.advanced.rfLearning'),
-                      icon: { ios: 'wave.3.left.circle' },
-                      onPress: rfLearnModal.present,
                     },
                     {
                       key: 'motor_config',

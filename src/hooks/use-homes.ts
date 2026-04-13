@@ -5,6 +5,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { showErrorMessage, showSuccessMessage } from '@/components/ui';
 import { homeService } from '@/lib/api/homes/home.service';
 import { translate } from '@/lib/i18n';
+import { useDeviceStore } from '@/stores/device/device-store';
 import { useHomeDataStore } from '@/stores/home/home-data-store';
 
 // ============================================================
@@ -159,8 +160,25 @@ export function useAssignEntitiesToRoom() {
   return useMutation({
     mutationFn: ({ roomId, body }: { roomId: string; body: TAssignEntitiesBody }) =>
       homeService.assignEntitiesToRoom(roomId, body),
-    onSuccess: (room) => {
+    onSuccess: (room, { roomId, body }) => {
       useHomeDataStore.getState().updateRoom(room.id, room);
+
+      // Sync useDeviceStore: update room field on assigned/unassigned devices
+      const { devices } = useDeviceStore.getState();
+      const assignedIds = new Set(body.entityIds);
+      const updatedDevices = devices.map((d) => {
+        if (assignedIds.has(d.id)) {
+          // Device was assigned to this room
+          return { ...d, room: { id: roomId, name: room.name } };
+        }
+        if (d.room?.id === roomId && !assignedIds.has(d.id)) {
+          // Device was previously in this room but removed from list
+          return { ...d, room: null };
+        }
+        return d;
+      });
+      useDeviceStore.getState().setDevices(updatedDevices);
+
       showSuccessMessage(translate('roomManagement.featuresAssigned'));
     },
     onError: (error: any) => {

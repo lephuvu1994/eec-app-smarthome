@@ -26,6 +26,7 @@ export type TRoom = {
   floorId?: string;
   entities?: TDeviceEntity[];
   scenes?: TScene[];
+  devices?: TDeviceEntity[];
 };
 
 /** GET /homes trả về home kèm floors + rooms */

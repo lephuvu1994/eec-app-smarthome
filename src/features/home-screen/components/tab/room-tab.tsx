@@ -15,7 +15,9 @@ import Animated, {
 import { Pressable, Text, View, WIDTH } from '@/components/ui';
 import { LightningIcon, SensorTempIcon } from '@/components/ui/icons';
 import { ASPECT_RATIO_VIDEO, BASE_SPACE_HORIZONTAL } from '@/constants';
+import { translate } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
+import { useDeviceStore } from '@/stores/device/device-store';
 import { ETheme } from '@/types/base';
 
 const MIN_HEIGHT = 28;
@@ -23,6 +25,8 @@ const MAX_WIDTH = 80 * (WIDTH - BASE_SPACE_HORIZONTAL * 2) / 100;
 const MAX_HEIGHT = MAX_WIDTH / ASPECT_RATIO_VIDEO;
 
 export const RoomTabItem = memo(({ room, focused, theme, onPress, isExpanded }: any) => {
+  const deviceCount = useDeviceStore(state => state.devices.filter(d => d.room?.id === room.id).length);
+
   const DYNAMIC_MIN_WIDTH = room.title.length * 8 + 42;
 
   const targetWidth = isExpanded ? MAX_WIDTH : DYNAMIC_MIN_WIDTH;
@@ -160,7 +164,9 @@ export const RoomTabItem = memo(({ room, focused, theme, onPress, isExpanded }: 
               'text-xs font-normal text-[#A3EC3E]',
             )}
           >
-            3 thiết bị
+            {deviceCount}
+            {' '}
+            {translate('base.device')}
           </Text>
         </Animated.View>
       </Pressable>

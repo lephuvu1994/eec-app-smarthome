@@ -16,6 +16,8 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 
+import { BaseLayout } from '@/components/layout/BaseLayout';
+import { FullLayout } from '@/components/layout/FullLayout';
 import { Pressable, Text, TouchableOpacity, View, WIDTH } from '@/components/ui';
 import { BASE_SPACE_HORIZONTAL, GAP_DEVICE_VIEW_MOBILE } from '@/constants';
 import { translate } from '@/lib/i18n';
@@ -151,61 +153,63 @@ export function RoomScreen() {
   const currentRooms = groups[currentFloorIdx]?.rooms ?? [];
 
   return (
-    <View className="flex-1">
-      {/* Header */}
-      <Animated.View
-        entering={FadeIn.duration(400)}
-        style={{ paddingTop: insets.top + 4 }}
-        className="px-4 pb-2"
-      >
-        <Text className="text-2xl font-bold text-neutral-800 dark:text-white">
-          {translate('app.roomTab', { defaultValue: 'Rooms' })}
-        </Text>
-      </Animated.View>
-
-      {/* Floor tabs + layout toggle */}
-      <View className="mb-2 flex-row items-center gap-1 px-2">
-        {groups.map((group, idx) => (
-          <Pressable key={group.key} onPress={() => setCurrentFloorIdx(idx)} className="px-3">
-            <Text
-              className={cn(
-                'h-8 text-base font-normal text-neutral-500 dark:text-neutral-400',
-                currentFloorIdx === idx && 'font-bold text-neutral-700 dark:text-white',
-              )}
-            >
-              {group.title}
-            </Text>
-          </Pressable>
-        ))}
-        <View className="flex-1" />
-        <TouchableOpacity
-          onPress={() => setIsGrid(prev => !prev)}
-          activeOpacity={0.7}
-          className="mr-2 size-10 items-center justify-center rounded-full bg-white/40 shadow-sm dark:bg-black/40"
+    <FullLayout>
+      <BaseLayout>
+        {/* Header */}
+        <Animated.View
+          entering={FadeIn.duration(400)}
+          style={{ paddingTop: insets.top + 4 }}
+          className="px-4 pb-2"
         >
-          <MaterialCommunityIcons
-            name={isGrid ? 'view-agenda-outline' : 'view-grid-outline'}
-            size={20}
-            color={theme === 'light' ? '#737373' : '#FFFFFF'}
-          />
-        </TouchableOpacity>
-      </View>
+          <Text className="text-2xl font-bold text-neutral-800 dark:text-white">
+            {translate('app.roomTab', { defaultValue: 'Rooms' })}
+          </Text>
+        </Animated.View>
 
-      {/* Room cards — flexWrap for smooth grid/list animation */}
-      <ScrollView
-        contentContainerStyle={{
-          flexDirection: 'row',
-          flexWrap: 'wrap',
-          paddingHorizontal: BASE_SPACE_HORIZONTAL,
-          gap: CARD_GAP,
-          paddingBottom: 120,
-        }}
-        showsVerticalScrollIndicator={false}
-      >
-        {currentRooms.map(room => (
-          <RoomCard key={room.id} room={room} isGrid={isGrid} />
-        ))}
-      </ScrollView>
-    </View>
+        {/* Floor tabs + layout toggle */}
+        <View className="mb-2 flex-row items-center gap-1 px-2">
+          {groups.map((group, idx) => (
+            <Pressable key={group.key} onPress={() => setCurrentFloorIdx(idx)} className="px-3">
+              <Text
+                className={cn(
+                  'h-8 text-base font-normal text-neutral-500 dark:text-neutral-400',
+                  currentFloorIdx === idx && 'font-bold text-neutral-700 dark:text-white',
+                )}
+              >
+                {group.title}
+              </Text>
+            </Pressable>
+          ))}
+          <View className="flex-1" />
+          <TouchableOpacity
+            onPress={() => setIsGrid(prev => !prev)}
+            activeOpacity={0.7}
+            className="mr-2 size-10 items-center justify-center rounded-full bg-white/40 shadow-sm dark:bg-black/40"
+          >
+            <MaterialCommunityIcons
+              name={isGrid ? 'view-agenda-outline' : 'view-grid-outline'}
+              size={20}
+              color={theme === 'light' ? '#737373' : '#FFFFFF'}
+            />
+          </TouchableOpacity>
+        </View>
+
+        {/* Room cards — flexWrap for smooth grid/list animation */}
+        <ScrollView
+          contentContainerStyle={{
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            paddingHorizontal: BASE_SPACE_HORIZONTAL,
+            gap: CARD_GAP,
+            paddingBottom: 120,
+          }}
+          showsVerticalScrollIndicator={false}
+        >
+          {currentRooms.map(room => (
+            <RoomCard key={room.id} room={room} isGrid={isGrid} />
+          ))}
+        </ScrollView>
+      </BaseLayout>
+    </FullLayout>
   );
 }

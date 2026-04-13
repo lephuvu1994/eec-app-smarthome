@@ -30,14 +30,16 @@ export function SceneFilterTabBar({ tabs, selected, onToggle }: TProps) {
           className={[
             'rounded-full px-3 items-center justify-center h-7',
             isActive
-              ? 'bg-[#1B1B1B]'
-              : 'bg-[#F3F4F6]',
+              ? 'bg-[#1B1B1B] dark:bg-white'
+              : 'bg-[#F3F4F6] dark:bg-neutral-800',
           ].join(' ')}
         >
           <Text
             className={[
               'text-sm font-medium',
-              isActive ? 'text-white' : 'text-[#6B7280]',
+              isActive
+                ? 'text-white dark:text-black'
+                : 'text-[#6B7280] dark:text-neutral-400',
             ].join(' ')}
           >
             {item.label}

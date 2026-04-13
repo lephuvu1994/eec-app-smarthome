@@ -71,6 +71,7 @@ export function ShutterVisualizer({
     // position: 0 (Closed, door covers hole) → 100 (Open, door slides away)
     let translateX = 0;
     let translateY = 0;
+    let rotateY = '0deg';
 
     const progress = position.value / 100;
 
@@ -92,12 +93,26 @@ export function ShutterVisualizer({
         // Fold = Gập hai biên (tạm thời slide sang trái)
         translateX = doorHoleWidth.value > 0 ? -progress * doorHoleWidth.value : 0;
         break;
+      case 'swing':
+        // Swing = Cửa xoay 2 cánh đóng mở như cửa cổng (pivot ở mép viền ngoài)
+        // Góc mở tối đa 110 độ. Quay số dương để mở hướng vào MẶT TRONG (background).
+        rotateY = `${progress * 110}deg`;
+        break;
       default:
         translateY = doorHoleHeight.value > 0 ? -progress * doorHoleHeight.value : 0;
     }
 
     return {
-      transform: [{ translateX }, { translateY }],
+      // Đáy left-anchor. Cửa phải đã được wrap scaleX: -1 nên anchor tự lật sang right!
+      transformOrigin: ['0%', '50%', 0] as any,
+      transform: [
+        // Perspective càng NHỎ thì hiệu ứng 3D (xa gần) càng mạnh.
+        // Giảm từ 800 xuống 350 để thấy rõ mép cửa thu nhỏ lại khi chìm vào trong trục Z.
+        { perspective: 200 },
+        { translateX },
+        { translateY },
+        { rotateY },
+      ],
     };
   });
 
@@ -113,27 +128,73 @@ export function ShutterVisualizer({
       </Animated.View>
 
       {/* 2. Door hole — clip area matching the door frame on the background */}
-      <Animated.View
-        style={[
-          {
-            position: 'absolute',
-            overflow: 'hidden',
-            top: deviceType.doorFrame.top,
-            left: deviceType.doorFrame.left,
-            width: deviceType.doorFrame.width,
-            height: deviceType.doorFrame.height,
-          },
-          animatedFadeStyle,
-        ]}
-        onLayout={(e) => {
-          doorHoleHeight.value = e.nativeEvent.layout.height;
-          doorHoleWidth.value = e.nativeEvent.layout.width;
-        }}
-      >
-        <Animated.View className="size-full" style={animatedDoorStyle}>
-          <Image source={deviceType.doorImage} style={styles.shutterImage} contentFit="fill" />
-        </Animated.View>
-      </Animated.View>
+      {deviceType.numberDoor === 1
+        ? (
+            <Animated.View
+              style={[
+                {
+                  position: 'absolute',
+                  overflow: 'hidden',
+                  top: deviceType.doorFrame.top,
+                  left: deviceType.doorFrame.left,
+                  width: deviceType.doorFrame.width,
+                  height: deviceType.doorFrame.height,
+                },
+                animatedFadeStyle,
+              ]}
+              onLayout={(e) => {
+                doorHoleHeight.value = e.nativeEvent.layout.height;
+                doorHoleWidth.value = e.nativeEvent.layout.width;
+              }}
+            >
+              <Animated.View className="size-full" style={animatedDoorStyle}>
+                <Image source={deviceType.doorImage} style={styles.shutterImage} contentFit="fill" />
+              </Animated.View>
+            </Animated.View>
+          )
+        : (
+            <>
+              <Animated.View
+                style={[
+                  {
+                    position: 'absolute',
+                    overflow: 'hidden',
+                    top: deviceType.doorFrame.top,
+                    left: deviceType.doorFrame.left,
+                    width: deviceType.doorFrame.width,
+                    height: deviceType.doorFrame.height,
+                  },
+                  animatedFadeStyle,
+                ]}
+                onLayout={(e) => {
+                  doorHoleHeight.value = e.nativeEvent.layout.height;
+                  doorHoleWidth.value = e.nativeEvent.layout.width;
+                }}
+              >
+                <Animated.View className="size-full" style={animatedDoorStyle}>
+                  <Image source={deviceType.doorImage} style={styles.shutterImage} contentFit="fill" />
+                </Animated.View>
+              </Animated.View>
+              <Animated.View
+                style={[
+                  {
+                    position: 'absolute',
+                    overflow: 'hidden',
+                    top: deviceType.doorFrame.top,
+                    right: deviceType.doorFrame.left,
+                    width: deviceType.doorFrame.width,
+                    height: deviceType.doorFrame.height,
+                    transform: [{ scaleX: -1 }],
+                  },
+                  animatedFadeStyle,
+                ]}
+              >
+                <Animated.View className="size-full" style={animatedDoorStyle}>
+                  <Image source={deviceType.doorImage} style={styles.shutterImage} contentFit="fill" />
+                </Animated.View>
+              </Animated.View>
+            </>
+          )}
 
       {/* 3. Status pill overlay — top right */}
       <View className="absolute top-3 right-3 flex-row items-center gap-2 rounded-full bg-white/60 px-3 py-1.5 shadow-sm dark:bg-black/60">
