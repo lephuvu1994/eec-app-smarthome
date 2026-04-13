@@ -6,7 +6,7 @@ import * as React from 'react';
 import { Text, View } from '@/components/ui';
 import { Modal } from '@/components/ui/modal';
 import { translate } from '@/lib/i18n';
-import { isPrimaryEntity } from '@/lib/utils/device-entity-helper';
+import { getPrimaryEntities } from '@/lib/utils/device-entity-helper';
 
 import { ModalItemFactory } from '../components/modal-item-factory';
 
@@ -23,8 +23,7 @@ export function DeviceControlModal({
   activeEntity,
   config,
 }: TDeviceControlModalProps) {
-  const entities = device.entities ?? [];
-  const primaryEntities = entities.filter(isPrimaryEntity);
+  const primaryEntities = getPrimaryEntities(device);
 
   return (
     <Modal ref={modalRef} snapPoints={config.modalSnapPoints} title={device.name}>

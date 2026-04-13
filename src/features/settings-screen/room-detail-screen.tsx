@@ -10,6 +10,7 @@ import { BaseLayout } from '@/components/layout/BaseLayout';
 import { ScrollView, Text, TouchableOpacity, View } from '@/components/ui';
 import { useDeleteRoom, useUpdateRoom } from '@/hooks/use-homes';
 import { translate } from '@/lib/i18n';
+import { useDeviceStore } from '@/stores/device/device-store';
 import { useHomeDataStore } from '@/stores/home/home-data-store';
 import { ETheme } from '@/types/base';
 
@@ -56,6 +57,11 @@ export function RoomDetailScreen() {
       return null;
     return floors.find(f => f.rooms?.some(r => r.id === roomId)) ?? null;
   }, [floors, roomId]);
+
+  // Read device count from device store (source of truth)
+  const deviceCount = useDeviceStore(s => s.devices.filter(d => d.room?.id === roomId).length);
+  // TODO: Scene count from scene store when available
+  const sceneCount = 0;
 
   const handleSave = useCallback(() => {
     if (!roomId || !name.trim())
@@ -127,7 +133,7 @@ export function RoomDetailScreen() {
             <SettingRow
               label={translate('roomManagement.devices')}
               value={translate('roomManagement.deviceCount', {
-                count: currentFloor?.rooms?.find(r => r.id === roomId)?.entities?.length ?? 0,
+                count: deviceCount,
               })}
               onPress={() => router.push({ pathname: '/assign-room-entities', params: { roomId } })}
             />
@@ -135,7 +141,7 @@ export function RoomDetailScreen() {
             <SettingRow
               label={translate('roomManagement.scenes')}
               value={translate('roomManagement.sceneCount', {
-                count: currentFloor?.rooms?.find(r => r.id === roomId)?.scenes?.length ?? 0,
+                count: sceneCount,
               })}
               onPress={() => router.push({ pathname: '/assign-room-scenes', params: { roomId } })}
             />

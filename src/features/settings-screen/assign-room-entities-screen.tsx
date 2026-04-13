@@ -171,14 +171,12 @@ export function AssignRoomEntitiesScreen() {
       return;
     setIsSaving(true);
 
-    const payloadEntityIds = new Set<string>();
-
-    Array.from(localAssignedIds).forEach((primaryId) => {
-      payloadEntityIds.add(primaryId);
-
-      const parentDevice = devicesMemo.find(d => d.entities?.some(e => e.id === primaryId));
+    // Collect unique device IDs from selected entities (assign at Device level)
+    const deviceIdSet = new Set<string>();
+    Array.from(localAssignedIds).forEach((entityId) => {
+      const parentDevice = devicesMemo.find(d => d.entities?.some(e => e.id === entityId));
       if (parentDevice) {
-        // Entity attributes are handled together — no separate dependent expansion needed
+        deviceIdSet.add(parentDevice.id);
       }
     });
 
@@ -188,7 +186,7 @@ export function AssignRoomEntitiesScreen() {
           {
             roomId,
             body: {
-              entityIds: Array.from(payloadEntityIds),
+              entityIds: Array.from(deviceIdSet),
             },
           },
           { onSuccess: resolve, onError: reject },

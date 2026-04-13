@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { FocusAwareStatusBar, Pressable, Text, View, WIDTH } from '@/components/ui';
 import { translate } from '@/lib/i18n';
+import { useDeviceStore } from '@/stores/device/device-store';
 import { useHomeDataStore } from '@/stores/home/home-data-store';
 
 const AnimatedExpoImage = Animated.createAnimatedComponent(Image);
@@ -29,7 +30,8 @@ export function RoomDetailScreen() {
   // Get room data from store
   const room = useHomeDataStore(s => s.rooms?.find(r => r.id === roomId));
   const roomName = room?.name ?? translate('room.defaultName', { defaultValue: 'Room' });
-  const deviceCount = room?.entities?.length ?? 0;
+  const deviceCount = useDeviceStore(s => s.devices.filter(d => d.room?.id === roomId).length);
+  const roomDevices = useDeviceStore(s => s.devices.filter(d => d.room?.id === roomId));
 
   return (
     <View className="flex-1 bg-white dark:bg-black">
@@ -163,9 +165,9 @@ export function RoomDetailScreen() {
                 )
               : (
                   <View className="gap-3">
-                    {room?.entities?.slice(0, 5).map((entity: any) => (
+                    {roomDevices.slice(0, 5).map((device: any) => (
                       <View
-                        key={entity.id}
+                        key={device.id}
                         className="flex-row items-center rounded-2xl bg-white p-4 shadow-sm dark:bg-neutral-800"
                       >
                         <View className="size-10 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/30">
@@ -173,10 +175,12 @@ export function RoomDetailScreen() {
                         </View>
                         <View className="ml-3 flex-1">
                           <Text className="font-medium text-neutral-800 dark:text-white">
-                            {entity.name}
+                            {device.name}
                           </Text>
                           <Text className="text-xs text-neutral-500">
-                            {translate('room.deviceOnline', { defaultValue: 'Online' })}
+                            {device.status === 'online'
+                              ? translate('room.deviceOnline', { defaultValue: 'Online' })
+                              : translate('room.deviceOffline', { defaultValue: 'Offline' })}
                           </Text>
                         </View>
                         <MaterialCommunityIcons name="chevron-right" size={20} color="#999" />

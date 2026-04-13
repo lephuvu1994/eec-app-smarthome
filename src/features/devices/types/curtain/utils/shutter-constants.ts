@@ -2,7 +2,7 @@ import type { DimensionValue, ImageSourcePropType } from 'react-native';
 
 // ── Animation Types ────────────────────────────────────────────────────────
 /** How the door panel animates in the visualizer */
-export type TCurtainAnimationType = 'slide_vertical' | 'slide_horizontal' | 'fold' | 'roll';
+export type TCurtainAnimationType = 'slide_vertical' | 'slide_horizontal' | 'fold' | 'roll' | 'swing';
 
 // ── Device Type Config ─────────────────────────────────────────────────────
 /**
@@ -29,6 +29,7 @@ export type TCurtainDeviceType = {
     width: DimensionValue;
     height: DimensionValue;
   };
+  numberDoor: number;
   /** Animation style for the door panel */
   animationType: TCurtainAnimationType;
 };
@@ -41,6 +42,7 @@ export const CURTAIN_DEVICE_TYPES: TCurtainDeviceType[] = [
     thumbnail: require('@@/assets/device/cuacuon/webp/anh-7.webp'),
     bgImage: require('@@/assets/device/cuacuon/webp/anh-7.webp'),
     doorImage: require('@@/assets/device/cuacuon/webp/anh-7-cua.webp'),
+    numberDoor: 1,
     doorFrame: { top: '43.4%', left: '24%', width: '52%', height: '45.3%' },
     animationType: 'slide_vertical',
   },
@@ -50,6 +52,7 @@ export const CURTAIN_DEVICE_TYPES: TCurtainDeviceType[] = [
     thumbnail: require('@@/assets/device/cuacuon/webp/anh1.webp'),
     bgImage: require('@@/assets/device/cuacuon/webp/anh1.webp'),
     doorImage: require('@@/assets/device/cuacuon/webp/anh-cua1.webp'),
+    numberDoor: 1,
     doorFrame: { top: '33.8%', left: '22.3%', width: '56%', height: '57.8%' },
     animationType: 'slide_vertical',
   },
@@ -58,46 +61,51 @@ export const CURTAIN_DEVICE_TYPES: TCurtainDeviceType[] = [
     name: 'deviceDetail.shutter.types.rollerShutter',
     thumbnail: require('@@/assets/device/cuacuon/anh2.png'),
     bgImage: require('@@/assets/device/cuacuon/anh2.png'),
-    doorImage: require('@@/assets/device/cuacuon/anh-cua1.png'),
-    doorFrame: { top: '33.8%', left: '26.3%', width: '47.8%', height: '59%' },
-    animationType: 'slide_vertical',
+    doorImage: require('@@/assets/device/cuacuon/webp/anh-cua2.webp'),
+    numberDoor: 2,
+    doorFrame: { top: '53%', left: '15%', width: '35%', height: '40%' },
+    animationType: 'swing',
   },
-  {
-    id: 'roller_shutter_3',
-    name: 'deviceDetail.shutter.types.rollerShutter',
-    thumbnail: require('@@/assets/device/cuacuon/webp/anh3.webp'),
-    bgImage: require('@@/assets/device/cuacuon/webp/anh3.webp'),
-    doorImage: require('@@/assets/device/cuacuon/anh-cua1.png'),
-    doorFrame: { top: '33.8%', left: '26.3%', width: '47.8%', height: '59%' },
-    animationType: 'slide_vertical',
-  },
-  {
-    id: 'roller_shutter_4',
-    name: 'deviceDetail.shutter.types.rollerShutter',
-    thumbnail: require('@@/assets/device/cuacuon/webp/anh4.webp'),
-    bgImage: require('@@/assets/device/cuacuon/webp/anh4.webp'),
-    doorImage: require('@@/assets/device/cuacuon/anh-cua1.png'),
-    doorFrame: { top: '33.8%', left: '26.3%', width: '47.8%', height: '59%' },
-    animationType: 'slide_vertical',
-  },
-  {
-    id: 'roller_shutter_5',
-    name: 'deviceDetail.shutter.types.rollerShutter',
-    thumbnail: require('@@/assets/device/cuacuon/webp/anh5.webp'),
-    bgImage: require('@@/assets/device/cuacuon/webp/anh5.webp'),
-    doorImage: require('@@/assets/device/cuacuon/anh-cua1.png'),
-    doorFrame: { top: '33.8%', left: '26.3%', width: '47.8%', height: '59%' },
-    animationType: 'slide_vertical',
-  },
-  {
-    id: 'roller_shutter_6',
-    name: 'deviceDetail.shutter.types.rollerShutter',
-    thumbnail: require('@@/assets/device/cuacuon/webp/anh6.webp'),
-    bgImage: require('@@/assets/device/cuacuon/webp/anh6.webp'),
-    doorImage: require('@@/assets/device/cuacuon/anh-cua1.png'),
-    doorFrame: { top: '33.8%', left: '26.3%', width: '47.8%', height: '59%' },
-    animationType: 'slide_vertical',
-  },
+  // {
+  //   id: 'roller_shutter_3',
+  //   name: 'deviceDetail.shutter.types.rollerShutter',
+  //   thumbnail: require('@@/assets/device/cuacuon/webp/anh3.webp'),
+  //   bgImage: require('@@/assets/device/cuacuon/webp/anh3.webp'),
+  //   doorImage: require('@@/assets/device/cuacuon/anh-cua1.png'),
+  //   numberDoor: 1,
+  //   doorFrame: { top: '33.8%', left: '26.3%', width: '47.8%', height: '59%' },
+  //   animationType: 'slide_vertical',
+  // },
+  // {
+  //   id: 'roller_shutter_4',
+  //   name: 'deviceDetail.shutter.types.rollerShutter',
+  //   thumbnail: require('@@/assets/device/cuacuon/webp/anh4.webp'),
+  //   bgImage: require('@@/assets/device/cuacuon/webp/anh4.webp'),
+  //   doorImage: require('@@/assets/device/cuacuon/anh-cua1.png'),
+  //   numberDoor: 1,
+  //   doorFrame: { top: '33.8%', left: '26.3%', width: '47.8%', height: '59%' },
+  //   animationType: 'slide_vertical',
+  // },
+  // {
+  //   id: 'roller_shutter_5',
+  //   name: 'deviceDetail.shutter.types.rollerShutter',
+  //   thumbnail: require('@@/assets/device/cuacuon/webp/anh5.webp'),
+  //   bgImage: require('@@/assets/device/cuacuon/webp/anh5.webp'),
+  //   doorImage: require('@@/assets/device/cuacuon/anh-cua1.png'),
+  //   numberDoor: 1,
+  //   doorFrame: { top: '33.8%', left: '26.3%', width: '47.8%', height: '59%' },
+  //   animationType: 'slide_vertical',
+  // },
+  // {
+  //   id: 'roller_shutter_6',
+  //   name: 'deviceDetail.shutter.types.rollerShutter',
+  //   thumbnail: require('@@/assets/device/cuacuon/webp/anh6.webp'),
+  //   bgImage: require('@@/assets/device/cuacuon/webp/anh6.webp'),
+  //   doorImage: require('@@/assets/device/cuacuon/anh-cua1.png'),
+  //   numberDoor: 1,
+  //   doorFrame: { top: '33.8%', left: '26.3%', width: '47.8%', height: '59%' },
+  //   animationType: 'slide_vertical',
+  // },
 ];
 
 /** Default device type when none is selected */

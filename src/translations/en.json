@@ -430,6 +430,7 @@
     "defaultName": "Room",
     "device": "{{count}} Device",
     "deviceOnline": "Online",
+    "deviceOffline": "Offline",
     "device_plural": "{{count}} Devices",
     "devices": "Devices",
     "noDevices": "No devices in this room yet",

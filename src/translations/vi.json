@@ -430,6 +430,7 @@
     "defaultName": "Phòng",
     "device": "{{count}} Thiết bị",
     "deviceOnline": "Trực tuyến",
+    "deviceOffline": "Ngoại tuyến",
     "device_plural": "{{count}} Thiết bị",
     "devices": "Thiết bị",
     "noDevices": "Chưa có thiết bị nào trong phòng này",
