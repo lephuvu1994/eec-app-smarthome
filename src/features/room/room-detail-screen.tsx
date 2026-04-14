@@ -1,6 +1,7 @@
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useMemo } from 'react';
 import { ScrollView } from 'react-native';
 import Animated, { Easing, FadeInDown, FadeInLeft, FadeInRight, SharedTransition, SlideInRight } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -30,8 +31,9 @@ export function RoomDetailScreen() {
   // Get room data from store
   const room = useHomeDataStore(s => s.rooms?.find(r => r.id === roomId));
   const roomName = room?.name ?? translate('room.defaultName', { defaultValue: 'Room' });
-  const deviceCount = useDeviceStore(s => s.devices.filter(d => d.room?.id === roomId).length);
-  const roomDevices = useDeviceStore(s => s.devices.filter(d => d.room?.id === roomId));
+  const devices = useDeviceStore(s => s.devices);
+  const roomDevices = useMemo(() => devices.filter(d => d.room?.id === roomId), [devices, roomId]);
+  const deviceCount = roomDevices.length;
 
   return (
     <View className="flex-1 bg-white dark:bg-black">

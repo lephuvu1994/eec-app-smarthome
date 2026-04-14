@@ -16,7 +16,7 @@ import Animated, {
 import { useUniwind } from 'uniwind';
 import { LiveCameraWrapper } from '@/components/base/LiveCameraWrapper';
 import { Pressable, Text, View, WIDTH } from '@/components/ui';
-import { ZeegoNativeMenu } from '@/components/ui/zeego-native-menu';
+import { NativeMenu } from '@/components/ui/NativeMenu';
 import { ANIMATION_DURATION, ASPECT_RATIO_VIDEO, BASE_SPACE_HORIZONTAL } from '@/constants';
 import { GroupPage } from '@/features/home-screen/components/tab/group-page';
 import { useHomeMenu } from '@/features/home-screen/hooks/use-home-menu';
@@ -300,7 +300,7 @@ export const HomeScreenWrapper = memo(({ className }: { className?: string }) =>
         </View>
 
         {/* UI nút menu room */}
-        <ZeegoNativeMenu
+        <NativeMenu
           triggerComponent={(
             <View pointerEvents="none" className="size-8 items-center justify-center rounded-full bg-white/40 shadow-sm dark:bg-black/40">
               <FontAwesome6 name="sliders" size={14} color={theme === 'light' ? '#737373' : '#FFFFFF'} />

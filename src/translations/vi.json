@@ -526,6 +526,10 @@
       "errors": {
         "noActionsConfigured": "Vui lòng thiết lập thêm tác vụ để chạy"
       },
+      "device": {
+        "single": "Chọn một thiết bị",
+        "multi": "Chọn nhiều thiết bị"
+      },
       "hubCreateTitle": "Tạo kịch bản",
       "hubSectionAuto": "Tự động hoá",
       "hubSectionManual": "Chạy thủ công",

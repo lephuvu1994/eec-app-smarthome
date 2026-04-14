@@ -1,10 +1,10 @@
 import type { Href } from 'expo-router';
-import type { TMenuElement } from '@/components/ui/zeego-native-menu';
+import type { TMenuElement } from '@/components/ui/NativeMenu';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { SafeAreaView, ScrollView, Text, View } from '@/components/ui';
 import { Button } from '@/components/ui/button';
-import { ZeegoNativeMenu } from '@/components/ui/zeego-native-menu';
+import { NativeMenu } from '@/components/ui/NativeMenu';
 import { translate } from '@/lib/i18n';
 
 export default function ExampleScreen() {
@@ -115,7 +115,7 @@ export default function ExampleScreen() {
 
         <View className="items-center gap-3 rounded-xl bg-white p-5 shadow-sm">
           <Text className="self-start text-lg font-semibold text-[#333]">1. Basic Actions</Text>
-          <ZeegoNativeMenu
+          <NativeMenu
             triggerComponent={<Button label="Basic Menu" />}
             elements={basicElements}
             menuTitle="Actions"
@@ -136,7 +136,7 @@ export default function ExampleScreen() {
               {isFavorite ? 'Yes' : 'No'}
             </Text>
           </View>
-          <ZeegoNativeMenu
+          <NativeMenu
             triggerComponent={<Button label="Complex Menu" variant="outline" />}
             elements={complexElements}
           />
@@ -145,17 +145,17 @@ export default function ExampleScreen() {
         <View className="items-center gap-3 rounded-xl bg-white p-5 shadow-sm">
           <Text className="self-start text-lg font-semibold text-[#333]">3. Alignment Options</Text>
           <View className="flex-row gap-2.5">
-            <ZeegoNativeMenu
+            <NativeMenu
               triggerComponent={<Button label="Start" size="sm" />}
               elements={alignElements}
               align="start"
             />
-            <ZeegoNativeMenu
+            <NativeMenu
               triggerComponent={<Button label="Center" size="sm" />}
               elements={alignElements}
               align="center"
             />
-            <ZeegoNativeMenu
+            <NativeMenu
               triggerComponent={<Button label="End" size="sm" />}
               elements={alignElements}
               align="end"
@@ -166,7 +166,7 @@ export default function ExampleScreen() {
         <View className="items-center gap-3 rounded-xl bg-white p-5 shadow-sm">
           <Text className="self-start text-lg font-semibold text-[#333]">4. Context Usage</Text>
           <Text className="mb-2 text-sm text-[#666]">Bấm vào icon bên dưới để mở menu quản lý</Text>
-          <ZeegoNativeMenu
+          <NativeMenu
             triggerComponent={(
               <View className="h-10 w-10 items-center justify-center rounded-full bg-[#E9ECEF]">
                 <Text className="text-2xl text-[#495057]">⋮</Text>

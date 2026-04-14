@@ -1,4 +1,4 @@
-import type { TMenuElement } from '@/components/ui/zeego-native-menu';
+import type { TMenuElement } from '@/components/ui/NativeMenu';
 
 import { Feather, FontAwesome5, FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation, useRouter } from 'expo-router';
@@ -11,7 +11,7 @@ import { BaseLayout } from '@/components/layout/BaseLayout';
 import { IS_ANDROID, Text, TouchableOpacity, View } from '@/components/ui';
 import { BellIcon } from '@/components/ui/icons';
 import { useModal } from '@/components/ui/modal';
-import { ZeegoNativeMenu } from '@/components/ui/zeego-native-menu';
+import { NativeMenu } from '@/components/ui/NativeMenu';
 import { TimelinePopover } from '@/features/devices/automation/timeline/timeline-popover';
 import { DeviceActionBar } from '@/features/devices/common/components/device-action-bar';
 import { EDoorState, useShutterControl } from '@/features/devices/types/curtain/hooks/use-shutter-control';
@@ -255,7 +255,7 @@ export function CurtainDetailScreen({ deviceId, entityId }: TProps) {
                   </View>
                 )}
               />
-              <ZeegoNativeMenu
+              <NativeMenu
                 elements={menuElements}
                 triggerComponent={(
                   <View pointerEvents="none" className="size-10 items-center justify-center rounded-full bg-white/40 shadow-sm dark:bg-black/40">

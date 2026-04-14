@@ -526,6 +526,10 @@
       "errors": {
         "noActionsConfigured": "Please set up at least one action to run"
       },
+      "device": {
+        "single": "Select a device",
+        "multi": "Select multiple devices"
+      },
       "hubCreateTitle": "Create Scene",
       "hubSectionAuto": "Automation",
       "hubSectionManual": "Manual Execution",

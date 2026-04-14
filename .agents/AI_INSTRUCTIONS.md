@@ -626,12 +626,12 @@ import Animated, { FadeInRight, FadeInUp, FadeOutLeft } from 'react-native-reani
 
 ## 14. Zeego Native Menu — Known Issues & Workarounds
 
-### ⚠️ Bug: ZeegoNativeMenu trong `headerRight` (React Navigation)
+### ⚠️ Bug: NativeMenu trong `headerRight` (React Navigation)
 
-**Vấn đề:** Khi đặt `ZeegoNativeMenu` (hoặc Zeego `DropdownMenu.Root`) bên trong `headerRight` của React Navigation / Expo Router, `DropdownMenu.Root` tự expand chiếm full width của `headerRight` container (~50% header width). Trigger button sẽ bị lệch sang trái thay vì nằm ở góc phải.
+**Vấn đề:** Khi đặt `NativeMenu` (hoặc Zeego `DropdownMenu.Root`) bên trong `headerRight` của React Navigation / Expo Router, `DropdownMenu.Root` tự expand chiếm full width của `headerRight` container (~50% header width). Trigger button sẽ bị lệch sang trái thay vì nằm ở góc phải.
 
 - GitHub Issue: [nandorojo/zeego#180](https://github.com/nandorojo/zeego/issues/180)
-- **Chỉ xảy ra** khi ZeegoNativeMenu nằm trong `headerRight` — dùng bên ngoài header (e.g., custom header trong screen content) thì hoàn toàn bình thường.
+- **Chỉ xảy ra** khi NativeMenu nằm trong `headerRight` — dùng bên ngoài header (e.g., custom header trong screen content) thì hoàn toàn bình thường.
 - Regular `TouchableOpacity` trong `headerRight` **KHÔNG** bị lỗi này.
 
 ### Workaround: Custom `headerTitle` với `paddingRight`
@@ -653,7 +653,7 @@ const HEADER_RIGHT_WIDTH = 32; // Điều chỉnh theo kích thước trigger
       </View>
     ),
     headerRight: () => (
-      <ZeegoNativeMenu
+      <NativeMenu
         elements={menuElements}
         triggerComponent={
           <View
@@ -669,7 +669,7 @@ const HEADER_RIGHT_WIDTH = 32; // Điều chỉnh theo kích thước trigger
 />;
 ```
 
-### Rules cho ZeegoNativeMenu:
+### Rules cho NativeMenu:
 
 - **Trigger:** Dùng `<View pointerEvents="none">` làm trigger — Zeego `DropdownMenu.Trigger` tự handle press
 - **KHÔNG** dùng `TouchableOpacity` làm trigger — sẽ conflict với Zeego's native press handling

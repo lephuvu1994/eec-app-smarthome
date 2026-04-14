@@ -1,4 +1,4 @@
-import type { TMenuElement } from '@/components/ui/zeego-native-menu';
+import type { TMenuElement } from '@/components/ui/NativeMenu';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as React from 'react';
@@ -8,7 +8,7 @@ import { useUniwind } from 'uniwind';
 import { CustomHeader, HeaderBackButton, useHeaderOffset } from '@/components/base/header/CustomHeader';
 import { BaseLayout } from '@/components/layout/BaseLayout';
 import { ScrollView, Switch, Text, View } from '@/components/ui';
-import { ZeegoNativeMenu } from '@/components/ui/zeego-native-menu';
+import { NativeMenu } from '@/components/ui/NativeMenu';
 import { deviceService } from '@/lib/api/devices/device.service';
 import { translate } from '@/lib/i18n';
 import { getPrimaryEntities } from '@/lib/utils/device-entity-helper';
@@ -94,7 +94,7 @@ export function SwitchSettingsScreen({ deviceId }: Props) {
     ];
 
     return (
-      <ZeegoNativeMenu
+      <NativeMenu
         elements={menuElements}
         triggerComponent={(
           <View pointerEvents="none" className="flex-row items-center justify-between border-b border-black/5 p-4 dark:border-white/5">

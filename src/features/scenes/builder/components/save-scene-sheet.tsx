@@ -31,7 +31,7 @@ export function SaveSceneSheet({ ref, onSave, isCreating, initialName }: SaveSce
   }, [name, onSave]);
 
   return (
-    <Modal ref={ref} snapPoints={['auto']}>
+    <Modal ref={ref} snapPoints={[bottom + 200]}>
       <BottomSheetView
         style={{
           paddingBottom: Math.max(bottom, 24),

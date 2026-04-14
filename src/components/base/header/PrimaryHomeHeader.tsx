@@ -1,5 +1,5 @@
 import type { Href } from 'expo-router';
-import type { TMenuElement } from '@/components/ui/zeego-native-menu';
+import type { TMenuElement } from '@/components/ui/NativeMenu';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { router } from 'expo-router';
 import { memo, useMemo } from 'react';
@@ -8,7 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 import { Text, TouchableOpacity, View } from '@/components/ui';
 import { BellIcon, SnownyIcon } from '@/components/ui/icons';
-import { ZeegoNativeMenu } from '@/components/ui/zeego-native-menu';
+import { NativeMenu } from '@/components/ui/NativeMenu';
 import { EHomeRole } from '@/features/auth/types/response';
 import { useUserManager } from '@/features/auth/user-store';
 import { HomeTimelinePopover } from '@/features/home-screen/components/modals/home-timeline-popover';
@@ -51,13 +51,15 @@ export const PrimaryHeaderHome: React.FC = memo(() => {
     {
       key: 'add device',
       title: translate('base.addDevice'),
-      icon: { ios: 'plus' },
+      icon: { ios: 'externaldrive.badge.plus' },
+      androidIconName: 'devices',
       onPress: () => router.push('/(app)/(mobile)/add-device' as Href),
     },
     {
       key: 'add scene',
       title: translate('base.addScene'),
-      icon: { ios: 'plus' },
+      icon: { ios: 'theatermasks.fill' },
+      androidIconName: 'lightning-bolt',
       onPress: () => router.push('/(app)/(mobile)/(scene)/hub' as Href),
     },
     {
@@ -67,8 +69,8 @@ export const PrimaryHeaderHome: React.FC = memo(() => {
     {
       key: 'scan',
       title: translate('base.scan'),
-      icon: { ios: 'trash' },
-      isDestructive: true,
+      icon: { ios: 'qrcode.viewfinder' },
+      androidIconName: 'qrcode-scan',
       onPress: () => router.push('/(app)/(mobile)/(home)/scan' as Href),
     },
   ], []);
@@ -82,7 +84,7 @@ export const PrimaryHeaderHome: React.FC = memo(() => {
     >
       <View className="flex-1 flex-col">
         {/* Home selector */}
-        <ZeegoNativeMenu
+        <NativeMenu
           triggerComponent={(
             <TouchableOpacity className="flex-row items-center gap-2.5">
               <AntDesign name="home" size={18} color={theme === ETheme.Light ? '#1B1B1B' : '#FFFFFF'} />
@@ -119,7 +121,7 @@ export const PrimaryHeaderHome: React.FC = memo(() => {
           )}
         />
 
-        <ZeegoNativeMenu
+        <NativeMenu
           triggerComponent={(
             <View pointerEvents="none" className="size-10 items-center justify-center rounded-full bg-white/40 shadow-sm dark:bg-black/40">
               <AntDesign name="plus" size={16} color={theme === ETheme.Light ? '#737373' : '#FFFFFF'} />

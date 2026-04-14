@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { FlatList, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { CustomHeader, HeaderBackButton } from '@/components/base/header/CustomHeader';
+import { CustomHeader, HeaderBackButton, useHeaderOffset } from '@/components/base/header/CustomHeader';
 import { BaseLayout } from '@/components/layout/BaseLayout';
 import { Text, View } from '@/components/ui';
 import { useSceneBuilderStore } from '@/features/scenes/builder/stores/scene-builder-store';
@@ -17,6 +17,7 @@ export function DeviceSelectorScreen() {
   const insets = useSafeAreaInsets();
   const homeId = useHomeStore.use.selectedHomeId();
   const { data: devicesData } = useDevices({ homeId: homeId || undefined });
+  const heightOffset = useHeaderOffset();
 
   const addAction = useSceneBuilderStore(state => state.addAction);
 
@@ -37,11 +38,10 @@ export function DeviceSelectorScreen() {
         title={translate('scenes.builder.selectDevice')}
         leftContent={<HeaderBackButton onPress={() => router.back()} />}
       />
-
       <FlatList
         data={devicesData?.data || []}
         keyExtractor={item => item.id}
-        contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 20 }}
+        contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 20, paddingTop: heightOffset + 16 }}
         renderItem={({ item }) => (
           <TouchableOpacity
             className="mb-3 flex-row items-center justify-between rounded-2xl bg-white p-4 shadow-sm dark:bg-charcoal-900"
