@@ -21,11 +21,12 @@ export function DeviceSelectorScreen() {
 
   const addAction = useSceneBuilderStore(state => state.addAction);
 
-  const handleSelectDevice = useCallback((deviceToken: string) => {
+  const handleSelectDevice = useCallback((deviceToken: string, deviceName: string) => {
     // Tạm thời mock thêm thẳng action, Phase 4 sẽ mở config bottom sheet
     addAction({
       type: ESceneActionType.DeviceControl,
       deviceToken,
+      deviceName,
       entityCode: 'switch_1',
       value: true,
     });
@@ -45,7 +46,7 @@ export function DeviceSelectorScreen() {
         renderItem={({ item }) => (
           <TouchableOpacity
             className="mb-3 flex-row items-center justify-between rounded-2xl bg-white p-4 shadow-sm dark:bg-charcoal-900"
-            onPress={() => handleSelectDevice(item.token)}
+            onPress={() => handleSelectDevice(item.token, item.name)}
             activeOpacity={0.7}
           >
             <View>

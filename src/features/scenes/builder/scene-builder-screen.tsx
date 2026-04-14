@@ -64,13 +64,13 @@ export function SceneBuilderScreen() {
   }, [saveSceneSheet]);
 
   const handleConfirmSave = useCallback(
-    async (name: string) => {
+    async (name: string, newIcon: string) => {
       if (!homeId)
         return;
 
       await createScene({
         name,
-        icon,
+        icon: newIcon,
         homeId,
         actions: actions.map(({ _id, ...rest }) => rest),
         triggers: isManual ? [] : [{ type: triggerType as any }],

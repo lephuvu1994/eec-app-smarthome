@@ -1,9 +1,8 @@
-import type { BottomSheetModal } from '@gorhom/bottom-sheet';
 import type { TDeviceSelectionMode } from './components/device-selection-sheet';
 import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { useRouter } from 'expo-router';
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect } from 'react';
 import { ScrollView, Switch } from 'react-native';
 import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -39,7 +38,7 @@ export function TapToRunBuilderScreen() {
   const isDark = theme === ETheme.Dark;
 
   const { createScene, isCreating, homeId } = useSceneBuilder();
-  const { actions, clearStore, removeAction, reorderActions, roomId, setRoomId, showOnHome, setShowOnHome, icon } = useSceneBuilderStore();
+  const { actions, addAction, clearStore, removeAction, reorderActions, roomId, setRoomId, showOnHome, setShowOnHome, icon, pendingSceneRunId, pendingDelayMs, setPendingSceneRunId, setPendingDelayMs } = useSceneBuilderStore();
 
   const addActionSheet = useModal();
   const selectTypeModelDeviceSheet = useModal();
@@ -65,10 +64,29 @@ export function TapToRunBuilderScreen() {
     if (type === ESceneActionType.DeviceControl) {
       selectTypeModelDeviceSheet.present();
     }
-    else {
-      useSceneBuilderStore.getState().addAction({ type }); // mock
+    else if (type === ESceneActionType.RunScene) {
+      setTimeout(() => router.push('/(app)/(mobile)/(scene)/scene-selector'), 100);
     }
-  }, [selectTypeModelDeviceSheet, addActionSheet]);
+    else if (type === ESceneActionType.Delay) {
+      setTimeout(() => router.push('/(app)/(mobile)/(scene)/delay-picker'), 100);
+    }
+  }, [selectTypeModelDeviceSheet, addActionSheet, router]);
+
+  // Consume pending RunScene result from SceneSelectorScreen
+  useEffect(() => {
+    if (!pendingSceneRunId)
+      return;
+    addAction({ type: ESceneActionType.RunScene, sceneId: pendingSceneRunId });
+    setPendingSceneRunId(null);
+  }, [pendingSceneRunId, addAction, setPendingSceneRunId]);
+
+  // Consume pending Delay result from DelayPickerScreen
+  useEffect(() => {
+    if (pendingDelayMs === null)
+      return;
+    addAction({ type: ESceneActionType.Delay, delayMs: pendingDelayMs });
+    setPendingDelayMs(null);
+  }, [pendingDelayMs, addAction, setPendingDelayMs]);
 
   const handleSelectModelDevice = useCallback((mode: TDeviceSelectionMode) => {
     selectTypeModelDeviceSheet.dismiss();
@@ -85,13 +103,13 @@ export function TapToRunBuilderScreen() {
   }, [saveSceneSheet]);
 
   const handleConfirmSave = useCallback(
-    async (name: string) => {
+    async (name: string, newIcon: string) => {
       if (!homeId)
         return;
 
       await createScene({
         name,
-        icon,
+        icon: newIcon,
         homeId,
         actions: actions.map(({ _id, ...rest }) => rest),
         triggers: [], // Tap-to-run -> rỗng
@@ -112,7 +130,7 @@ export function TapToRunBuilderScreen() {
             variant="ghost"
             label={translate('scenes.builder.cancel')}
             onPress={handleCancel}
-            textClassName="font-medium text-lg text-primary"
+            textClassName="font-medium no-underline text-lg text-primary"
           />
         )}
       />
@@ -245,14 +263,14 @@ export function TapToRunBuilderScreen() {
       {IS_IOS
         ? (
             <BottomSheetModalProvider>
-              <AddActionSheet ref={addActionSheet.ref} onSelectType={handleSelectActionType} />
+              <AddActionSheet ref={addActionSheet.ref} onSelectType={handleSelectActionType} disabledTypes={[ESceneActionType.Notification]} disabledLabel={translate('scenes.builder.automationOnly')} />
               <SelectModeDeviceSheet ref={selectTypeModelDeviceSheet.ref} onSelectMode={handleSelectModelDevice} />
               <SaveSceneSheet ref={saveSceneSheet.ref} onSave={handleConfirmSave} isCreating={isCreating} />
             </BottomSheetModalProvider>
           )
         : (
             <>
-              <AddActionSheet ref={addActionSheet.ref} onSelectType={handleSelectActionType} />
+              <AddActionSheet ref={addActionSheet.ref} onSelectType={handleSelectActionType} disabledTypes={[ESceneActionType.Notification]} disabledLabel={translate('scenes.builder.automationOnly')} />
               <SaveSceneSheet ref={saveSceneSheet.ref} onSave={handleConfirmSave} isCreating={isCreating} />
             </>
           )}

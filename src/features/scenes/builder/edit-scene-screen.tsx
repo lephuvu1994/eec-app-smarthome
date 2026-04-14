@@ -101,13 +101,13 @@ export function EditSceneScreen() {
   }, []);
 
   const handleConfirmSave = useCallback(
-    (name: string) => {
+    (name: string, newIcon: string) => {
       saveSheetRef.current?.dismiss();
 
       updateScene(
         {
           name,
-          icon,
+          icon: newIcon,
           roomId: roomId || undefined,
           actions: actions.map(({ _id, ...rest }) => rest) as any,
         },

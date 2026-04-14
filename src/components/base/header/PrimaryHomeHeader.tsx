@@ -51,14 +51,14 @@ export const PrimaryHeaderHome: React.FC = memo(() => {
     {
       key: 'add device',
       title: translate('base.addDevice'),
-      icon: { ios: 'externaldrive.badge.plus' },
+      icon: { ios: 'plus.circle.fill' },
       androidIconName: 'devices',
       onPress: () => router.push('/(app)/(mobile)/add-device' as Href),
     },
     {
       key: 'add scene',
       title: translate('base.addScene'),
-      icon: { ios: 'theatermasks.fill' },
+      icon: { ios: 'rectangle.stack.badge.plus' },
       androidIconName: 'lightning-bolt',
       onPress: () => router.push('/(app)/(mobile)/(scene)/hub' as Href),
     },

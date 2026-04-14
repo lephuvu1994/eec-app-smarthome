@@ -1,11 +1,9 @@
-import { Feather } from '@expo/vector-icons';
 import { useQueryClient } from '@tanstack/react-query';
 import { router, Stack } from 'expo-router';
 import Animated, { FadeIn, FadeOut, useAnimatedStyle } from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
+import { CustomHeader, HeaderBackButton, useHeaderOffset } from '@/components/base/header/CustomHeader';
 import { BaseLayout } from '@/components/layout/BaseLayout';
-
 import { Text, TouchableOpacity, View } from '@/components/ui';
 import { translate } from '@/lib/i18n';
 import { ETheme } from '@/types/base';
@@ -21,9 +19,9 @@ import { useAddDevice } from './hooks/use-add-device';
 import { EAddDeviceStep, EPairingMode } from './types';
 
 export function AddDeviceScreen() {
-  const insets = useSafeAreaInsets();
   const { theme } = useUniwind();
   const queryClient = useQueryClient();
+  const headerOffset = useHeaderOffset();
 
   const {
     step,
@@ -169,9 +167,11 @@ export function AddDeviceScreen() {
     <BaseLayout>
       <Stack.Screen options={{ headerShown: false }} />
       <View className="relative w-full flex-1">
-        <View style={{ paddingTop: insets.top, flex: 1 }}>
-          <View className="relative h-14 flex-row items-center justify-center px-5">
-            <TouchableOpacity
+        <CustomHeader
+          title={translate('base.addDevice')}
+          tintColor={theme === ETheme.Dark ? '#FFFFFF' : '#1B1B1B'}
+          leftContent={(
+            <HeaderBackButton
               onPress={() => {
                 if (step === EAddDeviceStep.SCANNING) {
                   router.back();
@@ -189,22 +189,11 @@ export function AddDeviceScreen() {
                   router.back();
                 }
               }}
-              className="absolute left-5 z-10 size-10 items-center justify-center rounded-full bg-white/60 dark:bg-white/10"
-              style={{
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 1 },
-                shadowOpacity: 0.05,
-                shadowRadius: 4,
-                elevation: 1,
-              }}
-            >
-              <Feather name="arrow-left" size={24} color={theme === ETheme.Dark ? '#FFFFFF' : '#1B1B1B'} />
-            </TouchableOpacity>
-            <Text className="text-[18px] font-bold text-[#1B1B1B] dark:text-white">
-              {translate('base.addDevice')}
-            </Text>
-          </View>
-
+              color={theme === ETheme.Dark ? '#FFFFFF' : '#1B1B1B'}
+            />
+          )}
+        />
+        <View style={{ paddingTop: headerOffset, flex: 1 }}>
           {renderStepContent()}
         </View>
       </View>
