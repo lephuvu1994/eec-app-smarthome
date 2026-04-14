@@ -59,8 +59,8 @@ export const CURTAIN_DEVICE_TYPES: TCurtainDeviceType[] = [
   {
     id: 'roller_shutter_2',
     name: 'deviceDetail.shutter.types.rollerShutter',
-    thumbnail: require('@@/assets/device/cuacuon/anh2.png'),
-    bgImage: require('@@/assets/device/cuacuon/anh2.png'),
+    thumbnail: require('@@/assets/device/cuacuon/webp/anh2.webp'),
+    bgImage: require('@@/assets/device/cuacuon/webp/anh2.webp'),
     doorImage: require('@@/assets/device/cuacuon/webp/anh-cua2.webp'),
     numberDoor: 2,
     doorFrame: { top: '53%', left: '15%', width: '35%', height: '40%' },
