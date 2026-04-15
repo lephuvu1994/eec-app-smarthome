@@ -1,4 +1,4 @@
-import type { TMenuElement } from '@/components/ui/zeego-native-menu';
+import type { TMenuElement } from '@/components/ui/NativeMenu';
 import type { TFloor, TRoom } from '@/types/home';
 
 import { router } from 'expo-router';
@@ -16,7 +16,7 @@ type TUseHomeMenuParams = {
 };
 
 /**
- * Xây dựng menuElements cho ZeegoNativeMenu trên Home Screen.
+ * Xây dựng menuElements cho NativeMenu trên Home Screen.
  *
  * Layout flat + grouped:
  *   Group 1 (cố định): Device Management + Room Management

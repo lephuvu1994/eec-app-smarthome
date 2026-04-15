@@ -1,32 +1,34 @@
-import type { BottomSheetModal } from '@gorhom/bottom-sheet';
+import type { TDeviceSelectionMode } from './components/device-selection-sheet';
 import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { useRouter } from 'expo-router';
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect } from 'react';
 import { ScrollView, Switch } from 'react-native';
 import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 import { CustomHeader, useHeaderOffset } from '@/components/base/header/CustomHeader';
-import { BaseLayout } from '@/components/layout/BaseLayout';
 
+import { BaseLayout } from '@/components/layout/BaseLayout';
 import {
   Button,
   colors,
   IS_IOS,
   Text,
   TouchableOpacity,
+  useModal,
   View,
 } from '@/components/ui';
 import { ActionList } from '@/features/scenes/builder/components/action-list';
 import { AddActionSheet } from '@/features/scenes/builder/components/add-action-sheet';
 import { SaveSceneSheet } from '@/features/scenes/builder/components/save-scene-sheet';
-import { useSceneBuilder } from '@/features/scenes/builder/hooks/use-scene-builder';
 
+import { useSceneBuilder } from '@/features/scenes/builder/hooks/use-scene-builder';
 import { useSceneBuilderStore } from '@/features/scenes/builder/stores/scene-builder-store';
 import { translate } from '@/lib/i18n';
 import { ETheme } from '@/types/base';
 import { ESceneActionType } from '@/types/scene';
+import { SelectModeDeviceSheet } from './components/select-mode-device-sheet';
 
 export function TapToRunBuilderScreen() {
   const router = useRouter();
@@ -36,10 +38,11 @@ export function TapToRunBuilderScreen() {
   const isDark = theme === ETheme.Dark;
 
   const { createScene, isCreating, homeId } = useSceneBuilder();
-  const { actions, clearStore, removeAction, reorderActions, roomId, setRoomId, showOnHome, setShowOnHome, icon } = useSceneBuilderStore();
+  const { actions, addAction, clearStore, removeAction, reorderActions, roomId, setRoomId, showOnHome, setShowOnHome, icon, pendingSceneRunId, pendingDelayMs, setPendingSceneRunId, setPendingDelayMs } = useSceneBuilderStore();
 
-  const addActionSheetRef = useRef<BottomSheetModal>(null);
-  const saveSheetRef = useRef<BottomSheetModal>(null);
+  const addActionSheet = useModal();
+  const selectTypeModelDeviceSheet = useModal();
+  const saveSceneSheet = useModal();
 
   // Thêm mock logic chọn phòng
   const handleToggleRoom = useCallback((val: boolean) => {
@@ -57,37 +60,66 @@ export function TapToRunBuilderScreen() {
   }, [clearStore, router]);
 
   const handleSelectActionType = useCallback((type: ESceneActionType) => {
-    addActionSheetRef.current?.dismiss();
+    addActionSheet.dismiss();
     if (type === ESceneActionType.DeviceControl) {
+      selectTypeModelDeviceSheet.present();
+    }
+    else if (type === ESceneActionType.RunScene) {
+      setTimeout(() => router.push('/(app)/(mobile)/(scene)/scene-selector'), 100);
+    }
+    else if (type === ESceneActionType.Delay) {
+      setTimeout(() => router.push('/(app)/(mobile)/(scene)/delay-picker'), 100);
+    }
+  }, [selectTypeModelDeviceSheet, addActionSheet, router]);
+
+  // Consume pending RunScene result from SceneSelectorScreen
+  useEffect(() => {
+    if (!pendingSceneRunId)
+      return;
+    addAction({ type: ESceneActionType.RunScene, sceneId: pendingSceneRunId });
+    setPendingSceneRunId(null);
+  }, [pendingSceneRunId, addAction, setPendingSceneRunId]);
+
+  // Consume pending Delay result from DelayPickerScreen
+  useEffect(() => {
+    if (pendingDelayMs === null)
+      return;
+    addAction({ type: ESceneActionType.Delay, delayMs: pendingDelayMs });
+    setPendingDelayMs(null);
+  }, [pendingDelayMs, addAction, setPendingDelayMs]);
+
+  const handleSelectModelDevice = useCallback((mode: TDeviceSelectionMode) => {
+    selectTypeModelDeviceSheet.dismiss();
+    if (mode === 'single') {
       setTimeout(() => router.push('/(app)/(mobile)/(scene)/device-selector'), 100);
     }
     else {
-      useSceneBuilderStore.getState().addAction({ type }); // mock
+      setTimeout(() => router.push('/(app)/(mobile)/(scene)/device-selector'), 100);
     }
-  }, [router]);
+  }, [router, selectTypeModelDeviceSheet]);
 
   const handleSaveFlow = useCallback(() => {
-    saveSheetRef.current?.present();
-  }, []);
+    saveSceneSheet.present();
+  }, [saveSceneSheet]);
 
   const handleConfirmSave = useCallback(
-    async (name: string) => {
+    async (name: string, newIcon: string) => {
       if (!homeId)
         return;
 
       await createScene({
         name,
-        icon,
+        icon: newIcon,
         homeId,
         actions: actions.map(({ _id, ...rest }) => rest),
         triggers: [], // Tap-to-run -> rỗng
       });
 
-      saveSheetRef.current?.dismiss();
+      saveSceneSheet.dismiss();
       clearStore();
       router.back();
     },
-    [actions, createScene, homeId, icon, clearStore, router],
+    [actions, createScene, homeId, icon, clearStore, router, saveSceneSheet],
   );
 
   return (
@@ -98,7 +130,7 @@ export function TapToRunBuilderScreen() {
             variant="ghost"
             label={translate('scenes.builder.cancel')}
             onPress={handleCancel}
-            textClassName="font-medium text-lg text-primary"
+            textClassName="font-medium no-underline text-lg text-primary"
           />
         )}
       />
@@ -132,7 +164,7 @@ export function TapToRunBuilderScreen() {
             </Text>
             <TouchableOpacity
               className="size-8 items-center justify-center rounded-full bg-gray-200 dark:bg-neutral-800"
-              onPress={() => addActionSheetRef.current?.present()}
+              onPress={() => addActionSheet.present()}
             >
               <AntDesign name="plus" size={16} color={colors.charcoal[900]} style={{ opacity: 0.8 }} />
             </TouchableOpacity>
@@ -214,12 +246,16 @@ export function TapToRunBuilderScreen() {
           className="absolute inset-x-0 bottom-0 bg-white/90 px-6 pt-4 pb-6 backdrop-blur-md dark:bg-charcoal-950/90"
           style={{ paddingBottom: Math.max(insets.bottom, 24) }}
         >
-          <Button
-            label={translate('scenes.builder.save')}
+          <TouchableOpacity
+            className="w-full flex-row items-center justify-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 py-4 dark:border-emerald-800 dark:bg-[#10B9811A]"
             onPress={handleSaveFlow}
-            className="bg-primary w-full rounded-full"
-            textClassName="font-semibold text-[17px] text-white"
-          />
+            activeOpacity={0.7}
+          >
+            <MaterialCommunityIcons name="content-save-outline" size={22} color="#10B981" />
+            <Text className="text-base font-semibold text-emerald-600 dark:text-emerald-400">
+              {translate('scenes.builder.save')}
+            </Text>
+          </TouchableOpacity>
         </Animated.View>
       )}
 
@@ -227,14 +263,15 @@ export function TapToRunBuilderScreen() {
       {IS_IOS
         ? (
             <BottomSheetModalProvider>
-              <AddActionSheet ref={addActionSheetRef} onSelectType={handleSelectActionType} />
-              <SaveSceneSheet ref={saveSheetRef} onSave={handleConfirmSave} isCreating={isCreating} />
+              <AddActionSheet ref={addActionSheet.ref} onSelectType={handleSelectActionType} disabledTypes={[ESceneActionType.Notification]} disabledLabel={translate('scenes.builder.automationOnly')} />
+              <SelectModeDeviceSheet ref={selectTypeModelDeviceSheet.ref} onSelectMode={handleSelectModelDevice} />
+              <SaveSceneSheet ref={saveSceneSheet.ref} onSave={handleConfirmSave} isCreating={isCreating} />
             </BottomSheetModalProvider>
           )
         : (
             <>
-              <AddActionSheet ref={addActionSheetRef} onSelectType={handleSelectActionType} />
-              <SaveSceneSheet ref={saveSheetRef} onSave={handleConfirmSave} isCreating={isCreating} />
+              <AddActionSheet ref={addActionSheet.ref} onSelectType={handleSelectActionType} disabledTypes={[ESceneActionType.Notification]} disabledLabel={translate('scenes.builder.automationOnly')} />
+              <SaveSceneSheet ref={saveSceneSheet.ref} onSave={handleConfirmSave} isCreating={isCreating} />
             </>
           )}
     </BaseLayout>

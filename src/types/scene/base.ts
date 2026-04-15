@@ -36,6 +36,8 @@ export type TSceneTrigger = {
 export type TSceneAction = {
   type: ESceneActionType;
   deviceToken?: string;
+  /** Display name for UI only — not sent to API */
+  deviceName?: string;
   entityCode?: string;
   value?: unknown;
   delayMs?: number;

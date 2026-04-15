@@ -57,6 +57,7 @@
   "dependencies": {
     "@expo-google-fonts/inter": "^0.4.2",
     "@expo/metro-runtime": "~55.0.6",
+    "@expo/ui": "~55.0.11",
     "@expo/vector-icons": "^15.0.3",
     "@gorhom/bottom-sheet": "^5.2.8",
     "@quidone/react-native-wheel-picker": "^1.6.4",
@@ -119,8 +120,6 @@
     "react-native-flash-message": "^0.4.2",
     "react-native-gesture-handler": "~2.30.0",
     "react-native-hash": "3.0.3",
-    "react-native-ios-context-menu": "^3.2.1",
-    "react-native-ios-utilities": "^5.2.0",
     "react-native-keyboard-controller": "1.20.7",
     "react-native-mmkv": "^4.3.0",
     "react-native-nitro-modules": "^0.35.2",
@@ -148,7 +147,6 @@
     "tailwind-variants": "^3.2.2",
     "uniwind": "^1.2.4",
     "useragent-parser-js": "1.0.3",
-    "zeego": "^3.0.6",
     "zod": "^4.3.5",
     "zustand": "^5.0.10"
   },

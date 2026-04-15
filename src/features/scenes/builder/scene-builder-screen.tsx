@@ -17,6 +17,7 @@ import { AddActionSheet } from './components/add-action-sheet';
 import { DeviceSelectionSheet } from './components/device-selection-sheet';
 import { SaveSceneSheet } from './components/save-scene-sheet';
 import { SceneIconPicker } from './components/scene-icon-picker';
+import { SelectModeDeviceSheet } from './components/select-mode-device-sheet';
 import { useSceneBuilder } from './hooks/use-scene-builder';
 import { useSceneBuilderStore } from './stores/scene-builder-store';
 import { ESceneTriggerHubType } from './types/scene-trigger-hub';
@@ -52,6 +53,7 @@ export function SceneBuilderScreen() {
 
   // Sheets
   const addActionSheet = useModal();
+  const deviceSelectionModeSheet = useModal();
   const deviceSelectionSheet = useModal();
   const saveSceneSheet = useModal();
 
@@ -62,13 +64,13 @@ export function SceneBuilderScreen() {
   }, [saveSceneSheet]);
 
   const handleConfirmSave = useCallback(
-    async (name: string) => {
+    async (name: string, newIcon: string) => {
       if (!homeId)
         return;
 
       await createScene({
         name,
-        icon,
+        icon: newIcon,
         homeId,
         actions: actions.map(({ _id, ...rest }) => rest),
         triggers: isManual ? [] : [{ type: triggerType as any }],
@@ -91,14 +93,28 @@ export function SceneBuilderScreen() {
   const handleSelectActionType = useCallback((type: ESceneActionType) => {
     addActionSheet.dismiss();
     if (type === ESceneActionType.DeviceControl) {
-      setTimeout(() => router.push('/(app)/(mobile)/(scene)/device-selector'), 100);
+      console.log('device control');
+      setTimeout(() => deviceSelectionModeSheet.present(), 100);
     }
     else {
+      console.log('other');
       addAction({ type }); // mock
     }
-  }, [addAction, addActionSheet, router]);
+  }, [addAction, addActionSheet, deviceSelectionModeSheet]);
 
-  const handleSelectDeviceMode = useCallback((_: TDeviceSelectionMode) => {
+  const handleSelectDeviceMode = useCallback((mode: TDeviceSelectionMode) => {
+    deviceSelectionModeSheet.dismiss();
+    setTimeout(() => {
+      if (mode === 'single') {
+        router.push('/(app)/(mobile)/(scene)/device-selector');
+      }
+      else {
+        router.push('/(app)/(mobile)/(scene)/device-selector?mode=multi');
+      }
+    }, 100);
+  }, [deviceSelectionModeSheet, router]);
+
+  const handleSelectDevice = useCallback((_: TDeviceSelectionMode) => {
     // TODO: Route qua màn device-selector
     addAction({ type: ESceneActionType.DeviceControl, deviceToken: `mock-dev-${Date.now()}` });
   }, [addAction]);
@@ -216,14 +232,16 @@ export function SceneBuilderScreen() {
           ? (
               <BottomSheetModalProvider>
                 <AddActionSheet ref={addActionSheet.ref} onSelectType={handleSelectActionType} />
-                <DeviceSelectionSheet ref={deviceSelectionSheet.ref} onSelectMode={handleSelectDeviceMode} />
+                <SelectModeDeviceSheet ref={deviceSelectionModeSheet.ref} onSelectMode={handleSelectDeviceMode} />
+                <DeviceSelectionSheet ref={deviceSelectionSheet.ref} onSelectMode={handleSelectDevice} />
                 <SaveSceneSheet ref={saveSceneSheet.ref} onSave={handleConfirmSave} isCreating={isCreating} />
               </BottomSheetModalProvider>
             )
           : (
               <>
                 <AddActionSheet ref={addActionSheet.ref} onSelectType={handleSelectActionType} />
-                <DeviceSelectionSheet ref={deviceSelectionSheet.ref} onSelectMode={handleSelectDeviceMode} />
+                <SelectModeDeviceSheet ref={deviceSelectionModeSheet.ref} onSelectMode={handleSelectDeviceMode} />
+                <DeviceSelectionSheet ref={deviceSelectionSheet.ref} onSelectMode={handleSelectDevice} />
                 <SaveSceneSheet ref={saveSceneSheet.ref} onSave={handleConfirmSave} isCreating={isCreating} />
               </>
             )}

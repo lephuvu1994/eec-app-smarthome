@@ -1,4 +1,5 @@
 import type { TUser } from '@/features/auth/types/response';
+import type { UserUpdateDto } from '@/types/user/request';
 import { client } from '../common';
 
 export const userService = {

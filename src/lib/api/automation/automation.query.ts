@@ -3,7 +3,7 @@ import type {
   TCreateTimerPayload,
   TDeviceSchedule,
   TDeviceTimer,
-} from './automation.service';
+} from '@/types/automation';
 import { createMutation, createQuery } from 'react-query-kit';
 import { automationService } from './automation.service';
 
