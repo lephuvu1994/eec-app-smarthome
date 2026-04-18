@@ -8,7 +8,7 @@ Tài liệu này dùng để theo dõi, phân tích và lên kế hoạch (To-Do
 
 **Trạng thái**: 🚧 Đang triển khai — Skeleton có sẵn, cần hoàn thiện Engine + UI Builder.
 
-📄 **Chi tiết → [scene_todo.md](./scene_todo.md)**
+📄 **Chi tiết → [Thư mục Scene](./scene/)**
 
 **Tóm tắt việc cần làm:**
 - **Server:** DB migration (icon/color/roomId) + Action Executor (`RUN_SCENE` Processor) + DEVICE_STATE trigger evaluation

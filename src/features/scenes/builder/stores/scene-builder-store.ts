@@ -11,7 +11,7 @@ export type TSceneBuilderState = {
   showOnHome: boolean;
   triggers: TSceneTrigger[];
   actions: (TSceneAction & { _id: string })[];
-  pendingSceneRunId: string | null;
+  pendingSceneRun: { id: string; name: string } | null;
   pendingDelayMs: number | null;
 };
 
@@ -28,7 +28,7 @@ type TSceneBuilderActions = {
   removeAction: (id: string) => void;
   reorderActions: (actions: (TSceneAction & { _id: string })[]) => void;
   /** Temp result from SceneSelectorScreen — consumed by builder and cleared */
-  setPendingSceneRunId: (id: string | null) => void;
+  setPendingSceneRun: (payload: { id: string; name: string } | null) => void;
   /** Temp result from DelayPickerScreen — consumed by builder and cleared */
   setPendingDelayMs: (ms: number | null) => void;
   clearStore: () => void;
@@ -42,7 +42,7 @@ const initialState: TSceneBuilderState = {
   showOnHome: true,
   triggers: [],
   actions: [],
-  pendingSceneRunId: null,
+  pendingSceneRun: null,
   pendingDelayMs: null,
 };
 
@@ -76,7 +76,7 @@ export const useSceneBuilderStore = create<TSceneBuilderState & TSceneBuilderAct
 
   reorderActions: actions => set({ actions }),
 
-  setPendingSceneRunId: id => set({ pendingSceneRunId: id }),
+  setPendingSceneRun: payload => set({ pendingSceneRun: payload }),
   setPendingDelayMs: ms => set({ pendingDelayMs: ms }),
 
   clearStore: () => set(initialState),

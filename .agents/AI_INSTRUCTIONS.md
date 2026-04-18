@@ -404,6 +404,7 @@ router.replace("/(welcome)/signin");
 ```typescript
 // LUÔN import từ barrel export
 import {
+  View,
   Button,
   FloatInput,
   IS_IOS,
@@ -412,6 +413,9 @@ import {
   Text,
   TouchableOpacity,
   View,
+  List,
+  Modal,
+  Select
 } from "@/components/ui";
 ```
 

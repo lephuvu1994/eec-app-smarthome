@@ -61,7 +61,7 @@ export function SceneSelectorScreen() {
 
   const homeId = useHomeStore.use.selectedHomeId();
   const rooms = useHomeDataStore(s => s.rooms ?? []);
-  const setPendingSceneRunId = useSceneBuilderStore(s => s.setPendingSceneRunId);
+  const setPendingSceneRun = useSceneBuilderStore(s => s.setPendingSceneRun);
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [search, setSearch] = useState('');
@@ -82,9 +82,12 @@ export function SceneSelectorScreen() {
   const handleConfirm = useCallback(() => {
     if (!selectedId)
       return;
-    setPendingSceneRunId(selectedId);
+    const sceneInfo = scenes.find((s) => s.id === selectedId);
+    if (sceneInfo) {
+      setPendingSceneRun({ id: selectedId, name: sceneInfo.name });
+    }
     router.back();
-  }, [selectedId, setPendingSceneRunId, router]);
+  }, [selectedId, scenes, setPendingSceneRun, router]);
 
   return (
     <BaseLayout>
@@ -143,11 +146,10 @@ export function SceneSelectorScreen() {
             <TouchableOpacity
               activeOpacity={0.7}
               onPress={() => setSelectedId(item.id)}
-              className={`mb-2 flex-row items-center gap-3 rounded-2xl px-4 py-4 ${
-                selected
-                  ? 'bg-emerald-50 dark:bg-emerald-900/30'
-                  : 'bg-white dark:bg-white/10'
-              }`}
+              className={`mb-2 flex-row items-center gap-3 rounded-2xl px-4 py-4 ${selected
+                ? 'bg-emerald-50 dark:bg-emerald-900/30'
+                : 'bg-white dark:bg-white/10'
+                }`}
             >
               {/* Scene icon */}
               <View

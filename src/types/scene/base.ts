@@ -42,6 +42,8 @@ export type TSceneAction = {
   value?: unknown;
   delayMs?: number;
   sceneId?: string;
+  /** Display name for UI only — not sent to API */
+  sceneName?: string;
   notificationTitle?: string;
   notificationBody?: string;
 };
